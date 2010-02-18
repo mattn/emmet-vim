@@ -681,9 +681,9 @@ let s:zen_settings = {
 \            'optgroup': 'optgroup>option',
 \            'optg': 'optgroup>option'
 \        },
-\        'empty_elements': ['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img', 'input', 'isindex', 'link', 'meta', 'param', 'embed', 'keygen', 'command'],
+\        'empty_elements': 'area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,keygen,command',
 \        'block_elements': 'address,applet,blockquote,button,center,dd,del,dir,div,dl,dt,fieldset,form,frameset,hr,iframe,ins,isindex,li,link,map,menu,noframes,noscript,object,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul,h1,h2,h3,h4,h5,h6',
-\        'inline_elements': 'a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var'
+\        'inline_elements': 'a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',
 \    },
 \    'xsl': {
 \        'default_attributes': {
@@ -723,13 +723,21 @@ let s:zen_settings = {
 \    }
 \}
 
+function! s:zen_expandos(key, type)
+  if has_key(s:zen_settings[a:type]['expandos'], a:key)
+    return s:zen_settings[a:type]['expandos'][a:key]
+  else
+    return a:key
+  endif
+endfunction
+
 function! s:zen_parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
   if len(type) == 0 | let type = 'html' | endif
 
   " TODO : expandos
-  "let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=zen_settings[type][''expandos''][submatch(1)]', 'i')
+  let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
 
   let mx = '\([\+>]\)\{-}\([a-z][a-z0-9:\!\-]*\)\(#[0-9A-Za-z_\-\$]\+\)\{0,1}\(\%(\.[0-9A-Za-z_\-\$]\+\)*\)\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
@@ -746,11 +754,28 @@ function! s:zen_parseIntoTree(abbr, type)
     if multiplier <= 0
       let multiplier = 1
     endif
+	if has_key(s:zen_settings[type]['aliases'], tag_name)
+	  let tag_name = s:zen_settings[type]['aliases'][tag_name]
+	endif
     let current = { 'name': '', 'attr':[], 'child': [], 'snippet': '', 'multiplier': 1 }
     if has_key(s:zen_settings[type]['snippets'], tag_name)
       let current['snippet'] = s:zen_settings[type]['snippets'][tag_name]
     else
       let current['name'] = tag_name
+      if has_key(s:zen_settings[type]['default_attributes'], tag_name)
+        if type(s:zen_settings[type]['default_attributes'][tag_name]) == 4
+          let a = s:zen_settings[type]['default_attributes'][tag_name]
+          for k in keys(a)
+            call add(current['attr'], {'name': k, 'value': a[k]})
+          endfor
+        else
+          for a in s:zen_settings[type]['default_attributes'][tag_name]
+            for k in keys(a)
+              call add(current['attr'], {'name': k, 'value': a[k]})
+            endfor
+          endfor
+        endif
+      endif
     endif
     if len(id)
       call add(current['attr'], {'name': 'id', 'value': id[1:]})
@@ -812,10 +837,14 @@ function! s:zen_toString(...)
         let inner = substitute(inner, "\t$", "", 'g')
         let str .= ">\n\t" . inner . "</" . current['name'] . ">\n"
       else
-        if match(s:zen_settings[type]['empty_elements'], '^'.current['name'].'$') >= 0
+        if stridx(','.s:zen_settings[type]['empty_elements'].',', ','.current['name'].',') != -1
           let str .= " />\n"
         else
-          let str .= "></" . current['name'] . ">\n"
+          if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
+            let str .= ">\n</" . current['name'] . ">\n"
+          else
+            let str .= "></" . current['name'] . ">\n"
+		  endif
         endif
       endif
     else
@@ -837,26 +866,31 @@ endfunction
 function! s:zen_expand()
   let line = getline('.')[:col('.')]
   let line = matchstr(line, '\(\S*\)$')
-  let expand = s:zen_toString(s:zen_parseIntoTree(line, '')['child'][0])
+  let items = s:zen_parseIntoTree(line, '')['child']
+  let expand = len(items) ? s:zen_toString(items[0]) : ''
   if len(expand)
     if expand !~ '|'
       let expand .= '|'
     endif
-    silent! exe "normal! d".(len(line)-1)."h"
-    silent! put! =expand
-    call search('|', 'b')
+    let expand = repeat("\<c-h>", len(line)) . expand
+	return expand
   endif
   return ''
 endfunction
 
 function! ZenExpand(abbr, type)
-  return s:toString(s:parseIntoTree(a:abbr, a:type)['child'][0])
+  let items = s:zen_parseIntoTree(a:abbr, a:type)['child']
+  if len(items) | return s:zen_toString(items[0]) | endif
+  return ''
 endfunction
 
-inoremap <plug>ZenCodingExpand <c-r>=<sid>zen_expand()<cr><del>
+inoremap <plug>ZenCodingExpand <c-r>=<sid>zen_expand()<cr><esc>?\|<cr><del>a
 imap <c-z>, <plug>ZenCodingExpand
 
 " test
 "echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
+"echo ZenExpand('ol>li*2', '')
+"echo ZenExpand('a', '')
+"echo ZenExpand('obj', '')
 "echo ZenExpand('cc:ie6>p+blockquote#sample$.so.many.classes*2', '')
 "echo ZenExpand('tm>if>div.message', '')
