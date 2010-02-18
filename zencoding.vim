@@ -189,7 +189,7 @@ let s:zen_settings = {
 \            'bdf:ow': 'border-fit:overwrite;',
 \            'bdf:of': 'border-fit:overflow;',
 \            'bdf:sp': 'border-fit:space;',
-\            'bdl': ['border-left:|;', 'border-length:|;'],
+\            'bdl': 'border-left:|;',
 \            'bdl:a': 'border-length:auto;',
 \            'bdsp': 'border-spacing:|;',
 \            'bds': 'border-style:|;',
@@ -218,7 +218,7 @@ let s:zen_settings = {
 \            'bdr+': 'border-right:1px solid #000;',
 \            'bdr:n': 'border-right:none;',
 \            'bdrw': 'border-right-width:|;',
-\            'bdrs': ['border-right-style:|;', 'border-radius:|;'],
+\            'bdrs': 'border-right-style:|;',
 \            'bdrs:n': 'border-right-style:none;',
 \            'bdrc': 'border-right-color:#000;',
 \            'bdb': 'border-bottom:|;',
@@ -228,12 +228,14 @@ let s:zen_settings = {
 \            'bdbs': 'border-bottom-style:|;',
 \            'bdbs:n': 'border-bottom-style:none;',
 \            'bdbc': 'border-bottom-color:#000;',
+\            'bdln': 'border-length:|;',
 \            'bdl+': 'border-left:1px solid #000;',
 \            'bdl:n': 'border-left:none;',
 \            'bdlw': 'border-left-width:|;',
 \            'bdls': 'border-left-style:|;',
 \            'bdls:n': 'border-left-style:none;',
 \            'bdlc': 'border-left-color:#000;',
+\            'bdrus': 'border-radius:|;',
 \            'bdtrrs': 'border-top-right-radius:|;',
 \            'bdtlrs': 'border-top-left-radius:|;',
 \            'bdbrrs': 'border-bottom-right-radius:|;',
@@ -721,7 +723,7 @@ let s:zen_settings = {
 \    }
 \}
 
-function! s:parseIntoTree(abbr, type)
+function! s:zen_parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
   if len(type) == 0 | let type = 'html' | endif
@@ -777,7 +779,7 @@ function! s:parseIntoTree(abbr, type)
   return root
 endfunction
 
-function! s:toString(...)
+function! s:zen_toString(...)
   let current = a:1
   if a:0 > 1
     let type = a:2
@@ -803,7 +805,7 @@ function! s:toString(...)
       endwhile
       let inner = ''
       for child in current['child']
-        let inner .= s:toString(child, type)
+        let inner .= s:zen_toString(child, type)
       endfor
       if len(inner)
         let inner = substitute(inner, "\n", "\n\t", 'g')
@@ -818,27 +820,29 @@ function! s:toString(...)
       endif
     else
       let str .= '' . current['snippet']
+      let inner = ''
       if len(current['child'])
-        let inner = ''
         for n in current['child']
-          let inner .= s:toString(n, type)
+          let inner .= s:zen_toString(n, type)
         endfor
         let inner = substitute(inner, "\n", "\n\t", 'g')
-        let str = substitute(str, '\${child}', inner, '')
       endif
+      let str = substitute(str, '\${child}', inner, '')
     endif
     let m = m + 1
   endwhile
   return str
 endfunction
 
-function! s:expand()
-  let expand = s:toString(s:parseIntoTree(getline('.'), '')['child'][0])
+function! s:zen_expand()
+  let line = getline('.')[:col('.')]
+  let line = matchstr(line, '\(\S*\)$')
+  let expand = s:zen_toString(s:zen_parseIntoTree(line, '')['child'][0])
   if len(expand)
     if expand !~ '|'
       let expand .= '|'
     endif
-    silent! normal! 0d$
+    silent! exe "normal! d".(len(line)-1)."h"
     silent! put! =expand
     call search('|', 'b')
   endif
@@ -849,7 +853,8 @@ function! ZenExpand(abbr, type)
   return s:toString(s:parseIntoTree(a:abbr, a:type)['child'][0])
 endfunction
 
-inoremap <c-,> <c-r>=<sid>expand()<cr><del>
+inoremap <plug>ZenCodingExpand <c-r>=<sid>zen_expand()<cr><del>
+imap <c-z>, <plug>ZenCodingExpand
 
 " test
 "echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
