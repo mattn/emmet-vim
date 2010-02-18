@@ -1,18 +1,18 @@
 "=============================================================================
-" File: zenconfig.vim
+" File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 19-Feb-2010.
 " Version: 0.1
-" WebPage: http://github.com/mattn/zenconfig-vim
+" WebPage: http://github.com/mattn/zencoding-vim
 " Usage:
 " Tips:
 " TODO: expandos
 " script type: plugin
 
-if &cp || (exists('g:loaded_zenconfig_vim') && g:loaded_zenconfig_vim)
+if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
   "finish
 endif
-let g:loaded_zenconfig_vim = 1
+let g:loaded_zencoding_vim = 1
 
 unlet! s:zen_settings
 let s:zen_settings = {
