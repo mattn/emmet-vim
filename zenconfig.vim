@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zenconfig.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 18-Feb-2010.
+" Last Change: 19-Feb-2010.
 " Version: 0.1
 " WebPage: http://github.com/mattn/zenconfig-vim
 " Usage:
@@ -803,7 +803,7 @@ function! s:toString(...)
       endwhile
       let inner = ''
       for child in current['child']
-        let inner .= s:ToString(child, type)
+        let inner .= s:toString(child, type)
       endfor
       if len(inner)
         let inner = substitute(inner, "\n", "\n\t", 'g')
@@ -821,7 +821,7 @@ function! s:toString(...)
       if len(current['child'])
         let inner = ''
         for n in current['child']
-          let inner .= s:ToString(n, type)
+          let inner .= s:toString(n, type)
         endfor
         let inner = substitute(inner, "\n", "\n\t", 'g')
         let str = substitute(str, '\${child}', inner, '')
@@ -852,6 +852,6 @@ endfunction
 inoremap <c-,> <c-r>=<sid>expand()<cr><del>
 
 " test
-echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
-echo ZenExpand('cc:ie6>p+blockquote#sample$.so.many.classes*2', '')
-echo ZenExpand('tm>if>div.message', '')
+"echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
+"echo ZenExpand('cc:ie6>p+blockquote#sample$.so.many.classes*2', '')
+"echo ZenExpand('tm>if>div.message', '')
