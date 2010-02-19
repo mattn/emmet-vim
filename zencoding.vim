@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 19-Feb-2010.
-" Version: 0.7
+" Version: 0.8
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -66,7 +66,7 @@
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
-  finish
+  "finish
 endif
 let g:loaded_zencoding_vim = 1
 
@@ -798,9 +798,10 @@ function! s:zen_parseIntoTree(abbr, type)
   " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
 
-  let mx = '\([\+>]\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\)\(#[0-9A-Za-z_\-\$]\+\)\{0,1}\(\%(\.[0-9A-Za-z_\-\$]\+\)*\)\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([\+>]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\)\(#[0-9A-Za-z_\-\$]\+\)\{0,1}\(\%(\[[^\]]\+\]\)*\)\(\%(\.[0-9A-Za-z_\-\$]\+\)*\)\({[^}]\+}\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
-  let parent = { 'name': '', 'attr': [], 'child': [], 'snippet': '', 'multiplier': 1 }
+  let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '' }
+  let granma = parent
   let root = parent
   while len(abbr)
     let match = matchstr(abbr, mx)
@@ -808,8 +809,10 @@ function! s:zen_parseIntoTree(abbr, type)
     let operator = substitute(match, mx, '\1', 'ig')
     let tag_name = substitute(match, mx, '\2', 'ig')
     let id = substitute(match, mx, '\3', 'ig')
-    let class_name = substitute(match, mx, '\4', 'ig')
-    let multiplier = 0 + substitute(match, mx, '\5', 'ig')
+    let attr = substitute(match, mx, '\4', 'ig')
+    let class_name = substitute(match, mx, '\5', 'ig')
+    let value = substitute(match, mx, '\6', 'ig')
+    let multiplier = 0 + substitute(match, mx, '\7', 'ig')
     if multiplier <= 0
       let multiplier = 1
     endif
@@ -818,7 +821,7 @@ function! s:zen_parseIntoTree(abbr, type)
         let tag_name = s:zen_settings[type]['aliases'][tag_name]
       endif
     endif
-    let current = { 'name': '', 'attr':[], 'child': [], 'snippet': '', 'multiplier': 1 }
+    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '' }
     if has_key(s:zen_settings[type]['snippets'], tag_name)
       let current['snippet'] = s:zen_settings[type]['snippets'][tag_name]
     else
@@ -829,12 +832,12 @@ function! s:zen_parseIntoTree(abbr, type)
           if type(default_attributes[tag_name]) == 4
             let a = default_attributes[tag_name]
             for k in keys(a)
-              call add(current['attr'], {'name': k, 'value': a[k]})
+              let current['attr'][k] = a[k]
             endfor
           else
             for a in default_attributes[tag_name]
               for k in keys(a)
-                call add(current['attr'], {'name': k, 'value': a[k]})
+                let current['attr'][k] = a[k]
               endfor
             endfor
           endif
@@ -842,15 +845,36 @@ function! s:zen_parseIntoTree(abbr, type)
       endif
     endif
     if len(id)
-      call add(current['attr'], {'name': 'id', 'value': id[1:]})
+      let current['attr']['id'] = id[1:]
     endif
     if len(class_name)
-      call add(current['attr'], {'name': 'class', 'value': class_name[1:]})
+      let current['attr']['class'] = class_name[1:]
     endif
+    if len(attr)
+      let attrs = split(attr, '\[\|\]\[\|\]')
+      unlet! aa
+      unlet! ka
+      for aa in attrs
+        let kk = split(aa, '=')
+        let current['attr'][kk[0]] = len(kk) > 1 ? join(kk[1:], '=') : ''
+      endfor
+    endif
+    let current['value'] = value
     let current['multiplier'] = multiplier
     if operator == '>' && !empty(last)
+      let tmp = parent
       unlet! parent
       let parent = last
+      let parent['parent'] = tmp
+    endif
+    if operator =~ '<'
+      for c in split(operator, '\zs')
+        let tmp = parent['parent']
+        if empty(tmp)
+          break
+        endif
+        let parent = tmp
+      endfor
     endif
     call add(parent['child'], current)
     let last = current
@@ -858,8 +882,10 @@ function! s:zen_parseIntoTree(abbr, type)
       echo "str=".str
       echo "operator=".operator
       echo "tag_name=".tag_name
-      echo "class_name=".class_name
       echo "id=".id
+      echo "class_name=".class_name
+      echo "attr=".attr
+      echo "value=".value
       echo "multiplier=".multiplier
       echo "\n"
     endif
@@ -886,21 +912,18 @@ function! s:zen_toString(...)
   while m <= current['multiplier']
     if len(current['name']) && type == 'html'
       let str .= '<' . current['name']
-      let n = 0
-      while n < len(current['attr'])
-        let attr = current['attr'][n]
-        if current['multiplier'] > 1 && attr['value'] =~ '\$$'
-          let str .= ' ' . attr['name'] . '="' . attr['value'][:-2] . m . '"'
+      for attr in keys(current['attr'])
+        if current['multiplier'] > 1 && current['attr'][attr] =~ '\$$'
+          let str .= ' ' . attr . '="' . current['attr'][attr][:-2] . m . '"'
         else
-          let str .= ' ' . attr['name'] . '="' . attr['value'] . '"'
+          let str .= ' ' . attr . '="' . current['attr'][attr] . '"'
         endif
-        let n = n + 1
-      endwhile
-      let inner = ''
+      endfor
+      let inner = current['value'][1:-2]
       for child in current['child']
         let inner .= s:zen_toString(child, type)
       endfor
-      if len(inner)
+      if len(current['child'])
         let inner = substitute(inner, "\n", "\n" . indent, 'g')
         let inner = substitute(inner, indent . "$", "", 'g')
         let str .= ">\n" . indent . inner . "</" . current['name'] . ">\n"
@@ -909,9 +932,9 @@ function! s:zen_toString(...)
           let str .= " />\n"
         else
           if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
-            let str .= ">\n|</" . current['name'] . ">\n"
+            let str .= ">\n" . inner . "|</" . current['name'] . ">\n"
           else
-            let str .= ">|</" . current['name'] . ">\n"
+            let str .= ">" . inner . "|</" . current['name'] . ">\n"
           endif
         endif
       endif
@@ -1017,5 +1040,9 @@ endif
 "echo ZenExpand('html:4t>div#wrapper>div#header+div#contents+div#footer', '')
 "echo ZenExpand('a[href=http://www.google.com/].foo#hoge', '')
 "echo ZenExpand('a+b', '')
+"echo ZenExpand('a>b>c<d', '')
+"echo ZenExpand('a>b>c<<d', '')
+"echo ZenExpand('a[href=foo][class=bar]', '')
+"echo ZenExpand('a[a=b][b=c=d][e]{foo}*2', '')
 
 " vim:set et:
