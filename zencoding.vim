@@ -798,7 +798,7 @@ function! s:zen_parseIntoTree(abbr, type)
   " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
 
-  let mx = '\([\+>]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\)\(#[0-9A-Za-z_\-\$]\+\)\{0,1}\(\%(\[[^\]]\+\]\)*\)\(\%(\.[0-9A-Za-z_\-\$]\+\)*\)\({[^}]\+}\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([\+>]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(#[0-9A-Za-z_\-\$]\+\)\{0,1}\(\%(\[[^\]]\+\]\)*\)\(\%(\.[0-9A-Za-z_\-\$]\+\)*\)\({[^}]\+}\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '' }
   let granma = parent
@@ -859,7 +859,12 @@ function! s:zen_parseIntoTree(abbr, type)
         let current['attr'][kk[0]] = len(kk) > 1 ? join(kk[1:], '=') : ''
       endfor
     endif
-    let current['value'] = value
+    if tag_name =~ '^{.*}$'
+      let current['name'] = ''
+      let current['value'] = str
+    else
+      let current['value'] = value
+    endif
     let current['multiplier'] = multiplier
     if operator == '>' && !empty(last)
       let tmp = parent
@@ -878,10 +883,10 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     call add(parent['child'], current)
     let last = current
-    if 0
+    if 1
       echo "str=".str
-      echo "operator=".operator
       echo "tag_name=".tag_name
+      echo "operator=".operator
       echo "id=".id
       echo "class_name=".class_name
       echo "attr=".attr
@@ -889,7 +894,7 @@ function! s:zen_parseIntoTree(abbr, type)
       echo "multiplier=".multiplier
       echo "\n"
     endif
-    if len(tag_name) == 0
+    if len(tag_name) == 0 && len(value) == 0
       break
     endif
     let abbr = substitute(strpart(abbr, len(match)), '^\s*', '', '')
@@ -942,6 +947,9 @@ function! s:zen_toString(...)
       let str .= '' . current['snippet']
       if len(str) == 0
         let str = current['name']
+        if len(current['value'])
+          let str .= current['value'][1:-2]
+        endif
       endif
       let inner = ''
       if len(current['child'])
@@ -1044,5 +1052,9 @@ endif
 "echo ZenExpand('a>b>c<<d', '')
 "echo ZenExpand('a[href=foo][class=bar]', '')
 "echo ZenExpand('a[a=b][b=c=d][e]{foo}*2', '')
+"echo ZenExpand('a[a=b][b=c=d][e]*2{foo}', '')
+"echo ZenExpand('a*2{foo}a', '')
+"echo ZenExpand('a{foo}*2>b', '')
+"echo ZenExpand('a*2{foo}>b', '')
 
 " vim:set et:
