@@ -3,7 +3,7 @@ script_id: '2981'
 script_type: utility
 script_package: zencoding.vim
 script_version: '0.2'
-required_vim_version: '7.2'
+required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
 detailed_description: |

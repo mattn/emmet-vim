@@ -945,7 +945,12 @@ function! s:zen_expand()
     let size = len(line) - len(part)
     let indent = repeat(s:zen_settings['indentation'], size)
     let expand = indent . substitute(expand, "\n", "\n" . indent, 'g')
-    call setline(line('.'), split(expand, '\n'))
+    let oldautoindent = &autoindent
+    let lines = split(expand, '\n')
+    call setline(line('.'), lines[0])
+    if len(lines) > 1
+      call append(line('.'), lines[1:])
+    endif
     return ''
   endif
   return '|'
