@@ -42,7 +42,7 @@
 "  This configuration will be marged at loading plugin. 
 "
 "    let g:user_zen_settings = {
-"    \  'indentation' : '_',
+"    \  'indentation' : '  ',
 "    \  'perl' : {
 "    \    'aliases' : {
 "    \      'req' : 'require '
