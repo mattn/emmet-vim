@@ -906,9 +906,9 @@ function! s:zen_toString(...)
           let str .= " />\n"
         else
           if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
-            let str .= ">\n</" . current['name'] . ">\n"
+            let str .= ">\n|</" . current['name'] . ">\n"
           else
-            let str .= "></" . current['name'] . ">\n"
+            let str .= ">|</" . current['name'] . ">\n"
           endif
         endif
       endif
@@ -938,6 +938,9 @@ function! s:zen_expand()
   let items = s:zen_parseIntoTree(part, type)['child']
   let expand = len(items) ? s:zen_toString(items[0], type) : ''
   if len(expand)
+    let expand = substitute(expand, '|', '$cursor$', '')
+    let expand = substitute(expand, '|', '', 'g')
+    let expand = substitute(expand, '\$cursor\$', '|', '')
     if expand !~ '|'
       let expand .= '|'
     endif
@@ -962,7 +965,7 @@ function! ZenExpand(abbr, type)
   return ''
 endfunction
 
-inoremap <plug>ZenCodingExpand <c-r>=<sid>zen_expand()<cr><esc>?\|<cr>a<bs>
+inoremap <plug>ZenCodingExpand <c-r>=<sid>zen_expand()<cr><esc>/\|<cr>a<bs>
 imap <c-z>, <plug>ZenCodingExpand
 
 function! s:zen_mergeConfig(lhs, rhs)
