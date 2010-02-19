@@ -66,7 +66,7 @@
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
-  "finish
+  finish
 endif
 let g:loaded_zencoding_vim = 1
 
