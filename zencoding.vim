@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 19-Feb-2010.
-" Version: 0.3
+" Version: 0.4
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -18,7 +18,7 @@
 "   "_" is a cursor position. and type "<c-z>,"
 "      +-------------------------------------
 "      | <!DOCTYPE HTML>
-"      | <html lang="${langfull}">
+"      | <html lang="en">
 "      | <head>
 "      |     <title></title>
 "      |     <meta charset="UTF-8">
@@ -35,14 +35,11 @@
 "   And type "<c-z>,"
 "      +-------------------------------------
 "      |<div id="foo1">
-"      |    <div class="bar">
-"      |    </div>
+"      |    <div class="bar">_</div>
 "      |</div>
 "      |<div id="foo2">
-"      |    <div class="bar">
-"      |    </div>
+"      |    <div class="bar"></div>
 "      |</div>
-"      | _
 "      +-------------------------------------
 "   
 " Tips:
@@ -63,6 +60,8 @@
 "     \  }
 "     \}
 "
+"   You can set language attribute in html using zen_settings['lang'].
+"
 " GetLatestVimScripts: 2981 1 :AutoInstall: zencoding.vim
 " script type: plugin
 
@@ -74,6 +73,7 @@ let g:loaded_zencoding_vim = 1
 unlet! s:zen_settings
 let s:zen_settings = {
 \    'indentation': "\t",
+\    'lang': "en",
 \    'css': {
 \        'snippets': {
 \            '@i': '@import url(|);',
@@ -594,7 +594,7 @@ let s:zen_settings = {
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
 \            'html:5': "<!DOCTYPE HTML>\n"
-\                    ."<html lang=\"${langfull}\">\n"
+\                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."    <title></title>\n"
 \                    ."    <meta charset=\"UTF-8\">\n"
@@ -944,6 +944,7 @@ function! s:zen_expand()
     if expand !~ '|'
       let expand .= '|'
     endif
+    let expand = substitute(expand, '${lang}', s:zen_settings['lang'], 'g')
     silent! exec "normal! ".repeat("x", len(part))
     let size = len(line) - len(part)
     let indent = repeat(s:zen_settings['indentation'], size)
@@ -992,7 +993,7 @@ function! s:zen_mergeConfig(lhs, rhs)
 endfunction
 
 if exists('g:user_zen_settings')
-    call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
+  call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 " test
 "echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
