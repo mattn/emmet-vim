@@ -5,11 +5,59 @@
 " Version: 0.1
 " WebPage: http://github.com/mattn/zencoding-vim
 " Usage:
+"
+"  Type abbreviation
+"     +-------------------------------------
+"     | html:5_
+"     +-------------------------------------
+"  "_" is a cursor position. and type <c-z>,
+"     +-------------------------------------
+"     | <!DOCTYPE HTML>
+"     | <html lang="${langfull}">
+"     | <head>
+"     |     <title></title>
+"     |     <meta charset="UTF-8">
+"     | </head>
+"     | <body>
+"     |      _
+"     | </body>
+"     | </html>
+"     +-------------------------------------
+"  type following
+"     +-------------------------------------
+"     | div#foo$*2>div.bar
+"     +-------------------------------------
+"  and type <c-z>,
+"     +-------------------------------------
+"     | <div id="foo$">
+"     |     <div class="bar">
+"     |     </div>
+"     | </div>
+"     | _
+"     +-------------------------------------
+"
 " Tips:
+"
+"  You can customize behaviour of expanding with overriding config.
+"  This configuration will be marged at loading plugin. 
+"
+"    let g:user_zen_settings = {
+"    \  'indentation' : '_',
+"    \  'perl' : {
+"    \    'aliases' : {
+"    \      'req' : 'require '
+"    \    },
+"    \    'snippets' : {
+"    \      'use' : "use strict\nuse warnings\n\n",
+"    \      'warn' : "warn \"|\";",
+"    \    }
+"    \  }
+"    \}
+"
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
-  "finish
+  finish
 endif
 let g:loaded_zencoding_vim = 1
 
@@ -755,15 +803,15 @@ function! s:zen_parseIntoTree(abbr, type)
     if multiplier <= 0
       let multiplier = 1
     endif
-	if has_key(s:zen_settings[type], 'aliases')
-	  if has_key(s:zen_settings[type]['aliases'], tag_name)
-	    let tag_name = s:zen_settings[type]['aliases'][tag_name]
-	  endif
-	endif
+    if has_key(s:zen_settings[type], 'aliases')
+      if has_key(s:zen_settings[type]['aliases'], tag_name)
+        let tag_name = s:zen_settings[type]['aliases'][tag_name]
+      endif
+    endif
     let current = { 'name': '', 'attr':[], 'child': [], 'snippet': '', 'multiplier': 1 }
     if has_key(s:zen_settings[type]['snippets'], tag_name)
       let current['snippet'] = s:zen_settings[type]['snippets'][tag_name]
-  else
+    else
       let current['name'] = tag_name
       if has_key(s:zen_settings[type], 'default_attributes')
         let default_attributes = s:zen_settings[type]['default_attributes']
@@ -851,11 +899,14 @@ function! s:zen_toString(...)
             let str .= ">\n</" . current['name'] . ">\n"
           else
             let str .= "></" . current['name'] . ">\n"
-		  endif
+          endif
         endif
       endif
     else
       let str .= '' . current['snippet']
+      if len(str) == 0
+        let str = current['name']
+      endif
       let inner = ''
       if len(current['child'])
         for n in current['child']
@@ -880,11 +931,11 @@ function! s:zen_expand()
     if expand !~ '|'
       let expand .= '|'
     endif
-	silent! exec "normal! ".repeat("x", len(part))
-	let size = len(line) - len(part)
-	let indent = repeat(s:zen_settings['indentation'], size)
+    silent! exec "normal! ".repeat("x", len(part))
+    let size = len(line) - len(part)
+    let indent = repeat(s:zen_settings['indentation'], size)
     let expand = indent . substitute(expand, "\n", "\n" . indent, 'g')
-	silent! put! =expand
+    silent! put! =expand
     return ''
   endif
   return '|'
@@ -899,6 +950,32 @@ endfunction
 inoremap <plug>ZenCodingExpand <c-r>=<sid>zen_expand()<cr><esc>?\|<cr>a<bs>
 imap <c-z>, <plug>ZenCodingExpand
 
+function! s:zen_mergeConfig(lhs, rhs)
+  if type(a:lhs) == 3 && type(a:rhs) == 3
+    call remove(a:lhs, 0, len(a:lhs)-1)
+    for index in a:rhs
+      call add(a:lhs, a:rhs[index])
+    endfor
+  elseif type(a:lhs) == 4 && type(a:rhs) == 4
+    for key in keys(a:rhs)
+      if type(a:rhs[key]) == 3
+        call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
+      elseif type(a:rhs[key]) == 4
+        if has_key(a:lhs, key)
+          call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
+        else
+          let a:lhs[key] = a:rhs[key]
+        endif
+      else
+        let a:lhs[key] = a:rhs[key]
+      endif
+    endfor
+  endif
+endfunction
+
+if exists('g:user_zen_settings')
+    call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
+endif
 " test
 "echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
 "echo ZenExpand('ol>li*2', '')
@@ -907,3 +984,6 @@ imap <c-z>, <plug>ZenCodingExpand
 "echo ZenExpand('cc:ie6>p+blockquote#sample$.so.many.classes*2', '')
 "echo ZenExpand('tm>if>div.message', '')
 "echo ZenExpand('@i', 'css')
+"echo ZenExpand('req', 'perl')
+
+" vim:set et:
