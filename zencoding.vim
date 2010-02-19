@@ -965,9 +965,9 @@ function! s:zen_toString(...)
   return str
 endfunction
 
-function! s:zen_expand()
-  let line = getline('.')[:col('.')-1]
-  let part = matchstr(line, '\(\S*\)\s\{-}$')
+function! s:zen_expand(word)
+  let line = getline('.')[:col('.')-2]
+  let part = matchstr(line, a:word ? '\(\w\+\)$' : '\(\S*\)$')
   let rest = getline('.')[col('.')-1:]
   let type = &ft
   let items = s:zen_parseIntoTree(part, type)['child']
@@ -983,11 +983,13 @@ function! s:zen_expand()
       let expand .= '|'
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings['lang'], 'g')
-    silent! exec "normal! ".repeat("x", len(part))
-    let size = len(line) - len(part)
-    let indent = repeat(s:zen_settings['indentation'], size)
-    let expand = indent . substitute(expand, "\n", "\n" . indent, 'g') . rest
-    let oldautoindent = &autoindent
+    if line[:-len(part)-1] =~ '^\s*$'
+      let size = len(line) - len(part)
+      let indent = repeat(s:zen_settings['indentation'], size)
+    else
+      let indent = ''
+    endif
+    let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
     let lines = split(expand, '\n')
     call setline(line('.'), lines[0])
     if len(lines) > 1
@@ -1007,8 +1009,10 @@ function! ZenExpand(abbr, type)
   return expand
 endfunction
 
-inoremap <plug>ZenCodingExpand <c-r>=<sid>zen_expand()<cr><esc>/\|<cr>a<bs>
-imap <c-z>, <plug>ZenCodingExpand
+inoremap <plug>ZenCodingExpandWord <c-r>=<sid>zen_expand(1)<cr><esc>/\|<cr>a<bs>
+inoremap <plug>ZenCodingExpandAbbr <c-g>u<c-r>=<sid>zen_expand(0)<cr><esc>/\|<cr>a<bs>
+imap <c-z>. <plug>ZenCodingExpandWord
+imap <c-z>, <plug>ZenCodingExpandAbbr
 
 function! s:zen_mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
