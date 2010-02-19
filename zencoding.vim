@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 19-Feb-2010.
-" Version: 0.4
+" Version: 0.5
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -932,8 +932,9 @@ function! s:zen_toString(...)
 endfunction
 
 function! s:zen_expand()
-  let line = getline('.')[:col('.')]
-  let part = matchstr(line, '\(\S*\)$')
+  let line = getline('.')[:col('.')-1]
+  let part = matchstr(line, '^.*\(\S*\)$')
+  let rest = getline('.')[col('.'):]
   let type = &ft
   let items = s:zen_parseIntoTree(part, type)['child']
   let expand = len(items) ? s:zen_toString(items[0], type) : ''
@@ -948,7 +949,7 @@ function! s:zen_expand()
     silent! exec "normal! ".repeat("x", len(part))
     let size = len(line) - len(part)
     let indent = repeat(s:zen_settings['indentation'], size)
-    let expand = indent . substitute(expand, "\n", "\n" . indent, 'g')
+    let expand = indent . substitute(expand, "\n", "\n" . indent, 'g') . rest
     let oldautoindent = &autoindent
     let lines = split(expand, '\n')
     call setline(line('.'), lines[0])
