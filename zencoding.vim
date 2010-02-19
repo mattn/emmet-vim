@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 19-Feb-2010.
-" Version: 0.5
+" Version: 0.6
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -66,7 +66,7 @@
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
-  finish
+  "finish
 endif
 let g:loaded_zencoding_vim = 1
 
@@ -854,6 +854,9 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     call add(parent['child'], current)
     let last = current
+    if len(tag_name) == 0
+      break
+    endif
     if 0
       echo "str=".str
       echo "operator=".operator
@@ -933,8 +936,8 @@ endfunction
 
 function! s:zen_expand()
   let line = getline('.')[:col('.')-1]
-  let part = matchstr(line, '^.*\(\S*\)$')
-  let rest = getline('.')[col('.'):]
+  let part = matchstr(line, '\(\S*\)\s\{-}$')
+  let rest = getline('.')[col('.')-1:]
   let type = &ft
   let items = s:zen_parseIntoTree(part, type)['child']
   let expand = len(items) ? s:zen_toString(items[0], type) : ''
@@ -1007,5 +1010,6 @@ endif
 "echo ZenExpand('req', 'perl')
 "echo ZenExpand('html:4t>div#wrapper>div#header+div#contents+div#footer', '')
 "echo ZenExpand('a[href=http://www.google.com/].foo#hoge', '')
+"echo ZenExpand('b', '')
 
 " vim:set et:
