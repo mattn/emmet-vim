@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 19-Feb-2010.
-" Version: 0.8
+" Last Change: 20-Feb-2010.
+" Version: 0.9
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -44,7 +44,7 @@
 "   
 " Tips:
 "   
-"   You can customize behaviour of expanding with overriding config.
+"   You can customize behavior of expanding with overriding config.
 "   This configuration will be marged at loading plugin. 
 "   
 "     let g:user_zen_settings = {
@@ -912,14 +912,14 @@ function! s:zen_toString(...)
   if len(type) == 0 | let type = 'html' | endif
 
   let indent = s:zen_settings['indentation']
-  let m = 1
+  let m = 0
   let str = ''
-  while m <= current['multiplier']
+  while m < current['multiplier']
     if len(current['name']) && type == 'html'
       let str .= '<' . current['name']
       for attr in keys(current['attr'])
         if current['multiplier'] > 1 && current['attr'][attr] =~ '\$$'
-          let str .= ' ' . attr . '="' . current['attr'][attr][:-2] . m . '"'
+          let str .= ' ' . attr . '="' . current['attr'][attr][:-2] . (m+1) . '"'
         else
           let str .= ' ' . attr . '="' . current['attr'][attr] . '"'
         endif
@@ -937,9 +937,12 @@ function! s:zen_toString(...)
           let str .= " />\n"
         else
           if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
-            let str .= ">\n" . inner . "|</" . current['name'] . ">\n"
+            let str .= ">\n" . inner . "|</" . current['name'] . ">aa\n"
           else
-            let str .= ">" . inner . "|</" . current['name'] . ">\n"
+            let str .= ">" . inner . "|</" . current['name'] . ">"
+            if current['multiplier'] > 1
+              let str .= "\n"
+            endif
           endif
         endif
       endif
