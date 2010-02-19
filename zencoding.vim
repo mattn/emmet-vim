@@ -8,54 +8,62 @@
 " SeeAlso: http://code.google.com/p/zen-coding/
 " Usage:
 "
-"  Type abbreviation
-"     +-------------------------------------
-"     | html:5_
-"     +-------------------------------------
-"  "_" is a cursor position. and type <c-z>,
-"     +-------------------------------------
-"     | <!DOCTYPE HTML>
-"     | <html lang="${langfull}">
-"     | <head>
-"     |     <title></title>
-"     |     <meta charset="UTF-8">
-"     | </head>
-"     | <body>
-"     |      _
-"     | </body>
-"     | </html>
-"     +-------------------------------------
-"  type following
-"     +-------------------------------------
-"     | div#foo$*2>div.bar
-"     +-------------------------------------
-"  and type <c-z>,
-"     +-------------------------------------
-"     | <div id="foo$">
-"     |     <div class="bar">
-"     |     </div>
-"     | </div>
-"     | _
-"     +-------------------------------------
-"
+"   This is vim script support expanding abbreviation like zen-coding.
+"   ref: http://code.google.com/p/zen-coding/
+"   
+"   Type abbreviation
+"      +-------------------------------------
+"      | html:5_
+"      +-------------------------------------
+"   "_" is a cursor position. and type "<c-z>,"
+"      +-------------------------------------
+"      | <!DOCTYPE HTML>
+"      | <html lang="${langfull}">
+"      | <head>
+"      |     <title></title>
+"      |     <meta charset="UTF-8">
+"      | </head>
+"      | <body>
+"      |      _
+"      | </body>
+"      | </html>
+"      +-------------------------------------
+"   Type following
+"      +-------------------------------------
+"      | div#foo$*2>div.bar
+"      +-------------------------------------
+"   And type "<c-z>,"
+"      +-------------------------------------
+"      |<div id="foo1">
+"      |    <div class="bar">
+"      |    </div>
+"      |</div>
+"      |<div id="foo2">
+"      |    <div class="bar">
+"      |    </div>
+"      |</div>
+"      | _
+"      +-------------------------------------
+"   
 " Tips:
+"   
+"   You can customize behaviour of expanding with overriding config.
+"   This configuration will be marged at loading plugin. 
+"   
+"     let g:user_zen_settings = {
+"     \  'indentation' : '  ',
+"     \  'perl' : {
+"     \    'aliases' : {
+"     \      'req' : 'require '
+"     \    },
+"     \    'snippets' : {
+"     \      'use' : "use strict\nuse warnings\n\n",
+"     \      'warn' : "warn \"|\";",
+"     \    }
+"     \  }
+"     \}
 "
-"  You can customize behaviour of expanding with overriding config.
-"  This configuration will be marged at loading plugin. 
-"
-"    let g:user_zen_settings = {
-"    \  'indentation' : '  ',
-"    \  'perl' : {
-"    \    'aliases' : {
-"    \      'req' : 'require '
-"    \    },
-"    \    'snippets' : {
-"    \      'use' : "use strict\nuse warnings\n\n",
-"    \      'warn' : "warn \"|\";",
-"    \    }
-"    \  }
-"    \}
-"
+" GetLatestVimScripts: 2981 1 :AutoInstall: zencoding.vim
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
