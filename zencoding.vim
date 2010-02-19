@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 19-Feb-2010.
-" Version: 0.1
+" Version: 0.2
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -67,7 +67,7 @@
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
-  finish
+  "finish
 endif
 let g:loaded_zencoding_vim = 1
 
@@ -740,7 +740,7 @@ let s:zen_settings = {
 \            'optg': 'optgroup>option'
 \        },
 \        'empty_elements': 'area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,keygen,command',
-\        'block_elements': 'address,applet,blockquote,button,center,dd,del,dir,div,dl,dt,fieldset,form,frameset,hr,iframe,ins,isindex,li,link,map,menu,noframes,noscript,object,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul,h1,h2,h3,h4,h5,h6,style',
+\        'block_elements': 'address,applet,blockquote,button,center,dd,del,dir,div,dl,dt,fieldset,form,frameset,hr,iframe,ins,isindex,link,map,menu,noframes,noscript,object,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul,h1,h2,h3,h4,h5,h6,style',
 \        'inline_elements': 'a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',
 \    },
 \    'xsl': {
@@ -905,7 +905,7 @@ function! s:zen_toString(...)
         if stridx(','.s:zen_settings[type]['empty_elements'].',', ','.current['name'].',') != -1
           let str .= " />\n"
         else
-          if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 "&& len(current['child'])
+          if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
             let str .= ">\n</" . current['name'] . ">\n"
           else
             let str .= "></" . current['name'] . ">\n"
@@ -945,7 +945,7 @@ function! s:zen_expand()
     let size = len(line) - len(part)
     let indent = repeat(s:zen_settings['indentation'], size)
     let expand = indent . substitute(expand, "\n", "\n" . indent, 'g')
-    silent! put! =expand
+    call setline(line('.'), split(expand, '\n'))
     return ''
   endif
   return '|'
@@ -995,5 +995,7 @@ endif
 "echo ZenExpand('tm>if>div.message', '')
 "echo ZenExpand('@i', 'css')
 "echo ZenExpand('req', 'perl')
+"echo ZenExpand('html:4t>div#wrapper>div#header+div#contents+div#footer', '')
+"echo ZenExpand('a[href=http://www.google.com/].foo#hoge', '')
 
 " vim:set et:
