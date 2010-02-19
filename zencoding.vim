@@ -813,6 +813,7 @@ function! s:zen_toString(...)
   endif
   if len(type) == 0 | let type = 'html' | endif
 
+  let indent = s:zen_settings['indentation']
   let m = 1
   let str = ''
   while m <= current['multiplier']
@@ -833,9 +834,9 @@ function! s:zen_toString(...)
         let inner .= s:zen_toString(child, type)
       endfor
       if len(inner)
-        let inner = substitute(inner, "\n", "\n\t", 'g')
-        let inner = substitute(inner, "\t$", "", 'g')
-        let str .= ">\n\t" . inner . "</" . current['name'] . ">\n"
+        let inner = substitute(inner, "\n", "\n" . indent, 'g')
+        let inner = substitute(inner, indent . "$", "", 'g')
+        let str .= ">\n" . indent . inner . "</" . current['name'] . ">\n"
       else
         if stridx(','.s:zen_settings[type]['empty_elements'].',', ','.current['name'].',') != -1
           let str .= " />\n"
@@ -854,7 +855,7 @@ function! s:zen_toString(...)
         for n in current['child']
           let inner .= s:zen_toString(n, type)
         endfor
-        let inner = substitute(inner, "\n", "\n\t", 'g')
+        let inner = substitute(inner, "\n", "\n" . indent, 'g')
       endif
       let str = substitute(str, '\${child}', inner, '')
     endif
@@ -865,15 +866,18 @@ endfunction
 
 function! s:zen_expand()
   let line = getline('.')[:col('.')]
-  let line = matchstr(line, '\(\S*\)$')
-  let items = s:zen_parseIntoTree(line, '')['child']
+  let part = matchstr(line, '\(\S*\)$')
+  let items = s:zen_parseIntoTree(part, '')['child']
   let expand = len(items) ? s:zen_toString(items[0]) : ''
   if len(expand)
     if expand !~ '|'
       let expand .= '|'
     endif
-    let expand = repeat("\<c-h>", len(line)) . expand
-	return expand
+	silent! exec "normal! ".repeat("x", len(part))
+	let size = len(line) - len(part)
+	let indent = repeat(s:zen_settings['indentation'], size)
+    let expand = indent . substitute(expand, "\n", "\n" . indent, 'g')
+	silent! put! =expand
   endif
   return ''
 endfunction
