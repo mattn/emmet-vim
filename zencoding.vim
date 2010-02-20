@@ -66,7 +66,7 @@
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
-  "finish
+  finish
 endif
 let g:loaded_zencoding_vim = 1
 
@@ -798,7 +798,7 @@ function! s:zen_parseIntoTree(abbr, type)
   " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
 
-  let mx = '\([\+>]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(#[0-9A-Za-z_\-\$]\+\)\{0,1}\(\%(\[[^\]]\+\]\)*\)\(\%(\.[0-9A-Za-z_\-\$]\+\)*\)\({[^}]\+}\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([\+>]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
   let granma = parent
@@ -808,11 +808,9 @@ function! s:zen_parseIntoTree(abbr, type)
     let str = substitute(match, mx, '\0', 'ig')
     let operator = substitute(match, mx, '\1', 'ig')
     let tag_name = substitute(match, mx, '\2', 'ig')
-    let id = substitute(match, mx, '\3', 'ig')
-    let attr = substitute(match, mx, '\4', 'ig')
-    let class_name = substitute(match, mx, '\5', 'ig')
-    let value = substitute(match, mx, '\6', 'ig')
-    let multiplier = 0 + substitute(match, mx, '\7', 'ig')
+    let attributes = substitute(match, mx, '\3', 'ig')
+    let value = substitute(match, mx, '\4', 'ig')
+    let multiplier = 0 + substitute(match, mx, '\5', 'ig')
     if multiplier <= 0
       let multiplier = 1
     endif
@@ -844,20 +842,25 @@ function! s:zen_parseIntoTree(abbr, type)
         endif
       endif
     endif
-    if len(id)
-      let current['attr']['id'] = id[1:]
-    endif
-    if len(class_name)
-      let current['attr']['class'] = class_name[1:]
-    endif
-    if len(attr)
-      let attrs = split(attr, '\[\|\]\[\|\]')
-      unlet! aa
-      unlet! ka
-      for aa in attrs
-        let kk = split(aa, '=')
-        let current['attr'][kk[0]] = len(kk) > 1 ? join(kk[1:], '=') : ''
-      endfor
+    if len(attributes)
+      let attr = attributes
+      while len(attr)
+        let item = matchstr(attr, '\(#[0-9A-Za-z_\-\$]\+\)')
+        if len(item) == 0
+          break
+        endif
+        let current['attr']['id'] = item[1:]
+        let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
+      endwhile
+      let attr = attributes
+      while len(attr)
+        let item = matchstr(attr, '\.\([\$a-zA-Z0-9_\-\&]\+\)')
+        if len(item) == 0
+          break
+        endif
+        let current['attr']['class'] = substitute(item[1:], '\.', '', 'g')
+        let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
+      endwhile
     endif
     if tag_name =~ '^{.*}$'
       let current['name'] = ''
@@ -890,9 +893,7 @@ function! s:zen_parseIntoTree(abbr, type)
       echo "str=".str
       echo "tag_name=".tag_name
       echo "operator=".operator
-      echo "id=".id
-      echo "class_name=".class_name
-      echo "attr=".attr
+      echo "attributes=".attributes
       echo "value=".value
       echo "multiplier=".multiplier
       echo "\n"
@@ -900,7 +901,7 @@ function! s:zen_parseIntoTree(abbr, type)
     if len(tag_name) == 0 && len(value) == 0
       break
     endif
-    let abbr = substitute(strpart(abbr, len(match)), '^\s*', '', '')
+    let abbr = abbr[stridx(abbr, match) + len(match):]
   endwhile
   return root
 endfunction
@@ -943,9 +944,6 @@ function! s:zen_toString(...)
             let str .= ">\n" . inner . "|</" . current['name'] . ">\n"
           else
             let str .= ">" . inner . "|</" . current['name'] . ">\n"
-            "if current['multiplier'] > 1 " || current['brother']
-            "  let str .= "\n"
-            "endif
           endif
         endif
       endif
@@ -972,9 +970,9 @@ function! s:zen_toString(...)
 endfunction
 
 function! s:zen_expand(word)
-  let line = getline('.')[:col('.')-2]
+  let line = getline('.')[:col('.')-1]
   let part = matchstr(line, a:word ? '\(\w\+\)$' : '\(\S.*\)$')
-  let rest = getline('.')[col('.')-1:]
+  let rest = getline('.')[col('.'):]
   let type = &ft
   let items = s:zen_parseIntoTree(part, type)['child']
   let expand = ''
@@ -995,15 +993,17 @@ function! s:zen_expand(word)
     else
       let indent = ''
     endif
+    let expand = substitute(expand, '\n\s*$', '', 'g')
     let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
     let lines = split(expand, '\n')
     call setline(line('.'), lines[0])
     if len(lines) > 1
       call append(line('.'), lines[1:])
     endif
-    return ''
   endif
-  return '|'
+  if search('|')
+    silent! exe "normal! a\<c-h>"
+  endif
 endfunction
 
 function! ZenExpand(abbr, type)
@@ -1015,10 +1015,14 @@ function! ZenExpand(abbr, type)
   return expand
 endfunction
 
-inoremap <plug>ZenCodingExpandWord <c-r>=<sid>zen_expand(1)<cr><esc>/\|<cr>a<bs>
-inoremap <plug>ZenCodingExpandAbbr <c-g>u<c-r>=<sid>zen_expand(0)<cr><esc>/\|<cr>a<bs>
-imap <c-z>. <plug>ZenCodingExpandWord
-imap <c-z>, <plug>ZenCodingExpandAbbr
+inoremap <plug>ZenCodingExpandWord <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
+inoremap <plug>ZenCodingExpandAbbr <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
+if !hasmapto('<c-z>.')
+  imap <c-z>. <plug>ZenCodingExpandWord
+endif
+if !hasmapto('<c-z>,')
+  imap <c-z>, <plug>ZenCodingExpandAbbr
+endif
 
 function! s:zen_mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
@@ -1066,6 +1070,7 @@ endif
 "echo ZenExpand('a*2{foo}a', '')
 "echo ZenExpand('a{foo}*2>b', '')
 "echo ZenExpand('a*2{foo}>b', '')
-"echo ZenExpand('	table>tr>td.name+td*3', '')
+"echo ZenExpand('table>tr>td.name#foo+td*3', '')
+"echo ZenExpand('div#header + div#footer', '')
 
 " vim:set et:
