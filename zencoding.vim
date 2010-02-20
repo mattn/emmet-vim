@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 20-Feb-2010.
-" Version: 0.9
+" Last Change: 21-Feb-2010.
+" Version: 0.10
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -800,7 +800,7 @@ function! s:zen_parseIntoTree(abbr, type)
 
   let mx = '\([\+>]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(#[0-9A-Za-z_\-\$]\+\)\{0,1}\(\%(\[[^\]]\+\]\)*\)\(\%(\.[0-9A-Za-z_\-\$]\+\)*\)\({[^}]\+}\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
-  let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '' }
+  let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
   let granma = parent
   let root = parent
   while len(abbr)
@@ -821,7 +821,7 @@ function! s:zen_parseIntoTree(abbr, type)
         let tag_name = s:zen_settings[type]['aliases'][tag_name]
       endif
     endif
-    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '' }
+    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
     if has_key(s:zen_settings[type]['snippets'], tag_name)
       let current['snippet'] = s:zen_settings[type]['snippets'][tag_name]
     else
@@ -871,6 +871,9 @@ function! s:zen_parseIntoTree(abbr, type)
       unlet! parent
       let parent = last
       let parent['parent'] = tmp
+    endif
+    if operator == '+'
+      let last['brother'] = 1
     endif
     if operator =~ '<'
       for c in split(operator, '\zs')
@@ -937,10 +940,10 @@ function! s:zen_toString(...)
           let str .= " />\n"
         else
           if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
-            let str .= ">\n" . inner . "|</" . current['name'] . ">aa\n"
+            let str .= ">\n" . inner . "|</" . current['name'] . ">\n"
           else
             let str .= ">" . inner . "|</" . current['name'] . ">"
-            if current['multiplier'] > 1
+            if current['multiplier'] > 1 || current['brother']
               let str .= "\n"
             endif
           endif
