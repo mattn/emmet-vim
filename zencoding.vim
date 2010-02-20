@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 21-Feb-2010.
-" Version: 0.10
+" Version: 0.11
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -66,7 +66,7 @@
 " script type: plugin
 
 if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
-  finish
+  "finish
 endif
 let g:loaded_zencoding_vim = 1
 
@@ -886,7 +886,7 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     call add(parent['child'], current)
     let last = current
-    if 1
+    if 0
       echo "str=".str
       echo "tag_name=".tag_name
       echo "operator=".operator
@@ -942,10 +942,10 @@ function! s:zen_toString(...)
           if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
             let str .= ">\n" . inner . "|</" . current['name'] . ">\n"
           else
-            let str .= ">" . inner . "|</" . current['name'] . ">"
-            if current['multiplier'] > 1 || current['brother']
-              let str .= "\n"
-            endif
+            let str .= ">" . inner . "|</" . current['name'] . ">\n"
+            "if current['multiplier'] > 1 " || current['brother']
+            "  let str .= "\n"
+            "endif
           endif
         endif
       endif
@@ -973,7 +973,7 @@ endfunction
 
 function! s:zen_expand(word)
   let line = getline('.')[:col('.')-2]
-  let part = matchstr(line, a:word ? '\(\w\+\)$' : '\(\S*\)$')
+  let part = matchstr(line, a:word ? '\(\w\+\)$' : '\(\S.*\)$')
   let rest = getline('.')[col('.')-1:]
   let type = &ft
   let items = s:zen_parseIntoTree(part, type)['child']
@@ -989,7 +989,7 @@ function! s:zen_expand(word)
       let expand .= '|'
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings['lang'], 'g')
-    if line[:-len(part)-1] =~ '^\s*$'
+    if line[:-len(part)-1] =~ '^\s\+$'
       let size = len(line) - len(part)
       let indent = repeat(s:zen_settings['indentation'], size)
     else
@@ -1066,5 +1066,6 @@ endif
 "echo ZenExpand('a*2{foo}a', '')
 "echo ZenExpand('a{foo}*2>b', '')
 "echo ZenExpand('a*2{foo}>b', '')
+"echo ZenExpand('	table>tr>td.name+td*3', '')
 
 " vim:set et:

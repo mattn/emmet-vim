@@ -67,6 +67,8 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.11': |
+   This is an upgrade for ZenCoding.vim: fixed indent.
 - '0.10': |
    This is an upgrade for ZenCoding.vim: fixed behavior of '+' operator
 - '0.9': |
