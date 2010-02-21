@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 21-Feb-2010.
-" Version: 0.11
+" Version: 0.12
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -798,7 +798,7 @@ function! s:zen_parseIntoTree(abbr, type)
   " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
 
-  let mx = '\([\+>]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([\+>#]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
   let granma = parent
@@ -811,6 +811,11 @@ function! s:zen_parseIntoTree(abbr, type)
     let attributes = substitute(match, mx, '\3', 'ig')
     let value = substitute(match, mx, '\4', 'ig')
     let multiplier = 0 + substitute(match, mx, '\5', 'ig')
+    if operator == '#'
+      let attributes = '#' . tag_name . attributes
+      let tag_name = 'div'
+      let operator = ''
+    endif
     if multiplier <= 0
       let multiplier = 1
     endif
@@ -889,7 +894,7 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     call add(parent['child'], current)
     let last = current
-    if 0
+    if 1
       echo "str=".str
       echo "tag_name=".tag_name
       echo "operator=".operator
