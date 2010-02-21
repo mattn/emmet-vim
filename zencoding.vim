@@ -845,20 +845,20 @@ function! s:zen_parseIntoTree(abbr, type)
     if len(attributes)
       let attr = attributes
       while len(attr)
-        let item = matchstr(attr, '\(#[0-9A-Za-z_\-\$]\+\)')
+        let item = matchstr(attr, '\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)\)')
         if len(item) == 0
           break
         endif
-        let current['attr']['id'] = item[1:]
-        let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
-      endwhile
-      let attr = attributes
-      while len(attr)
-        let item = matchstr(attr, '\.\([\$a-zA-Z0-9_\-\&]\+\)')
-        if len(item) == 0
-          break
+        if item[0] == '#'
+          let current['attr']['id'] = item[1:]
         endif
-        let current['attr']['class'] = substitute(item[1:], '\.', '', 'g')
+        if item[0] == '.'
+          let current['attr']['class'] = substitute(item[1:], '\.', '', 'g')
+        endif
+        if item[0] == '['
+          let kk = split(item[1:-2], '=')
+          let current['attr'][kk[0]] = len(kk) > 1 ? join(kk[1:], '=') : ''
+        endif
         let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
       endwhile
     endif
@@ -898,9 +898,12 @@ function! s:zen_parseIntoTree(abbr, type)
       echo "multiplier=".multiplier
       echo "\n"
     endif
-    if len(tag_name) == 0 && len(value) == 0
-      break
+    if len(tag_name) == 0
+      let current['name'] = 'div'
     endif
+    "if len(tag_name) == 0 && len(value) == 0
+    "  break
+    "endif
     let abbr = abbr[stridx(abbr, match) + len(match):]
   endwhile
   return root
@@ -1072,5 +1075,6 @@ endif
 "echo ZenExpand('a*2{foo}>b', '')
 "echo ZenExpand('table>tr>td.name#foo+td*3', '')
 "echo ZenExpand('div#header + div#footer', '')
+"echo ZenExpand('#header + div#footer', '')
 
 " vim:set et:
