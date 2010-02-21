@@ -798,7 +798,7 @@ function! s:zen_parseIntoTree(abbr, type)
   " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
 
-  let mx = '\([\+>#]\|<\+\)\{-}\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([\+>#]\|<\+\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
   let granma = parent
@@ -894,7 +894,7 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     call add(parent['child'], current)
     let last = current
-    if 1
+    if 0
       echo "str=".str
       echo "tag_name=".tag_name
       echo "operator=".operator
@@ -909,6 +909,7 @@ function! s:zen_parseIntoTree(abbr, type)
     "if len(tag_name) == 0 && len(value) == 0
     "  break
     "endif
+    "let abbr = substitute(abbr[stridx(abbr, match) + len(match):], '^\s*', '', '')
     let abbr = abbr[stridx(abbr, match) + len(match):]
   endwhile
   return root
@@ -1081,5 +1082,6 @@ endif
 "echo ZenExpand('table>tr>td.name#foo+td*3', '')
 "echo ZenExpand('div#header + div#footer', '')
 "echo ZenExpand('#header + div#footer', '')
+"echo ZenExpand('#header > ul > li < p{Footer}', '')
 
 " vim:set et:
