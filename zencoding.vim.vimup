@@ -68,7 +68,7 @@ install_details: |
 
 versions:
 - '0.16': |
-   This is an upgrade for ZenCoding.vim: fixed problem for endless loop.
+   This is an upgrade for ZenCoding.vim: fixed problem 'endless loop'.
 - '0.15': |
    This is an upgrade for ZenCoding.vim: set default filetype to 'html'.
 - '0.14': |
