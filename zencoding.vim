@@ -801,7 +801,7 @@ function! s:zen_parseIntoTree(abbr, type)
   " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
 
-  let mx = '\([\+>#{]\|<\+\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([\+>#]\|<\+\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
   let granma = parent
