@@ -1041,13 +1041,13 @@ if !exists('g:user_zen_expandword_key')
   let g:user_zen_expandword_key = '<c-z>.'
 endif
 if !hasmapto(g:user_zen_expandword_key)
-  imap <c-z>. <plug>ZenCodingExpandWord
+  exe "imap " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
 endif
 if !exists('g:user_zen_expandabbr_key')
   let g:user_zen_expandabbr_key = '<c-z>,'
 endif
 if !hasmapto(g:user_zen_expandabbr_key)
-  imap <c-z>, <plug>ZenCodingExpandAbbr
+  exe "imap " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
 endif
 
 function! s:zen_mergeConfig(lhs, rhs)
