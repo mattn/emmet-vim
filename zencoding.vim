@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 22-Feb-2010.
-" Version: 0.13
+" Version: 0.14
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -927,15 +927,19 @@ function! s:zen_toString(...)
   endif
   if len(type) == 0 | let type = 'html' | endif
 
-  let indent = s:zen_settings['indentation']
+  if has_key(s:zen_settings[type], 'indentation')
+    let indent = s:zen_settings[type]['indentation']
+  else
+    let indent = s:zen_settings['indentation']
+  endif
   let m = 0
   let str = ''
   while m < current['multiplier']
     if len(current['name']) && type == 'html'
       let str .= '<' . current['name']
       for attr in keys(current['attr'])
-        if current['multiplier'] > 1 && current['attr'][attr] =~ '\$$'
-          let str .= ' ' . attr . '="' . current['attr'][attr][:-2] . (m+1) . '"'
+        if current['multiplier'] > 1 && current['attr'][attr] =~ '\$'
+          let str .= ' ' . attr . '="' . substitute(current['attr'][attr], '\$', m+1, 'g') . '"'
         else
           let str .= ' ' . attr . '="' . current['attr'][attr] . '"'
         endif
@@ -1092,5 +1096,6 @@ endif
 "echo ZenExpand('div#header + div#footer', '')
 "echo ZenExpand('#header + div#footer', '')
 "echo ZenExpand('#header > ul > li < p{Footer}', '')
+"echo ZenExpand('a#foo$$$*3', '')
 
 " vim:set et:

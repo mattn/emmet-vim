@@ -67,6 +67,8 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.14': |
+   This is an upgrade for ZenCoding.vim: indentation for each languages.
 - '0.13': |
    This is an upgrade for ZenCoding.vim: user key map.
 - '0.12': |
