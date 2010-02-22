@@ -1040,10 +1040,10 @@ inoremap <plug>ZenCodingExpandAbbr <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
 if !exists('g:user_zen_expandword_key')
   let g:user_zen_expandword_key = '<c-z>.'
 endif
-if !hasmapto(g:user_zen_expandword_key)
+if !hasmapto(g:user_zen_expandword_key, 'i')
   exe "imap " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
 endif
-if !exists('g:user_zen_expandabbr_key')
+if !exists('g:user_zen_expandabbr_key', 'i')
   let g:user_zen_expandabbr_key = '<c-z>,'
 endif
 if !hasmapto(g:user_zen_expandabbr_key)
