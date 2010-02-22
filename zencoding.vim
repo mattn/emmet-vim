@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 21-Feb-2010.
+" Last Change: 22-Feb-2010.
 " Version: 0.12
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -794,6 +794,9 @@ function! s:zen_parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
   if len(type) == 0 | let type = 'html' | endif
+  if !has_key(s:zen_settings, type)
+    return { 'child': [] }
+  endif
 
   " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
