@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 22-Feb-2010.
-" Version: 0.15
+" Version: 0.16
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -812,6 +812,9 @@ function! s:zen_parseIntoTree(abbr, type)
     let attributes = substitute(match, mx, '\3', 'ig')
     let value = substitute(match, mx, '\4', 'ig')
     let multiplier = 0 + substitute(match, mx, '\5', 'ig')
+    if len(str) == 0
+      break
+    endif
     if operator == '#'
       let attributes = '#' . tag_name . attributes
       let tag_name = 'div'
