@@ -798,9 +798,7 @@ function! s:zen_parseIntoTree(abbr, type)
     return { 'child': [] }
   endif
 
-  " TODO : expandos
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
-
   let mx = '\([\+>#]\|<\+\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
@@ -909,10 +907,6 @@ function! s:zen_parseIntoTree(abbr, type)
     if len(tag_name) == 0
       let current['name'] = 'div'
     endif
-    "if len(tag_name) == 0 && len(value) == 0
-    "  break
-    "endif
-    "let abbr = substitute(abbr[stridx(abbr, match) + len(match):], '^\s*', '', '')
     let abbr = abbr[stridx(abbr, match) + len(match):]
   endwhile
   return root
@@ -989,7 +983,7 @@ function! s:zen_expand(word)
   let type = &ft
   let line = getline('.')[:col('.')-1]
   if a:word || type != 'html'
-    let part = matchstr(line, '\([0-9A-Za-z_\@]\+\)$')
+    let part = matchstr(line, '\([0-9A-Za-z_\@:]\+\)$')
   else
     let part = matchstr(line, '\(\S.*\)$')
   endif
@@ -1104,5 +1098,6 @@ endif
 "echo ZenExpand('#header > ul > li < p{Footer}', '')
 "echo ZenExpand('a#foo$$$*3', '')
 "echo ZenExpand('@i', 'css')
+"echo ZenExpand('fs:n', 'css')
 
 " vim:set et:
