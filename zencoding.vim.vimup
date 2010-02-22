@@ -67,6 +67,8 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.18': |
+   This is an upgrade for ZenCoding.vim: ignore duplicate key map.
 - '0.17': |
    This is an upgrade for ZenCoding.vim: fixed key map.
 - '0.16': |
