@@ -981,6 +981,7 @@ endfunction
 
 function! s:zen_expand(word)
   let type = &ft
+  if len(type) == 0 | let type = 'html' | endif
   let line = getline('.')[:col('.')-1]
   if a:word || type != 'html'
     let part = matchstr(line, '\([0-9A-Za-z_\@:]\+\)$')
