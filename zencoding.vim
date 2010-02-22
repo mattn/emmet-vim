@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Feb-2010.
+" Last Change: 23-Feb-2010.
 " Version: 0.17
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1043,10 +1043,10 @@ endif
 if !hasmapto(g:user_zen_expandword_key, 'i')
   exe "imap " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
 endif
-if !exists('g:user_zen_expandabbr_key', 'i')
+if !exists('g:user_zen_expandabbr_key')
   let g:user_zen_expandabbr_key = '<c-z>,'
 endif
-if !hasmapto(g:user_zen_expandabbr_key)
+if !hasmapto(g:user_zen_expandabbr_key, 'i')
   exe "imap " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
 endif
 
