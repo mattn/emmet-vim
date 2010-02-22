@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 22-Feb-2010.
-" Version: 0.12
+" Version: 0.13
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -1029,10 +1029,16 @@ endfunction
 
 inoremap <plug>ZenCodingExpandWord <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
 inoremap <plug>ZenCodingExpandAbbr <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
-if !hasmapto('<c-z>.')
+if !exists('g:user_zen_expandword_key')
+  let g:user_zen_expandword_key = '<c-z>.'
+endif
+if !hasmapto(g:user_zen_expandword_key)
   imap <c-z>. <plug>ZenCodingExpandWord
 endif
-if !hasmapto('<c-z>,')
+if !exists('g:user_zen_expandabbr_key')
+  let g:user_zen_expandabbr_key = '<c-z>,'
+endif
+if !hasmapto(g:user_zen_expandabbr_key)
   imap <c-z>, <plug>ZenCodingExpandAbbr
 endif
 

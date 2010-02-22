@@ -67,6 +67,8 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.13': |
+   This is an upgrade for ZenCoding.vim: user key map.
 - '0.12': |
    This is an upgrade for ZenCoding.vim: few extensive notation.
 - '0.11': |
