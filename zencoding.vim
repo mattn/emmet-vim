@@ -90,7 +90,7 @@ if !hasmapto(g:user_zen_expandabbr_key, 'v')
 endif
 
 if exists('s:zen_settings')
-  "finish
+  finish
 endif
 
 unlet! s:zen_settings
