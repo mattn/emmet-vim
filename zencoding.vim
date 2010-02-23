@@ -823,7 +823,7 @@ function! s:zen_parseIntoTree(abbr, type)
 
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\++\{-}$', '\=s:zen_expandos(submatch(1), type)', 'i')
   let abbr = substitute(abbr, '\(\%([+<>]\+\|^\)\s*\)#', '\1div#', 'g')
-  let mx = '\([+<>]\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([+>]\|<\+\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
   let granma = parent
@@ -1184,5 +1184,6 @@ endif
 "echo ZenExpand('ul+', '')
 "echo ZenExpand('#header>li<#content', '')
 "echo ZenExpand('(#header>li)<#content', '')
+"echo ZenExpand('a>b>c<<div', '')
 
 " vim:set et:
