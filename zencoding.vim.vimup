@@ -8,6 +8,13 @@ summary: vim plugins for HTML and CSS hi-speed coding.
 
 detailed_description: |
 
+  ********************************************************
+  * Warning
+  ********************************************************
+  If version of zencoding.vim is smaller than '0.21', you have older file in your '$HOME/.vim/plugin'(or '$HOME/vimfiles/plugin') directory.
+  Newer become ftplugin script. Thus you should remove older script and copy new plugin to '$HOME/.vim/ftplugin/html'(or '$HOME/vimfiles/ftplugin/html') directory.
+  ********************************************************
+
   This is vim script support expanding abbreviation like zen-coding.
   ref: http://code.google.com/p/zen-coding/
   
