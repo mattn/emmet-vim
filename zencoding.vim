@@ -1076,11 +1076,13 @@ function! ZenCompleteTag(findstart, base)
         call add(res, item)
       endif
     endfor
-    for item in values(s:zen_settings[type]['aliases'])
-      if stridx(item, a:base) != -1
-        call add(res, item)
-      endif
-    endfor
+    if has_key(s:zen_settings[type], 'aliases')
+      for item in values(s:zen_settings[type]['aliases'])
+        if stridx(item, a:base) != -1
+          call add(res, item)
+        endif
+      endfor
+    endif
     return res
   endif
 endfunction
