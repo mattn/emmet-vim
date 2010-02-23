@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 23-Feb-2010.
-" Version: 0.20
+" Version: 0.21
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -982,9 +982,15 @@ function! s:zen_toString(...)
   return str
 endfunction
 
-function! s:zen_expand(word)
+function! s:zen_get_filetype()
   let type = &ft
   if len(type) == 0 | let type = 'html' | endif
+  if type == 'xhtml' | let type = 'html' | endif
+  return type
+endfunction
+
+function! s:zen_expand(word)
+  let type = s:zen_get_filetype()
   let line = getline('.')[:col('.')-1]
   if a:word || type != 'html'
     let part = matchstr(line, '\([0-9A-Za-z_\@:]\+\)$')
