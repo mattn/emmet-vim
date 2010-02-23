@@ -823,9 +823,6 @@ function! s:zen_parseIntoTree(abbr, type)
     if multiplier <= 0
       let multiplier = 1
     endif
-    if tag_name =~ ':'
-      let tag_name = substitute(tag_name, ':.*$', '', '')
-    endif
     if has_key(s:zen_settings[type], 'aliases')
       if has_key(s:zen_settings[type]['aliases'], tag_name)
         let tag_name = s:zen_settings[type]['aliases'][tag_name]
@@ -835,7 +832,7 @@ function! s:zen_parseIntoTree(abbr, type)
     if has_key(s:zen_settings[type]['snippets'], tag_name)
       let current['snippet'] = s:zen_settings[type]['snippets'][tag_name]
     else
-      let current['name'] = tag_name
+      let current['name'] = substitute(tag_name, ':.*$', '', '')
       if has_key(s:zen_settings[type], 'default_attributes')
         let default_attributes = s:zen_settings[type]['default_attributes']
         if has_key(default_attributes, tag_name)
