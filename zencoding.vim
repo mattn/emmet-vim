@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 23-Feb-2010.
-" Version: 0.19
+" Version: 0.20
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -994,8 +994,6 @@ function! s:zen_expand(word)
   let rest = getline('.')[col('.'):]
   let items = s:zen_parseIntoTree(part, type)['child']
   let expand = ''
-  let g:hoge = line
-  let g:moge = part
   for item in items
     let expand .= s:zen_toString(item, type)
   endfor
@@ -1035,21 +1033,6 @@ function! ZenExpand(abbr, type)
   return expand
 endfunction
 
-inoremap <plug>ZenCodingExpandWord <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
-inoremap <plug>ZenCodingExpandAbbr <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
-if !exists('g:user_zen_expandword_key')
-  let g:user_zen_expandword_key = '<c-z>.'
-endif
-if !hasmapto(g:user_zen_expandword_key, 'i')
-  exe "imap " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
-endif
-if !exists('g:user_zen_expandabbr_key')
-  let g:user_zen_expandabbr_key = '<c-z>,'
-endif
-if !hasmapto(g:user_zen_expandabbr_key, 'i')
-  exe "imap " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
-endif
-
 function! s:zen_mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
     call remove(a:lhs, 0, len(a:lhs)-1)
@@ -1073,9 +1056,54 @@ function! s:zen_mergeConfig(lhs, rhs)
   endif
 endfunction
 
+function! ZenCompleteTag(findstart, base)
+  if a:findstart
+    let line = getline('.')
+    let start = col('.') - 1
+    while start > 0 && line[start - 1] =~ '[a-zA-Z0-9:\@]'
+      let start -= 1
+    endwhile
+    return start
+  else
+    let type = &ft
+    let res = []
+    if !has_key(s:zen_settings, type)
+      return res
+    endif
+    if len(type) == 0 | let type = 'html' | endif
+    for item in keys(s:zen_settings[type]['snippets'])
+      if stridx(item, a:base) != -1
+        call add(res, item)
+      endif
+    endfor
+    return res
+  endif
+endfunction
+
 if exists('g:user_zen_settings')
   call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
+
+if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
+  setlocal completefunc=ZenCompleteTag
+endif
+
+inoremap <plug>ZenCodingExpandWord <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
+inoremap <plug>ZenCodingExpandAbbr <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
+
+if !exists('g:user_zen_expandword_key')
+  let g:user_zen_expandword_key = '<c-z>.'
+endif
+if !hasmapto(g:user_zen_expandword_key, 'i')
+  exe "imap " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
+endif
+if !exists('g:user_zen_expandabbr_key')
+  let g:user_zen_expandabbr_key = '<c-z>,'
+endif
+if !hasmapto(g:user_zen_expandabbr_key, 'i')
+  exe "imap " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
+endif
+
 " test
 "echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
 "echo ZenExpand('ol>li*2', '')
