@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 23-Feb-2010.
-" Version: 0.22
+" Last Change: 24-Feb-2010.
+" Version: 0.23
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -90,7 +90,7 @@ if !hasmapto(g:user_zen_expandabbr_key, 'v')
 endif
 
 if exists('s:zen_settings')
-  finish
+  "finish
 endif
 
 unlet! s:zen_settings
@@ -822,7 +822,8 @@ function! s:zen_parseIntoTree(abbr, type)
   endif
 
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\++\{-}$', '\=s:zen_expandos(submatch(1), type)', 'i')
-  let mx = '\([\+>#]\|<\+\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let abbr = substitute(abbr, '\(\%([+<>]\+\|^\)\s*\)#', '\1div#', 'g')
+  let mx = '\([+<>]\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
   let granma = parent
@@ -838,10 +839,9 @@ function! s:zen_parseIntoTree(abbr, type)
     if len(str) == 0
       break
     endif
-    if operator == '#'
-      let attributes = '#' . tag_name . attributes
+    if tag_name =~ '^#'
+      let attributes = tag_name . attributes
       let tag_name = 'div'
-      let operator = ''
     endif
     if multiplier <= 0
       let multiplier = 1
@@ -1182,5 +1182,7 @@ endif
 "echo ZenExpand('fs:n', 'css')
 "echo ZenExpand('link:css', '')
 "echo ZenExpand('ul+', '')
+"echo ZenExpand('#header>li<#content', '')
+"echo ZenExpand('(#header>li)<#content', '')
 
 " vim:set et:
