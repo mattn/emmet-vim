@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 23-Feb-2010.
-" Version: 0.18
+" Version: 0.19
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -823,6 +823,9 @@ function! s:zen_parseIntoTree(abbr, type)
     if multiplier <= 0
       let multiplier = 1
     endif
+    if tag_name =~ ':'
+      let tag_name = substitute(tag_name, ':.*$', '', '')
+    endif
     if has_key(s:zen_settings[type], 'aliases')
       if has_key(s:zen_settings[type]['aliases'], tag_name)
         let tag_name = s:zen_settings[type]['aliases'][tag_name]
@@ -1103,5 +1106,6 @@ endif
 "echo ZenExpand('a#foo$$$*3', '')
 "echo ZenExpand('@i', 'css')
 "echo ZenExpand('fs:n', 'css')
+"echo ZenExpand('link:css', '')
 
 " vim:set et:
