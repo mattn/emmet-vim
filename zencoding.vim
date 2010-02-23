@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 23-Feb-2010.
-" Version: 0.21
+" Version: 0.22
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -65,10 +65,33 @@
 " GetLatestVimScripts: 2981 1 :AutoInstall: zencoding.vim
 " script type: plugin
 
-if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
+if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
+  setlocal completefunc=ZenCompleteTag
+endif
+
+inoremap <plug>ZenCodingExpandAbbr   <esc>:call <sid>zen_expand(0)<cr>a
+inoremap <plug>ZenCodingExpandWord   <esc>:call <sid>zen_expand(1)<cr>a
+vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expand(2)<cr>
+
+if !exists('g:user_zen_expandword_key')
+  let g:user_zen_expandword_key = '<c-z>.'
+endif
+if !hasmapto(g:user_zen_expandword_key, 'i')
+  exe "imap <buffer> " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
+endif
+if !exists('g:user_zen_expandabbr_key')
+  let g:user_zen_expandabbr_key = '<c-z>,'
+endif
+if !hasmapto(g:user_zen_expandabbr_key, 'i')
+  exe "imap <buffer> " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
+endif
+if !hasmapto(g:user_zen_expandabbr_key, 'v')
+  exe "vmap <buffer> " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandVisual"
+endif
+
+if exists('s:zen_settings')
   finish
 endif
-let g:loaded_zencoding_vim = 1
 
 unlet! s:zen_settings
 let s:zen_settings = {
@@ -798,7 +821,7 @@ function! s:zen_parseIntoTree(abbr, type)
     return { 'child': [] }
   endif
 
-  let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\+$', '\=s:zen_expandos(submatch(1), type)', 'i')
+  let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)\++\{-}$', '\=s:zen_expandos(submatch(1), type)', 'i')
   let mx = '\([\+>#]\|<\+\)\{-}\s*\(@\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let last = {}
   let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'brother': 0 }
@@ -888,7 +911,7 @@ function! s:zen_parseIntoTree(abbr, type)
       let last['brother'] = 1
     endif
     if operator =~ '<'
-      for c in split(operator, '\zs')
+      for c in range(len(operator))
         let tmp = parent['parent']
         if empty(tmp)
           break
@@ -989,20 +1012,53 @@ function! s:zen_get_filetype()
   return type
 endfunction
 
-function! s:zen_expand(word)
+function! s:zen_expand(mode) range
   let type = s:zen_get_filetype()
-  let line = getline('.')[:col('.')-1]
-  if a:word || type != 'html'
-    let part = matchstr(line, '\([0-9A-Za-z_\@:]\+\)$')
-  else
-    let part = matchstr(line, '\(\S.*\)$')
-  endif
-  let rest = getline('.')[col('.'):]
-  let items = s:zen_parseIntoTree(part, type)['child']
   let expand = ''
-  for item in items
-    let expand .= s:zen_toString(item, type)
-  endfor
+  if a:mode == 2
+    let leader = input('Tag: ', '')
+    if len(leader) == 0
+      return
+    endif
+    let line = ''
+    let part = ''
+    let rest = ''
+    if leader =~ '\*$'
+      for n in range(a:firstline, a:lastline)
+        let items = s:zen_parseIntoTree(leader[:-2] . '{' . getline(n) . '}', type)['child']
+        for item in items
+          let expand .= s:zen_toString(item, type)
+        endfor
+      endfor
+    else
+      let str = '' 
+      if a:firstline != a:lastline
+        for n in range(a:firstline, a:lastline)
+          let str .= getline(n) . "\n"
+        endfor
+        let items = s:zen_parseIntoTree(leader . "{\n" . str . "}", type)['child']
+      else
+        let str .= getline(a:firstline)
+        let items = s:zen_parseIntoTree(leader . "{" . str . "}", type)['child']
+      endif
+      for item in items
+        let expand .= s:zen_toString(item, type)
+      endfor
+    endif
+    silent! exe "normal! gvc"
+  else
+    let line = getline('.')[:col('.')-1]
+    if a:mode == 1 || type != 'html'
+      let part = matchstr(line, '\([0-9A-Za-z_\@:]\+\)$')
+    else
+      let part = matchstr(line, '\(\S.*\)$')
+    endif
+    let rest = getline('.')[col('.'):]
+    let items = s:zen_parseIntoTree(part, type)['child']
+    for item in items
+      let expand .= s:zen_toString(item, type)
+    endfor
+  endif
   if len(expand)
     let expand = substitute(expand, '|', '$cursor$', '')
     let expand = substitute(expand, '|', '', 'g')
@@ -1097,26 +1153,6 @@ if exists('g:user_zen_settings')
   call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 
-if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
-  setlocal completefunc=ZenCompleteTag
-endif
-
-inoremap <plug>ZenCodingExpandWord <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
-inoremap <plug>ZenCodingExpandAbbr <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
-
-if !exists('g:user_zen_expandword_key')
-  let g:user_zen_expandword_key = '<c-z>.'
-endif
-if !hasmapto(g:user_zen_expandword_key, 'i')
-  exe "imap " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
-endif
-if !exists('g:user_zen_expandabbr_key')
-  let g:user_zen_expandabbr_key = '<c-z>,'
-endif
-if !hasmapto(g:user_zen_expandabbr_key, 'i')
-  exe "imap " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
-endif
-
 " test
 "echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
 "echo ZenExpand('ol>li*2', '')
@@ -1145,5 +1181,6 @@ endif
 "echo ZenExpand('@i', 'css')
 "echo ZenExpand('fs:n', 'css')
 "echo ZenExpand('link:css', '')
+"echo ZenExpand('ul+', '')
 
 " vim:set et:
