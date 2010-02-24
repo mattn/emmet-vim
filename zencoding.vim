@@ -1221,5 +1221,7 @@ endif
 "echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)', '')
 "echo ZenExpand('#content>(#main>div#entry$*5>(h3>a)+div>p*3)+#utilities', '')
 "echo ZenExpand('(div>(ul))+(#utilities)', '')
+"echo ZenExpand('(a>b)+(c+d)', '')
+"echo zenexpand('(a>b)+(c>d)', '')
 
 " vim:set et:
