@@ -768,6 +768,7 @@ let s:zen_settings = {
 \        'inline_elements': 'a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',
 \    },
 \    'xsl': {
+\        'extends': 'html',
 \        'default_attributes': {
 \            'tmatch': [{'match': ''}, {'mode': ''}],
 \            'tname': [{'name': ''}],
@@ -802,6 +803,12 @@ let s:zen_settings = {
 \        'expandos': {
 \            'choose': 'xsl:choose>xsl:when+xsl:otherwise'
 \        }
+\    },
+\    'haml': {
+\        'extends': 'html'
+\    },
+\    'xhtml': {
+\        'extends': 'html'
 \    }
 \}
 
@@ -1057,12 +1064,18 @@ function! s:zen_expand(mode) range
     let line = ''
     let part = ''
     let rest = ''
-    if leader =~ '\*$'
+    if leader =~ '*'
+      let query = substitute(leader, '*', '{$line$}*' . (a:lastline - a:firstline + 1), '')
+      let items = s:zen_parseIntoTree(query, type)['child']
+      for item in items
+        let expand .= s:zen_toString(item, type)
+      endfor
+      let line = getline(a:firstline)
+      let part = substitute(line, '^\s*', '', '')
       for n in range(a:firstline, a:lastline)
-        let items = s:zen_parseIntoTree(leader[:-2] . '{' . getline(n) . '}', type)['child']
-        for item in items
-          let expand .= s:zen_toString(item, type)
-        endfor
+        let lline = getline(n)
+        let lpart = substitute(lline, '^\s*', '', '')
+        let expand = substitute(expand, '\$line\$', lpart, '')
       endfor
     else
       let str = '' 
