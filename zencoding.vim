@@ -824,9 +824,9 @@ function! s:zen_parseIntoTree(abbr, type)
 
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(submatch(1), type).")".submatch(2)', 'i')
   let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}\s*\(+*)\+\)\{0,1}'
-  let last = {}
-  let parent = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'rank': 0 }
-  let root = parent
+  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let parent = root
+  let last = root
   let pos = []
   while len(abbr)
     let match = matchstr(abbr, mx)
@@ -853,7 +853,7 @@ function! s:zen_parseIntoTree(abbr, type)
         let tag_name = s:zen_settings[type]['aliases'][tag_name]
       endif
     endif
-    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'rank': 0 }
+    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
     if has_key(s:zen_settings[type]['snippets'], tag_name)
       let current['snippet'] = s:zen_settings[type]['snippets'][tag_name]
     else
@@ -905,20 +905,18 @@ function! s:zen_parseIntoTree(abbr, type)
     let current['multiplier'] = multiplier
 
     if !empty(last)
-      if operator == '>'
-        "let tmp = parent
+      if operator =~ '>'
         unlet! parent
         let parent = last
-        "let parent['parent'] = tmp
         let current['parent'] = last
-        let current['rank'] = last['rank'] + 1
+        let current['pos'] = last['pos'] + 1
       else
         let current['parent'] = parent
-        let current['rank'] = last['rank']
+        let current['pos'] = last['pos']
       endif
     else
       let current['parent'] = parent
-      let current['rank'] = 1
+      let current['pos'] = 1
     endif
     if operator =~ '<'
       for c in range(len(operator))
@@ -934,8 +932,29 @@ function! s:zen_parseIntoTree(abbr, type)
     let last = current
 
     if block_start == '('
-      let pos += [last['rank']]
+      if operator =~ '>'
+        let last['pos'] += 1
+        let pos += [last['pos']]
+      else
+        let pos += [last['pos']]
+      endif
     endif
+
+    if block_end =~ ')'
+      for n in range(len(block_end))
+        for c in range(last['pos'] - pos[-1])
+          let tmp = parent['parent']
+          if !has_key(tmp, 'parent')
+            break
+          endif
+          let parent = tmp
+        endfor
+        call remove(pos, -1)
+        let last = parent
+        let last['pos'] += 1
+      endfor
+    endif
+    let abbr = abbr[stridx(abbr, match) + len(match):]
     if 0
       echo "str=".str
       echo "block_start=".block_start
@@ -949,21 +968,6 @@ function! s:zen_parseIntoTree(abbr, type)
       echo "pos=".string(pos)
       echo "\n"
     endif
-    if block_end =~ ')'
-      for n in range(len(block_end))
-        let parent = last['parent']
-        for c in range(last['rank'] - pos[-1])
-          let tmp = parent['parent']
-          if !has_key(tmp, 'parent')
-            break
-          endif
-          let parent = tmp
-        endfor
-        let last = parent
-        call remove(pos, -1)
-      endfor
-    endif
-    let abbr = abbr[stridx(abbr, match) + len(match):]
   endwhile
   return root
 endfunction
@@ -1217,9 +1221,6 @@ endif
 "echo ZenExpand('a>b>c<<div', '')
 "echo ZenExpand('(#header>h1)+#content+#footer', '')
 "echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)', '')
-"echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+(ul))+(#utilities))+(#footer>address)', '')
-"echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)', '')
-"echo ZenExpand('#content>(#main>div#entry$*5>(h3>a)+div>p*3)+#utilities', '')
 "echo ZenExpand('(div>(ul))+(#utilities)', '')
 
 " vim:set et:
