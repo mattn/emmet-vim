@@ -1080,6 +1080,8 @@ function! s:zen_expand(mode) range
     else
       let str = '' 
       if a:firstline != a:lastline
+        let line = getline(a:firstline)
+        let part = substitute(line, '^\s*', '', '')
         for n in range(a:firstline, a:lastline)
           let str .= getline(n) . "\n"
         endfor
