@@ -79,7 +79,7 @@ install_details: |
 
 versions:
 - '0.23': |
-   This is an upgrade for ZenCoding.vim: pre-expand '#header>li<#content' to 'div#header>li<div#content'.
+   This is an upgrade for ZenCoding.vim: pre-expand '#header>li<#content' to 'div#header>li<div#content'. support () expression.
 - '0.22': |
    This is an upgrade for ZenCoding.vim: expand 'ul+' to 'ul>li'. fix undo ring. support visual selection. when type trigger key on visual select, it request you leader like 'ul>li'. if you give 'ul>li*' as leader, you'll get each separate 'ul>li' tags. and when you give 'blockquote' as leader, you'll get blocked text.
 - '0.21': |
