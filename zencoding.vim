@@ -830,7 +830,7 @@ function! s:zen_parseIntoTree(abbr, type)
   endif
 
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(submatch(1), type).")".submatch(2)', 'i')
-  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}\s*\(+*)\+\)\{0,1}'
+  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}\s*\()\+\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
   let parent = root
   let last = root
@@ -845,6 +845,7 @@ function! s:zen_parseIntoTree(abbr, type)
     let value = substitute(match, mx, '\5', 'ig')
     let multiplier = 0 + substitute(match, mx, '\6', 'ig')
     let block_end = substitute(match, mx, '\7', 'ig')
+    let multiplier_block = 0 + substitute(match, mx, '\8', 'ig')
     if len(str) == 0
       break
     endif
@@ -852,9 +853,8 @@ function! s:zen_parseIntoTree(abbr, type)
       let attributes = tag_name . attributes
       let tag_name = 'div'
     endif
-    if multiplier <= 0
-      let multiplier = 1
-    endif
+    if multiplier <= 0 | let multiplier = 1 | endif
+    if multiplier_block <= 0 | let multiplier_block = 1 | endif
     if has_key(s:zen_settings[type], 'aliases')
       if has_key(s:zen_settings[type]['aliases'], tag_name)
         let tag_name = s:zen_settings[type]['aliases'][tag_name]
@@ -910,6 +910,7 @@ function! s:zen_parseIntoTree(abbr, type)
       let current['value'] = value
     endif
     let current['multiplier'] = multiplier
+    let current['multiplier'] = multiplier
 
     if !empty(last)
       if operator =~ '>'
@@ -958,6 +959,7 @@ function! s:zen_parseIntoTree(abbr, type)
         endfor
         call remove(pos, -1)
         let last = parent
+        let last['child'][-1]['multiplier'] = multiplier_block
         let last['pos'] += 1
       endfor
     endif
@@ -971,6 +973,7 @@ function! s:zen_parseIntoTree(abbr, type)
       echo "value=".value
       echo "multiplier=".multiplier
       echo "block_end=".block_end
+      echo "multiplier_block=".multiplier_block
       echo "abbr=".abbr
       echo "pos=".string(pos)
       echo "\n"
@@ -1240,5 +1243,6 @@ endif
 "echo ZenExpand('(#header>h1)+#content+#footer', '')
 "echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)', '')
 "echo ZenExpand('(div>(ul))+(#utilities)', '')
+"echo ZenExpand('table>(tr>td*3)*4', '')
 
 " vim:set et:
