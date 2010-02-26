@@ -79,7 +79,7 @@ install_details: |
 
 versions:
 - '0.25': |
-   This is an upgrade for ZenCoding.vim: store undo before working.
+   This is an upgrade for ZenCoding.vim: store undo before working. good luck about 'table>(tr>td*3)*4'.
 - '0.24': |
    This is an upgrade for ZenCoding.vim: fixed behavior of parsing area of visual selection.
 - '0.23': |
