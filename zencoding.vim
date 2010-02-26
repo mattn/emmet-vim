@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 26-Feb-2010.
-" Version: 0.25
+" Version: 0.26
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -61,7 +61,7 @@
 "     \  }
 "     \}
 "
-"   You can set language attribute in html using zen_settings['lang'].
+"   You can set language attribute in html using 'zen_settings.lang'.
 "
 " GetLatestVimScripts: 2981 1 :AutoInstall: zencoding.vim
 " script type: plugin
@@ -814,8 +814,8 @@ let s:zen_settings = {
 
 function! s:zen_expandos(key, type)
   if has_key(s:zen_settings[a:type], 'expandos')
-    if has_key(s:zen_settings[a:type]['expandos'], a:key)
-      return s:zen_settings[a:type]['expandos'][a:key]
+    if has_key(s:zen_settings[a:type].expandos, a:key)
+      return s:zen_settings[a:type].expandos[a:key]
    endif
  endif
  return a:key
@@ -830,7 +830,7 @@ function! s:zen_parseIntoTree(abbr, type)
   endif
 
   let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(submatch(1), type).")".submatch(2)', 'i')
-  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}\s*\()\+\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}'
+  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
   let parent = root
   let last = root
@@ -845,7 +845,6 @@ function! s:zen_parseIntoTree(abbr, type)
     let value = substitute(match, mx, '\5', 'ig')
     let multiplier = 0 + substitute(match, mx, '\6', 'ig')
     let block_end = substitute(match, mx, '\7', 'ig')
-    let multiplier_block = 0 + substitute(match, mx, '\8', 'ig')
     if len(str) == 0
       break
     endif
@@ -854,29 +853,28 @@ function! s:zen_parseIntoTree(abbr, type)
       let tag_name = 'div'
     endif
     if multiplier <= 0 | let multiplier = 1 | endif
-    if multiplier_block <= 0 | let multiplier_block = 1 | endif
     if has_key(s:zen_settings[type], 'aliases')
-      if has_key(s:zen_settings[type]['aliases'], tag_name)
-        let tag_name = s:zen_settings[type]['aliases'][tag_name]
+      if has_key(s:zen_settings[type].aliases, tag_name)
+        let tag_name = s:zen_settings[type].aliases[tag_name]
       endif
     endif
     let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
-    if has_key(s:zen_settings[type]['snippets'], tag_name)
-      let current['snippet'] = s:zen_settings[type]['snippets'][tag_name]
+    if has_key(s:zen_settings[type].snippets, tag_name)
+      let current.snippet = s:zen_settings[type].snippets[tag_name]
     else
-      let current['name'] = substitute(tag_name, ':.*$', '', '')
+      let current.name = substitute(tag_name, ':.*$', '', '')
       if has_key(s:zen_settings[type], 'default_attributes')
-        let default_attributes = s:zen_settings[type]['default_attributes']
+        let default_attributes = s:zen_settings[type].default_attributes
         if has_key(default_attributes, tag_name)
           if type(default_attributes[tag_name]) == 4
             let a = default_attributes[tag_name]
             for k in keys(a)
-              let current['attr'][k] = len(a[k]) ? a[k] : '|'
+              let current.attr[k] = len(a[k]) ? a[k] : '|'
             endfor
           else
             for a in default_attributes[tag_name]
               for k in keys(a)
-                let current['attr'][k] = len(a[k]) ? a[k] : '|'
+                let current.attr[k] = len(a[k]) ? a[k] : '|'
               endfor
             endfor
           endif
@@ -891,44 +889,44 @@ function! s:zen_parseIntoTree(abbr, type)
           break
         endif
         if item[0] == '#'
-          let current['attr']['id'] = item[1:]
+          let current.attr.id = item[1:]
         endif
         if item[0] == '.'
-          let current['attr']['class'] = substitute(item[1:], '\.', '', 'g')
+          let current.attr.class = substitute(item[1:], '\.', '', 'g')
         endif
         if item[0] == '['
           let kk = split(item[1:-2], '=')
-          let current['attr'][kk[0]] = len(kk) > 1 ? join(kk[1:], '=') : ''
+          let current.attr[kk[0]] = len(kk) > 1 ? join(kk[1:], '=') : ''
         endif
         let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
       endwhile
     endif
     if tag_name =~ '^{.*}$'
-      let current['name'] = ''
-      let current['value'] = str
+      let current.name = ''
+      let current.value = str
     else
-      let current['value'] = value
+      let current.value = value
     endif
-    let current['multiplier'] = multiplier
-    let current['multiplier'] = multiplier
+    let current.multiplier = multiplier
+    let current.multiplier = multiplier
 
     if !empty(last)
       if operator =~ '>'
         unlet! parent
         let parent = last
-        let current['parent'] = last
-        let current['pos'] = last['pos'] + 1
+        let current.parent = last
+        let current.pos = last.pos + 1
       else
-        let current['parent'] = parent
-        let current['pos'] = last['pos']
+        let current.parent = parent
+        let current.pos = last.pos
       endif
     else
-      let current['parent'] = parent
-      let current['pos'] = 1
+      let current.parent = parent
+      let current.pos = 1
     endif
     if operator =~ '<'
       for c in range(len(operator))
-        let tmp = parent['parent']
+        let tmp = parent.parent
         if empty(tmp)
           break
         endif
@@ -936,31 +934,38 @@ function! s:zen_parseIntoTree(abbr, type)
       endfor
     endif
 
-    call add(parent['child'], current)
+    call add(parent.child, current)
     let last = current
 
-    if block_start == '('
-      if operator =~ '>'
-        let last['pos'] += 1
-        let pos += [last['pos']]
-      else
-        let pos += [last['pos']]
-      endif
+    if block_start =~ '('
+      for n in range(len(block_start))
+        let pos += [last.pos]
+      endfor
     endif
 
     if block_end =~ ')'
-      for n in range(len(block_end))
-        for c in range(last['pos'] - pos[-1])
-          let tmp = parent['parent']
-          if !has_key(tmp, 'parent')
-            break
+      for n in split(substitute(block_end, ' ', '', 'g'), ')', 1)
+        if n == ''
+          if len(pos) > 0 && last.pos >= pos[-1]
+            for c in range(last.pos - pos[-1])
+              let tmp = parent.parent
+              if !has_key(tmp, 'parent')
+                break
+              endif
+              let parent = tmp
+            endfor
+            call remove(pos, -1)
+            let last = parent
+            let last.pos += 1
           endif
-          let parent = tmp
-        endfor
-        call remove(pos, -1)
-        let last = parent
-        let last['child'][-1]['multiplier'] = multiplier_block
-        let last['pos'] += 1
+        else
+          let cl = last.child
+          let cls = []
+          for c in range(n[1:])
+            let cls += cl
+          endfor
+          let last.child = cls
+        endif
       endfor
     endif
     let abbr = abbr[stridx(abbr, match) + len(match):]
@@ -973,7 +978,6 @@ function! s:zen_parseIntoTree(abbr, type)
       echo "value=".value
       echo "multiplier=".multiplier
       echo "block_end=".block_end
-      echo "multiplier_block=".multiplier_block
       echo "abbr=".abbr
       echo "pos=".string(pos)
       echo "\n"
@@ -992,52 +996,52 @@ function! s:zen_toString(...)
   if len(type) == 0 | let type = 'html' | endif
 
   if has_key(s:zen_settings[type], 'indentation')
-    let indent = s:zen_settings[type]['indentation']
+    let indent = s:zen_settings[type].indentation
   else
-    let indent = s:zen_settings['indentation']
+    let indent = s:zen_settings.indentation
   endif
   let m = 0
   let str = ''
-  while m < current['multiplier']
-    if len(current['name']) && type == 'html'
-      let str .= '<' . current['name']
-      for attr in keys(current['attr'])
-        if current['multiplier'] > 1 && current['attr'][attr] =~ '\$'
-          let str .= ' ' . attr . '="' . substitute(current['attr'][attr], '\$', m+1, 'g') . '"'
+  while m < current.multiplier
+    if len(current.name) && type == 'html'
+      let str .= '<' . current.name
+      for attr in keys(current.attr)
+        if current.multiplier > 1 && current.attr[attr] =~ '\$'
+          let str .= ' ' . attr . '="' . substitute(current.attr[attr], '\$', m+1, 'g') . '"'
         else
-          let str .= ' ' . attr . '="' . current['attr'][attr] . '"'
+          let str .= ' ' . attr . '="' . current.attr[attr] . '"'
         endif
       endfor
-      let inner = current['value'][1:-2]
-      for child in current['child']
+      let inner = current.value[1:-2]
+      for child in current.child
         let inner .= s:zen_toString(child, type)
       endfor
-      if len(current['child'])
+      if len(current.child)
         let inner = substitute(inner, "\n", "\n" . indent, 'g')
         let inner = substitute(inner, indent . "$", "", 'g')
-        let str .= ">\n" . indent . inner . "</" . current['name'] . ">\n"
+        let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
       else
-        if stridx(','.s:zen_settings[type]['empty_elements'].',', ','.current['name'].',') != -1
+        if stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
           let str .= " />\n"
         else
-          if stridx(','.s:zen_settings[type]['block_elements'].',', ','.current['name'].',') != -1 && len(current['child'])
-            let str .= ">\n" . inner . "|</" . current['name'] . ">\n"
+          if stridx(','.s:zen_settings[type].block_elements.',', ','.current.name.',') != -1 && len(current.child)
+            let str .= ">\n" . inner . "|</" . current.name . ">\n"
           else
-            let str .= ">" . inner . "|</" . current['name'] . ">\n"
+            let str .= ">" . inner . "|</" . current.name . ">\n"
           endif
         endif
       endif
     else
-      let str .= '' . current['snippet']
+      let str .= '' . current.snippet
       if len(str) == 0
-        let str = current['name']
-        if len(current['value'])
-          let str .= current['value'][1:-2]
+        let str = current.name
+        if len(current.value)
+          let str .= current.value[1:-2]
         endif
       endif
       let inner = ''
-      if len(current['child'])
-        for n in current['child']
+      if len(current.child)
+        for n in current.child
           let inner .= s:zen_toString(n, type)
         endfor
         let inner = substitute(inner, "\n", "\n" . indent, 'g')
@@ -1069,7 +1073,7 @@ function! s:zen_expand(mode) range
     let rest = ''
     if leader =~ '*'
       let query = substitute(leader, '*', '{$line$}*' . (a:lastline - a:firstline + 1), '')
-      let items = s:zen_parseIntoTree(query, type)['child']
+      let items = s:zen_parseIntoTree(query, type).child
       for item in items
         let expand .= s:zen_toString(item, type)
       endfor
@@ -1088,10 +1092,10 @@ function! s:zen_expand(mode) range
         for n in range(a:firstline, a:lastline)
           let str .= getline(n) . "\n"
         endfor
-        let items = s:zen_parseIntoTree(leader . "{\n" . str . "}", type)['child']
+        let items = s:zen_parseIntoTree(leader . "{\n" . str . "}", type).child
       else
         let str .= getline(a:firstline)
-        let items = s:zen_parseIntoTree(leader . "{" . str . "}", type)['child']
+        let items = s:zen_parseIntoTree(leader . "{" . str . "}", type).child
       endif
       for item in items
         let expand .= s:zen_toString(item, type)
@@ -1106,7 +1110,7 @@ function! s:zen_expand(mode) range
       let part = matchstr(line, '\(\S.*\)$')
     endif
     let rest = getline('.')[col('.'):]
-    let items = s:zen_parseIntoTree(part, type)['child']
+    let items = s:zen_parseIntoTree(part, type).child
     for item in items
       let expand .= s:zen_toString(item, type)
     endfor
@@ -1118,10 +1122,10 @@ function! s:zen_expand(mode) range
     if expand !~ '|'
       let expand .= '|'
     endif
-    let expand = substitute(expand, '${lang}', s:zen_settings['lang'], 'g')
+    let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
     if line[:-len(part)-1] =~ '^\s\+$'
       let size = len(line) - len(part)
-      let indent = repeat(s:zen_settings['indentation'], size)
+      let indent = repeat(s:zen_settings.indentation, size)
     else
       let indent = ''
     endif
@@ -1139,7 +1143,7 @@ function! s:zen_expand(mode) range
 endfunction
 
 function! ZenExpand(abbr, type)
-  let items = s:zen_parseIntoTree(a:abbr, a:type)['child']
+  let items = s:zen_parseIntoTree(a:abbr, a:type).child
   let expand = ''
   for item in items
     let expand .= s:zen_toString(item, a:type)
@@ -1185,13 +1189,13 @@ function! ZenCompleteTag(findstart, base)
       return res
     endif
     if len(type) == 0 | let type = 'html' | endif
-    for item in keys(s:zen_settings[type]['snippets'])
+    for item in keys(s:zen_settings[type].snippets)
       if stridx(item, a:base) != -1
         call add(res, item)
       endif
     endfor
     if has_key(s:zen_settings[type], 'aliases')
-      for item in values(s:zen_settings[type]['aliases'])
+      for item in values(s:zen_settings[type].aliases)
         if stridx(item, a:base) != -1
           call add(res, item)
         endif
@@ -1242,7 +1246,8 @@ endif
 "echo ZenExpand('a>b>c<<div', '')
 "echo ZenExpand('(#header>h1)+#content+#footer', '')
 "echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)', '')
-"echo ZenExpand('(div>(ul))+(#utilities)', '')
+"echo ZenExpand('(div>(ul*2))+(#utilities)', '')
 "echo ZenExpand('table>(tr>td*3)*4', '')
+"echo ZenExpand('(((a#foo+a#bar)*2)*3)', '')
 
 " vim:set et:
