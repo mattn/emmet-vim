@@ -962,7 +962,7 @@ function! s:zen_parseIntoTree(abbr, type)
       endfor
     endif
     let abbr = abbr[stridx(abbr, match) + len(match):]
-    if 0
+    if exists('g:zencoding_debug')
       echo "str=".str
       echo "block_start=".block_start
       echo "tag_name=".tag_name
@@ -1202,7 +1202,10 @@ if exists('g:user_zen_settings')
   call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 
-" test
+if !exists('g:zencoding_debug')
+  finish
+endif
+
 "echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
 "echo ZenExpand('ol>li*2', '')
 "echo ZenExpand('a', '')
