@@ -66,6 +66,10 @@
 " GetLatestVimScripts: 2981 1 :AutoInstall: zencoding.vim
 " script type: plugin
 
+if !exists('g:zencoding_debug')
+  let g:zencoding_debug = 0
+endif
+
 if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
   setlocal completefunc=ZenCompleteTag
 endif
@@ -90,7 +94,7 @@ if !hasmapto(g:user_zen_expandabbr_key, 'v')
   exe "vmap <buffer> " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandVisual"
 endif
 
-if exists('s:zen_settings') && !exists('g:zencoding_debug')
+if exists('s:zen_settings') && g:zencoding_debug == 0
   finish
 endif
 
@@ -908,7 +912,6 @@ function! s:zen_parseIntoTree(abbr, type)
       let current.value = value
     endif
     let current.multiplier = multiplier
-    let current.multiplier = multiplier
 
     if !empty(last)
       if operator =~ '>'
@@ -938,14 +941,17 @@ function! s:zen_parseIntoTree(abbr, type)
     let last = current
 
     if block_start =~ '('
+      if operator =~ '>'
+        let last.pos += 1
+      endif
       for n in range(len(block_start))
         let pos += [last.pos]
       endfor
     endif
 
     if block_end =~ ')'
-      for n in split(substitute(block_end, ' ', '', 'g'), ')', 1)
-        if n == ''
+      for n in split(substitute(substitute(block_end, ' ', '', 'g'), ')', ',),', 'g'), ',')
+        if n == ')'
           if len(pos) > 0 && last.pos >= pos[-1]
             for c in range(last.pos - pos[-1])
               let tmp = parent.parent
@@ -958,7 +964,7 @@ function! s:zen_parseIntoTree(abbr, type)
             let last = parent
             let last.pos += 1
           endif
-        else
+        elseif len(n)
           let cl = last.child
           let cls = []
           for c in range(n[1:])
@@ -969,7 +975,7 @@ function! s:zen_parseIntoTree(abbr, type)
       endfor
     endif
     let abbr = abbr[stridx(abbr, match) + len(match):]
-    if exists('g:zencoding_debug')
+    if g:zencoding_debug > 1
       echo "str=".str
       echo "block_start=".block_start
       echo "tag_name=".tag_name
@@ -1209,7 +1215,7 @@ if exists('g:user_zen_settings')
   call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 
-if !exists('g:zencoding_debug')
+if g:zencoding_debug == 0
   finish
 endif
 
@@ -1246,7 +1252,7 @@ endif
 "echo ZenExpand('a>b>c<<div', '')
 "echo ZenExpand('(#header>h1)+#content+#footer', '')
 "echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)', '')
-"echo ZenExpand('(div>(ul*2))+(#utilities)', '')
+"echo ZenExpand('(div>(ul*2)*2)+(#utilities)', '')
 "echo ZenExpand('table>(tr>td*3)*4', '')
 "echo ZenExpand('(((a#foo+a#bar)*2)*3)', '')
 
