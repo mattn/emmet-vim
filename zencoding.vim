@@ -871,12 +871,12 @@ function! s:zen_parseIntoTree(abbr, type)
           if type(default_attributes[tag_name]) == 4
             let a = default_attributes[tag_name]
             for k in keys(a)
-              let current['attr'][k] = a[k]
+              let current['attr'][k] = len(a[k]) ? a[k] : '|'
             endfor
           else
             for a in default_attributes[tag_name]
               for k in keys(a)
-                let current['attr'][k] = a[k]
+                let current['attr'][k] = len(a[k]) ? a[k] : '|'
               endfor
             endfor
           endif
