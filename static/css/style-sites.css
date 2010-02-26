@@ -1,0 +1,94 @@
+@charset "utf-8"
+
+section, article, aside, hgroup, header, footer, nav, figure { display: block; }
+
+body {
+	font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", Meiryo, "メイリオ", "ＭＳ Ｐゴシック", Verdana, Geneva, Arial, Helvetica;
+	text-align: center;
+}
+
+section {
+	clear:both;
+	text-align: left;
+}
+
+article {
+}
+
+img {
+	border: none;
+}
+
+#content {
+}
+
+h1 {
+    font-family: 'Verdana', 'Arial';
+    padding: 0.5em;  margin-top: 0; margin-bottom: 0;
+}
+
+.subtitle {
+    background: transparent url(../images/allow-right-orange.png) no-repeat scroll 0%;
+    padding-left: 26px;
+    line-height: 26px;
+    text-decoration: underline;
+}
+
+.maintitle {
+    background: transparent url(../images/allow-right-green.png) no-repeat scroll 0%;
+    padding-left: 26px;
+    line-height: 26px;
+    text-decoration: underline;
+}
+
+.blocked-content {
+    padding: 1em;
+    border: 1px dotted gray;
+    font-family: 'Verdana', 'Arial';
+}
+
+a{
+	color: #006699;
+	text-decoration: none;
+}
+
+a:link {
+	color: #006699;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #006699;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #006699;
+	text-decoration: underline;
+}
+
+li a, h3 a {
+	padding-left:5px;
+	padding-right:5px;
+	background-color:none;
+	text-decoration:none;
+	color: #333333;
+	text-shadow:1px 1px 1px #ffffff;
+	line-height: 25px;
+}
+li a:hover, li a:active, h3 a:hover, li a:active {
+	background-color:#334d55;
+	text-decoration:none;
+	color:#ffffff;
+	text-shadow:1px 1px 1px #000000;
+}
+
+pre.code {
+    padding: 1em;
+    border: 1px dotted gray;
+    font-family: 'Verdana', 'Arial';
+	color: white;
+	background: gray;
+	width: 500px;
+}
+
