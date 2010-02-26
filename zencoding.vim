@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Feb-2010.
-" Version: 0.24
+" Last Change: 26-Feb-2010.
+" Version: 0.25
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -70,8 +70,8 @@ if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
   setlocal completefunc=ZenCompleteTag
 endif
 
-inoremap <plug>ZenCodingExpandAbbr   <esc>:call <sid>zen_expand(0)<cr>a
-inoremap <plug>ZenCodingExpandWord   <esc>:call <sid>zen_expand(1)<cr>a
+inoremap <plug>ZenCodingExpandAbbr   <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
+inoremap <plug>ZenCodingExpandWord   <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
 vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expand(2)<cr>
 
 if !exists('g:user_zen_expandword_key')
