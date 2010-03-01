@@ -1070,14 +1070,14 @@ function! s:zen_expand(mode) range
   let type = s:zen_get_filetype()
   let expand = ''
   if a:mode == 2
-    let leader = input('Tag: ', '')
+    let leader = substitute(input('Tag: ', ''), ' ', '', 'g')
     if len(leader) == 0
       return
     endif
     let line = ''
     let part = ''
     let rest = ''
-    if leader =~ '*'
+    if leader =~ '\*'
       let query = substitute(leader, '*', '{$line$}*' . (a:lastline - a:firstline + 1), '')
       let items = s:zen_parseIntoTree(query, type).child
       for item in items
