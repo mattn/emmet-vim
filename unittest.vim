@@ -76,6 +76,18 @@ finish
       'result': "<a id=\"hoge\" href=\"http://www.google.com/\" class=\"foo\"></a>\n",
     },
     {
+      'name': "a[href=http://www.google.com/]{Google}",
+      'query': "a[href=http://www.google.com/]{Google}",
+      'type': "html",
+      'result': "<a href=\"http://www.google.com/\">Google</a>\n",
+    },
+    {
+      'name': "{ZenCoding}",
+      'query': "{ZenCoding}",
+      'type': "html",
+      'result': "ZenCoding",
+    },
+    {
       'name': "a+b",
       'query': "a+b",
       'type': "html",
