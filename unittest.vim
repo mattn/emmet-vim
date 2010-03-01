@@ -5,6 +5,7 @@ let testgroups = eval(join(filter(split(substitute(join(readfile(expand('<sfile>
 for testgroup in testgroups
   echohl Visual | echon "[" testgroup.category."]\n" | echohl None
   let tests = testgroup.tests
+  let start = reltime()
   for n in range(len(tests))
     let testtitle = tests[n].name
     let testtitle = len(testtitle) < 57 ? (testtitle.repeat(' ', 57-len(testtitle))) : strpart(testtitle, 0, 57)
@@ -20,6 +21,7 @@ for testgroup in testgroups
   	echo ""
     endif
   endfor
+  echo "past:".reltimestr(reltime(start))."\n"
 endfor
  
 finish
