@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 26-Feb-2010.
+" Last Change: 01-Mar-2010.
 " Version: 0.26
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1154,6 +1154,8 @@ function! ZenExpand(abbr, type)
   for item in items
     let expand .= s:zen_toString(item, a:type)
   endfor
+  let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
+  let expand = substitute(expand, '|', '', 'g')
   return expand
 endfunction
 
@@ -1219,41 +1221,9 @@ if g:zencoding_debug == 0
   finish
 endif
 
-"echo ZenExpand('html:xt>div#header>div#logo+ul#nav>li.item-$*5>a', '')
-"echo ZenExpand('ol>li*2', '')
-"echo ZenExpand('a', '')
-"echo ZenExpand('obj', '')
-"echo ZenExpand('cc:ie6>p+blockquote#sample$.so.many.classes*2', '')
-"echo ZenExpand('tm>if>div.message', '')
-"echo ZenExpand('@i', 'css')
-"echo ZenExpand('req', 'perl')
-"echo ZenExpand('html:4t>div#wrapper>div#header+div#contents+div#footer', '')
-"echo ZenExpand('a[href=http://www.google.com/].foo#hoge', '')
-"echo ZenExpand('a+b', '')
-"echo ZenExpand('a>b>c<d', '')
-"echo ZenExpand('a>b>c<<d', '')
-"echo ZenExpand('a[href=foo][class=bar]', '')
-"echo ZenExpand('a[a=b][b=c=d][e]{foo}*2', '')
-"echo ZenExpand('a[a=b][b=c=d][e]*2{foo}', '')
-"echo ZenExpand('a*2{foo}a', '')
-"echo ZenExpand('a{foo}*2>b', '')
-"echo ZenExpand('a*2{foo}>b', '')
-"echo ZenExpand('table>tr>td.name#foo+td*3', '')
-"echo ZenExpand('div#header + div#footer', '')
-"echo ZenExpand('#header + div#footer', '')
-"echo ZenExpand('#header > ul > li < p{Footer}', '')
-"echo ZenExpand('a#foo$$$*3', '')
-"echo ZenExpand('@i', 'css')
-"echo ZenExpand('fs:n', 'css')
-"echo ZenExpand('link:css', '')
-"echo ZenExpand('ul+', '')
-"echo ZenExpand('#header>li<#content', '')
-"echo ZenExpand('(#header>li)<#content', '')
-"echo ZenExpand('a>b>c<<div', '')
-"echo ZenExpand('(#header>h1)+#content+#footer', '')
-"echo ZenExpand('(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)', '')
-"echo ZenExpand('(div>(ul*2)*2)+(#utilities)', '')
-"echo ZenExpand('table>(tr>td*3)*4', '')
-"echo ZenExpand('(((a#foo+a#bar)*2)*3)', '')
+if filereadable('unittest.vim')
+  source unittest.vim
+  finish
+endif
 
 " vim:set et:
