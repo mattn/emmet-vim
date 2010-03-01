@@ -78,20 +78,21 @@ inoremap <plug>ZenCodingExpandAbbr   <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
 inoremap <plug>ZenCodingExpandWord   <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
 vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expand(2)<cr>
 
+let s:target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
 if !exists('g:user_zen_expandword_key')
   let g:user_zen_expandword_key = '<c-z>.'
 endif
 if !hasmapto(g:user_zen_expandword_key, 'i')
-  exe "imap <buffer> " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
+  exe "imap " . s:target . " " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
 endif
 if !exists('g:user_zen_expandabbr_key')
   let g:user_zen_expandabbr_key = '<c-z>,'
 endif
 if !hasmapto(g:user_zen_expandabbr_key, 'i')
-  exe "imap <buffer> " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
+  exe "imap " . s:target . " " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
 endif
 if !hasmapto(g:user_zen_expandabbr_key, 'v')
-  exe "vmap <buffer> " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandVisual"
+  exe "vmap " . s:target . " " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandVisual"
 endif
 
 if exists('s:zen_settings') && g:zencoding_debug == 0
