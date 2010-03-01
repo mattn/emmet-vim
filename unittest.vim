@@ -3,13 +3,14 @@ so zencoding.vim
 unlet! testgroups
 let testgroups = eval(join(filter(split(substitute(join(readfile(expand('<sfile>')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
 for testgroup in testgroups
-  echohl Visual | echon "[" testgroup.category."]\n" | echohl None
+  echohl MatchParen | echon "[" testgroup.category."]\n" | echohl None
   let tests = testgroup.tests
   let start = reltime()
   for n in range(len(tests))
     let testtitle = tests[n].name
     let testtitle = len(testtitle) < 57 ? (testtitle.repeat(' ', 57-len(testtitle))) : strpart(testtitle, 0, 57)
-    echon "testing #".printf("%03d", n+1)": ".testtitle." ... "
+    echohl ModeMsg | echon "testing #".printf("%03d", n+1)
+    echohl None | echon ": ".testtitle." ... "
     unlet! res | let res = ZenExpand(tests[n].query, '', 0)
     if res == tests[n].result
       echohl Title | echon "ok\n" | echohl None
