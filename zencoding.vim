@@ -1217,13 +1217,4 @@ if exists('g:user_zen_settings')
   call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 
-if g:zencoding_debug == 0
-  finish
-endif
-
-if filereadable('unittest.vim')
-  source unittest.vim
-  finish
-endif
-
 " vim:set et:

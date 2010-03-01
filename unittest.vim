@@ -1,3 +1,5 @@
+so zencoding.vim
+
 unlet! testcases | let testcases = eval(join(filter(split(substitute(join(readfile(expand('<sfile>')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
 for n in range(len(testcases))
   let testtitle = testcases[n]['name']
