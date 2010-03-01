@@ -1148,14 +1148,16 @@ function! s:zen_expand(mode) range
   endif
 endfunction
 
-function! ZenExpand(abbr, type)
+function! ZenExpand(abbr, type, orig)
   let items = s:zen_parseIntoTree(a:abbr, a:type).child
   let expand = ''
   for item in items
     let expand .= s:zen_toString(item, a:type)
   endfor
-  let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
-  let expand = substitute(expand, '|', '', 'g')
+  if a:orig == 0
+    let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
+    let expand = substitute(expand, '|', '', 'g')
+  endif
   return expand
 endfunction
 
