@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 03-Mar-2010.
+" Last Change: 04-Mar-2010.
 " Version: 0.27
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -74,11 +74,12 @@ if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
   setlocal completefunc=ZenCompleteTag
 endif
 
-inoremap <plug>ZenCodingExpandAbbr   <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
-inoremap <plug>ZenCodingExpandWord   <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
-vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expand(2)<cr>
-inoremap <plug>ZenCodingNext <esc>:call <sid>zen_nextprev(0)<cr>
-inoremap <plug>ZenCodingPrev <esc>:call <sid>zen_nextprev(1)<cr>
+inoremap <plug>ZenCodingExpandAbbr   <c-g>u<esc>:call <sid>zen_expandAbbr(0)<cr>a
+inoremap <plug>ZenCodingExpandWord   <c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a
+vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expandAbbr(2)<cr>
+inoremap <plug>ZenCodingNext <esc>:call <sid>zen_moveNextPrev(0)<cr>
+inoremap <plug>ZenCodingPrev <esc>:call <sid>zen_moveNextPrev(1)<cr>
+inoremap <plug>ZenCodingImageSize <esc>:call <sid>zen_imageSize()<cr>a
 
 let s:target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
 
@@ -111,6 +112,7 @@ endif
 if !hasmapto(g:user_zen_prev_key, 'i')
   exe "imap " . s:target . " " . g:user_zen_prev_key . " <plug>ZenCodingPrev"
 endif
+exe "imap " . s:target . " <c-z>i <plug>ZenCodingImageSize"
 
 if exists('s:zen_settings') && g:zencoding_debug == 0
   finish
@@ -1099,15 +1101,15 @@ function! s:zen_toString(...)
   return str
 endfunction
 
-function! s:zen_get_filetype()
+function! s:zen_getFileType()
   let type = &ft
   if len(type) == 0 | let type = 'html' | endif
   if type == 'xhtml' | let type = 'html' | endif
   return type
 endfunction
 
-function! s:zen_expand(mode) range
-  let type = s:zen_get_filetype()
+function! s:zen_expandAbbr(mode) range
+  let type = s:zen_getFileType()
   let expand = ''
   if a:mode == 2
     let leader = substitute(input('Tag: ', ''), ' ', '', 'g')
@@ -1188,13 +1190,58 @@ function! s:zen_expand(mode) range
   endif
 endfunction
 
-function! s:zen_nextprev(flag)
+function! s:zen_moveNextPrev(flag)
   if search('><\/\|\(""\)\|^\s*$', a:flag ? 'Wpb' : 'Wp') == 3
     startinsert!
   else
     silent! normal! l
     startinsert
   endif
+endfunction
+
+function! s:zen_imageSize()
+  let line = getline('.')
+  let mx = '<img [^>]\+>'
+  let c = 0
+  let match = ''
+  while len(line)
+    let match = matchstr(line, mx)
+    if len(match) == 0
+      let c = -1
+    endif
+    let pos = stridx(line, match)
+    let c += pos
+    if c <= col('.') && (col('.') < c + len(match))
+      break
+    endif
+    let line = line[pos + len(match):]
+    let c += len(match)
+  endwhile
+  if pos == -1 || len(line) == 0
+    return
+  endif
+  let mx = '^.*\ssrc=["'']\([^"'']\+\)["''].*$'
+  let fn = matchstr(match, mx)
+  if len(fn) == 0
+    return
+  endif
+  let fn = substitute(fn, mx, '\1', '')
+  let [w, h] = [-1, -1]
+  
+  perl <<EOF
+no warnings;
+use Image::Info qw( image_info );
+eval {
+  my $ii = image_info(''.VIM::Eval('l:fn'));
+  VIM::DoCommand(sprintf('let [w, h] = [%d,%d]', $ii->{width}, $ii->{height}));
+  undef $ii;
+}
+EOF
+  if w == -1 && h == -1
+    return
+  endif
+  " TODO: replace text
+  echo '<img src="' . fn . '" width="' . w . '" height="' . h . '">'
 endfunction
 
 function! ZenExpand(abbr, type, orig)
