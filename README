@@ -1,0 +1,103 @@
+Tutorial of zencoding.vim
+
+                                                    mattn <mattn.jp@gmail.com>
+
+1. Expand Abbreviation
+
+  Type abbreviation as 'div>p#foo$*3>a' and type '<c-z>,'.
+  ---------------------
+  <div>
+      <p id="foo1">
+          <a href=""></a>
+      </p>
+      <p id="foo2">
+          <a href=""></a>
+      </p>
+      <p id="foo3">
+          <a href=""></a>
+      </p>
+  </div>
+  ---------------------
+
+2. Wrap with Abbreviation
+
+  Write as below.
+  ---------------------
+  test1
+  test2
+  test3
+  ---------------------
+  Then do visual select(line wize) and type '<c-z>,'.
+  If you request 'Tag:', then type 'ul>li*'.
+  ---------------------
+  <ul>
+      <li>test1</li>
+      <li>test2</li>
+      <li>test3</li>
+  </ul>
+  ---------------------
+
+  If you type tag as 'blockquote', then you'll see as following.
+  ---------------------
+  <blockquote>
+      test1
+      test2
+      test3
+  </blockquote>
+  ---------------------
+
+3. Balance Tag Inward
+
+  use surround.vim and type 'vit'
+
+
+4. Balance Tag Outward
+
+  use surrond.vim and type 'vat'
+
+5. Go to Next
+
+  type '<c-z>n' in insert mode.
+
+6. Previous Edit Point
+
+  type '<c-z>N' in insert mode.
+
+7. Update <img> Size
+
+  (1) :!start explorer
+  (2) right click the file. 
+  (3) check the image size.
+  (4) add the size of img tag.
+
+8. Merge Lines
+
+  select the lines included '<li>'
+  ---------------------
+  <ul>
+  	<li class="list1"></li>
+  	<li class="list2"></li>
+  	<li class="list3"></li>
+  </ul>
+  ---------------------
+  and type 'J'
+  ---------------------
+  <ul>
+  	<li class="list1"></li>
+  	<li class="list2"></li>
+  	<li class="list3"></li>
+  </ul>
+  ---------------------
+
+9. Remove Tag
+
+  under construction
+
+10. Split/Join Tag
+
+  under construction
+
+11. Toggle Comment
+
+  under construction
+
