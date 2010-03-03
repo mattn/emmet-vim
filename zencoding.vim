@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 02-Mar-2010.
-" Version: 0.26
+" Last Change: 03-Mar-2010.
+" Version: 0.27
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -1110,13 +1110,13 @@ function! s:zen_expand(mode) range
     endif
     silent! exe "normal! gvc"
   else
-    let line = getline('.')[:col('.')-1]
+    let line = getline('.')[:col('.')]
     if a:mode == 1 || type != 'html'
       let part = matchstr(line, '\([0-9A-Za-z_\@:]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
     endif
-    let rest = getline('.')[col('.'):]
+    let rest = getline('.')[col('.')+1:]
     let items = s:zen_parseIntoTree(part, type).child
     for item in items
       let expand .= s:zen_toString(item, type)
