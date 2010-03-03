@@ -100,13 +100,19 @@ finish
       'name': "a>b>c<d",
       'query': "a>b>c<d",
       'type': "html",
-      'result': "<a href=\"\">\n\t<b>\n\t\t<c></c>\n\t</b>\n\t<d></d>\n</a>\n",
+      'result': "<a href=\"\"><b><c></c></b><d></d></a>\n",
     },
     {
       'name': "a>b>c<<d",
       'query': "a>b>c<<d",
       'type': "html",
-      'result': "<a href=\"\">\n\t<b>\n\t\t<c></c>\n\t</b>\n</a>\n<d></d>\n",
+      'result': "<a href=\"\"><b><c></c></b></a>\n<d></d>\n",
+    },
+    {
+      'name': "blockquote>b>c<<d",
+      'query': "blockquote>b>c<<d",
+      'type': "html",
+      'result': "<blockquote>\n\t<b><c></c></b>\n</blockquote>\n<d></d>\n",
     },
     {
       'name': "a[href=foo][class=bar]",
@@ -136,7 +142,7 @@ finish
       'name': "a{foo}*2>b",
       'query': "a{foo}*2>b",
       'type': "html",
-      'result': "<a href=\"\">\n\tfoo<b></b>\n</a>\n<a href=\"\">\n\tfoo<b></b>\n</a>\n",
+      'result': "<a href=\"\">foo<b></b></a>\n<a href=\"\">foo<b></b></a>\n",
     },
     {
       'name': "a*2{foo}>b",
@@ -196,7 +202,7 @@ finish
       'name': "a>b>c<<div",
       'query': "a>b>c<<div",
       'type': "html",
-      'result': "<a href=\"\">\n\t<b>\n\t\t<c></c>\n\t</b>\n</a>\n<div></div>\n",
+      'result': "<a href=\"\"><b><c></c></b></a>\n<div></div>\n",
     },
     {
       'name': "(#header>h1)+#content+#footer",

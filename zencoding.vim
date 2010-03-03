@@ -1001,6 +1001,11 @@ function! s:zen_toString(...)
     let type = ''
   endif
   if len(type) == 0 | let type = 'html' | endif
+  if a:0 > 2
+    let inline = a:3
+  else
+    let inline = 0
+  endif
 
   if has_key(s:zen_settings[type], 'indentation')
     let indent = s:zen_settings[type].indentation
@@ -1011,6 +1016,11 @@ function! s:zen_toString(...)
   let str = ''
   while m < current.multiplier
     if len(current.name) && type == 'html'
+      if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') != -1
+        let child_inline = 1
+      else
+        let child_inline = 0
+      endif
       let str .= '<' . current.name
       for attr in keys(current.attr)
         if current.multiplier > 1 && current.attr[attr] =~ '\$'
@@ -1020,22 +1030,39 @@ function! s:zen_toString(...)
         endif
       endfor
       let inner = current.value[1:-2]
+      if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') != -1
+        let child_inline = 1
+      else
+        let child_inline = 0
+      endif
       for child in current.child
-        let inner .= s:zen_toString(child, type)
+        let inner .= s:zen_toString(child, type, child_inline)
       endfor
       if len(current.child)
-        let inner = substitute(inner, "\n", "\n" . indent, 'g')
-        let inner = substitute(inner, indent . "$", "", 'g')
-        let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
-      else
-        if stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
-          let str .= " />\n"
-        else
-          if stridx(','.s:zen_settings[type].block_elements.',', ','.current.name.',') != -1 && len(current.child)
-            let str .= ">\n" . inner . "|</" . current.name . ">\n"
+        if inline == 0
+          if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') == -1
+            let inner = substitute(inner, "\n", "\n" . indent, 'g')
+            let inner = substitute(inner, indent . "$", "", 'g')
+            let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
           else
-            let str .= ">" . inner . "|</" . current.name . ">\n"
+            let str .= ">" . inner . "</" . current.name . ">\n"
           endif
+        else
+          let str .= ">" . inner . "</" . current.name . ">"
+        endif
+      else
+        if inline == 0
+          if stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
+            let str .= " />\n"
+          else
+            if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') == -1 && len(current.child)
+              let str .= ">\n" . inner . "|</" . current.name . ">\n"
+            else
+              let str .= ">" . inner . "|</" . current.name . ">\n"
+            endif
+          endif
+        else
+          let str .= ">" . inner . "|</" . current.name . ">"
         endif
       endif
     else
@@ -1049,7 +1076,7 @@ function! s:zen_toString(...)
       let inner = ''
       if len(current.child)
         for n in current.child
-          let inner .= s:zen_toString(n, type)
+          let inner .= s:zen_toString(n, type, inline)
         endfor
         let inner = substitute(inner, "\n", "\n" . indent, 'g')
       endif
