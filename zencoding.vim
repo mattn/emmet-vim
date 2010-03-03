@@ -1016,11 +1016,6 @@ function! s:zen_toString(...)
   let str = ''
   while m < current.multiplier
     if len(current.name) && type == 'html'
-      if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') != -1
-        let child_inline = 1
-      else
-        let child_inline = 0
-      endif
       let str .= '<' . current.name
       for attr in keys(current.attr)
         if current.multiplier > 1 && current.attr[attr] =~ '\$'
