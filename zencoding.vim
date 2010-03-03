@@ -77,14 +77,18 @@ endif
 inoremap <plug>ZenCodingExpandAbbr   <c-g>u<esc>:call <sid>zen_expand(0)<cr>a
 inoremap <plug>ZenCodingExpandWord   <c-g>u<esc>:call <sid>zen_expand(1)<cr>a
 vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expand(2)<cr>
+inoremap <plug>ZenCodingNext <esc>:call <sid>zen_nextprev(0)<cr>
+inoremap <plug>ZenCodingPrev <esc>:call <sid>zen_nextprev(1)<cr>
 
 let s:target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
+
 if !exists('g:user_zen_expandword_key')
   let g:user_zen_expandword_key = '<c-z>.'
 endif
 if !hasmapto(g:user_zen_expandword_key, 'i')
   exe "imap " . s:target . " " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
 endif
+
 if !exists('g:user_zen_expandabbr_key')
   let g:user_zen_expandabbr_key = '<c-z>,'
 endif
@@ -93,6 +97,19 @@ if !hasmapto(g:user_zen_expandabbr_key, 'i')
 endif
 if !hasmapto(g:user_zen_expandabbr_key, 'v')
   exe "vmap " . s:target . " " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandVisual"
+endif
+
+if !exists('g:user_zen_next_key')
+  let g:user_zen_next_key = '<c-z>n'
+endif
+if !hasmapto(g:user_zen_next_key, 'i')
+  exe "imap " . s:target . " " . g:user_zen_next_key . " <plug>ZenCodingNext"
+endif
+if !exists('g:user_zen_prev_key')
+  let g:user_zen_prev_key = '<c-z>N'
+endif
+if !hasmapto(g:user_zen_prev_key, 'i')
+  exe "imap " . s:target . " " . g:user_zen_prev_key . " <plug>ZenCodingPrev"
 endif
 
 if exists('s:zen_settings') && g:zencoding_debug == 0
@@ -1168,6 +1185,15 @@ function! s:zen_expand(mode) range
   endif
   if search('|')
     silent! exe "normal! a\<c-h>"
+  endif
+endfunction
+
+function! s:zen_nextprev(flag)
+  if search('><\/\|\(""\)\|^\s*$', a:flag ? 'Wpb' : 'Wp') == 3
+    startinsert!
+  else
+    silent! normal! l
+    startinsert
   endif
 endfunction
 
