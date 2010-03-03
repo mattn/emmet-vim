@@ -80,7 +80,7 @@ install_details: |
 
 versions:
 - '0.27': |
-   This is an upgrade for ZenCoding.vim: fixed problem that can't work on the part of multibyte characters.
+   This is an upgrade for ZenCoding.vim: fixed problem that can't work on the part of multibyte characters. fixed inline elements behavior.
 - '0.26': |
    This is an upgrade for ZenCoding.vim: The count of '(((a#foo + a#bar)*2)*3)' should be 12.
 - '0.25': |
