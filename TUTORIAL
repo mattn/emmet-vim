@@ -66,7 +66,7 @@ Tutorial of zencoding.vim
 7. Update <img> Size
 
   (1) :!start explorer
-  (2) right click the file. 
+  (2) right click the file. and click 'Property'.
   (3) check the image size.
   (4) add the size of img tag.
 
