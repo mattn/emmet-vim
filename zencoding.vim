@@ -80,39 +80,28 @@ vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expandAbbr(2)<cr>
 inoremap <plug>ZenCodingNext <esc>:call <sid>zen_moveNextPrev(0)<cr>
 inoremap <plug>ZenCodingPrev <esc>:call <sid>zen_moveNextPrev(1)<cr>
 inoremap <plug>ZenCodingImageSize <esc>:call <sid>zen_imageSize()<cr>a
+inoremap <plug>ZenCodingToggleComment <esc>:call <sid>zen_toggleComment()<cr>a
+inoremap <plug>ZenCodingSplitJoinTag <esc>:call <sid>zen_splitJoinTag()<cr>a
 
 let s:target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
 
-if !exists('g:user_zen_expandword_key')
-  let g:user_zen_expandword_key = '<c-z>.'
-endif
-if !hasmapto(g:user_zen_expandword_key, 'i')
-  exe "imap " . s:target . " " . g:user_zen_expandword_key . " <plug>ZenCodingExpandWord"
-endif
-
-if !exists('g:user_zen_expandabbr_key')
-  let g:user_zen_expandabbr_key = '<c-z>,'
-endif
-if !hasmapto(g:user_zen_expandabbr_key, 'i')
-  exe "imap " . s:target . " " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandAbbr"
-endif
-if !hasmapto(g:user_zen_expandabbr_key, 'v')
-  exe "vmap " . s:target . " " . g:user_zen_expandabbr_key . " <plug>ZenCodingExpandVisual"
-endif
-
-if !exists('g:user_zen_next_key')
-  let g:user_zen_next_key = '<c-z>n'
-endif
-if !hasmapto(g:user_zen_next_key, 'i')
-  exe "imap " . s:target . " " . g:user_zen_next_key . " <plug>ZenCodingNext"
-endif
-if !exists('g:user_zen_prev_key')
-  let g:user_zen_prev_key = '<c-z>N'
-endif
-if !hasmapto(g:user_zen_prev_key, 'i')
-  exe "imap " . s:target . " " . g:user_zen_prev_key . " <plug>ZenCodingPrev"
-endif
-exe "imap " . s:target . " <c-z>i <plug>ZenCodingImageSize"
+for item in [
+\ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '<c-z>.', 'plug': 'ZenCodingExpandWord'},
+\ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandAbbr'},
+\ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandVisual'},
+\ {'mode': 'i', 'var': 'user_zen_next_key', 'key': '<c-z>n', 'plug': 'ZenCodingNext'},
+\ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': '<c-z>N', 'plug': 'ZenCodingPrev'},
+\ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize'},
+\ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment'},
+\ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag'},
+\]
+  if !exists('g:' . item.var)
+    exe "let g:" . item.var . " = '" . item.key . "'"
+  endif
+  if !hasmapto(eval("g:" . item.var), item.mode)
+    exe "imap " . s:target . " " . item.key . " <plug>" . item.plug
+  endif
+endfor
 
 if exists('s:zen_settings') && g:zencoding_debug == 0
   finish
@@ -1076,7 +1065,11 @@ function! s:zen_toString(...)
             endif
           endif
         else
-          let str .= ">" . inner . "|</" . current.name . ">"
+          if stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
+            let str .= " />"
+          else
+            let str .= ">" . inner . "|</" . current.name . ">"
+          endif
         endif
       endif
     else
@@ -1199,6 +1192,23 @@ function! s:zen_moveNextPrev(flag)
   endif
 endfunction
 
+function! s:zen_parseTag(tag)
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let mx = '<\([a-z][a-z0-9]*\)\(\%(\s[a-z0-9]\+=\%([^"'' \t]\+\|["''][^"'']\+["'']\)\)*\)\(/\{0,1}\)>'
+  let match = matchstr(a:tag, mx)
+  let current.name = substitute(match, mx, '\1', 'i')
+  let attrs = substitute(match, mx, '\2', 'i')
+  let mx = '\([a-z0-9]\+\)=["'']\{0,1}\([^"'' \t]\+\|[^"'']\+\)["'']\{0,1}'
+  while len(attrs) > 0
+    let match = matchstr(attrs, mx)
+    let name = substitute(match, mx, '\1', 'i')
+    let value = substitute(match, mx, '\2', 'i')
+    let current.attr[name] = value
+    let attrs = attrs[stridx(attrs, match) + len(match):]
+  endwhile
+  return current
+endfunction
+
 function! s:zen_imageSize()
   let line = getline('.')
   let mx = '<img [^>]\+>'
@@ -1220,28 +1230,72 @@ function! s:zen_imageSize()
   if pos == -1 || len(line) == 0
     return
   endif
-  let mx = '^.*\ssrc=["'']\([^"'']\+\)["''].*$'
-  let fn = matchstr(match, mx)
-  if len(fn) == 0
-    return
-  endif
-  let fn = substitute(fn, mx, '\1', '')
+  let current = s:zen_parseTag(match)
+  let fn = current.attr['src']
   let [w, h] = [-1, -1]
   
-  perl <<EOF
+  if has('perl')
+perl <<EOF
 no warnings;
-use Image::Info qw( image_info );
 eval {
-  my $ii = image_info(''.VIM::Eval('l:fn'));
-  VIM::DoCommand(sprintf('let [w, h] = [%d,%d]', $ii->{width}, $ii->{height}));
+  require Image::Info;
+  my $fn = ''.VIM::Eval('l:fn');
+  my $ii;
+  if ($fn =~ /^http\:\/\//) {
+    require File::Temp;
+    require LWP::Simple;
+    my $tmp = File::Temp::tempfile(CLEANUP => 1);
+    my $path = "$tmp";
+    $path =~ s/\\/\//g if $^O eq 'MSWin32';
+    my $res = LWP::Simple::mirror($fn, $path);
+    $ii = Image::Info::image_info($path);
+  } else {
+    $ii = Image::Info::image_info($fn);
+  }
+  VIM::DoCommand(sprintf('let [w, h] = [%d,%d]', $ii->{width} || -1, $ii->{height} || -1));
   undef $ii;
-}
+};
+VIM::Msg($@, "ErrorMsg") if $@;
 EOF
+  endif
+
   if w == -1 && h == -1
     return
   endif
-  " TODO: replace text
-  echo '<img src="' . fn . '" width="' . w . '" height="' . h . '">'
+  let current.attr['width'] = w
+  let current.attr['height'] = h
+  let html = s:zen_toString(current, 'html', 1)
+  let line = getline('.')
+  let line = line[:c-1] . html . line[c + len(match):]
+  call setline(line('.'), line)
+endfunction
+
+function! s:zen_toggleComment()
+  let pos = getpos('.')
+  call search('<', 'bW')
+  if searchpair('<!-- <[a-z]', '', ' -->', 'bcW')
+    exe "normal! d5l"
+    call search('\(</[^>]\+>\|<[^/>]\+/>\) -->', 'ceW')
+    exe "normal! d4h"
+    let pos[2] -= 5
+  elseif searchpair('<[a-z]', '', '\(</[^>]\+>\|<[^/>]\+/>\)', 'bcW')
+    exe "normal! i<!-- "
+    let rpos = search('\(</[^>]\+>\|<[^/>]\+/>\)', 'ceW')
+    exe "normal! a --\<c-v>>"
+    let pos[2] += 5
+  endif
+  call setpos('.', pos)
+endfunction
+
+function! s:zen_splitJoinTag()
+  let pos = getpos('.')
+  if searchpair('<[a-z]', '', '\(</[^>]\+>\|<[^/>]\+/>\)', 'bcW')
+    exe "normal! i<!-- "
+    let rpos = search('\(</[^>]\+>\|<[^/>]\+/>\)', 'ceW')
+    exe "normal! a --\<c-v>>"
+  else
+    call setpos('.', pos)
+  endif
 endfunction
 
 function! ZenExpand(abbr, type, orig)

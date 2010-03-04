@@ -65,10 +65,7 @@ Tutorial of zencoding.vim
 
 7. Update <img> Size
 
-  (1) :!start explorer
-  (2) right click the file. and click 'Property'.
-  (3) check the image size.
-  (4) add the size of img tag.
+  type '<c-z>i' on img tag 
 
 8. Merge Lines
 
@@ -99,5 +96,5 @@ Tutorial of zencoding.vim
 
 11. Toggle Comment
 
-  under construction
+  type '<c-z>/' in insert mode.
 

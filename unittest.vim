@@ -1,4 +1,7 @@
-unlet! g:user_zen_settings
+if exists('g:user_zen_settings')
+  let s:old_user_zen_settings = g:user_zen_settings
+  unlet! g:user_zen_settings
+endif
 so zencoding.vim
 
 unlet! testgroups
@@ -25,6 +28,10 @@ for testgroup in testgroups
   endfor
   echo "past:".reltimestr(reltime(start))."\n"
 endfor
+
+if exists('g:user_zen_settings')
+  let g:user_zen_settings = s:old_user_zen_settings
+endif
  
 finish
 [
