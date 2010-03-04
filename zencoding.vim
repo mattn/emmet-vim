@@ -1245,14 +1245,13 @@ eval {
   require Image::Info;
   my $fn = ''.VIM::Eval('l:fn');
   my $ii;
-  if ($fn =~ /^http\:\/\//) {
+  if ($fn =~ /^https?\:\/\//) {
     require File::Temp;
     require LWP::Simple;
-    my $tmp = File::Temp::tempfile(CLEANUP => 1);
-    my $path = "$tmp";
-    $path =~ s/\\/\//g if $^O eq 'MSWin32';
-    my $res = LWP::Simple::mirror($fn, $path);
-    $ii = Image::Info::image_info($path);
+    my $tmp = File::Temp::tmpnam();
+    LWP::Simple::mirror($fn, $tmp);
+    $ii = Image::Info::image_info($tmp);
+    unlink $tmp;
   } else {
     $ii = Image::Info::image_info($fn);
   }
