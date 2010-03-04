@@ -1283,11 +1283,8 @@ function! s:zen_toggleComment()
       call search(' -->', 'cW')
       exe "normal! d4l"
       let pos[2] -= 5
-    elseif searchpair('>', '', '<', 'bcW')
-      exe "normal! a<!-- "
-      call search('<', 'ceW')
-      exe "normal! i --\<c-v>>"
-      let pos[2] += 5
+    else
+      " TODO
     endif
   else
     call search('<', 'bW')
