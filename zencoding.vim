@@ -1276,25 +1276,25 @@ endfunction
 
 function! s:zen_toggleComment()
   let pos = getpos('.')
-  let sp1 = searchpos('<', 'bnW')
+  let sp1 = searchpos('<[^!]', 'bnW')
   let sp2 = searchpos('>', 'bnW')
   if sp1[0]<sp2[0] || (sp1[0] == sp2[0] && sp1[1]<sp2[1])
     if searchpair('<!-- ', '', ' -->', 'bcW')
       exe "normal! d5l"
-      call search(' -->', 'ceW')
-      exe "normal! d4h"
+      call search(' -->', 'cW')
+      exe "normal! d4l"
       let pos[2] -= 5
-    elseif searchpair('[^\s]', '', '[^\s]', 'bcW')
-      exe "normal! Bi<!--"
-      call search('\(\s\|$\)', 'eW')
-      exe "normal! a--\<c-v>>"
-      let pos[2] += 4
+    elseif searchpair('>', '', '<', 'bcW')
+      exe "normal! a<!-- "
+      call search('<', 'ceW')
+      exe "normal! i --\<c-v>>"
+      let pos[2] += 5
     endif
   else
     call search('<', 'bW')
     if searchpair('<!-- <[a-z]', '', ' -->', 'bcW')
       exe "normal! d5l"
-      call search('\(</[^>]\+>\|<[^/>]\+/>\) -->', 'ceW')
+      call search(' -->', 'ceW')
       exe "normal! d4h"
       let pos[2] -= 5
     elseif searchpair('<[a-z]', '', '\(</[^>]\+>\|<[^/>]\+/>\)', 'bcW')
