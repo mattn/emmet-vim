@@ -1218,6 +1218,7 @@ function! s:zen_imageSize()
     let match = matchstr(line, mx)
     if len(match) == 0
       let c = -1
+      break
     endif
     let pos = stridx(line, match)
     let c += pos
@@ -1227,7 +1228,7 @@ function! s:zen_imageSize()
     let line = line[pos + len(match):]
     let c += len(match)
   endwhile
-  if pos == -1 || len(line) == 0
+  if c == -1 || len(line) == 0
     return
   endif
   let current = s:zen_parseTag(match)
