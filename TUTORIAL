@@ -65,7 +65,14 @@ Tutorial of zencoding.vim
 
 7. Update <img> Size
 
-  type '<c-z>i' on img tag 
+  Move cursor to img tag.
+  ---------------------
+  <img src="foo.png" />
+  ---------------------
+  Type '<c-z>i' on img tag 
+  ---------------------
+  <img src="foo.png" width="32" height="48" />
+  ---------------------
 
 8. Merge Lines
 
@@ -96,5 +103,16 @@ Tutorial of zencoding.vim
 
 11. Toggle Comment
 
-  type '<c-z>/' in insert mode.
+  Move cursor to block
+  ---------------------
+  <div>
+  	hello world
+  </div>
+  ---------------------
+  Type '<c-z>/' in insert mode.
+  ---------------------
+  <!-- <div>
+  	hello world
+  </div> -->
+  ---------------------
 

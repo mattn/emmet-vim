@@ -1289,13 +1289,7 @@ endfunction
 
 function! s:zen_splitJoinTag()
   let pos = getpos('.')
-  if searchpair('<[a-z]', '', '\(</[^>]\+>\|<[^/>]\+/>\)', 'bcW')
-    exe "normal! i<!-- "
-    let rpos = search('\(</[^>]\+>\|<[^/>]\+/>\)', 'ceW')
-    exe "normal! a --\<c-v>>"
-  else
-    call setpos('.', pos)
-  endif
+  call setpos('.', pos)
 endfunction
 
 function! ZenExpand(abbr, type, orig)
