@@ -1280,7 +1280,7 @@ function! s:zen_toggleComment()
     let pos[2] -= 5
   elseif searchpair('<[a-z]', '', '\(</[^>]\+>\|<[^/>]\+/>\)', 'bcW')
     exe "normal! i<!-- "
-    let rpos = search('\(</[^>]\+>\|<[^/>]\+/>\)', 'ceW')
+    let rpos = search('\(<\/[^>]\+>\|[^\/>]*\/>\)', 'ceW')
     exe "normal! a --\<c-v>>"
     let pos[2] += 5
   endif
