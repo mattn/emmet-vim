@@ -1325,8 +1325,6 @@ function! s:zen_removeTag()
   if s:cursor_in_region(block)
     let content = s:get_content(block)
     let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
-    echo matchstr(content, mx2)
-    echo tag_name
     if matchstr(content, mx2) =~ '</' . tag_name
       call s:change_content(block, '')
     endif
