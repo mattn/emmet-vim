@@ -1281,24 +1281,39 @@ endfunction
 
 function! s:zen_toggleComment()
   let pos = getpos('.')
-  let tag_region = s:search_region('<[a-zA-Z][a-zA-Z0-9][^>\s]\+>', '\(<\/[^>]\+>\|[^\-]>\)')
-  if !s:cursor_in_region(tag_region)
+  let block = s:search_region('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', '\(<\/[^>]\+>\)')
+  if !s:cursor_in_region(block)
+    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*'
+    let mx2 = '[^/>\s]*/>'
+    let empty = s:search_region(mx1, mx2)
+    if !s:cursor_in_region(block)
+      let comment_region = s:search_region('<!--', '-->')
+      if !s:region_is_valid(comment_region) || !s:cursor_in_region(comment_region)
+        let content = '<!-- ' . s:get_content(empty) . ' -->'
+        call s:change_content(empty, content)
+      else
+        let content = s:get_content(comment_region)
+        let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
+        call s:change_content(comment_region, content)
+      endif
+    endif
     return
-  endif
-  let comment_region = s:search_region('<!--', '-->')
-  if !s:region_is_valid(comment_region) || !s:cursor_in_region(comment_region)
-    let content = '<!-- ' . s:get_content(tag_region) . ' -->'
-    call s:change_content(tag_region, content)
   else
-    let content = s:get_content(comment_region)
-    let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
-    call s:change_content(comment_region, content)
+    let comment_region = s:search_region('<!--', '-->')
+    if !s:region_is_valid(comment_region) || !s:cursor_in_region(comment_region)
+      let content = '<!-- ' . s:get_content(block) . ' -->'
+      call s:change_content(block, content)
+    else
+      let content = s:get_content(comment_region)
+      let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
+      call s:change_content(comment_region, content)
+    endif
   endif
   call setpos('.', pos)
 endfunction
 
 function! s:zen_splitJoinTag()
-  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*>'
+  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*>'
   let mx2 = '<\/[^>]\+>'
   let block = s:search_region(mx1, mx2)
   if s:cursor_in_region(block)
