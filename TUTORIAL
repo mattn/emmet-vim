@@ -95,11 +95,26 @@ Tutorial of zencoding.vim
 
 9. Remove Tag
 
-  under construction
+  Move cursor in block
+  ---------------------
+  <div class="foo">
+  	<a>cursor is here</a>
+  </div>
+  ---------------------
+  Type '<c-z>k' in insert mode.
+  ---------------------
+  <div class="foo">
+  	
+  </div>
+  ---------------------
+  And type '<c-z>j' in there again.
+  ---------------------
+
+  ---------------------
 
 10. Split/Join Tag
 
-  Move cursor to block
+  Move cursor in block
   ---------------------
   <div class="foo">
   	cursor is here
@@ -109,7 +124,7 @@ Tutorial of zencoding.vim
   ---------------------
   <div class="foo"/>
   ---------------------
-  And type '<c-z>j' in there.
+  And type '<c-z>j' in there again.
   ---------------------
   <div class="foo">
   </div>
