@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 04-Mar-2010.
+" Last Change: 05-Mar-2010.
 " Version: 0.27
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -649,6 +649,7 @@ let s:zen_settings = {
 \            'bdo': {'dir': ''},
 \            'bdo:r': {'dir': 'rtl'},
 \            'bdo:l': {'dir': 'ltr'},
+\            'del': {'datetime': '${datetime}'},
 \            'link:css': [{'rel': 'stylesheet'}, {'type': 'text/css'}, {'href': '|style.css'}, {'media': 'all'}],
 \            'link:print': [{'rel': 'stylesheet'}, {'type': 'text/css'}, {'href': '|print.css'}, {'media': 'print'}],
 \            'link:favicon': [{'rel': 'shortcut icon'}, {'type': 'image/x-icon'}, {'href': '|favicon.ico'}],
@@ -1164,6 +1165,12 @@ function! s:zen_expandAbbr(mode) range
       let expand .= '|'
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
+    if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
+      let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . ' ' . s:zen_settings.timezone, 'g')
+    else
+      " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
+      let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
+    endif
     if line[:-len(part)-1] =~ '^\s\+$'
       let size = len(line) - len(part)
       let indent = repeat(s:zen_settings.indentation, size)
