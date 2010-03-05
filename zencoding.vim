@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 05-Mar-2010.
+" Last Change: 06-Mar-2010.
 " Version: 0.27
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1313,28 +1313,30 @@ function! s:zen_toggleComment()
 endfunction
 
 function! s:zen_splitJoinTag()
-  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*>'
-  let mx2 = '<\/[^>]\+>'
-  let block = s:search_region(mx1, mx2)
-  if s:cursor_in_region(block)
-    let content = s:get_content(block)
-    let content = matchstr(content, mx1)[:-2] . '/>'
-    call s:change_content(block, content)
+  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*'
+  let mx2 = '/>'
+  let empty = s:search_region(mx1, mx2)
+  if s:cursor_in_region(empty)
+    let content = s:get_content(empty)
+    let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+    let content = matchstr(content, mx1) . ">\n</" . tag_name . '>'
+    call s:change_content(empty, content)
+    call setpos('.', [0, empty[0][0], empty[0][1], 0])
   else
-    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*'
-    let mx2 = '[^/>\s]*/>'
-    let empty = s:search_region(mx1, mx2)
-    if s:cursor_in_region(empty)
-      let content = s:get_content(empty)
-      let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
-      let content = matchstr(content, mx1) . ">\n</" . tag_name . '>'
-      call s:change_content(empty, content)
+    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*>'
+    let mx2 = '<\/[^>]\+>'
+    let block = s:search_region(mx1, mx2)
+    if s:cursor_in_region(block)
+      let content = s:get_content(block)
+      let content = matchstr(content, mx1)[:-2] . '/>'
+      call s:change_content(block, content)
+      call setpos('.', [0, block[0][0], block[0][1], 0])
     endif
   endif
 endfunction
 
 function! s:zen_removeTag()
-  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*>'
+  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*>'
   let mx2 = '<\/[^>]\+>'
   let block = s:search_region(mx1, mx2)
   if s:cursor_in_region(block)
@@ -1342,13 +1344,15 @@ function! s:zen_removeTag()
     let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
     if matchstr(content, mx2) =~ '</' . tag_name
       call s:change_content(block, '')
+      call setpos('.', [0, block[0][0], block[0][1], 0])
     endif
   else
-    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*'
-    let mx2 = '[^/>\s]*/>'
+    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*'
+    let mx2 = '/>'
     let empty = s:search_region(mx1, mx2)
     if s:cursor_in_region(empty)
       call s:change_content(empty, '')
+      call setpos('.', [0, empty[0][0], empty[0][1], 0])
     endif
   endif
 endfunction
@@ -1460,14 +1464,14 @@ endfunction
 "   baz:end
 "   --------------------
 function! s:change_content(region, content)
-  let oldlines = getline(a:region[0][0], a:region[1][0])
   let newlines = split(a:content, '\n')
+  let oldlines = getline(a:region[0][0], a:region[1][0])
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
   if len(newlines) == 0
     let tmp = ''
     if a:region[0][1] > 0
-      let tmp = oldlines[0][a:region[0][1]-2]
+      let tmp = oldlines[0][:a:region[0][1]-2]
     endif
     if a:region[1][1] > 0
       let tmp .= oldlines[-1][a:region[1][1]:]
@@ -1475,14 +1479,14 @@ function! s:change_content(region, content)
     call setline(line('.'), tmp)
   elseif len(newlines) == 1
     if a:region[0][1] > 0
-      let newlines[0] = oldlines[0][a:region[0][1]-2] . newlines[0]
+      let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
     if a:region[1][1] > 0
       let newlines[0] .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), newlines[0])
   else
-    let newlines[0] = oldlines[0][a:region[0][1]-2] . newlines[0]
+    let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     let newlines[-1] .= oldlines[-1][a:region[1][1]]
     call setline(line('.'), newlines[0])
     call append(line('.'), newlines[1:])
@@ -1545,7 +1549,7 @@ endfunction
 " region_in_region : check region is in the region
 "   this function return 0 or 1
 function! s:region_in_region(outer, inner)
-  if !s:region_is_valid(region)
+  if !s:region_is_valid(a:inner) || !s:region_is_valid(a:outer) || 
     return 0
   endif
   return s:point_in_region(a:inner[0], a:outer) && s:point_in_region(a:inner[1], a:outer)
