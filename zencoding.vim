@@ -1549,7 +1549,7 @@ endfunction
 " region_in_region : check region is in the region
 "   this function return 0 or 1
 function! s:region_in_region(outer, inner)
-  if !s:region_is_valid(a:inner) || !s:region_is_valid(a:outer) || 
+  if !s:region_is_valid(a:inner) || !s:region_is_valid(a:outer)
     return 0
   endif
   return s:point_in_region(a:inner[0], a:outer) && s:point_in_region(a:inner[1], a:outer)
