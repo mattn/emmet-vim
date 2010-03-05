@@ -87,6 +87,8 @@ for item in [
 \ {'mode': 'n', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': ':call <sid>zen_toggleComment()<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag', 'func': '<esc>:call <sid>zen_splitJoinTag()<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': '<esc>:call <sid>zen_removeTag()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': ':call <sid>zen_removeTag()<cr>'},
 \]
    
   if !hasmapto('<plug>'.item.plug, item.mode)
@@ -1312,6 +1314,28 @@ function! s:zen_splitJoinTag()
       let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
       let content = matchstr(content, mx1) . ">\n</" . tag_name . '>'
       call s:change_content(empty, content)
+    endif
+  endif
+endfunction
+
+function! s:zen_removeTag()
+  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*>'
+  let mx2 = '<\/[^>]\+>'
+  let block = s:search_region(mx1, mx2)
+  if s:cursor_in_region(block)
+    let content = s:get_content(block)
+    let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+    echo matchstr(content, mx2)
+    echo tag_name
+    if matchstr(content, mx2) =~ '</' . tag_name
+      call s:change_content(block, '')
+    endif
+  else
+    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*'
+    let mx2 = '[^/>\s]*/>'
+    let empty = s:search_region(mx1, mx2)
+    if s:cursor_in_region(empty)
+      call s:change_content(empty, '')
     endif
   endif
 endfunction

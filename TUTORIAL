@@ -99,7 +99,21 @@ Tutorial of zencoding.vim
 
 10. Split/Join Tag
 
-  under construction
+  Move cursor to block
+  ---------------------
+  <div class="foo">
+  	cursor is here
+  </div>
+  ---------------------
+  Type '<c-z>j' in insert mode.
+  ---------------------
+  <div class="foo"/>
+  ---------------------
+  And type '<c-z>j' in there.
+  ---------------------
+  <div class="foo">
+  </div>
+  ---------------------
 
 11. Toggle Comment
 
