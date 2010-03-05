@@ -1282,30 +1282,19 @@ endfunction
 
 function! s:zen_toggleComment()
   let pos = getpos('.')
-  let sp1 = searchpos('<[^!]', 'bnW')
-  let sp2 = searchpos('>', 'bnW')
-  if sp1[0]<sp2[0] || (sp1[0] == sp2[0] && sp1[1]<sp2[1])
-    if searchpair('<!-- ', '', ' -->', 'bcW')
-      exe "normal! d5l"
-      call search(' -->', 'cW')
-      exe "normal! d4l"
-      let pos[2] -= 5
-    else
-      " TODO
-    endif
+  let tag_region = s:search_region('<[^>\s]\+\>', '\(<\/[^>]\+>\|[^\-]>\)')
+  if !s:cursor_in_region(tag_region)
+    return
+  endif
+  let comment_region = s:search_region('<!--', '-->')
+  if !s:region_is_valid(comment_region) || !s:cursor_in_region(comment_region)
+    let content = '<!-- ' . s:get_content(tag_region) . ' -->'
+    call s:change_content(tag_region, content)
   else
-    call search('<', 'bW')
-    if searchpair('<!-- <[a-z]', '', ' -->', 'bcW')
-      exe "normal! d5l"
-      call search(' -->', 'ceW')
-      exe "normal! d4h"
-      let pos[2] -= 5
-    elseif searchpair('<[a-z]', '', '\(</[^>]\+>\|<[^/>]\+/>\)', 'bcW')
-      exe "normal! i<!-- "
-      call search('\(<\/[^>]\+>\|[^\/>]*\/>\)', 'ceW')
-      exe "normal! a --\<c-v>>"
-      let pos[2] += 5
-    endif
+    let content = s:get_content(comment_region)
+    let g:hoge = content
+    let content = substitute(content, '^<!--\s*\(.*\)\s*-->$', '\1', '')
+    call s:change_content(comment_region, content)
   endif
   call setpos('.', pos)
 endfunction
@@ -1385,5 +1374,117 @@ endfunction
 if exists('g:user_zen_settings')
   call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
+
+" delete_content : delete content in region
+"   if region make from between '<foo>' and '</foo>'
+"   --------------------
+"   begin:<foo>
+"   </foo>:end
+"   --------------------
+"   this function make the content as following
+"   --------------------
+"   begin::end
+"   --------------------
+function! s:delete_content(region)
+  let lines = getline(a:region[0][0], a:region[1][0])
+  call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
+  silent! exe "delete ".(a:region[1][0] - a:region[0][0])
+  call setline(line('.'), lines[0][:a:region[0][1]-2] . lines[-1][a:region[1][1]])
+endfunction
+
+" change_content : change content in region
+"   if region make from between '<foo>' and '</foo>'
+"   --------------------
+"   begin:<foo>
+"   </foo>:end
+"   --------------------
+"   and content is
+"   --------------------
+"   foo
+"   bar
+"   baz
+"   --------------------
+"   this function make the content as following
+"   --------------------
+"   begin:foo
+"   bar
+"   baz:end
+"   --------------------
+function! s:change_content(region, content)
+  let oldlines = getline(a:region[0][0], a:region[1][0])
+  let newlines = split(a:content, '\n')
+  call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
+  silent! exe "delete ".(a:region[1][0] - a:region[0][0])
+  if len(newlines) == 1
+    call setline(line('.'), oldlines[0][:a:region[0][1]-2] . newlines[0] . oldlines[-1][a:region[1][1]])
+  else
+    let newlines[0] = oldlines[0][a:region[0][1]-2] . newlines[0]
+    let newlines[-1] .= oldlines[-1][a:region[1][1]]
+    call setline(line('.'), newlines[0])
+    call append(line('.'), newlines[1:])
+  endif
+endfunction
+
+" select_region : select region
+"   this function make a selection of region
+function! s:select_region(region)
+  call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
+  normal! v
+  call setpos('.', [0, a:region[1][0], a:region[1][1], 0])
+endfunction
+
+" point_in_region : check point is in the region
+"   this function return 0 or 1
+function! s:point_in_region(point, region)
+  if !s:region_is_valid(a:region) | return 0 | endif
+  if a:region[0][0] > a:point[0] | return 0 | endif
+  if a:region[1][0] < a:point[0] | return 0 | endif
+  if a:region[0][0] == a:point[0] && a:region[0][1] > a:point[1] | return 0 | endif
+  if a:region[1][0] == a:point[0] && a:region[1][1] < a:point[1] | return 0 | endif
+  return 1
+endfunction
+
+" cursor_in_region : check cursor is in the region
+"   this function return 0 or 1
+function! s:cursor_in_region(region)
+  if !s:region_is_valid(a:region) | return 0 | endif
+  let cur = getpos('.')[1:2]
+  return s:point_in_region(cur, a:region)
+endfunction
+
+" region_is_valid : check region is valid
+"   this function return 0 or 1
+function! s:region_is_valid(region)
+  if a:region[0][0] == 0 || a:region[1][0] == 0 | return 0 | endif
+  return 1
+endfunction
+
+" search_region : make region from pattern which is composing start/end 
+"   this function return array of position
+function! s:search_region(start, end)
+  return [searchpos(a:start, 'bcnW'), searchpos(a:end, 'cneW')]
+endfunction
+
+" get_content : get content in region
+"   this function return string in region
+function! s:get_content(region)
+  let lines = getline(a:region[0][0], a:region[1][0])
+  if a:region[0][0] == a:region[1][0]
+    let lines[0] = lines[0][a:region[0][1]-1:a:region[1][1]-1]
+  else
+    let lines[0] = lines[0][a:region[0][1]-1:]
+    let lines[-1] = lines[-1][:a:region[1][1]-1]
+  endif
+  return join(lines, "\n")
+endfunction
+
+" region_in_region : check region is in the region
+"   this function return 0 or 1
+function! s:region_in_region(outer, inner)
+  if !s:region_is_valid(region)
+    return 0
+  endif
+  return s:point_in_region(a:inner[0], a:outer) && s:point_in_region(a:inner[1], a:outer)
+endfunction
 
 " vim:set et:
