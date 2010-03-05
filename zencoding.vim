@@ -1293,7 +1293,7 @@ function! s:zen_toggleComment()
   else
     let content = s:get_content(comment_region)
     let g:hoge = content
-    let content = substitute(content, '^<!--\s*\(.*\)\s*-->$', '\1', '')
+    let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
     call s:change_content(comment_region, content)
   endif
   call setpos('.', pos)
@@ -1416,7 +1416,7 @@ function! s:change_content(region, content)
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
   if len(newlines) == 1
-    call setline(line('.'), oldlines[0][:a:region[0][1]-2] . newlines[0] . oldlines[-1][a:region[1][1]])
+    call setline(line('.'), oldlines[0][:a:region[0][1]-2] . newlines[0] . oldlines[-1][a:region[1][1]:])
   else
     let newlines[0] = oldlines[0][a:region[0][1]-2] . newlines[0]
     let newlines[-1] .= oldlines[-1][a:region[1][1]]
