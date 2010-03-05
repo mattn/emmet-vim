@@ -74,32 +74,29 @@ if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
   setlocal completefunc=ZenCompleteTag
 endif
 
-inoremap <plug>ZenCodingExpandAbbr   <c-g>u<esc>:call <sid>zen_expandAbbr(0)<cr>a
-inoremap <plug>ZenCodingExpandWord   <c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a
-vnoremap <plug>ZenCodingExpandVisual :call <sid>zen_expandAbbr(2)<cr>
-inoremap <plug>ZenCodingNext <esc>:call <sid>zen_moveNextPrev(0)<cr>
-inoremap <plug>ZenCodingPrev <esc>:call <sid>zen_moveNextPrev(1)<cr>
-inoremap <plug>ZenCodingImageSize <esc>:call <sid>zen_imageSize()<cr>a
-inoremap <plug>ZenCodingToggleComment <esc>:call <sid>zen_toggleComment()<cr>a
-inoremap <plug>ZenCodingSplitJoinTag <esc>:call <sid>zen_splitJoinTag()<cr>a
-
 let s:target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
-
 for item in [
-\ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '<c-z>.', 'plug': 'ZenCodingExpandWord'},
-\ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandAbbr'},
-\ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandVisual'},
-\ {'mode': 'i', 'var': 'user_zen_next_key', 'key': '<c-z>n', 'plug': 'ZenCodingNext'},
-\ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': '<c-z>N', 'plug': 'ZenCodingPrev'},
-\ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize'},
-\ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment'},
-\ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag'},
+\ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(0)'},
+\ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '<c-z>.', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(1)'},
+\ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandVisual', 'func': ':call <sid>zen_expandAbbr(2)<cr>'},
+\ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandNormal', 'func': ':call <sid>zen_expandAbbr(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_next_key', 'key': '<c-z>n', 'plug': 'ZenCodingNext', 'func': '<esc>:call <sid>zen_moveNextPrev(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': '<c-z>N', 'plug': 'ZenCodingPrev', 'func': '<esc>:call <sid>zen_moveNextPrev(1)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize', 'func': '<esc>:call <sid>zen_imageSize()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': '<esc>:call <sid>zen_toggleComment()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': ':call <sid>zen_toggleComment()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag', 'func': '<esc>:call <sid>zen_splitJoinTag()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
 \]
-  if !exists('g:' . item.var)
-    exe "let g:" . item.var . " = '" . item.key . "'"
+   
+  if !hasmapto('<plug>'.item.plug, item.mode)
+    exe item.mode . 'noremap <plug>' . item.plug . ' ' . item.func
   endif
-  if !hasmapto(eval("g:" . item.var), item.mode)
-    exe item.mode . "map " . s:target . " " . item.key . " <plug>" . item.plug
+  if !exists('g:' . item.var)
+    exe 'let g:' . item.var . " = '" . item.key . "'"
+  endif
+  if !hasmapto(eval('g:' . item.var), item.mode)
+    exe item.mode . 'map ' . s:target . ' ' . item.key . ' <plug>' . item.plug
   endif
 endfor
 
@@ -843,8 +840,8 @@ function! s:zen_parseIntoTree(abbr, type)
     return { 'child': [] }
   endif
 
-  let abbr = substitute(abbr, '\([a-z][a-z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(submatch(1), type).")".submatch(2)', 'i')
-  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-z][a-z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+  let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(submatch(1), type).")".submatch(2)', 'i')
+  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-zA-Z][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
   let parent = root
   let last = root
@@ -898,7 +895,7 @@ function! s:zen_parseIntoTree(abbr, type)
     if len(attributes)
       let attr = attributes
       while len(attr)
-        let item = matchstr(attr, '\(\%(\%(#[0-9A-Za-z_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[0-9A-Za-z_\-\$]\+\)\)\)')
+        let item = matchstr(attr, '\(\%(\%(#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[a-zA-Z0-9_\-\$]\+\)\)\)')
         if len(item) == 0
           break
         endif
@@ -1147,7 +1144,7 @@ function! s:zen_expandAbbr(mode) range
   else
     let line = getline('.')[:col('.')]
     if a:mode == 1 || type != 'html'
-      let part = matchstr(line, '\([0-9A-Za-z_\@:]\+\)$')
+      let part = matchstr(line, '\([a-zA-Z0-9_\@:]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
     endif
@@ -1201,11 +1198,11 @@ endfunction
 
 function! s:zen_parseTag(tag)
   let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
-  let mx = '<\([a-z][a-z0-9]*\)\(\%(\s[a-z][a-z0-9]\+=\%([^"'' \t]\+\|["''][^"'']\+["'']\)\s*\)*\)\(/\{0,1}\)>'
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|["''][^"'']\+["'']\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')
   let attrs = substitute(match, mx, '\2', 'i')
-  let mx = '\([a-z0-9]\+\)=["'']\{0,1}\([^"'' \t]\+\|[^"'']\+\)["'']\{0,1}'
+  let mx = '\([a-zA-Z0-9]\+\)=["'']\{0,1}\([^"'' \t]\+\|[^"'']\+\)["'']\{0,1}'
   while len(attrs) > 0
     let match = matchstr(attrs, mx)
     if len(match) == 0
@@ -1282,7 +1279,7 @@ endfunction
 
 function! s:zen_toggleComment()
   let pos = getpos('.')
-  let tag_region = s:search_region('<[^>\s]\+\>', '\(<\/[^>]\+>\|[^\-]>\)')
+  let tag_region = s:search_region('<[a-zA-Z][a-zA-Z0-9][^>\s]\+>', '\(<\/[^>]\+>\|[^\-]>\)')
   if !s:cursor_in_region(tag_region)
     return
   endif
@@ -1292,7 +1289,6 @@ function! s:zen_toggleComment()
     call s:change_content(tag_region, content)
   else
     let content = s:get_content(comment_region)
-    let g:hoge = content
     let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
     call s:change_content(comment_region, content)
   endif
@@ -1300,8 +1296,24 @@ function! s:zen_toggleComment()
 endfunction
 
 function! s:zen_splitJoinTag()
-  let pos = getpos('.')
-  call setpos('.', pos)
+  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*>'
+  let mx2 = '<\/[^>]\+>'
+  let block = s:search_region(mx1, mx2)
+  if s:cursor_in_region(block)
+    let content = s:get_content(block)
+    let content = matchstr(content, mx1)[:-2] . '/>'
+    call s:change_content(block, content)
+  else
+    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*'
+    let mx2 = '[^/>\s]*/>'
+    let empty = s:search_region(mx1, mx2)
+    if s:cursor_in_region(empty)
+      let content = s:get_content(empty)
+      let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+      let content = matchstr(content, mx1) . ">\n</" . tag_name . '>'
+      call s:change_content(empty, content)
+    endif
+  endif
 endfunction
 
 function! ZenExpand(abbr, type, orig)
@@ -1415,8 +1427,23 @@ function! s:change_content(region, content)
   let newlines = split(a:content, '\n')
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
-  if len(newlines) == 1
-    call setline(line('.'), oldlines[0][:a:region[0][1]-2] . newlines[0] . oldlines[-1][a:region[1][1]:])
+  if len(newlines) == 0
+    let tmp = ''
+    if a:region[0][1] > 0
+      let tmp = oldlines[0][a:region[0][1]-2]
+    endif
+    if a:region[1][1] > 0
+      let tmp .= oldlines[-1][a:region[1][1]:]
+    endif
+    call setline(line('.'), tmp)
+  elseif len(newlines) == 1
+    if a:region[0][1] > 0
+      let newlines[0] = oldlines[0][a:region[0][1]-2] . newlines[0]
+    endif
+    if a:region[1][1] > 0
+      let newlines[0] .= oldlines[-1][a:region[1][1]:]
+    endif
+    call setline(line('.'), newlines[0])
   else
     let newlines[0] = oldlines[0][a:region[0][1]-2] . newlines[0]
     let newlines[-1] .= oldlines[-1][a:region[1][1]]
