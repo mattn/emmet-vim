@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Mar-2010.
+" Last Change: 07-Mar-2010.
 " Version: 0.27
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -80,13 +80,17 @@ for item in [
 \ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '<c-z>.', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a'},
 \ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandVisual', 'func': ':call <sid>zen_expandAbbr(2)<cr>'},
 \ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandNormal', 'func': ':call <sid>zen_expandAbbr(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_balancetaginward_key', 'key': '<c-z>d', 'plug': 'ZenCodingBalanceTagInward', 'func': '<esc>:call <sid>zen_balanceTag(0)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_balancetaginward_key', 'key': '<c-z>d', 'plug': 'ZenCodingBalanceTagInward', 'func': ':call <sid>zen_balanceTag(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_balancetagoutward_key', 'key': '<c-z>D', 'plug': 'ZenCodingBalanceTagOutward', 'func': '<esc>:call <sid>zen_balanceTag(1)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_balancetagoutward_key', 'key': '<c-z>D', 'plug': 'ZenCodingBalanceTagOutward', 'func': ':call <sid>zen_balanceTag(1)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_next_key', 'key': '<c-z>n', 'plug': 'ZenCodingNext', 'func': '<esc>:call <sid>zen_moveNextPrev(0)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': '<c-z>N', 'plug': 'ZenCodingPrev', 'func': '<esc>:call <sid>zen_moveNextPrev(1)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize', 'func': '<esc>:call <sid>zen_imageSize()<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': '<esc>:call <sid>zen_toggleComment()<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': ':call <sid>zen_toggleComment()<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag', 'func': '<esc>:call <sid>zen_splitJoinTag()<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTag', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTagInsert', 'func': '<esc>:call <sid>zen_splitJoinTag()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTagNormal', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': '<esc>:call <sid>zen_removeTag()<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': ':call <sid>zen_removeTag()<cr>'},
 \]
@@ -1281,7 +1285,9 @@ endfunction
 
 function! s:zen_toggleComment()
   let pos = getpos('.')
-  let block = s:search_region('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', '\(<\/[^>]\+>\)')
+  "let block = s:search_region('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', '\(<\/[^>]\+>\)')
+  "let block = s:search_region('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', '\(<\/[^>]\+>\)')
+  let pos1 = searchpos('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', 
   if !s:cursor_in_region(block)
     let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*'
     let mx2 = '[^/>\s]*/>'
@@ -1313,35 +1319,35 @@ function! s:zen_toggleComment()
 endfunction
 
 function! s:zen_splitJoinTag()
-  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*'
-  let mx2 = '/>'
-  let empty = s:search_region(mx1, mx2)
-  if s:cursor_in_region(empty)
-    let content = s:get_content(empty)
-    let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
-    let content = matchstr(content, mx1) . ">\n</" . tag_name . '>'
-    call s:change_content(empty, content)
-    call setpos('.', [0, empty[0][0], empty[0][1], 0])
-  else
-    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*>'
-    let mx2 = '<\/[^>]\+>'
-    let block = s:search_region(mx1, mx2)
-    if s:cursor_in_region(block)
-      let content = s:get_content(block)
-      let content = matchstr(content, mx1)[:-2] . '/>'
-      call s:change_content(block, content)
-      call setpos('.', [0, block[0][0], block[0][1], 0])
-    endif
-  endif
-endfunction
-
-function! s:zen_removeTag()
   let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*>'
   let mx2 = '<\/[^>]\+>'
   let block = s:search_region(mx1, mx2)
   if s:cursor_in_region(block)
     let content = s:get_content(block)
-    let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+    let content = matchstr(content, mx1)[:-2] . '/>'
+    call s:change_content(block, content)
+    call setpos('.', [0, block[0][0], block[0][1], 0])
+  else
+    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^\/>]*'
+    let mx2 = '/>'
+    let empty = s:search_region(mx1, mx2)
+    if s:cursor_in_region(empty)
+      let content = s:get_content(empty)
+      let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+      let content = matchstr(content, mx1) . ">\n</" . tag_name . '>'
+      call s:change_content(empty, content)
+      call setpos('.', [0, empty[0][0], empty[0][1], 0])
+    endif
+  endif
+endfunction
+
+function! s:zen_removeTag()
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^/>]*>'
+  let pos1 = searchpos(mx, 'bcnW')
+  let tag_name = substitute(matchstr(getline(pos1[0]), mx), mx, '\1', '')
+  let pos2 = searchpos('</' . tag_name . '>', 'cnW')
+  let block = [pos1, pos2]
+  if s:cursor_in_region(block)
     if matchstr(content, mx2) =~ '</' . tag_name
       call s:change_content(block, '')
       call setpos('.', [0, block[0][0], block[0][1], 0])
@@ -1353,6 +1359,24 @@ function! s:zen_removeTag()
     if s:cursor_in_region(empty)
       call s:change_content(empty, '')
       call setpos('.', [0, empty[0][0], empty[0][1], 0])
+    endif
+  endif
+endfunction
+
+function! s:zen_balanceTag(flag)
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^/>]*>'
+  let pos1 = searchpos(mx, 'bcnW')
+  let tag_name = substitute(matchstr(getline(pos1[0]), mx), mx, '\1', '')
+  let pos2 = searchpos('</' . tag_name . '>', 'cnW')
+  let block = [pos1, pos2]
+  if s:cursor_in_region(block)
+    call s:select_region(block)
+  else
+    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*'
+    let mx2 = '/>'
+    let empty = s:search_region(mx1, mx2)
+    if s:cursor_in_region(empty)
+      call s:select_region(empty)
     endif
   endif
 endfunction
