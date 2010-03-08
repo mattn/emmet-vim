@@ -143,6 +143,12 @@ Tutorial of zencoding.vim
   	hello world
   </div> -->
   ---------------------
+  Type '<c-z>/' in there again.
+  ---------------------
+  <div>
+  	hello world
+  </div>
+  ---------------------
 
 12. Make anchor from URL
 

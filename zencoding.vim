@@ -925,7 +925,7 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     if tag_name =~ '^{.*}$'
       let current.name = ''
-      let current.value = str
+      let current.value = tag_name
     else
       let current.value = value
     endif
@@ -955,7 +955,11 @@ function! s:zen_parseIntoTree(abbr, type)
       endfor
     endif
 
-    call add(parent.child, current)
+    if len(current.name)
+      call add(parent.child, current)
+    else
+      let parent.value .= current.value
+    endif
     let last = current
 
     if block_start =~ '('
@@ -1171,7 +1175,7 @@ function! s:zen_expandAbbr(mode) range
       let leader = substitute(leader, mx, '', '')
     endif
     if leader =~ '\*'
-      let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '') . '{$line$}'
+      let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '') . '>{$line$}'
       let items = s:zen_parseIntoTree(query, type).child
       for item in items
         let expand .= s:zen_toString(item, type, 0, filter)
