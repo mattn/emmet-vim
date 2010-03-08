@@ -48,12 +48,11 @@ Tutorial of zencoding.vim
 
 3. Balance Tag Inward
 
-  use surround.vim and type 'vit'
-
+  type '<c-z>d' in insert mode.
 
 4. Balance Tag Outward
 
-  use surrond.vim and type 'vat'
+  type '<c-z>D' in insert mode.
 
 5. Go to Next Edit Point
 
@@ -105,6 +104,7 @@ Tutorial of zencoding.vim
   	
   </div>
   ---------------------
+
   And type '<c-z>j' in there again.
   ---------------------
 
@@ -122,6 +122,7 @@ Tutorial of zencoding.vim
   ---------------------
   <div class="foo"/>
   ---------------------
+
   And type '<c-z>j' in there again.
   ---------------------
   <div class="foo">
