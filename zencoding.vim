@@ -1325,13 +1325,14 @@ function! s:zen_toggleComment()
 endfunction
 
 function! s:zen_splitJoinTag()
+  let pos = getpos('.')
   let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
   let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
   let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
   if content[-2:] == '/>' && s:cursor_in_region(block)
-    let content = content[:-3] . ">\n</" . tag_name . '>'
+    let content = content[:-3] . "></" . tag_name . '>'
     call s:change_content(block, content)
     call setpos('.', [0, block[0][0], block[0][1], 0])
   else
@@ -1349,12 +1350,17 @@ function! s:zen_splitJoinTag()
       call setpos('.', [0, block[0][0], block[0][1], 0])
     else
       call setpos('.', [0, block[0][0]-1, block[0][1], 0])
-      call s:zen_splitJoinTag()
+      try
+        call s:zen_splitJoinTag()
+      catch /E132/
+        call setpos('.', pos)
+      endtry
     endif
   endif
 endfunction
 
 function! s:zen_removeTag()
+  let pos = getpos('.')
   let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
@@ -1377,12 +1383,17 @@ function! s:zen_removeTag()
       call setpos('.', [0, block[0][0], block[0][1], 0])
     else
       call setpos('.', [0, block[0][0]-1, block[0][1], 0])
-      call s:zen_removeTag()
+      try
+        call s:zen_removeTag()
+      catch /E132/
+        call setpos('.', pos)
+      endtry
     endif
   endif
 endfunction
 
 function! s:zen_balanceTag(flag)
+  let pos = getpos('.')
   let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
@@ -1417,7 +1428,11 @@ function! s:zen_balanceTag(flag)
       call s:select_region(block)
     else
       call setpos('.', [0, block[0][0]-1, block[0][1], 0])
-      call s:zen_balanceTag(a:flag)
+      try
+        call s:zen_balanceTag(a:flag)
+      catch /E132/
+        call setpos('.', pos)
+      endtry
     endif
   endif
 endfunction
