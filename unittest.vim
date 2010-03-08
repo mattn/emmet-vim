@@ -291,5 +291,16 @@ finish
     },
   ],
 },
+{
+  'category': 'haml',
+  'tests': [
+    {
+      'name': "ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}+br",
+      'query': "ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}+br",
+      'type': "haml",
+      'result': "%ul#foo\n  %li.bar1{ :foo => \"bar\", :bar => \"baz\" }\n    baz\n    %br/\n  %li.bar2{ :foo => \"bar\", :bar => \"baz\" }\n    baz\n    %br/\n  %li.bar3{ :foo => \"bar\", :bar => \"baz\" }\n    baz\n    %br/\n",
+    },
+  ],
+},
 ]
 " vim:set et:
