@@ -1025,6 +1025,9 @@ function! s:zen_toString(...)
   endif
   if a:0 > 3
     let filter = a:4
+    if filter == 'haml'
+      let type = 'haml'
+    endif
   else
     let filter = 'html'
   endif
@@ -1138,7 +1141,6 @@ function! s:zen_toString(...)
 
         let inner = ''
         if len(current.child) == 1 && len(current.child[0].name) == 0
-          "let str .= s:zen_toString(current.child[0], type, inline, filter)
           let lines = split(current.child[0].value[1:-2], "\n")
           let str .= " " . lines[0]
           for line in lines[1:]
