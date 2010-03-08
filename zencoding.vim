@@ -1621,13 +1621,6 @@ endfunction
 function! s:get_content_from_url(url)
   silent! new
   silent! exec '0r!curl -s -L "'.substitute(a:url, '#.*', '', '').'"'
-  if executable('nkf')
-    if &enc == 'utf-8'
-      silent! %!nkf -X8
-    elseif &enc == 'cp932'
-      silent! %!nkf -Xs
-    endif
-  endif
   let ret = join(getline(1, '$'), "\n")
   silent! bw!
   return ret
