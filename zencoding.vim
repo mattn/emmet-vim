@@ -1133,6 +1133,15 @@ endfunction
 
 function! s:zen_getFileType()
   let type = &ft
+  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
+    let type = 'css'    
+  endif
+  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^html'
+    let type = 'html'    
+  endif
+  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^xml'
+    let type = 'xml'    
+  endif
   if len(type) == 0 | let type = 'html' | endif
   if type == 'xhtml' | let type = 'html' | endif
   return type
@@ -1246,6 +1255,7 @@ function! s:zen_expandAbbr(mode) range
       call append(line('.'), lines[1:])
     endif
   endif
+  silent! exe "normal! ".len(part)."h"
   if search('|')
     silent! exe "normal! a\<c-h>"
   endif
