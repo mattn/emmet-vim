@@ -1053,6 +1053,7 @@ function! s:zen_toString(...)
           let doller = substitute(val, '^.\{-}\(\$\+\)$', '\1', '')
           let val = substitute(val, '\(\$\+\)$', '', '')
           let val .= printf('%0' . len(doller) . 'd', m+1)
+          let g:hoge = val
         endif
         let tmp .= ' ' . attr . '="' . val . '"'
         if filter == 'c'
@@ -1076,7 +1077,11 @@ function! s:zen_toString(...)
         let inner .= html
       endfor
       if len(current.child) == 1 && current.child[0].name == ''
-        let str .= ">" . inner . "</" . current.name . ">\n"
+        if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') == -1
+          let str .= ">" . inner . "</" . current.name . ">\n"
+        else
+          let str .= ">" . inner . "</" . current.name . ">"
+        endif
       elseif len(current.child)
         if inline == 0
           if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') == -1
