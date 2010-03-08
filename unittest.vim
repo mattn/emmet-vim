@@ -15,7 +15,7 @@ for testgroup in testgroups
     let testtitle = len(testtitle) < 57 ? (testtitle.repeat(' ', 57-len(testtitle))) : strpart(testtitle, 0, 57)
     echohl ModeMsg | echon "testing #".printf("%03d", n+1)
     echohl None | echon ": ".testtitle." ... "
-    unlet! res | let res = ZenExpand(tests[n].query, '', 0)
+    unlet! res | let res = ZenExpand(tests[n].query, tests[n].type, 0)
     if res == tests[n].result
       echohl Title | echon "ok\n" | echohl None
     else
@@ -245,16 +245,19 @@ finish
     {
       'name': "div#box$*3>h3+p*2",
       'query': "div#box$*3>h3+p*2",
+      'type': "html",
       'result': "<div id=\"box1\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box2\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box3\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n"
     },
     {
       'name': "div#box$*3>h3+p.bar*2|e",
       'query': "div#box$*3>h3+p.bar*2|e",
+      'type': "html",
       'result': "&lt;div id=\"box1\"&gt;\n\t&amp;lt;h3&amp;gt;&amp;lt;/h3&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n&lt;/div&gt;\n&lt;div id=\"box2\"&gt;\n\t&amp;lt;h3&amp;gt;&amp;lt;/h3&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n&lt;/div&gt;\n&lt;div id=\"box3\"&gt;\n\t&amp;lt;h3&amp;gt;&amp;lt;/h3&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n&lt;/div&gt;\n",
     },
     {
       'name': "div>div#page>p.title+p|c",
       'query': "div>div#page>p.title+p|c",
+      'type': "html",
       'result': "<div>\n\t<!-- #page -->\n\t<div id=\"page\">\n\t\t<!-- .title -->\n\t\t<p class=\"title\"></p>\n\t\t<!-- /.title -->\n\t\t<p></p>\n\t</div>\n\t<!-- /#page -->\n</div>\n",
     },
   ],
@@ -266,7 +269,7 @@ finish
       'name': "@i",
       'query': "@i",
       'type': "css",
-      'result': "<@i></@i>\n",
+      'result': "@import url();",
     },
     {
       'name': "link:css",
@@ -278,7 +281,13 @@ finish
       'name': "fs:n",
       'query': "fs:n",
       'type': "css",
-      'result': "<fs></fs>\n",
+      'result': "font-style:normal;",
+    },
+    {
+      'name': "fl:l|fc",
+      'query': "fl:l|fc",
+      'type': "css",
+      'result': "float: left;",
     },
   ],
 },
