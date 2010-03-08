@@ -877,12 +877,12 @@ function! s:zen_parseIntoTree(abbr, type)
     if multiplier <= 0 | let multiplier = 1 | endif
     if has_key(s:zen_settings[type], 'aliases')
       if has_key(s:zen_settings[type].aliases, tag_name)
-        let tag_name = s:zen_settings[type].aliases[tag_name]
+        let tag_name = substitute(s:zen_settings[type].aliases[tag_name], '|', '${cursor}', 'g')
       endif
     endif
     let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
     if has_key(s:zen_settings[type], 'snippets') && has_key(s:zen_settings[type].snippets, tag_name)
-      let current.snippet = s:zen_settings[type].snippets[tag_name]
+      let current.snippet = substitute(s:zen_settings[type].snippets[tag_name], '|', '${cursor}', 'g')
     else
       let current.name = substitute(tag_name, ':.*$', '', '')
       if has_key(s:zen_settings[type], 'default_attributes')
@@ -891,12 +891,12 @@ function! s:zen_parseIntoTree(abbr, type)
           if type(default_attributes[tag_name]) == 4
             let a = default_attributes[tag_name]
             for k in keys(a)
-              let current.attr[k] = len(a[k]) ? a[k] : '|'
+              let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
             endfor
           else
             for a in default_attributes[tag_name]
               for k in keys(a)
-                let current.attr[k] = len(a[k]) ? a[k] : '|'
+                let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
               endfor
             endfor
           endif
@@ -1046,8 +1046,10 @@ function! s:zen_toString(...)
       let tmp = '<' . current.name
       for attr in keys(current.attr)
         let val = current.attr[attr]
-        if current.multiplier > 1 && val =~ '\$'
-          let val = substitute(val, '\$', m+1, 'g')
+        if current.multiplier > 1 && val =~ '\$$'
+          let doller = substitute(val, '^.\{-}\(\$\+\)$', '\1', '')
+          let val = substitute(val, '\(\$\+\)$', '', '')
+          let val .= printf('%0' . len(doller) . 'd', m+1)
         endif
         let tmp .= ' ' . attr . '="' . val . '"'
         if filter == 'c'
@@ -1089,9 +1091,9 @@ function! s:zen_toString(...)
             let str .= " />\n"
           else
             if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') == -1 && len(current.child)
-              let str .= ">\n" . inner . "|</" . current.name . ">\n"
+              let str .= ">\n" . inner . '${cursor}</' . current.name . ">\n"
             else
-              let str .= ">" . inner . "|</" . current.name . ">\n"
+              let str .= ">" . inner . '${cursor}</' . current.name . ">\n"
             endif
           endif
           if len(comment) > 0 | let str .= "<!-- /" . comment . " -->\n" . comment_indent | endif
@@ -1099,43 +1101,46 @@ function! s:zen_toString(...)
           if stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
             let str .= " />"
           else
-            let str .= ">" . inner . "|</" . current.name . ">"
+            let str .= ">" . inner . '${cursor}</' . current.name . ">"
           endif
         endif
       endif
-    elseif len(current.name) && type == 'haml'
-      let str .= '%' . current.name
-      let tmp = ''
-      for attr in keys(current.attr)
-        let val = current.attr[attr]
-        if current.multiplier > 1 && val =~ '\$'
-          let val = substitute(val, '\$', m+1, 'g')
+    elseif type == 'haml'
+      if len(current.name) > 0
+        let str .= '%' . current.name
+        let tmp = ''
+        for attr in keys(current.attr)
+          let val = current.attr[attr]
+          if current.multiplier > 1 && val =~ '\$$'
+            let doller = substitute(val, '^.\{-}\(\$\+\)$', '\1', '')
+            let val = substitute(val, '\(\$\+\)$', '', '')
+            let val .= printf('%0' . len(doller) . 'd', m+1)
+          endif
+          if attr == 'id'
+            let str .= '#' . val
+          elseif attr == 'class'
+            let str .= '.' . val
+          else
+            if len(tmp) > 0 | let tmp .= ',' | endif
+            let tmp .= ' :' . attr . ' => "' . val . '"'
+          endif
+        endfor
+        if len(tmp)
+          let str .= '{' . tmp . ' }'
         endif
-        if attr == 'id'
-          let str .= '#' . val
-        elseif attr == 'class'
-          let str .= '.' . val
-        else
-          if len(tmp) > 0 | let tmp .= ',' | endif
-          let tmp .= ' :' . attr . ' => "' . val . '"'
+        if stridx(','.s:zen_settings['html'].empty_elements.',', ','.current.name.',') != -1
+          let str .= "/\n"
+        elseif stridx(','.s:zen_settings['html'].block_elements.',', ','.current.name.',') != -1 && len(current.child) == 0
+          let str .= '<'
         endif
-      endfor
-      if len(tmp)
-        let str .= '{' . tmp . ' }'
-      endif
-      if stridx(','.s:zen_settings['html'].empty_elements.',', ','.current.name.',') != -1
-        let str .= '/'
-      elseif stridx(','.s:zen_settings['html'].block_elements.',', ','.current.name.',') != -1 && len(current.child) == 0
-        let str .= '<'
       endif
       if len(current.value) > 0
-        let lines = split(current.value, "\n")[1:]
+        let lines = split(current.value[1:-2], "\n")
         let str .= " " . lines[0]
         for line in lines[1:]
-          let str .= " |\n  " . line
+          let str .= " |\n" . line
         endfor
       endif
-      let str .= "\n"
       let inner = ''
       for child in current.child
         let inner .= s:zen_toString(child, type, inline, filter)
@@ -1143,11 +1148,11 @@ function! s:zen_toString(...)
           let inner .= "\n"
         endif
       endfor
-      let inner = "  " . substitute(inner, "\n", "\n  ", 'g')
+      let inner = substitute(inner, "\n", "\n  ", 'g')
       let str .= substitute(inner, "  $", "", 'g')
     else
       if len(current.snippet) > 0
-        let tmp = current.snippet
+        let tmp = substitute(current.snippet, '|', '${cursor}', 'g')
         if type == 'css' && filter == 'fc'
           let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
         endif
@@ -1272,17 +1277,16 @@ function! s:zen_expandAbbr(mode) range
     endfor
   endif
   if len(expand)
-    let expand = substitute(expand, '|', '$cursor$', '')
-    let expand = substitute(expand, '|', '', 'g')
-    let expand = substitute(expand, '\$cursor\$', '|', '')
-    if expand !~ '|'
-      if a:mode == 2
-        let expand = '|' . expand
+    if expand !~ '\${cursor}'
+      if a:mode == 2 | 
+        let expand = '${cursor}' . expand
       else
-        let expand .= '|'
+        let expand .= '${cursor}'
       endif
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
+    let expand = substitute(expand, '\${cursor}', '$cursor$', '')
+    let expand = substitute(expand, '\${cursor}', '', 'g')
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . ' ' . s:zen_settings.timezone, 'g')
     else
@@ -1304,8 +1308,8 @@ function! s:zen_expandAbbr(mode) range
     endif
   endif
   silent! exe "normal! ".len(part)."h"
-  if search('|')
-    silent! exe "normal! a\<c-h>"
+  if search('\$cursor\$', 'e')
+    silent! exe "normal! a" . repeat("\<c-h>", 8)
   endif
 endfunction
 
@@ -1663,8 +1667,8 @@ function! ZenExpand(abbr, type, orig)
     let expand .= s:zen_toString(item, a:type, 0, filter)
   endfor
   if a:orig == 0
-    let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
-    let expand = substitute(expand, '|', '', 'g')
+    let expand = substitute(expand, '\${lang}', s:zen_settings.lang, 'g')
+    let expand = substitute(expand, '\${cursor}', '', 'g')
   endif
   return expand
 endfunction
@@ -1715,7 +1719,7 @@ function! ZenCompleteTag(findstart, base)
     if has_key(s:zen_settings[type], 'aliases')
       for item in values(s:zen_settings[type].aliases)
         if stridx(item, a:base) != -1
-          call add(res, item)
+          call add(res, substitute(item, '|', '', 'g'))
         endif
       endfor
     endif

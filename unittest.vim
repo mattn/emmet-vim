@@ -186,7 +186,7 @@ finish
       'name': "a#foo$$$*3",
       'query': "a#foo$$$*3",
       'type': "html",
-      'result': "<a id=\"foo111\" href=\"\"></a>\n<a id=\"foo222\" href=\"\"></a>\n<a id=\"foo333\" href=\"\"></a>\n",
+      'result': "<a id=\"foo001\" href=\"\"></a>\n<a id=\"foo002\" href=\"\"></a>\n<a id=\"foo003\" href=\"\"></a>\n",
     },
     {
       'name': "ul+",
@@ -298,7 +298,7 @@ finish
       'name': "ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}+br",
       'query': "ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}+br",
       'type': "haml",
-      'result': "%ul#foo\n  %li.bar1{ :foo => \"bar\", :bar => \"baz\" }\n    baz\n    %br/\n  %li.bar2{ :foo => \"bar\", :bar => \"baz\" }\n    baz\n    %br/\n  %li.bar3{ :foo => \"bar\", :bar => \"baz\" }\n    baz\n    %br/\n",
+      'result': "%ul#foo\n  %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %br/\n  %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %br/\n  %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n    %br/\n",
     },
   ],
 },
