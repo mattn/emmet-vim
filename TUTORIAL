@@ -144,3 +144,29 @@ Tutorial of zencoding.vim
   </div> -->
   ---------------------
 
+12. Make anchor from URL
+
+  Move cursor to URL
+  ---------------------
+  http://www.google.com/
+  ---------------------
+  Type '<c-z>a'
+  ---------------------
+  <qa href="http://www.google.com/">Google|</a>
+  ---------------------
+
+13. Make quoted text from URL
+
+  Move cursor to URL
+  ---------------------
+  http://github.com/
+  ---------------------
+  Type '<c-z>A'
+  ---------------------
+  <blockquote class="quote">
+  	<a href="http://github.com/">Secure source code hosting and collaborative development - GitHub</a><br />
+  	<p>How does it work? Get up and running in seconds by forking a project, pushing an existing repository...</p>
+  	<cite>http://github.com/</cite>
+  </blockquote>
+  ---------------------
+
