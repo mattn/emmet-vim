@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 07-Mar-2010.
+" Last Change: 08-Mar-2010.
 " Version: 0.27
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1285,26 +1285,12 @@ endfunction
 
 function! s:zen_toggleComment()
   let pos = getpos('.')
-  "let block = s:search_region('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', '\(<\/[^>]\+>\)')
-  "let block = s:search_region('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', '\(<\/[^>]\+>\)')
-  let pos1 = searchpos('<[a-zA-Z][a-zA-Z0-9]*[^\/>]*>', 
-  if !s:cursor_in_region(block)
-    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>\s]*'
-    let mx2 = '[^/>\s]*/>'
-    let empty = s:search_region(mx1, mx2)
-    if !s:cursor_in_region(block)
-      let comment_region = s:search_region('<!--', '-->')
-      if !s:region_is_valid(comment_region) || !s:cursor_in_region(comment_region)
-        let content = '<!-- ' . s:get_content(empty) . ' -->'
-        call s:change_content(empty, content)
-      else
-        let content = s:get_content(comment_region)
-        let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
-        call s:change_content(comment_region, content)
-      endif
-    endif
-    return
-  else
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+  let pos1 = searchpos(mx, 'bcnW')
+  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  if content[-2:] == '/>' && s:cursor_in_region(block)
     let comment_region = s:search_region('<!--', '-->')
     if !s:region_is_valid(comment_region) || !s:cursor_in_region(comment_region)
       let content = '<!-- ' . s:get_content(block) . ' -->'
@@ -1314,69 +1300,78 @@ function! s:zen_toggleComment()
       let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
       call s:change_content(comment_region, content)
     endif
+  else
+    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    let block = [pos1, pos2]
+    if s:cursor_in_region(block)
+      let comment_region = s:search_region('<!--', '-->')
+      if !s:region_is_valid(comment_region) || !s:cursor_in_region(comment_region)
+        let content = '<!-- ' . s:get_content(block) . ' -->'
+        call s:change_content(block, content)
+      else
+        let content = s:get_content(comment_region)
+        let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
+        call s:change_content(comment_region, content)
+      endif
+    endif
   endif
   call setpos('.', pos)
 endfunction
 
 function! s:zen_splitJoinTag()
-  let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*>'
-  let mx2 = '<\/[^>]\+>'
-  let block = s:search_region(mx1, mx2)
-  if s:cursor_in_region(block)
-    let content = s:get_content(block)
-    let content = matchstr(content, mx1)[:-2] . '/>'
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+  let pos1 = searchpos(mx, 'bcnW')
+  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  if content[-2:] == '/>' && s:cursor_in_region(block)
+    let content = content[:-3] . ">\n</" . tag_name . '>'
     call s:change_content(block, content)
     call setpos('.', [0, block[0][0], block[0][1], 0])
   else
-    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^\/>]*'
-    let mx2 = '/>'
-    let empty = s:search_region(mx1, mx2)
-    if s:cursor_in_region(empty)
-      let content = s:get_content(empty)
-      let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
-      let content = matchstr(content, mx1) . ">\n</" . tag_name . '>'
-      call s:change_content(empty, content)
-      call setpos('.', [0, empty[0][0], empty[0][1], 0])
+    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    let block = [pos1, pos2]
+    if s:cursor_in_region(block)
+      let content = s:get_content(block)
+      let content = matchstr(content, mx)[:-2] . '/>'
+      call s:change_content(block, content)
+      call setpos('.', [0, block[0][0], block[0][1], 0])
     endif
   endif
 endfunction
 
 function! s:zen_removeTag()
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^/>]*>'
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
-  let tag_name = substitute(matchstr(getline(pos1[0]), mx), mx, '\1', '')
-  let pos2 = searchpos('</' . tag_name . '>', 'cnW')
-  let block = [pos1, pos2]
-  if s:cursor_in_region(block)
-    if matchstr(content, mx2) =~ '</' . tag_name
+  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  if content[-2:] == '/>' && s:cursor_in_region(block)
+    call s:change_content(block, '')
+    call setpos('.', [0, block[0][0], block[0][1], 0])
+  else
+    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    let block = [pos1, pos2]
+    if s:cursor_in_region(block)
       call s:change_content(block, '')
       call setpos('.', [0, block[0][0], block[0][1], 0])
-    endif
-  else
-    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*'
-    let mx2 = '/>'
-    let empty = s:search_region(mx1, mx2)
-    if s:cursor_in_region(empty)
-      call s:change_content(empty, '')
-      call setpos('.', [0, empty[0][0], empty[0][1], 0])
     endif
   endif
 endfunction
 
 function! s:zen_balanceTag(flag)
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^/>]*>'
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
-  let tag_name = substitute(matchstr(getline(pos1[0]), mx), mx, '\1', '')
-  let pos2 = searchpos('</' . tag_name . '>', 'cnW')
-  let block = [pos1, pos2]
-  if s:cursor_in_region(block)
+  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  if content[-2:] == '/>' && s:cursor_in_region(block)
     call s:select_region(block)
   else
-    let mx1 = '<[a-zA-Z][a-zA-Z0-9]*[^/>]*'
-    let mx2 = '/>'
-    let empty = s:search_region(mx1, mx2)
-    if s:cursor_in_region(empty)
-      call s:select_region(empty)
+    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    let block = [pos1, pos2]
+    if s:cursor_in_region(block)
+      call s:select_region(block)
     endif
   endif
 endfunction
@@ -1494,24 +1489,28 @@ function! s:change_content(region, content)
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
   if len(newlines) == 0
     let tmp = ''
-    if a:region[0][1] > 0
+    if a:region[0][1] > 1
       let tmp = oldlines[0][:a:region[0][1]-2]
     endif
-    if a:region[1][1] > 0
+    if a:region[1][1] > 1
       let tmp .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), tmp)
   elseif len(newlines) == 1
-    if a:region[0][1] > 0
+    if a:region[0][1] > 1
       let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
-    if a:region[1][1] > 0
+    if a:region[1][1] > 1
       let newlines[0] .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), newlines[0])
   else
-    let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
-    let newlines[-1] .= oldlines[-1][a:region[1][1]]
+    if a:region[0][1] > 1
+      let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
+    endif
+    if a:region[1][1] > 1
+      let newlines[-1] .= oldlines[-1][a:region[1][1]:]
+    endif
     call setline(line('.'), newlines[0])
     call append(line('.'), newlines[1:])
   endif
