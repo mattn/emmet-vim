@@ -86,7 +86,8 @@ for item in [
 \ {'mode': 'n', 'var': 'user_zen_balancetagoutward_key', 'key': '<c-z>D', 'plug': 'ZenCodingBalanceTagOutward', 'func': ':call <sid>zen_balanceTag(1)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_next_key', 'key': '<c-z>n', 'plug': 'ZenCodingNext', 'func': '<esc>:call <sid>zen_moveNextPrev(0)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': '<c-z>N', 'plug': 'ZenCodingPrev', 'func': '<esc>:call <sid>zen_moveNextPrev(1)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize', 'func': '<esc>:call <sid>zen_imageSize()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize', 'func': '<esc>:call <sid>zen_imageSize()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize', 'func': ':call <sid>zen_imageSize()<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': '<esc>:call <sid>zen_toggleComment()<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': ':call <sid>zen_toggleComment()<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTagInsert', 'func': '<esc>:call <sid>zen_splitJoinTag()<cr>a'},
@@ -1384,8 +1385,19 @@ function! s:zen_balanceTag(flag)
     call s:select_region(block)
   else
     if tag_name[0] == '/'
-      let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
-      let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+      let tag_name = tag_name[1:]
+      let pos1 = searchpos('<' . tag_name . '[^a-zA-Z0-9]*[^>]*>', 'bcnW')
+      let mx = '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+    endif
+    if a:flag
+      let l = getline(pos1[0])
+      let content = matchstr(l[pos1[1]-1:], mx)
+      if pos1[1] + len(content) > len(l)
+        let pos1[0] += 1
+      else
+        let pos1[1] += len(content) + 1
+      endif
+      let pos2 = searchpos('\n\{0,1}</' . tag_name . '>', 'cnW')
     else
       let pos2 = searchpos('</' . tag_name . '>', 'cneW')
     endif
