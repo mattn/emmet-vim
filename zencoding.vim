@@ -1021,6 +1021,11 @@ function! s:zen_toString(...)
   else
     let inline = 0
   endif
+  if a:0 > 3
+    let filter = a:4
+  else
+    let filter = ''
+  endif
 
   if has_key(s:zen_settings[type], 'indentation')
     let indent = s:zen_settings[type].indentation
@@ -1030,15 +1035,26 @@ function! s:zen_toString(...)
   let m = 0
   let str = ''
   while m < current.multiplier
+    let comment_indent = ''
+    let comment = ''
     if len(current.name) && type == 'html'
-      let str .= '<' . current.name
+      if filter == 'c'
+        let comment_indent = substitute(str, '^.*\(\s*\)$', '\1', '')
+      endif
+      let tmp = '<' . current.name
       for attr in keys(current.attr)
-        if current.multiplier > 1 && current.attr[attr] =~ '\$'
-          let str .= ' ' . attr . '="' . substitute(current.attr[attr], '\$', m+1, 'g') . '"'
-        else
-          let str .= ' ' . attr . '="' . current.attr[attr] . '"'
+        let val = current.attr[attr]
+        if current.multiplier > 1 && val =~ '\$'
+          let val = substitute(val, '\$', m+1, 'g')
+        endif
+        let tmp .= ' ' . attr . '="' . val . '"'
+        if filter == 'c'
+          if attr == 'id' | let comment .= '#' . val | endif
+          if attr == 'class' | let comment .= '.' . val | endif
         endif
       endfor
+      if len(comment) > 0 | let tmp = "<!-- " . comment . " -->\n" . comment_indent . tmp | endif
+      let str .= tmp
       let inner = current.value[1:-2]
       if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') != -1
         let child_inline = 1
@@ -1046,7 +1062,7 @@ function! s:zen_toString(...)
         let child_inline = 0
       endif
       for child in current.child
-        let inner .= s:zen_toString(child, type, child_inline)
+        let inner .= s:zen_toString(child, type, child_inline, filter)
       endfor
       if len(current.child)
         if inline == 0
@@ -1060,6 +1076,7 @@ function! s:zen_toString(...)
         else
           let str .= ">" . inner . "</" . current.name . ">"
         endif
+        if len(comment) > 0 | let str .= "<!-- /" . comment . " -->\n" . comment_indent | endif
       else
         if inline == 0
           if stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
@@ -1071,6 +1088,7 @@ function! s:zen_toString(...)
               let str .= ">" . inner . "|</" . current.name . ">\n"
             endif
           endif
+          if len(comment) > 0 | let str .= "<!-- /" . comment . " -->\n" . comment_indent | endif
         else
           if stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
             let str .= " />"
@@ -1090,7 +1108,7 @@ function! s:zen_toString(...)
       let inner = ''
       if len(current.child)
         for n in current.child
-          let inner .= s:zen_toString(n, type, inline)
+          let inner .= s:zen_toString(n, type, inline, filter)
         endfor
         let inner = substitute(inner, "\n", "\n" . indent, 'g')
       endif
@@ -1111,19 +1129,25 @@ endfunction
 function! s:zen_expandAbbr(mode) range
   let type = s:zen_getFileType()
   let expand = ''
+  let filter = ''
+  let line = ''
+  let part = ''
+  let rest = ''
   if a:mode == 2
-    let leader = substitute(input('Tag: ', ''), ' ', '', 'g')
+    let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
     if len(leader) == 0
       return
     endif
-    let line = ''
-    let part = ''
-    let rest = ''
+    let mx = '|\(e\|c\|fc\|xsl\)\s*$'
+    if leader =~ mx
+      let filter = substitute(matchstr(leader, mx), mx, '\1', '')
+      let leader = substitute(leader, mx, '', '')
+    endif
     if leader =~ '\*'
       let query = substitute(leader, '*', '{$line$}*' . (a:lastline - a:firstline + 1), '')
       let items = s:zen_parseIntoTree(query, type).child
       for item in items
-        let expand .= s:zen_toString(item, type)
+        let expand .= s:zen_toString(item, type, 0, filter)
       endfor
       let line = getline(a:firstline)
       let part = substitute(line, '^\s*', '', '')
@@ -1132,7 +1156,7 @@ function! s:zen_expandAbbr(mode) range
         let lpart = substitute(lline, '^\s*', '', '')
         let expand = substitute(expand, '\$line\$', lpart, '')
       endfor
-    else
+    elseif len(leader)
       let str = '' 
       if a:firstline != a:lastline
         let line = getline(a:firstline)
@@ -1146,8 +1170,10 @@ function! s:zen_expandAbbr(mode) range
         let items = s:zen_parseIntoTree(leader . "{" . str . "}", type).child
       endif
       for item in items
-        let expand .= s:zen_toString(item, type)
+        let expand .= s:zen_toString(item, type, 0, filter)
       endfor
+    else
+      let expand = join(getline(a:firstline, a:lastline), "\n")
     endif
     silent! exe "normal! gvc"
   else
@@ -1158,9 +1184,15 @@ function! s:zen_expandAbbr(mode) range
       let part = matchstr(line, '\(\S.*\)$')
     endif
     let rest = getline('.')[col('.')+1:]
-    let items = s:zen_parseIntoTree(part, type).child
+    let str = part
+    let mx = '|\(e\|c\|fc\|xsl\)\s*$'
+    if str =~ mx
+      let filter = substitute(matchstr(str, mx), mx, '\1', '')
+      let str = substitute(str, mx, '', '')
+    endif
+    let items = s:zen_parseIntoTree(str, type).child
     for item in items
-      let expand .= s:zen_toString(item, type)
+      let expand .= s:zen_toString(item, type, 0, filter)
     endfor
   endif
   if len(expand)
@@ -1185,6 +1217,11 @@ function! s:zen_expandAbbr(mode) range
     endif
     let expand = substitute(expand, '\n\s*$', '', 'g')
     let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
+    if filter == 'e'
+      let expand = substitute(expand, '&', '\&amp;', 'g')
+      let expand = substitute(expand, '<', '\&lt;', 'g')
+      let expand = substitute(expand, '>', '\&gt;', 'g')
+    endif
     let lines = split(expand, '\n')
     call setline(line('.'), lines[0])
     if len(lines) > 1
