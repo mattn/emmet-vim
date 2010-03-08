@@ -1486,7 +1486,7 @@ function! s:zen_anchorizeURL()
     return
   endif
 
-  silent! split ______FETCHTITLE______
+  silent! new
   silent! exec '0r!curl -s -L "'.substitute(content, '#.*', '', '').'"'
   if executable('nkf')
     if &enc == 'utf-8'
