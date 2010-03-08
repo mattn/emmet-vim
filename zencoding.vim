@@ -94,6 +94,8 @@ for item in [
 \ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTagNormal', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': '<esc>:call <sid>zen_removeTag()<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': ':call <sid>zen_removeTag()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': '<esc>:call <sid>zen_anchorizeURL()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': ':call <sid>zen_anchorizeURL()<cr>'},
 \]
    
   if !hasmapto('<plug>'.item.plug, item.mode)
@@ -1435,6 +1437,34 @@ function! s:zen_balanceTag(flag)
       endtry
     endif
   endif
+endfunction
+
+function! s:zen_anchorizeURL()
+  let pos = getpos('.')
+  let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
+  let pos1 = searchpos(mx, 'bcnW')
+  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  if !s:cursor_in_region(block)
+    return
+  endif
+
+  silent! split ______FETCHTITLE______
+  silent! exec '0r!curl -s -L "'.substitute(content, '#.*', '', '').'"'
+  if executable('nkf')
+    if &enc == 'utf-8'
+      silent! %!nkf -X8
+    elseif &enc == 'cp932'
+      silent! %!nkf -Xs
+    endif
+  endif
+  silent! %join!
+  silent! %g/^\s*$/d _
+  silent! %s/^.\{-}<title[^>]*>\([^<]\+\)<\/title[^>]*>.*/\1/i
+  let ret = getline('.')
+  silent! bw!
+  let format = '<a href="%s">%s</a>'
+  call s:change_content(block, printf(format, content, ret))
 endfunction
 
 function! ZenExpand(abbr, type, orig)
