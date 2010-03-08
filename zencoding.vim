@@ -881,7 +881,7 @@ function! s:zen_parseIntoTree(abbr, type)
       endif
     endif
     let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
-    if has_key(s:zen_settings[type].snippets, tag_name)
+    if has_key(s:zen_settings[type], 'snippets') && has_key(s:zen_settings[type].snippets, tag_name)
       let current.snippet = s:zen_settings[type].snippets[tag_name]
     else
       let current.name = substitute(tag_name, ':.*$', '', '')
@@ -955,11 +955,7 @@ function! s:zen_parseIntoTree(abbr, type)
       endfor
     endif
 
-    if len(current.name)
-      call add(parent.child, current)
-    else
-      let parent.value .= current.value
-    endif
+    call add(parent.child, current)
     let last = current
 
     if block_start =~ '('
@@ -1107,6 +1103,48 @@ function! s:zen_toString(...)
           endif
         endif
       endif
+    elseif len(current.name) && type == 'haml'
+      let str .= '%' . current.name
+      let tmp = ''
+      for attr in keys(current.attr)
+        let val = current.attr[attr]
+        if current.multiplier > 1 && val =~ '\$'
+          let val = substitute(val, '\$', m+1, 'g')
+        endif
+        if attr == 'id'
+          let str .= '#' . val
+        elseif attr == 'class'
+          let str .= '.' . val
+        else
+          if len(tmp) > 0 | let tmp .= ',' | endif
+          let tmp .= ' :' . attr . ' => "' . val . '"'
+        endif
+      endfor
+      if len(tmp)
+        let str .= '{' . tmp . ' }'
+      endif
+      if stridx(','.s:zen_settings['html'].empty_elements.',', ','.current.name.',') != -1
+        let str .= '/'
+      elseif stridx(','.s:zen_settings['html'].block_elements.',', ','.current.name.',') != -1 && len(current.child) == 0
+        let str .= '<'
+      endif
+      if len(current.value) > 0
+        let lines = split(current.value, "\n")[1:]
+        let str .= " " . lines[0]
+        for line in lines[1:]
+          let str .= "\n  " . line
+        endfor
+      endif
+      let str .= "\n"
+      let inner = ''
+      for child in current.child
+        let inner .= s:zen_toString(child, type, inline, filter)
+        if len(child.name) == 0
+          let inner .= "\n"
+        endif
+      endfor
+      let inner = "  " . substitute(inner, "\n", "\n  ", 'g')
+      let str .= substitute(inner, "  $", "", 'g')
     else
       if len(current.snippet) > 0
         let tmp = current.snippet
@@ -1169,7 +1207,7 @@ function! s:zen_expandAbbr(mode) range
     if len(leader) == 0
       return
     endif
-    let mx = '|\(e\|c\|fc\|xsl\)\s*$'
+    let mx = '|\(html\|haml\|e\|c\|fc\|xsl\)\s*$'
     if leader =~ mx
       let filter = substitute(matchstr(leader, mx), mx, '\1', '')
       let leader = substitute(leader, mx, '', '')
@@ -1223,7 +1261,7 @@ function! s:zen_expandAbbr(mode) range
     endif
     let rest = getline('.')[col('.')+1:]
     let str = part
-    let mx = '|\(e\|c\|fc\|xsl\)\s*$'
+    let mx = '|\(html\|haml\|e\|c\|fc\|xsl\)\s*$'
     if str =~ mx
       let filter = substitute(matchstr(str, mx), mx, '\1', '')
       let str = substitute(str, mx, '', '')
@@ -1612,7 +1650,7 @@ function! s:zen_anchorizeURL(flag)
 endfunction
 
 function! ZenExpand(abbr, type, orig)
-  let mx = '|\(e\|c\|fc\|xsl\)\s*$'
+  let mx = '|\(haml\|html\|e\|c\|fc\|xsl\)\s*$'
   let str = a:abbr
   let filter = ''
   if str =~ mx
