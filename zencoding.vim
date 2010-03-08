@@ -1132,7 +1132,7 @@ function! s:zen_toString(...)
         let lines = split(current.value, "\n")[1:]
         let str .= " " . lines[0]
         for line in lines[1:]
-          let str .= "\n  " . line
+          let str .= " |\n  " . line
         endfor
       endif
       let str .= "\n"
