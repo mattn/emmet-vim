@@ -1342,11 +1342,14 @@ function! s:zen_splitJoinTag()
       let pos2 = searchpos('</' . tag_name . '>', 'cneW')
     endif
     let block = [pos1, pos2]
-    if s:cursor_in_region(block)
-      let content = s:get_content(block)
+    let content = s:get_content(block)
+    if s:cursor_in_region(block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
       let content = matchstr(content, mx)[:-2] . '/>'
       call s:change_content(block, content)
       call setpos('.', [0, block[0][0], block[0][1], 0])
+    else
+      call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+      call s:zen_splitJoinTag()
     endif
   endif
 endfunction
@@ -1368,9 +1371,13 @@ function! s:zen_removeTag()
       let pos2 = searchpos('</' . tag_name . '>', 'cneW')
     endif
     let block = [pos1, pos2]
-    if s:cursor_in_region(block)
+    let content = s:get_content(block)
+    if s:cursor_in_region(block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
       call s:change_content(block, '')
       call setpos('.', [0, block[0][0], block[0][1], 0])
+    else
+      call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+      call s:zen_removeTag()
     endif
   endif
 endfunction
@@ -1381,6 +1388,9 @@ function! s:zen_balanceTag(flag)
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
   let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
   let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  if !s:region_is_valid(block)
+    return
+  endif
   if content[-2:] == '/>' && s:cursor_in_region(block)
     call s:select_region(block)
   else
@@ -1402,8 +1412,12 @@ function! s:zen_balanceTag(flag)
       let pos2 = searchpos('</' . tag_name . '>', 'cneW')
     endif
     let block = [pos1, pos2]
-    if s:cursor_in_region(block)
+    let content = s:get_content(block)
+    if s:cursor_in_region(block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
       call s:select_region(block)
+    else
+      call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+      call s:zen_balanceTag(a:flag)
     endif
   endif
 endfunction
@@ -1591,6 +1605,9 @@ endfunction
 " get_content : get content in region
 "   this function return string in region
 function! s:get_content(region)
+  if !s:region_is_valid(a:region)
+    return ''
+  endif
   let lines = getline(a:region[0][0], a:region[1][0])
   if a:region[0][0] == a:region[1][0]
     let lines[0] = lines[0][a:region[0][1]-1:a:region[1][1]-1]
