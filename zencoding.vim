@@ -94,8 +94,10 @@ for item in [
 \ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTagNormal', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': '<esc>:call <sid>zen_removeTag()<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': ':call <sid>zen_removeTag()<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': '<esc>:call <sid>zen_anchorizeURL()<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': ':call <sid>zen_anchorizeURL()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': '<esc>:call <sid>zen_anchorizeURL(0)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': ':call <sid>zen_anchorizeURL(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_anchorizesummary_key', 'key': '<c-z>A', 'plug': 'ZenCodingAnchorizeSummary', 'func': '<esc>:call <sid>zen_anchorizeURL(1)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_anchorizesummary_key', 'key': '<c-z>A', 'plug': 'ZenCodingAnchorizeSummary', 'func': ':call <sid>zen_anchorizeURL(1)<cr>'},
 \]
    
   if !hasmapto('<plug>'.item.plug, item.mode)
@@ -1062,7 +1064,11 @@ function! s:zen_toString(...)
         let child_inline = 0
       endif
       for child in current.child
-        let inner .= s:zen_toString(child, type, child_inline, filter)
+        let html = s:zen_toString(child, type, child_inline, filter)
+        if child.name == 'br'
+          let inner = substitute(inner, '\n\s*$', '', '')
+        endif
+        let inner .= html
       endfor
       if len(current.child)
         if inline == 0
@@ -1504,7 +1510,54 @@ function! s:zen_balanceTag(flag)
   endif
 endfunction
 
-function! s:zen_anchorizeURL()
+function! s:getContentFromURL(url)
+  silent! new
+  silent! exec '0r!curl -s -L "'.substitute(a:url, '#.*', '', '').'"'
+  if executable('nkf')
+    if &enc == 'utf-8'
+      silent! %!nkf -X8
+    elseif &enc == 'cp932'
+      silent! %!nkf -Xs
+    endif
+  endif
+  let ret = join(getline(1, '$'), "\n")
+  silent! bw!
+  return ret
+endfunction
+
+function! s:getTextFromHTML(buf)
+  let threshold_len = 100
+  let threshold_per = 0.1
+  let buf = a:buf
+
+  let buf = strpart(buf, stridx(buf, '</head>'))
+  let res = ''
+  let max = 0
+  let mx = '\(<td[^>]\{-}>\)\|\(<\/td>\)\|\(<div[^>]\{-}>\)\|\(<\/div>\)'
+  let m = split(buf, mx)
+  for str in m
+    let c = split(str, '<[^>]*?>')
+    let str = substitute(str, '<[^>]\{-}>', '', 'g')
+    let str = substitute(str, '&gt;', '>', 'g')
+    let str = substitute(str, '&lt;', '<', 'g')
+    let str = substitute(str, '&quot;', '"', 'g')
+    let str = substitute(str, '&apos;', "'", 'g')
+    let str = substitute(str, '&nbsp;', ' ', 'g')
+    let str = substitute(str, '&yen;', '\&#65509;', 'g')
+    let str = substitute(str, '&amp;', '\&', 'g')
+    let l = len(str)
+    if l > threshold_len
+      let per = len(c) / l
+      if max < l && per < threshold_per
+          let max = l
+          let res = str
+      endif
+    endif
+  endfor
+  return res
+endfunction
+
+function! s:zen_anchorizeURL(flag)
   let pos = getpos('.')
   let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
   let pos1 = searchpos(mx, 'bcnW')
@@ -1514,22 +1567,39 @@ function! s:zen_anchorizeURL()
     return
   endif
 
-  silent! new
-  silent! exec '0r!curl -s -L "'.substitute(url, '#.*', '', '').'"'
-  if executable('nkf')
-    if &enc == 'utf-8'
-      silent! %!nkf -X8
-    elseif &enc == 'cp932'
-      silent! %!nkf -Xs
-    endif
+  let content = s:getContentFromURL(url)
+  let content = substitute(content, '\n', '', 'g')
+  let content = substitute(content, '\n\s*\n', '\n', 'g')
+  let head = strpart(content, 0, stridx(content, '</head>'))
+  let title = substitute(head, '.*<title[^>]*>\([^<]\+\)<\/title[^>]*>.*', '\1', 'g')
+
+  if a:flag == 0
+    let a = s:zen_parseTag('<a>')
+    let a.attr['href'] = url
+    let a.value = title
+    let expand = s:zen_toString(a, 'html', 0, '')
+  else
+    let body = strpart(content, stridx(content, '</head>'))
+    let body = s:getTextFromHTML(body)
+    let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
+
+    let blockquote = s:zen_parseTag('<blockquote class="quote">')
+    let a = s:zen_parseTag('<a>')
+    let a.attr['href'] = url
+    let a.value = '{' . title . '}'
+    call add(blockquote.child, a)
+    call add(blockquote.child, s:zen_parseTag('<br/>'))
+    let p = s:zen_parseTag('<p>')
+    let p.value = body
+    call add(blockquote.child, p)
+    let cite = s:zen_parseTag('<cite>')
+    let cite.value = '{' . url . '}'
+    call add(blockquote.child, cite)
+    let expand = s:zen_toString(blockquote, 'html', 0, '')
+    let expand = substitute(expand, '|', '', 'g')
+    let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+    let expand = substitute(expand, "\n", "\n" . indent, 'g')
   endif
-  silent! %join!
-  silent! %g/^\s*$/d _
-  silent! %s/^.\{-}<title[^>]*>\([^<]\+\)<\/title[^>]*>.*/\1/i
-  let ret = getline('.')
-  silent! bw!
-  let current = s:zen_parseIntoTree(printf('a[href=%s]{%s}', url, ret), '').child[0]
-  let expand = s:zen_toString(current, 'html', 0, '')
   call s:change_content(block, expand)
 endfunction
 
