@@ -1099,7 +1099,11 @@ function! s:zen_toString(...)
       endif
     else
       if len(current.snippet) > 0
-        let str .= current.snippet
+        let tmp = current.snippet
+        if type == 'css' && filter == 'fc'
+          let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
+        endif
+        let str .= tmp
       else
         if len(current.name)
           let str .= current.name
@@ -1194,7 +1198,7 @@ function! s:zen_expandAbbr(mode) range
   else
     let line = getline('.')[:col('.')]
     if a:mode == 1 || type != 'html'
-      let part = matchstr(line, '\([a-zA-Z0-9_\@:]\+\)$')
+      let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
     endif
