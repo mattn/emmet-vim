@@ -1285,10 +1285,10 @@ endfunction
 
 function! s:zen_toggleComment()
   let pos = getpos('.')
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+  let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
   let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
   if content[-2:] == '/>' && s:cursor_in_region(block)
     let comment_region = s:search_region('<!--', '-->')
@@ -1301,7 +1301,12 @@ function! s:zen_toggleComment()
       call s:change_content(comment_region, content)
     endif
   else
-    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    if tag_name[0] == '/'
+      let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+      let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+    else
+      let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    endif
     let block = [pos1, pos2]
     if s:cursor_in_region(block)
       let comment_region = s:search_region('<!--', '-->')
@@ -1319,17 +1324,22 @@ function! s:zen_toggleComment()
 endfunction
 
 function! s:zen_splitJoinTag()
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+  let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
   let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
   if content[-2:] == '/>' && s:cursor_in_region(block)
     let content = content[:-3] . ">\n</" . tag_name . '>'
     call s:change_content(block, content)
     call setpos('.', [0, block[0][0], block[0][1], 0])
   else
-    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    if tag_name[0] == '/'
+      let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+      let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+    else
+      let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    endif
     let block = [pos1, pos2]
     if s:cursor_in_region(block)
       let content = s:get_content(block)
@@ -1341,16 +1351,21 @@ function! s:zen_splitJoinTag()
 endfunction
 
 function! s:zen_removeTag()
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+  let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
   let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
   if content[-2:] == '/>' && s:cursor_in_region(block)
     call s:change_content(block, '')
     call setpos('.', [0, block[0][0], block[0][1], 0])
   else
-    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    if tag_name[0] == '/'
+      let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+      let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+    else
+      let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    endif
     let block = [pos1, pos2]
     if s:cursor_in_region(block)
       call s:change_content(block, '')
@@ -1360,15 +1375,20 @@ function! s:zen_removeTag()
 endfunction
 
 function! s:zen_balanceTag(flag)
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+  let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
   let pos1 = searchpos(mx, 'bcnW')
   let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let tag_name = substitute(content, '^<\([a-zA-Z0-9]*\).*$', '\1', '')
+  let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
   let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
   if content[-2:] == '/>' && s:cursor_in_region(block)
     call s:select_region(block)
   else
-    let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    if tag_name[0] == '/'
+      let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+      let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+    else
+      let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+    endif
     let block = [pos1, pos2]
     if s:cursor_in_region(block)
       call s:select_region(block)
