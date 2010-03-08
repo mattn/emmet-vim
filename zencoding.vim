@@ -1610,7 +1610,7 @@ function! s:zen_anchorizeURL(flag)
     let cite.value = '{' . url . '}'
     call add(blockquote.child, cite)
     let expand = s:zen_toString(blockquote, 'html', 0, '')
-    let expand = substitute(expand, '|', '', 'g')
+    let expand = substitute(expand, '\${cursor}', '', 'g')
     let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
     let expand = substitute(expand, "\n", "\n" . indent, 'g')
   endif
@@ -1711,7 +1711,7 @@ function! ZenCompleteTag(findstart, base)
     if has_key(s:zen_settings[type], 'aliases')
       for item in values(s:zen_settings[type].aliases)
         if stridx(item, a:base) != -1
-          call add(res, substitute(item, '|', '', 'g'))
+          call add(res, substitute(item, '\${cursor}', '', 'g'))
         endif
       endfor
     endif
