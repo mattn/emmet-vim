@@ -1395,9 +1395,9 @@ function! s:zen_balanceTag(flag)
       if pos1[1] + len(content) > len(l)
         let pos1[0] += 1
       else
-        let pos1[1] += len(content) + 1
+        let pos1[1] += len(content)
       endif
-      let pos2 = searchpos('\n\{0,1}</' . tag_name . '>', 'cnW')
+      let pos2 = searchpos('\(\n\|.\)</' . tag_name . '>', 'cnW')
     else
       let pos2 = searchpos('</' . tag_name . '>', 'cneW')
     endif
