@@ -1592,6 +1592,7 @@ function! s:zen_anchorizeURL(flag)
     let a.attr['href'] = url
     let a.value = '{' . title . '}'
     let expand = s:zen_toString(a, 'html', 0, '')
+    let expand = substitute(expand, '\${cursor}', '', 'g')
   else
     let body = strpart(content, stridx(content, '</head>'))
     let body = s:get_text_from_html(body)
