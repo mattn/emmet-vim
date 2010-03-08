@@ -1360,6 +1360,9 @@ function! s:zen_imageSize()
   endif
   let current = s:zen_parseTag(s:get_content(img_region))
   let fn = current.attr['src']
+  if fn !~ '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
   let [w, h] = [-1, -1]
   
   if has('perl')
