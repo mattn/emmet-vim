@@ -1508,14 +1508,14 @@ function! s:zen_anchorizeURL()
   let pos = getpos('.')
   let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
   let pos1 = searchpos(mx, 'bcnW')
-  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
   if !s:cursor_in_region(block)
     return
   endif
 
   silent! new
-  silent! exec '0r!curl -s -L "'.substitute(content, '#.*', '', '').'"'
+  silent! exec '0r!curl -s -L "'.substitute(url, '#.*', '', '').'"'
   if executable('nkf')
     if &enc == 'utf-8'
       silent! %!nkf -X8
@@ -1528,8 +1528,9 @@ function! s:zen_anchorizeURL()
   silent! %s/^.\{-}<title[^>]*>\([^<]\+\)<\/title[^>]*>.*/\1/i
   let ret = getline('.')
   silent! bw!
-  let format = '<a href="%s">%s</a>'
-  call s:change_content(block, printf(format, content, ret))
+  let current = s:zen_parseIntoTree(printf('a[href=%s]{%s}', url, ret), '').child[0]
+  let expand = s:zen_toString(current, 'html', 0, '')
+  call s:change_content(block, expand)
 endfunction
 
 function! ZenExpand(abbr, type, orig)
