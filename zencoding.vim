@@ -1026,7 +1026,7 @@ function! s:zen_toString(...)
   if a:0 > 3
     let filter = a:4
   else
-    let filter = ''
+    let filter = 'html'
   endif
 
   if has_key(s:zen_settings[type], 'indentation')
@@ -1207,7 +1207,7 @@ endfunction
 function! s:zen_expandAbbr(mode) range
   let type = s:zen_getFileType()
   let expand = ''
-  let filter = ''
+  let filter = 'html'
   let line = ''
   let part = ''
   let rest = ''
