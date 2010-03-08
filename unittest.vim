@@ -295,10 +295,10 @@ finish
   'category': 'haml',
   'tests': [
     {
-      'name': "ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}+br",
-      'query': "ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}+br",
+      'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
+      'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
       'type': "haml",
-      'result': "%ul#foo\n  %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %br/\n  %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %br/\n  %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n    %br/\n",
+      'result': "%div\n  %p<\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
     },
   ],
 },

@@ -1131,27 +1131,29 @@ function! s:zen_toString(...)
           let str .= '{' . tmp . ' }'
         endif
         if stridx(','.s:zen_settings['html'].empty_elements.',', ','.current.name.',') != -1
-          let str .= "/\n"
+          let str .= "/"
         elseif stridx(','.s:zen_settings['html'].block_elements.',', ','.current.name.',') != -1 && len(current.child) == 0
           let str .= '<'
         endif
-      endif
-      if len(current.value) > 0
-        let lines = split(current.value[1:-2], "\n")
-        let str .= " " . lines[0]
-        for line in lines[1:]
-          let str .= " |\n" . line
-        endfor
-      endif
-      let inner = ''
-      for child in current.child
-        let inner .= s:zen_toString(child, type, inline, filter)
-        if len(child.name) == 0
-          let inner .= "\n"
+
+        let inner = ''
+        if len(current.child) == 1 && len(current.child[0].name) == 0
+          "let str .= s:zen_toString(current.child[0], type, inline, filter)
+          let lines = split(current.child[0].value[1:-2], "\n")
+          let str .= " " . lines[0]
+          for line in lines[1:]
+            let str .= " |\n" . line
+          endfor
+        elseif len(current.child) > 0
+          for child in current.child
+            let inner .= s:zen_toString(child, type, inline, filter)
+          endfor
+          let inner = substitute(inner, "\n", "\n  ", 'g')
+          let inner = substitute(inner, "\n  $", "", 'g')
+          let str .= "\n  " . inner
         endif
-      endfor
-      let inner = substitute(inner, "\n", "\n  ", 'g')
-      let str .= substitute(inner, "  $", "", 'g')
+      endif
+      let str .= "\n"
     else
       if len(current.snippet) > 0
         let tmp = substitute(current.snippet, '|', '${cursor}', 'g')
