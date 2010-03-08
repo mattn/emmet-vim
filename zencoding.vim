@@ -1531,6 +1531,7 @@ function! s:getTextFromHTML(buf)
   let buf = a:buf
 
   let buf = strpart(buf, stridx(buf, '</head>'))
+  let buf = substitute(buf, '<script>.\{-}</script>', '', 'g')
   let res = ''
   let max = 0
   let mx = '\(<td[^>]\{-}>\)\|\(<\/td>\)\|\(<div[^>]\{-}>\)\|\(<\/div>\)'
@@ -1545,6 +1546,8 @@ function! s:getTextFromHTML(buf)
     let str = substitute(str, '&nbsp;', ' ', 'g')
     let str = substitute(str, '&yen;', '\&#65509;', 'g')
     let str = substitute(str, '&amp;', '\&', 'g')
+    let str = substitute(str, '^\s*\(.*\)\s*$', '\1', '')
+    let str = substitute(str, '\s\+', ' ', 'g')
     let l = len(str)
     if l > threshold_len
       let per = len(c) / l
@@ -1554,6 +1557,7 @@ function! s:getTextFromHTML(buf)
       endif
     endif
   endfor
+  let res = substitute(res, '^\s*\(.*\)\s*$', '\1', 'g')
   return res
 endfunction
 
@@ -1576,7 +1580,7 @@ function! s:zen_anchorizeURL(flag)
   if a:flag == 0
     let a = s:zen_parseTag('<a>')
     let a.attr['href'] = url
-    let a.value = title
+    let a.value = '{' . title . '}'
     let expand = s:zen_toString(a, 'html', 0, '')
   else
     let body = strpart(content, stridx(content, '</head>'))
