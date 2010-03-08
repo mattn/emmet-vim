@@ -1098,9 +1098,12 @@ function! s:zen_toString(...)
         endif
       endif
     else
-      let str .= '' . current.snippet
-      if len(str) == 0
-        let str = current.name
+      if len(current.snippet) > 0
+        let str .= current.snippet
+      else
+        if len(current.name)
+          let str .= current.name
+        endif
         if len(current.value)
           let str .= current.value[1:-2]
         endif
@@ -1116,6 +1119,11 @@ function! s:zen_toString(...)
     endif
     let m = m + 1
   endwhile
+  if filter == 'e'
+    let str = substitute(str, '&', '\&amp;', 'g')
+    let str = substitute(str, '<', '\&lt;', 'g')
+    let str = substitute(str, '>', '\&gt;', 'g')
+  endif
   return str
 endfunction
 
@@ -1156,15 +1164,24 @@ function! s:zen_expandAbbr(mode) range
         let lpart = substitute(lline, '^\s*', '', '')
         let expand = substitute(expand, '\$line\$', lpart, '')
       endfor
-    elseif len(leader)
+    else
       let str = '' 
       if a:firstline != a:lastline
         let line = getline(a:firstline)
         let part = substitute(line, '^\s*', '', '')
         for n in range(a:firstline, a:lastline)
-          let str .= getline(n) . "\n"
+          if len(leader) > 0
+            let str .= getline(n) . "\n"
+          else
+            let lpart = substitute(getline(n), '^\s*', '', '')
+            let str .= lpart . "\n"
+          endif
         endfor
-        let items = s:zen_parseIntoTree(leader . "{\n" . str . "}", type).child
+        if len(leader)
+          let items = s:zen_parseIntoTree(leader . "{\n" . str . "}", type).child
+        else
+          let items = s:zen_parseIntoTree(leader . "{" . str . "}", type).child
+        endif
       else
         let str .= getline(a:firstline)
         let items = s:zen_parseIntoTree(leader . "{" . str . "}", type).child
@@ -1172,8 +1189,6 @@ function! s:zen_expandAbbr(mode) range
       for item in items
         let expand .= s:zen_toString(item, type, 0, filter)
       endfor
-    else
-      let expand = join(getline(a:firstline, a:lastline), "\n")
     endif
     silent! exe "normal! gvc"
   else
@@ -1200,7 +1215,11 @@ function! s:zen_expandAbbr(mode) range
     let expand = substitute(expand, '|', '', 'g')
     let expand = substitute(expand, '\$cursor\$', '|', '')
     if expand !~ '|'
-      let expand .= '|'
+      if a:mode == 2
+        let expand = '|' . expand
+      else
+        let expand .= '|'
+      endif
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
@@ -1217,11 +1236,6 @@ function! s:zen_expandAbbr(mode) range
     endif
     let expand = substitute(expand, '\n\s*$', '', 'g')
     let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
-    if filter == 'e'
-      let expand = substitute(expand, '&', '\&amp;', 'g')
-      let expand = substitute(expand, '<', '\&lt;', 'g')
-      let expand = substitute(expand, '>', '\&gt;', 'g')
-    endif
     let lines = split(expand, '\n')
     call setline(line('.'), lines[0])
     if len(lines) > 1
@@ -1505,10 +1519,17 @@ function! s:zen_anchorizeURL()
 endfunction
 
 function! ZenExpand(abbr, type, orig)
-  let items = s:zen_parseIntoTree(a:abbr, a:type).child
+  let mx = '|\(e\|c\|fc\|xsl\)\s*$'
+  let str = a:abbr
+  let filter = ''
+  if str =~ mx
+    let filter = substitute(matchstr(str, mx), mx, '\1', '')
+    let str = substitute(str, mx, '', '')
+  endif
+  let items = s:zen_parseIntoTree(str, a:type).child
   let expand = ''
   for item in items
-    let expand .= s:zen_toString(item, a:type)
+    let expand .= s:zen_toString(item, a:type, 0, filter)
   endfor
   if a:orig == 0
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
