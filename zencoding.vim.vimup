@@ -2,7 +2,7 @@ script_name: ZenCoding.vim
 script_id: '2981'
 script_type: utility
 script_package: zencoding.vim
-script_version: '0.27'
+script_version: '0.28'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
@@ -79,6 +79,8 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.28': |
+   This is an upgrade for ZenCoding.vim: supported 'Balance Tag Inward/Outward', 'Go to Next/Previous Edit Point', 'Update <img> Size', 'Remove Tag', 'Split/Join Tag', 'Toggle Comment'
 - '0.27': |
    This is an upgrade for ZenCoding.vim: fixed problem that can't work on the part of multibyte characters. fixed inline elements behavior.
 - '0.26': |

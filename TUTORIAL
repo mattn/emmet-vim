@@ -55,11 +55,11 @@ Tutorial of zencoding.vim
 
   use surrond.vim and type 'vat'
 
-5. Go to Next
+5. Go to Next Edit Point
 
   type '<c-z>n' in insert mode.
 
-6. Previous Edit Point
+6. Go to Previous Edit Point
 
   type '<c-z>N' in insert mode.
 
@@ -87,9 +87,7 @@ Tutorial of zencoding.vim
   and type 'J'
   ---------------------
   <ul>
-  	<li class="list1"></li>
-  	<li class="list2"></li>
-  	<li class="list3"></li>
+  	<li class="list1"></li><li class="list2"></li><li class="list3"></li>
   </ul>
   ---------------------
 
