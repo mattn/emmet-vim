@@ -1152,7 +1152,7 @@ function! s:zen_expandAbbr(mode) range
       let leader = substitute(leader, mx, '', '')
     endif
     if leader =~ '\*'
-      let query = substitute(leader, '*', '{$line$}*' . (a:lastline - a:firstline + 1), '')
+      let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '') . '{$line$}'
       let items = s:zen_parseIntoTree(query, type).child
       for item in items
         let expand .= s:zen_toString(item, type, 0, filter)
