@@ -1354,28 +1354,11 @@ function! s:zen_parseTag(tag)
 endfunction
 
 function! s:zen_imageSize()
-  let line = getline('.')
-  let mx = '<img [^>]\+>'
-  let c = 0
-  let match = ''
-  while len(line)
-    let match = matchstr(line, mx)
-    if len(match) == 0
-      let c = -1
-      break
-    endif
-    let pos = stridx(line, match)
-    let c += pos
-    if c <= col('.') && (col('.') < c + len(match))
-      break
-    endif
-    let line = line[pos + len(match):]
-    let c += len(match)
-  endwhile
-  if c == -1 || len(line) == 0
+  let img_region = s:search_region('<img\s', '>')
+  if !s:region_is_valid(img_region) || !s:cursor_in_region(img_region)
     return
   endif
-  let current = s:zen_parseTag(match)
+  let current = s:zen_parseTag(s:get_content(img_region))
   let fn = current.attr['src']
   let [w, h] = [-1, -1]
   
@@ -1409,9 +1392,7 @@ EOF
   let current.attr['width'] = w
   let current.attr['height'] = h
   let html = s:zen_toString(current, 'html', 1)
-  let line = getline('.')
-  let line = line[:c-1] . html . line[c + len(match):]
-  call setline(line('.'), line)
+  call s:change_content(img_region, html)
 endfunction
 
 function! s:zen_toggleComment()
