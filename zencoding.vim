@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 08-Mar-2010.
+" Last Change: 09-Mar-2010.
 " Version: 0.28
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1072,7 +1072,9 @@ function! s:zen_toString(...)
         endif
         let inner .= html
       endfor
-      if len(current.child)
+      if len(current.child) == 1 && current.child[0].name == ''
+        let str .= ">" . inner . "</" . current.name . ">\n"
+      elseif len(current.child)
         if inline == 0
           if stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') == -1
             let inner = substitute(inner, "\n", "\n" . indent, 'g')
@@ -1556,7 +1558,76 @@ function! s:zen_balanceTag(flag)
   endif
 endfunction
 
-function! s:getContentFromURL(url)
+function! s:zen_mergeConfig(lhs, rhs)
+  if type(a:lhs) == 3 && type(a:rhs) == 3
+    call remove(a:lhs, 0, len(a:lhs)-1)
+    for index in a:rhs
+      call add(a:lhs, a:rhs[index])
+    endfor
+  elseif type(a:lhs) == 4 && type(a:rhs) == 4
+    for key in keys(a:rhs)
+      if type(a:rhs[key]) == 3
+        call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
+      elseif type(a:rhs[key]) == 4
+        if has_key(a:lhs, key)
+          call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
+        else
+          let a:lhs[key] = a:rhs[key]
+        endif
+      else
+        let a:lhs[key] = a:rhs[key]
+      endif
+    endfor
+  endif
+endfunction
+
+function! s:zen_anchorizeURL(flag)
+  let pos = getpos('.')
+  let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
+  let pos1 = searchpos(mx, 'bcnW')
+  let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
+  if !s:cursor_in_region(block)
+    return
+  endif
+
+  let content = s:get_content_from_url(url)
+  let content = substitute(content, '\n', '', 'g')
+  let content = substitute(content, '\n\s*\n', '\n', 'g')
+  let head = strpart(content, 0, stridx(content, '</head>'))
+  let title = substitute(head, '.*<title[^>]*>\([^<]\+\)<\/title[^>]*>.*', '\1', 'g')
+
+  if a:flag == 0
+    let a = s:zen_parseTag('<a>')
+    let a.attr['href'] = url
+    let a.value = '{' . title . '}'
+    let expand = s:zen_toString(a, 'html', 0, '')
+  else
+    let body = strpart(content, stridx(content, '</head>'))
+    let body = s:get_text_from_html(body)
+    let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
+
+    let blockquote = s:zen_parseTag('<blockquote class="quote">')
+    let a = s:zen_parseTag('<a>')
+    let a.attr['href'] = url
+    let a.value = '{' . title . '}'
+    call add(blockquote.child, a)
+    call add(blockquote.child, s:zen_parseTag('<br/>'))
+    let p = s:zen_parseTag('<p>')
+    let p.value = body
+    call add(blockquote.child, p)
+    let cite = s:zen_parseTag('<cite>')
+    let cite.value = '{' . url . '}'
+    call add(blockquote.child, cite)
+    let expand = s:zen_toString(blockquote, 'html', 0, '')
+    let expand = substitute(expand, '|', '', 'g')
+    let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+    let expand = substitute(expand, "\n", "\n" . indent, 'g')
+  endif
+  call s:change_content(block, expand)
+endfunction
+
+function! s:get_content_from_url(url)
   silent! new
   silent! exec '0r!curl -s -L "'.substitute(a:url, '#.*', '', '').'"'
   if executable('nkf')
@@ -1571,7 +1642,7 @@ function! s:getContentFromURL(url)
   return ret
 endfunction
 
-function! s:getTextFromHTML(buf)
+function! s:get_text_from_html(buf)
   let threshold_len = 100
   let threshold_per = 0.1
   let buf = a:buf
@@ -1607,52 +1678,6 @@ function! s:getTextFromHTML(buf)
   return res
 endfunction
 
-function! s:zen_anchorizeURL(flag)
-  let pos = getpos('.')
-  let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
-  let pos1 = searchpos(mx, 'bcnW')
-  let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
-  if !s:cursor_in_region(block)
-    return
-  endif
-
-  let content = s:getContentFromURL(url)
-  let content = substitute(content, '\n', '', 'g')
-  let content = substitute(content, '\n\s*\n', '\n', 'g')
-  let head = strpart(content, 0, stridx(content, '</head>'))
-  let title = substitute(head, '.*<title[^>]*>\([^<]\+\)<\/title[^>]*>.*', '\1', 'g')
-
-  if a:flag == 0
-    let a = s:zen_parseTag('<a>')
-    let a.attr['href'] = url
-    let a.value = '{' . title . '}'
-    let expand = s:zen_toString(a, 'html', 0, '')
-  else
-    let body = strpart(content, stridx(content, '</head>'))
-    let body = s:getTextFromHTML(body)
-    let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
-
-    let blockquote = s:zen_parseTag('<blockquote class="quote">')
-    let a = s:zen_parseTag('<a>')
-    let a.attr['href'] = url
-    let a.value = '{' . title . '}'
-    call add(blockquote.child, a)
-    call add(blockquote.child, s:zen_parseTag('<br/>'))
-    let p = s:zen_parseTag('<p>')
-    let p.value = body
-    call add(blockquote.child, p)
-    let cite = s:zen_parseTag('<cite>')
-    let cite.value = '{' . url . '}'
-    call add(blockquote.child, cite)
-    let expand = s:zen_toString(blockquote, 'html', 0, '')
-    let expand = substitute(expand, '|', '', 'g')
-    let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
-    let expand = substitute(expand, "\n", "\n" . indent, 'g')
-  endif
-  call s:change_content(block, expand)
-endfunction
-
 function! ZenExpand(abbr, type, orig)
   let mx = '|\(haml\|html\|e\|c\|fc\|xsl\)\s*$'
   let str = a:abbr
@@ -1671,29 +1696,6 @@ function! ZenExpand(abbr, type, orig)
     let expand = substitute(expand, '\${cursor}', '', 'g')
   endif
   return expand
-endfunction
-
-function! s:zen_mergeConfig(lhs, rhs)
-  if type(a:lhs) == 3 && type(a:rhs) == 3
-    call remove(a:lhs, 0, len(a:lhs)-1)
-    for index in a:rhs
-      call add(a:lhs, a:rhs[index])
-    endfor
-  elseif type(a:lhs) == 4 && type(a:rhs) == 4
-    for key in keys(a:rhs)
-      if type(a:rhs[key]) == 3
-        call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
-      elseif type(a:rhs[key]) == 4
-        if has_key(a:lhs, key)
-          call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
-        else
-          let a:lhs[key] = a:rhs[key]
-        endif
-      else
-        let a:lhs[key] = a:rhs[key]
-      endif
-    endfor
-  endif
 endfunction
 
 function! ZenCompleteTag(findstart, base)
