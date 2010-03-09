@@ -1053,7 +1053,6 @@ function! s:zen_toString(...)
           let doller = substitute(val, '^.\{-}\(\$\+\)$', '\1', '')
           let val = substitute(val, '\(\$\+\)$', '', '')
           let val .= printf('%0' . len(doller) . 'd', m+1)
-          let g:hoge = val
         endif
         let tmp .= ' ' . attr . '="' . val . '"'
         if filter == 'c'
