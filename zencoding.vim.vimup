@@ -2,7 +2,7 @@ script_name: ZenCoding.vim
 script_id: '2981'
 script_type: utility
 script_package: zencoding.vim
-script_version: '0.28'
+script_version: '0.29'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
@@ -10,6 +10,8 @@ detailed_description: |
 
   ********************************************************
   * Warning
+  ********************************************************
+  Leading key '<c-z>' was changed to '<c-y>' at version '0.29'.
   ********************************************************
   If version of zencoding.vim is smaller than '0.21', you have older file in your '$HOME/.vim/plugin'(or '$HOME/vimfiles/plugin') directory.
   Newer become ftplugin script. Thus you should remove older script and copy new plugin to '$HOME/.vim/ftplugin/html'(or '$HOME/vimfiles/ftplugin/html') directory.
@@ -22,7 +24,7 @@ detailed_description: |
      +-------------------------------------
      | html:5_
      +-------------------------------------
-  "_" is a cursor position. and type "<c-z>," (Ctrl + z and Comma)
+  "_" is a cursor position. and type "<c-y>," (Ctrl + y and Comma)
   NOTE: Don't worry about key map. you can change it easily.
      +-------------------------------------
      | <!DOCTYPE HTML>
@@ -40,7 +42,7 @@ detailed_description: |
      +-------------------------------------
      | div#foo$*2>div.bar
      +-------------------------------------
-  And type "<c-z>,"
+  And type "<c-y>,"
      +-------------------------------------
      |<div id="foo1">
      |    <div class="bar">_</div>
@@ -79,6 +81,8 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.29': |
+   This is an upgrade for ZenCoding.vim: Changed leading key to '<c-y>' from '<c-z>'.
 - '0.28': |
    This is an upgrade for ZenCoding.vim: supported 'Balance Tag Inward/Outward', 'Go to Next/Previous Edit Point', 'Update <img> Size', 'Remove Tag', 'Split/Join Tag', 'Toggle Comment'
 - '0.27': |
