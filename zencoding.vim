@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 09-Mar-2010.
-" Version: 0.29
+" Version: 0.30
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -1141,13 +1141,20 @@ function! s:zen_toString(...)
         if len(tmp)
           let str .= '{' . tmp . ' }'
         endif
-        if stridx(','.s:zen_settings['html'].empty_elements.',', ','.current.name.',') != -1
+        if stridx(','.s:zen_settings['html'].empty_elements.',', ','.current.name.',') != -1 && len(current.value) == 0
           let str .= "/"
-        elseif stridx(','.s:zen_settings['html'].block_elements.',', ','.current.name.',') != -1 && len(current.child) == 0
+        elseif stridx(','.s:zen_settings['html'].block_elements.',', ','.current.name.',') != -1 && (len(current.child) == 0 && len(current.value) == 0)
           let str .= '<'
         endif
 
         let inner = ''
+        if len(current.value) > 0
+          let lines = split(current.value[1:-2], "\n")
+          let str .= " " . lines[0]
+          for line in lines[1:]
+            let str .= " |\n" . line
+          endfor
+        endif
         if len(current.child) == 1 && len(current.child[0].name) == 0
           let lines = split(current.child[0].value[1:-2], "\n")
           let str .= " " . lines[0]
