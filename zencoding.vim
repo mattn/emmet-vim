@@ -1546,25 +1546,28 @@ function! s:zen_balanceTag(flag)
       return
     else
       if tag_name[0] == '/'
-        let tag_name = tag_name[1:]
-        let pos1 = searchpos('<' . tag_name . '[^a-zA-Z0-9]*[^>]*>', 'bcnW')
-        let mx = '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
-      endif
-      if a:flag
-        let l = getline(pos1[0])
-        let content = matchstr(l[pos1[1]-1:], mx)
-        if pos1[1] + len(content) > len(l)
-          let pos1[0] += 1
-        else
-          let pos1[1] += len(content)
-        endif
-        let pos2 = searchpos('\(\n\|.\)</' . tag_name . '>', 'cnW')
+        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+        call setpos('.', [0, pos1[0], pos1[1], 0])
+        let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
       else
         let pos2 = searchpos('</' . tag_name . '>', 'cneW')
       endif
       let block = [pos1, pos2]
       let content = s:get_content(block)
       if s:point_in_region(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+        if a:flag
+          let l = getline(pos1[0])
+          let content = matchstr(l[pos1[1]-1:], mx)
+          if pos1[1] + len(content) > len(l)
+            let pos1[0] += 1
+          else
+            let pos1[1] += len(content)
+          endif
+          let pos2 = searchpos('\(\n\|.\)</' . tag_name . '>', 'cnW')
+        else
+          let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+        endif
+        let block = [pos1, pos2]
         call s:select_region(block)
         return
       else
