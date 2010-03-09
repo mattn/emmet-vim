@@ -15,7 +15,7 @@
 "      +-------------------------------------
 "      | html:5_
 "      +-------------------------------------
-"   "_" is a cursor position. and type "<c-z>," (Ctrl+z and Comma)
+"   "_" is a cursor position. and type "<c-y>," (Ctrl+z and Comma)
 "   NOTE: Don't worry about key map. you can change it easily.
 "      +-------------------------------------
 "      | <!DOCTYPE HTML>
@@ -33,7 +33,7 @@
 "      +-------------------------------------
 "      | div#foo$*2>div.bar
 "      +-------------------------------------
-"   And type "<c-z>,"
+"   And type "<c-y>,"
 "      +-------------------------------------
 "      |<div id="foo1">
 "      |    <div class="bar">_</div>
@@ -74,30 +74,34 @@ if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
   setlocal completefunc=ZenCompleteTag
 endif
 
+if exists('g:user_zen_leader_key') && g:user_zen_leader_key
+  let g:user_zen_leader_key = '<c-y>'
+endif
+
 let s:target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
 for item in [
-\ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(0)<cr>a'},
-\ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '<c-z>.', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a'},
-\ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandVisual', 'func': ':call <sid>zen_expandAbbr(2)<cr>'},
-\ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': '<c-z>,', 'plug': 'ZenCodingExpandNormal', 'func': ':call <sid>zen_expandAbbr(0)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_balancetaginward_key', 'key': '<c-z>d', 'plug': 'ZenCodingBalanceTagInward', 'func': '<esc>:call <sid>zen_balanceTag(0)<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_balancetaginward_key', 'key': '<c-z>d', 'plug': 'ZenCodingBalanceTagInward', 'func': ':call <sid>zen_balanceTag(0)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_balancetagoutward_key', 'key': '<c-z>D', 'plug': 'ZenCodingBalanceTagOutward', 'func': '<esc>:call <sid>zen_balanceTag(1)<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_balancetagoutward_key', 'key': '<c-z>D', 'plug': 'ZenCodingBalanceTagOutward', 'func': ':call <sid>zen_balanceTag(1)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_next_key', 'key': '<c-z>n', 'plug': 'ZenCodingNext', 'func': '<esc>:call <sid>zen_moveNextPrev(0)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': '<c-z>N', 'plug': 'ZenCodingPrev', 'func': '<esc>:call <sid>zen_moveNextPrev(1)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize', 'func': '<esc>:call <sid>zen_imageSize()<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_imagesize_key', 'key': '<c-z>i', 'plug': 'ZenCodingImageSize', 'func': ':call <sid>zen_imageSize()<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': '<esc>:call <sid>zen_toggleComment()<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_togglecomment_key', 'key': '<c-z>/', 'plug': 'ZenCodingToggleComment', 'func': ':call <sid>zen_toggleComment()<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTagInsert', 'func': '<esc>:call <sid>zen_splitJoinTag()<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-z>j', 'plug': 'ZenCodingSplitJoinTagNormal', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': '<esc>:call <sid>zen_removeTag()<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_removetag_key', 'key': '<c-z>k', 'plug': 'ZenCodingRemoveTag', 'func': ':call <sid>zen_removeTag()<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': '<esc>:call <sid>zen_anchorizeURL(0)<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-z>a', 'plug': 'ZenCodingAnchorizeURL', 'func': ':call <sid>zen_anchorizeURL(0)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_anchorizesummary_key', 'key': '<c-z>A', 'plug': 'ZenCodingAnchorizeSummary', 'func': '<esc>:call <sid>zen_anchorizeURL(1)<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_anchorizesummary_key', 'key': '<c-z>A', 'plug': 'ZenCodingAnchorizeSummary', 'func': ':call <sid>zen_anchorizeURL(1)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': '<c-y>,', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(0)<cr>a'},
+\ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '<c-y>.', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a'},
+\ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': '<c-y>,', 'plug': 'ZenCodingExpandVisual', 'func': ':call <sid>zen_expandAbbr(2)<cr>'},
+\ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': '<c-y>,', 'plug': 'ZenCodingExpandNormal', 'func': ':call <sid>zen_expandAbbr(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_balancetaginward_key', 'key': '<c-y>d', 'plug': 'ZenCodingBalanceTagInward', 'func': '<esc>:call <sid>zen_balanceTag(0)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_balancetaginward_key', 'key': '<c-y>d', 'plug': 'ZenCodingBalanceTagInward', 'func': ':call <sid>zen_balanceTag(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_balancetagoutward_key', 'key': '<c-y>D', 'plug': 'ZenCodingBalanceTagOutward', 'func': '<esc>:call <sid>zen_balanceTag(1)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_balancetagoutward_key', 'key': '<c-y>D', 'plug': 'ZenCodingBalanceTagOutward', 'func': ':call <sid>zen_balanceTag(1)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_next_key', 'key': '<c-y>n', 'plug': 'ZenCodingNext', 'func': '<esc>:call <sid>zen_moveNextPrev(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': '<c-y>N', 'plug': 'ZenCodingPrev', 'func': '<esc>:call <sid>zen_moveNextPrev(1)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_imagesize_key', 'key': '<c-y>i', 'plug': 'ZenCodingImageSize', 'func': '<esc>:call <sid>zen_imageSize()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_imagesize_key', 'key': '<c-y>i', 'plug': 'ZenCodingImageSize', 'func': ':call <sid>zen_imageSize()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '<c-y>/', 'plug': 'ZenCodingToggleComment', 'func': '<esc>:call <sid>zen_toggleComment()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_togglecomment_key', 'key': '<c-y>/', 'plug': 'ZenCodingToggleComment', 'func': ':call <sid>zen_toggleComment()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': '<c-y>j', 'plug': 'ZenCodingSplitJoinTagInsert', 'func': '<esc>:call <sid>zen_splitJoinTag()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': '<c-y>j', 'plug': 'ZenCodingSplitJoinTagNormal', 'func': ':call <sid>zen_splitJoinTag()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_removetag_key', 'key': '<c-y>k', 'plug': 'ZenCodingRemoveTag', 'func': '<esc>:call <sid>zen_removeTag()<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_removetag_key', 'key': '<c-y>k', 'plug': 'ZenCodingRemoveTag', 'func': ':call <sid>zen_removeTag()<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-y>a', 'plug': 'ZenCodingAnchorizeURL', 'func': '<esc>:call <sid>zen_anchorizeURL(0)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_anchorizeurl_key', 'key': '<c-y>a', 'plug': 'ZenCodingAnchorizeURL', 'func': ':call <sid>zen_anchorizeURL(0)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_anchorizesummary_key', 'key': '<c-y>A', 'plug': 'ZenCodingAnchorizeSummary', 'func': '<esc>:call <sid>zen_anchorizeURL(1)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_anchorizesummary_key', 'key': '<c-y>A', 'plug': 'ZenCodingAnchorizeSummary', 'func': ':call <sid>zen_anchorizeURL(1)<cr>'},
 \]
    
   if !hasmapto('<plug>'.item.plug, item.mode)
