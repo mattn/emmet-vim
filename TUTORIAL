@@ -4,7 +4,7 @@ Tutorial of zencoding.vim
 
 1. Expand Abbreviation
 
-  Type abbreviation as 'div>p#foo$*3>a' and type '<c-z>,'.
+  Type abbreviation as 'div>p#foo$*3>a' and type '<c-y>,'.
   ---------------------
   <div>
       <p id="foo1">
@@ -27,7 +27,7 @@ Tutorial of zencoding.vim
   test2
   test3
   ---------------------
-  Then do visual select(line wize) and type '<c-z>,'.
+  Then do visual select(line wize) and type '<c-y>,'.
   If you request 'Tag:', then type 'ul>li*'.
   ---------------------
   <ul>
@@ -48,19 +48,19 @@ Tutorial of zencoding.vim
 
 3. Balance Tag Inward
 
-  type '<c-z>d' in insert mode.
+  type '<c-y>d' in insert mode.
 
 4. Balance Tag Outward
 
-  type '<c-z>D' in insert mode.
+  type '<c-y>D' in insert mode.
 
 5. Go to Next Edit Point
 
-  type '<c-z>n' in insert mode.
+  type '<c-y>n' in insert mode.
 
 6. Go to Previous Edit Point
 
-  type '<c-z>N' in insert mode.
+  type '<c-y>N' in insert mode.
 
 7. Update <img> Size
 
@@ -68,7 +68,7 @@ Tutorial of zencoding.vim
   ---------------------
   <img src="foo.png" />
   ---------------------
-  Type '<c-z>i' on img tag 
+  Type '<c-y>i' on img tag 
   ---------------------
   <img src="foo.png" width="32" height="48" />
   ---------------------
@@ -98,14 +98,14 @@ Tutorial of zencoding.vim
   	<a>cursor is here</a>
   </div>
   ---------------------
-  Type '<c-z>k' in insert mode.
+  Type '<c-y>k' in insert mode.
   ---------------------
   <div class="foo">
   	
   </div>
   ---------------------
 
-  And type '<c-z>j' in there again.
+  And type '<c-y>j' in there again.
   ---------------------
 
   ---------------------
@@ -118,12 +118,12 @@ Tutorial of zencoding.vim
   	cursor is here
   </div>
   ---------------------
-  Type '<c-z>j' in insert mode.
+  Type '<c-y>j' in insert mode.
   ---------------------
   <div class="foo"/>
   ---------------------
 
-  And type '<c-z>j' in there again.
+  And type '<c-y>j' in there again.
   ---------------------
   <div class="foo">
   </div>
@@ -137,13 +137,13 @@ Tutorial of zencoding.vim
   	hello world
   </div>
   ---------------------
-  Type '<c-z>/' in insert mode.
+  Type '<c-y>/' in insert mode.
   ---------------------
   <!-- <div>
   	hello world
   </div> -->
   ---------------------
-  Type '<c-z>/' in there again.
+  Type '<c-y>/' in there again.
   ---------------------
   <div>
   	hello world
@@ -156,7 +156,7 @@ Tutorial of zencoding.vim
   ---------------------
   http://www.google.com/
   ---------------------
-  Type '<c-z>a'
+  Type '<c-y>a'
   ---------------------
   <qa href="http://www.google.com/">Google</a>
   ---------------------
@@ -167,7 +167,7 @@ Tutorial of zencoding.vim
   ---------------------
   http://github.com/
   ---------------------
-  Type '<c-z>A'
+  Type '<c-y>A'
   ---------------------
   <blockquote class="quote">
   	<a href="http://github.com/">Secure source code hosting and collaborative development - GitHub</a><br />
