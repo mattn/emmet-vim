@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 09-Mar-2010.
+" Last Change: 10-Mar-2010.
 " Version: 0.30
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -857,6 +857,12 @@ function! s:zen_parseIntoTree(abbr, type)
     return { 'child': [] }
   endif
 
+  if has_key(s:zen_settings[type], 'indentation')
+    let indent = s:zen_settings[type].indentation
+  else
+    let indent = s:zen_settings.indentation
+  endif
+
   let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(submatch(1), type).")".submatch(2)', 'i')
   let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-zA-Z][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
@@ -888,7 +894,11 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
     if has_key(s:zen_settings[type], 'snippets') && has_key(s:zen_settings[type].snippets, tag_name)
-      let current.snippet = substitute(s:zen_settings[type].snippets[tag_name], '|', '${cursor}', 'g')
+      let snippet = s:zen_settings[type].snippets[tag_name]
+      let snippet = substitute(snippet, '|', '${cursor}', 'g')
+      let lines = split(snippet, "\n")
+      call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", indent, "g")')
+      let current.snippet = join(lines, "\n")
     else
       let current.name = substitute(tag_name, ':.*$', '', '')
       if has_key(s:zen_settings[type], 'default_attributes')
