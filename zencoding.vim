@@ -111,7 +111,7 @@ for item in [
     exe 'let g:' . item.var . " = '" . g:user_zen_leader_key . item.key . "'"
   endif
   if !hasmapto(eval('g:' . item.var), item.mode)
-    exe item.mode . 'map ' . s:target . ' ' . g:user_zen_leader_key . item.key . ' <plug>' . item.plug
+    exe item.mode . 'map ' . s:target . ' ' . item.key . ' <plug>' . item.plug
   endif
 endfor
 
