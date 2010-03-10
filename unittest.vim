@@ -249,6 +249,12 @@ finish
       'result': "<div id=\"box1\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box2\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box3\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n"
     },
     {
+      'name': "div#box.foo$$$.bar$$$",
+      'query': "div#box$*3>h3+p*2",
+      'type': "html",
+      'result': "<div id=\"box1\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box2\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box3\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n"
+    },
+    {
       'name': "div#box$*3>h3+p.bar*2|e",
       'query': "div#box$*3>h3+p.bar*2|e",
       'type': "html",
