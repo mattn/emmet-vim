@@ -1065,10 +1065,10 @@ function! s:zen_toString(...)
       let tmp = '<' . current.name
       for attr in keys(current.attr)
         let val = current.attr[attr]
-        if current.multiplier > 1 && val =~ '\$$'
-          let doller = substitute(val, '^.\{-}\(\$\+\)$', '\1', '')
-          let val = substitute(val, '\(\$\+\)$', '', '')
-          let val .= printf('%0' . len(doller) . 'd', m+1)
+        if current.multiplier > 1
+          while val =~ '\$[^{]*'
+            let val = substitute(val, '\(\$\+\)\([^{]*\)', '\=printf("%0".len(submatch(1))."d", m+1).submatch(2)', 'g')
+          endwhile
         endif
         let tmp .= ' ' . attr . '="' . val . '"'
         if filter == 'c'
@@ -1136,10 +1136,10 @@ function! s:zen_toString(...)
         let tmp = ''
         for attr in keys(current.attr)
           let val = current.attr[attr]
-          if current.multiplier > 1 && val =~ '\$$'
-            let doller = substitute(val, '^.\{-}\(\$\+\)$', '\1', '')
-            let val = substitute(val, '\(\$\+\)$', '', '')
-            let val .= printf('%0' . len(doller) . 'd', m+1)
+          if current.multiplier > 1
+            while val =~ '\$[^{]*'
+              let val = substitute(val, '\(\$\+\)\([^{]*\)', '\=printf("%0".len(submatch(1))."d", m+1).submatch(2)', 'g')
+            endwhile
           endif
           if attr == 'id'
             let str .= '#' . val
@@ -1327,8 +1327,8 @@ function! s:zen_expandAbbr(mode) range
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
     if line[:-len(part)-1] =~ '^\s\+$'
-      let size = len(line) - len(part)
-      let indent = repeat(s:zen_settings.indentation, size)
+      let size = (len(line) - len(part)) / len(s:zen_settings.indentation)
+      let indent = line[:-len(part)-1] . repeat(s:zen_settings.indentation, size)
     else
       let indent = ''
     endif
