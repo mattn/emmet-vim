@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 10-Mar-2010.
+" Last Change: 11-Mar-2010.
 " Version: 0.30
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -922,7 +922,7 @@ function! s:zen_parseIntoTree(abbr, type)
     if len(attributes)
       let attr = attributes
       while len(attr)
-        let item = matchstr(attr, '\(\%(\%(#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[a-zA-Z0-9_\-\$]\+\)\)\)')
+        let item = matchstr(attr, '\(\%(\%(#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[a-zA-Z0-9_\-\$]\+\)*\)\)')
         if len(item) == 0
           break
         endif
@@ -930,7 +930,7 @@ function! s:zen_parseIntoTree(abbr, type)
           let current.attr.id = item[1:]
         endif
         if item[0] == '.'
-          let current.attr.class = substitute(item[1:], '\.', '', 'g')
+          let current.attr.class = substitute(item[1:], '\.', ' ', 'g')
         endif
         if item[0] == '['
           let kk = split(item[1:-2], '=')
@@ -1144,7 +1144,7 @@ function! s:zen_toString(...)
           if attr == 'id'
             let str .= '#' . val
           elseif attr == 'class'
-            let str .= '.' . val
+            let str .= '.' . substitute(val, ' ', '.', 'g')
           else
             if len(tmp) > 0 | let tmp .= ',' | endif
             let tmp .= ' :' . attr . ' => "' . val . '"'
