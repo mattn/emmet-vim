@@ -1066,8 +1066,8 @@ function! s:zen_toString(...)
       for attr in keys(current.attr)
         let val = current.attr[attr]
         if current.multiplier > 1
-          while val =~ '\$[^{]*'
-            let val = substitute(val, '\(\$\+\)\([^{]*\)', '\=printf("%0".len(submatch(1))."d", m+1).submatch(2)', 'g')
+          while val =~ '\$\([^{]\|$\)'
+            let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", m+1).submatch(2)', 'g')
           endwhile
         endif
         let tmp .= ' ' . attr . '="' . val . '"'

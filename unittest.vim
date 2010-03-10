@@ -42,7 +42,7 @@ finish
       'name': "html:xt>div#header>div#logo+ul#nav>li.item-$*5>a",
       'query': "html:xt>div#header>div#logo+ul#nav>li.item-$*5>a",
       'type': "html",
-      'result': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n<head>\n    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n    <title></title>\n</head>\n<body>\n\t<div id=\"header\">\n\t\t<div id=\"logo\"></div>\n\t\t<ul id=\"nav\">\n\t\t\t<li class=\"item-1\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-2\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-3\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-4\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-5\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t</ul>\n\t</div>\n\t\n</body>\n</html>",
+      'result': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n<head>\n\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n\t<title></title>\n</head>\n<body>\n\t<div id=\"header\">\n\t\t<div id=\"logo\"></div>\n\t\t<ul id=\"nav\">\n\t\t\t<li class=\"item-1\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-2\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-3\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-4\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t\t<li class=\"item-5\">\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</li>\n\t\t</ul>\n\t</div>\n\t\n</body>\n</html>",
     },
     {
       'name': "ol>li*2",
@@ -66,7 +66,7 @@ finish
       'name': "cc:ie6>p+blockquote#sample$.so.many.classes*2",
       'query': "cc:ie6>p+blockquote#sample$.so.many.classes*2",
       'type': "html",
-      'result': "<!--[if lte IE 6]>\n\t<p></p>\n\t<blockquote id=\"sample1\" class=\"classes\"></blockquote>\n\t<blockquote id=\"sample2\" class=\"classes\"></blockquote>\n\t\n<![endif]-->",
+      'result': "<!--[if lte IE 6]>\n\t<p></p>\n\t<blockquote id=\"sample1\" class=\"so many classes\"></blockquote>\n\t<blockquote id=\"sample2\" class=\"so many classes\"></blockquote>\n\t\n<![endif]-->",
     },
     {
       'name': "tm>if>div.message",
@@ -78,7 +78,7 @@ finish
       'name': "html:4t>div#wrapper>div#header+div#contents+div#footer",
       'query': "html:4t>div#wrapper>div#header+div#contents+div#footer",
       'type': "html",
-      'result': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html lang=\"en\">\n<head>\n    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n    <title></title>\n</head>\n<body>\n\t<div id=\"wrapper\">\n\t\t<div id=\"header\"></div>\n\t\t<div id=\"contents\"></div>\n\t\t<div id=\"footer\"></div>\n\t</div>\n\t\n</body>\n</html>",
+      'result': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html lang=\"en\">\n<head>\n\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n\t<title></title>\n</head>\n<body>\n\t<div id=\"wrapper\">\n\t\t<div id=\"header\"></div>\n\t\t<div id=\"contents\"></div>\n\t\t<div id=\"footer\"></div>\n\t</div>\n\t\n</body>\n</html>",
     },
     {
       'name': "a[href=http://www.google.com/].foo#hoge",
@@ -249,10 +249,10 @@ finish
       'result': "<div id=\"box1\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box2\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box3\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n"
     },
     {
-      'name': "div#box.foo$$$.bar$$$",
-      'query': "div#box$*3>h3+p*2",
+      'name': "div#box.foo$$$.bar$$$*3",
+      'query': "div#box.foo$$$.bar$$$*3",
       'type': "html",
-      'result': "<div id=\"box1\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box2\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n<div id=\"box3\">\n\t<h3></h3>\n\t<p></p>\n\t<p></p>\n</div>\n"
+      'result': "<div id=\"box\" class=\"foo001 bar001\"></div>\n<div id=\"box\" class=\"foo002 bar002\"></div>\n<div id=\"box\" class=\"foo003 bar003\"></div>\n",
     },
     {
       'name': "div#box$*3>h3+p.bar*2|e",
