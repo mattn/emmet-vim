@@ -1229,6 +1229,9 @@ function! s:zen_getFileType()
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^xml'
     let type = 'xml'    
   endif
+  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^javaScript'
+    let type = 'javascript'    
+  endif
   if has_key(s:zen_settings, type) && has_key(s:zen_settings[type], 'extends')
     let type = s:zen_settings[type].extends
   endif
