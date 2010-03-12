@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 11-Mar-2010.
-" Version: 0.31
+" Last Change: 12-Mar-2010.
+" Version: 0.32
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -664,6 +664,7 @@ let s:zen_settings = {
 \            'bdo:r': {'dir': 'rtl'},
 \            'bdo:l': {'dir': 'ltr'},
 \            'del': {'datetime': '${datetime}'},
+\            'ins': {'datetime': '${datetime}'},
 \            'link:css': [{'rel': 'stylesheet'}, {'type': 'text/css'}, {'href': '|style.css'}, {'media': 'all'}],
 \            'link:print': [{'rel': 'stylesheet'}, {'type': 'text/css'}, {'href': '|print.css'}, {'media': 'print'}],
 \            'link:favicon': [{'rel': 'shortcut icon'}, {'type': 'image/x-icon'}, {'href': '|favicon.ico'}],
@@ -1153,9 +1154,9 @@ function! s:zen_toString(...)
         if len(tmp)
           let str .= '{' . tmp . ' }'
         endif
-        if stridx(','.s:zen_settings['html'].empty_elements.',', ','.current.name.',') != -1 && len(current.value) == 0
+        if stridx(','.s:zen_settings.html.empty_elements.',', ','.current.name.',') != -1 && len(current.value) == 0
           let str .= "/"
-        elseif stridx(','.s:zen_settings['html'].block_elements.',', ','.current.name.',') != -1 && (len(current.child) == 0 && len(current.value) == 0)
+        elseif stridx(','.s:zen_settings.html.block_elements.',', ','.current.name.',') != -1 && (len(current.child) == 0 && len(current.value) == 0)
           let str .= '<'
         endif
 
@@ -1227,6 +1228,12 @@ function! s:zen_getFileType()
   endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^xml'
     let type = 'xml'    
+  endif
+  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^javaScript'
+    let type = 'javascript'    
+  endif
+  if has_key(s:zen_settings, type) && has_key(s:zen_settings[type], 'extends')
+    let type = s:zen_settings[type].extends
   endif
   if len(type) == 0 | let type = 'html' | endif
   if type == 'xhtml' | let type = 'html' | endif
@@ -1328,7 +1335,7 @@ function! s:zen_expandAbbr(mode) range
     endif
     if line[:-len(part)-1] =~ '^\s\+$'
       let size = (len(line) - len(part)) / len(s:zen_settings.indentation)
-      let indent = line[:-len(part)-1] . repeat(s:zen_settings.indentation, size)
+      let indent = repeat(s:zen_settings.indentation, size)
     else
       let indent = ''
     endif
@@ -1385,7 +1392,7 @@ function! s:zen_imageSize()
     return
   endif
   let current = s:zen_parseTag(content)
-  let fn = current.attr['src']
+  let fn = current.attr.src
   if fn !~ '^\(/\|http\)'
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
@@ -1418,8 +1425,8 @@ EOF
   if w == -1 && h == -1
     return
   endif
-  let current.attr['width'] = w
-  let current.attr['height'] = h
+  let current.attr.width = w
+  let current.attr.height = h
   let html = s:zen_toString(current, 'html', 1)
   call s:change_content(img_region, html)
 endfunction
@@ -1650,7 +1657,7 @@ function! s:zen_anchorizeURL(flag)
 
   if a:flag == 0
     let a = s:zen_parseTag('<a>')
-    let a.attr['href'] = url
+    let a.attr.href = url
     let a.value = '{' . title . '}'
     let expand = s:zen_toString(a, 'html', 0, '')
     let expand = substitute(expand, '\${cursor}', '', 'g')
@@ -1661,7 +1668,7 @@ function! s:zen_anchorizeURL(flag)
 
     let blockquote = s:zen_parseTag('<blockquote class="quote">')
     let a = s:zen_parseTag('<a>')
-    let a.attr['href'] = url
+    let a.attr.href = url
     let a.value = '{' . title . '}'
     call add(blockquote.child, a)
     call add(blockquote.child, s:zen_parseTag('<br/>'))

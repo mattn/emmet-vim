@@ -176,3 +176,29 @@ Tutorial of zencoding.vim
   </blockquote>
   ---------------------
 
+14. Enable zencoding.vim for language you using.
+
+  There are two ways to enable zencoding.vim for language you using.
+
+  1. Enable with filetype.
+  ---------------------
+  # mkdir $HOME/.vim/ftplugin/php
+  # cp zencoding.vim $HOME/.vim/ftplugin/php/.
+  ---------------------
+  
+  2. Enable with zen_settings.
+  ---------------------
+  # cp zencoding.vim $HOME/.vim/.
+  # cat >> ~/.vimrc
+  let g:user_zen_settings = {
+  \  'php' : {
+  \    'extends' : 'html',
+  \  },
+  \  'xml' : {
+  \    'extends' : 'html',
+  \  },
+  \  'haml' : {
+  \    'extends' : 'html',
+  \  },
+  \}
+  ---------------------
