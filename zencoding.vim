@@ -1332,7 +1332,7 @@ function! s:zen_expandAbbr(mode) range
     endif
     if line[:-len(part)-1] =~ '^\s\+$'
       let size = (len(line) - len(part)) / len(s:zen_settings.indentation)
-      let indent = line[:-len(part)-1] . repeat(s:zen_settings.indentation, size)
+      let indent = repeat(s:zen_settings.indentation, size)
     else
       let indent = ''
     endif
