@@ -664,6 +664,7 @@ let s:zen_settings = {
 \            'bdo:r': {'dir': 'rtl'},
 \            'bdo:l': {'dir': 'ltr'},
 \            'del': {'datetime': '${datetime}'},
+\            'ins': {'datetime': '${datetime}'},
 \            'link:css': [{'rel': 'stylesheet'}, {'type': 'text/css'}, {'href': '|style.css'}, {'media': 'all'}],
 \            'link:print': [{'rel': 'stylesheet'}, {'type': 'text/css'}, {'href': '|print.css'}, {'media': 'print'}],
 \            'link:favicon': [{'rel': 'shortcut icon'}, {'type': 'image/x-icon'}, {'href': '|favicon.ico'}],
