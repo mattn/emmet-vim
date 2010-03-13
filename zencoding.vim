@@ -1300,7 +1300,7 @@ function! s:zen_expandAbbr(mode) range
   else
     let line = getline('.')
     if col('.') < len(line)
-      let line = matchstr(line, '^\(.*\%'.col('.').'v.\)')
+      let line = matchstr(line, '^\(.*\%'.col('.').'c.\)')
     endif
     if a:mode == 1 || type != 'html'
       let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
