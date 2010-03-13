@@ -2,7 +2,7 @@ script_name: ZenCoding.vim
 script_id: '2981'
 script_type: utility
 script_package: zencoding.vim
-script_version: '0.32'
+script_version: '0.33'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
@@ -81,6 +81,8 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.33': |
+   This is an upgrade for ZenCoding.vim: fixed problem breaking multibyte when cursor is in a part of line. enabled zencoding for javascript in html.
 - '0.32': |
    This is an upgrade for ZenCoding.vim: fixed indentation. supported extends so that you can enable zencoding for php/xhtml/haml other's section 14 in http://github.com/mattn/zencoding-vim/raw/master/TUTORIAL
 - '0.31': |
