@@ -1337,8 +1337,7 @@ function! s:zen_expandAbbr(mode) range
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
     if line[:-len(part)-1] =~ '^\s\+$'
-      let size = (len(line) - len(part)) / len(s:zen_settings.indentation)
-      let indent = repeat(s:zen_settings.indentation, size)
+      let indent = line[:-len(part)-1]
     else
       let indent = ''
     endif
