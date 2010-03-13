@@ -92,3 +92,8 @@ pre.code {
 	width: 500px;
 }
 
+#tty {
+	font-family: monospace;
+	font-size: 8px;
+	line-height: 0px;
+}
