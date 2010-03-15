@@ -2,7 +2,7 @@
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 15-Mar-2010.
-" Version: 0.32
+" Version: 0.33
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -83,7 +83,7 @@ for item in [
 \ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(0)<cr>a'},
 \ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '.', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a'},
 \ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandVisual', 'func': ':call <sid>zen_expandAbbr(2)<cr>'},
-\ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandNormal', 'func': ':call <sid>zen_expandAbbr(0)<cr>'},
+\ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandNormal', 'func': ':call <sid>zen_expandAbbr(3)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInward', 'func': '<esc>:call <sid>zen_balanceTag(0)<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInward', 'func': ':call <sid>zen_balanceTag(0)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_balancetagoutward_key', 'key': 'D', 'plug': 'ZenCodingBalanceTagOutward', 'func': '<esc>:call <sid>zen_balanceTag(1)<cr>a'},
@@ -1324,13 +1324,16 @@ function! s:zen_expandAbbr(mode) range
     endif
     silent! exe "normal! gvc"
   else
-    let line = getline('.')[:col('.')]
+    let line = getline('.')
+    if col('.') < len(line)
+      let line = matchstr(line, '^\(.*\%'.col('.').'c.\)')
+    endif
     if a:mode == 1
       let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
     endif
-    let rest = getline('.')[col('.')+1:]
+    let rest = getline('.')[len(line):]
     let str = part
     let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
     if str =~ mx
@@ -1360,8 +1363,7 @@ function! s:zen_expandAbbr(mode) range
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
     if line[:-len(part)-1] =~ '^\s\+$'
-      let size = (len(line) - len(part)) / len(s:zen_settings.indentation)
-      let indent = repeat(s:zen_settings.indentation, size)
+      let indent = line[:-len(part)-1]
     else
       let indent = ''
     endif
@@ -1390,11 +1392,11 @@ endfunction
 
 function! s:zen_parseTag(tag)
   let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|["''][^"'']\+["'']\)\s*\)*\)\(/\{0,1}\)>'
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|["''][^"'']*["'']\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')
   let attrs = substitute(match, mx, '\2', 'i')
-  let mx = '\([a-zA-Z0-9]\+\)=["'']\{0,1}\([^"'' \t]\+\|[^"'']\+\)["'']\{0,1}'
+  let mx = '\([a-zA-Z0-9]\+\)=["'']\{0,1}\([^"'' \t]*\|[^"'']\+\)["'']\{0,1}'
   while len(attrs) > 0
     let match = matchstr(attrs, mx)
     if len(match) == 0
