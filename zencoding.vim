@@ -1608,7 +1608,7 @@ function! s:zen_balanceTag(flag)
   while 1
     let pos = getpos('.')
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
-    let pos1 = searchpos(mx, 'bnW')
+    let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
