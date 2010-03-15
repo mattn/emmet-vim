@@ -84,10 +84,12 @@ for item in [
 \ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '.', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a'},
 \ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandVisual', 'func': ':call <sid>zen_expandAbbr(2)<cr>'},
 \ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandNormal', 'func': ':call <sid>zen_expandAbbr(3)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInward', 'func': '<esc>:call <sid>zen_balanceTag(0)<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInward', 'func': ':call <sid>zen_balanceTag(0)<cr>'},
-\ {'mode': 'i', 'var': 'user_zen_balancetagoutward_key', 'key': 'D', 'plug': 'ZenCodingBalanceTagOutward', 'func': '<esc>:call <sid>zen_balanceTag(1)<cr>a'},
-\ {'mode': 'n', 'var': 'user_zen_balancetagoutward_key', 'key': 'D', 'plug': 'ZenCodingBalanceTagOutward', 'func': ':call <sid>zen_balanceTag(1)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInwardInsert', 'func': '<esc>:call <sid>zen_balanceTag(1)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInwardNormal', 'func': ':call <sid>zen_balanceTag(1)<cr>'},
+\ {'mode': 'v', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInwardVisual', 'func': ':call <sid>zen_balanceTag(2)<cr>'},
+\ {'mode': 'i', 'var': 'user_zen_balancetagoutward_key', 'key': 'D', 'plug': 'ZenCodingBalanceTagOutwardInsert', 'func': '<esc>:call <sid>zen_balanceTag(-1)<cr>a'},
+\ {'mode': 'n', 'var': 'user_zen_balancetagoutward_key', 'key': 'D', 'plug': 'ZenCodingBalanceTagOutwardNormal', 'func': ':call <sid>zen_balanceTag(-1)<cr>'},
+\ {'mode': 'v', 'var': 'user_zen_balancetagoutward_key', 'key': 'D', 'plug': 'ZenCodingBalanceTagOutwardVisual', 'func': ':call <sid>zen_balanceTag(-2)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_next_key', 'key': 'n', 'plug': 'ZenCodingNext', 'func': '<esc>:call <sid>zen_moveNextPrev(0)<cr>'},
 \ {'mode': 'n', 'var': 'user_zen_next_key', 'key': 'n', 'plug': 'ZenCodingNext', 'func': ':call <sid>zen_moveNextPrev(0)<cr>'},
 \ {'mode': 'i', 'var': 'user_zen_prev_key', 'key': 'N', 'plug': 'ZenCodingPrev', 'func': '<esc>:call <sid>zen_moveNextPrev(1)<cr>'},
@@ -1474,7 +1476,6 @@ endfunction
 function! s:zen_toggleComment()
   let curpos = getpos('.')
   while 1
-    let pos = getpos('.')
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
@@ -1526,7 +1527,6 @@ endfunction
 function! s:zen_splitJoinTag()
   let curpos = getpos('.')
   while 1
-    let pos = getpos('.')
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
@@ -1567,7 +1567,6 @@ endfunction
 function! s:zen_removeTag()
   let curpos = getpos('.')
   while 1
-    let pos = getpos('.')
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
@@ -1603,33 +1602,48 @@ function! s:zen_removeTag()
   endwhile
 endfunction
 
-function! s:zen_balanceTag(flag)
-  let curpos = getpos('.')
+function! s:zen_balanceTag(flag) range
+  let vblock = s:get_visualblock()
+  if abs(a:flag) == 2
+    let curpos = [0, line("'<"), col("'<"), 0]
+  else
+    let curpos = getpos('.')
+  endif
   while 1
-    let pos = getpos('.')
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
-    let pos1 = searchpos(mx, 'bcnW')
+    let pos1 = searchpos(mx, (a:flag == -2 ? 'nW' : 'bcnW'))
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if !s:region_is_valid(block)
-      return
+      break
     endif
-    if content[-2:] == '/>' && s:cursor_in_region(block)
+    if content[-2:] == '/>' && s:point_in_region(curpos[1:2], block)
       call s:select_region(block)
       return
     else
       if tag_name[0] == '/'
-        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', a:flag == -2 ? 'nW' : 'bcnW')
+        if pos1[0] == 0
+          break
+        endif
         call setpos('.', [0, pos1[0], pos1[1], 0])
         let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
       else
         let pos2 = searchpos('</' . tag_name . '>', 'cneW')
       endif
       let block = [pos1, pos2]
+      if !s:region_is_valid(block)
+        break
+      endif
       let content = s:get_content(block)
-      if s:point_in_region(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
-        if a:flag
+      if a:flag == -2
+        let check = s:region_in_region(vblock, block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+      else
+        let check = s:point_in_region(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+      endif
+      if check
+        if a:flag < 0
           let l = getline(pos1[0])
           let content = matchstr(l[pos1[1]-1:], mx)
           if pos1[1] + len(content) > len(l)
@@ -1645,15 +1659,27 @@ function! s:zen_balanceTag(flag)
         call s:select_region(block)
         return
       else
-        if block[0][0] > 0
-          call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+        if s:region_is_valid(block)
+          if a:flag == -2
+            if setpos('.', [0, block[0][0]+1, block[0][1], 0]) == -1
+              break
+            endif
+          else
+            if setpos('.', [0, block[0][0]-1, block[0][1], 0]) == -1
+              break
+            endif
+          endif
         else
-          call setpos('.', curpos)
-          return
+          break
         endif
       endif
     endif
   endwhile
+  if abs(a:flag) == 2
+    silent! exe "normal! gv"
+  else
+    call setpos('.', curpos)
+  endif
 endfunction
 
 function! s:zen_mergeConfig(lhs, rhs)
@@ -1680,7 +1706,6 @@ function! s:zen_mergeConfig(lhs, rhs)
 endfunction
 
 function! s:zen_anchorizeURL(flag)
-  let pos = getpos('.')
   let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
   let pos1 = searchpos(mx, 'bcnW')
   let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
@@ -1903,9 +1928,9 @@ endfunction
 " select_region : select region
 "   this function make a selection of region
 function! s:select_region(region)
-  call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
-  normal! v
   call setpos('.', [0, a:region[1][0], a:region[1][1], 0])
+  normal! v
+  call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
 endfunction
 
 " point_in_region : check point is in the region
@@ -1963,6 +1988,12 @@ function! s:region_in_region(outer, inner)
     return 0
   endif
   return s:point_in_region(a:inner[0], a:outer) && s:point_in_region(a:inner[1], a:outer)
+endfunction
+
+" get_visualblock : get region of visual block
+"   this function return region of visual block
+function! s:get_visualblock()
+  return [[line("'<"), col("'<")], [line("'>"), col("'>")]]
 endfunction
 
 " vim:set et:
