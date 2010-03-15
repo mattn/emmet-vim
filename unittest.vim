@@ -314,5 +314,16 @@ finish
     },
   ],
 },
+{
+  'category': 'xsl',
+  'tests': [
+    {
+      'name': "ap>wp",
+      'query': "ap>wp",
+      'type': "xsl",
+      'result': "<xsl:apply-templates select=\"\" mode=\"\">\n\t<xsl:with-param select=\"\" name=\"\"></xsl:with-param>\n</xsl:apply-templates>\n",
+    },
+  ],
+},
 ]
 " vim:set et:
