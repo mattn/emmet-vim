@@ -1269,10 +1269,15 @@ endfunction
 function! s:zen_expandAbbr(mode) range
   let type = s:zen_getFileType()
   let expand = ''
-  let filters = []
+  let filters = ['html']
   let line = ''
   let part = ''
   let rest = ''
+
+  if has_key(s:zen_settings, type) && has_key(s:zen_settings[type], 'filters')
+    let filters = split(s:zen_settings[type].filters, '\s*,\s*')
+  endif
+
   if a:mode == 2
     let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
     if len(leader) == 0
@@ -1761,10 +1766,16 @@ endfunction
 function! ZenExpand(abbr, type, orig)
   let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
-  let filters = ['html']
+  let type = a:type
+
+  if len(type) == 0 | let type = 'html' | endif
   if str =~ mx
     let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
     let str = substitute(str, mx, '', '')
+  elseif has_key(s:zen_settings[a:type], 'extends')
+    let filters = split(s:zen_settings[a:type].extends, '\s*,\s*')
+  else
+    let filters = ['html']
   endif
   let items = s:zen_parseIntoTree(str, a:type).child
   let expand = ''
