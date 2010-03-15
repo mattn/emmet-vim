@@ -1195,10 +1195,10 @@ function! s:zen_toString(...)
         if len(comment) > 0 | let str .= "<!-- /" . comment . " -->\n" . comment_indent | endif
       else
         if inline == 0
-          if !has_key(s:zen_settings[type], 'empty_elements') || (has_key(s:zen_settings[type], 'empty_elements') && stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1)
+          if stridx(','.s:zen_settings.html.empty_elements.',', ','.current.name.',') != -1
             let str .= " />\n"
           else
-            if has_key(s:zen_settings[type], 'inline_elements') && stridx(','.s:zen_settings[type].inline_elements.',', ','.current.name.',') == -1 && len(current.child)
+            if stridx(','.s:zen_settings.html.inline_elements.',', ','.current.name.',') == -1 && len(current.child)
               let str .= ">\n" . inner . '${cursor}</' . current.name . ">\n"
             else
               let str .= ">" . inner . '${cursor}</' . current.name . ">\n"
@@ -1206,7 +1206,7 @@ function! s:zen_toString(...)
           endif
           if len(comment) > 0 | let str .= "<!-- /" . comment . " -->\n" . comment_indent | endif
         else
-          if has_key(s:zen_settings[type], 'empty_elements') || stridx(','.s:zen_settings[type].empty_elements.',', ','.current.name.',') != -1
+          if stridx(','.s:zen_settings.html.empty_elements.',', ','.current.name.',') != -1
             let str .= " />"
           else
             let str .= ">" . inner . '${cursor}</' . current.name . ">"
