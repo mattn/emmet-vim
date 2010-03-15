@@ -304,6 +304,12 @@ finish
       'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
       'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
       'type': "haml",
+      'result': "<div>\n\t<p></p>\n\t<ul id=\"foo\">\n\t\t<li foo=\"bar\" bar=\"baz\" class=\"bar1\">baz</li>\n\t\t<li foo=\"bar\" bar=\"baz\" class=\"bar2\">baz</li>\n\t\t<li foo=\"bar\" bar=\"baz\" class=\"bar3\">baz</li>\n\t</ul>\n</div>\n",
+    },
+    {
+      'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
+      'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
+      'type': "haml",
       'result': "%div\n  %p<\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
     },
   ],
