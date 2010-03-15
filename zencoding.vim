@@ -880,10 +880,10 @@ endfunction
 function! s:zen_parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
-  if len(type) == 0 | let type = 'html' | endif
   if !has_key(s:zen_settings, type)
-    return { 'child': [] }
+    let type = 'html'
   endif
+  if len(type) == 0 | let type = 'html' | endif
 
   if has_key(s:zen_settings[type], 'indentation')
     let indent = s:zen_settings[type].indentation
@@ -1067,6 +1067,9 @@ function! s:zen_toString(...)
     let type = a:2
   else
     let type = ''
+  endif
+  if !has_key(s:zen_settings, type)
+    let type = 'html'
   endif
   if len(type) == 0 | let type = 'html' | endif
   if a:0 > 2
