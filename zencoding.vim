@@ -1147,6 +1147,9 @@ function! s:zen_toString(...)
       endif
       let tmp = '<' . current.name
       for attr in keys(current.attr)
+        if current.name =~ '^\(xsl:with-param\|xsl:variable\)$' && s:zen_use_filter(filters, 'xsl') && len(current.child) && attr == 'select'
+          continue
+        endif
         let val = current.attr[attr]
         if current.multiplier > 1
           while val =~ '\$\([^{]\|$\)'
