@@ -1073,7 +1073,11 @@ function! s:zen_toString(...)
     let inline = 0
   endif
   if a:0 > 3
-    let filters = a:4
+    if type(a:4) == 1
+      let filters = split(a:4, '\s*,\s*')
+    else
+      let filters = a:4
+    endif
   else
     let filters = ['html']
   endif
@@ -1604,7 +1608,7 @@ function! s:zen_balanceTag(flag)
   while 1
     let pos = getpos('.')
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
-    let pos1 = searchpos(mx, 'bcnW')
+    let pos1 = searchpos(mx, 'bnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
@@ -1616,7 +1620,7 @@ function! s:zen_balanceTag(flag)
       return
     else
       if tag_name[0] == '/'
-        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'cnW')
         call setpos('.', [0, pos1[0], pos1[1], 0])
         let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
       else
@@ -1695,7 +1699,7 @@ function! s:zen_anchorizeURL(flag)
     let a = s:zen_parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
-    let expand = s:zen_toString(a, 'html', 0, '')
+    let expand = s:zen_toString(a, 'html', 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
   else
     let body = strpart(content, stridx(content, '</head>'))
@@ -1714,7 +1718,7 @@ function! s:zen_anchorizeURL(flag)
     let cite = s:zen_parseTag('<cite>')
     let cite.value = '{' . url . '}'
     call add(blockquote.child, cite)
-    let expand = s:zen_toString(blockquote, 'html', 0, '')
+    let expand = s:zen_toString(blockquote, 'html', 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
     let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
     let expand = substitute(expand, "\n", "\n" . indent, 'g')
