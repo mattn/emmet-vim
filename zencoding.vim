@@ -1804,8 +1804,8 @@ function! ZenExpand(abbr, type, orig)
   if str =~ mx
     let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
     let str = substitute(str, mx, '', '')
-  elseif has_key(s:zen_settings[a:type], 'extends')
-    let filters = split(s:zen_settings[a:type].extends, '\s*,\s*')
+  elseif has_key(s:zen_settings[a:type], 'filters')
+    let filters = split(s:zen_settings[a:type].filters, '\s*,\s*')
   else
     let filters = ['html']
   endif
