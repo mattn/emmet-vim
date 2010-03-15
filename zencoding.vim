@@ -1620,7 +1620,7 @@ function! s:zen_balanceTag(flag)
       return
     else
       if tag_name[0] == '/'
-        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'cnW')
+        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
         call setpos('.', [0, pos1[0], pos1[1], 0])
         let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
       else
