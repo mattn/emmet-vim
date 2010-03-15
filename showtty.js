@@ -49,7 +49,7 @@ var setTextChunk = function (tb, r, index, stx) {
 
 var setBoldChunk = function (tb, r, index, stx) {
     for (var i = 0; i < r.length; i++) {
-        tb.arr[index][i+stx].style.fontWeight = r.charAt(i) == 0 ? 'normal' : 'bold';
+        tb.arr[index][i+stx].style.fontWeight = r.charAt(i) == 0 ? 'normal' : 'normal';
     }
 };
 
