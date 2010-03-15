@@ -188,11 +188,15 @@ Tutorial of zencoding.vim
   
   2. Enable with zen_settings.
   ---------------------
-  # cp zencoding.vim $HOME/.vim/.
+  # cp zencoding.vim $HOME/.vim/plugin/.
+
+
+  And you can customize the behavior of language you using.
   # cat >> ~/.vimrc
   let g:user_zen_settings = {
   \  'php' : {
   \    'extends' : 'html',
+  \    'filters' : 'c',
   \  },
   \  'xml' : {
   \    'extends' : 'html',
