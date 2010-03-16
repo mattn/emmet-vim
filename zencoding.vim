@@ -1483,6 +1483,21 @@ EOF
 endfunction
 
 function! s:zen_toggleComment()
+  if s:zen_getFileType() == 'css'
+    let line = getline('.')
+    let mx = '^\(\s*\)/\*\s*\(.*\)\s*\*/\s*$'
+    if line =~ mx
+      let space = substitute(matchstr(line, mx), mx, '\1', '')
+      let line = substitute(matchstr(line, mx), mx, '\2', '')
+      let line = space . substitute(line, '^\s*\|\s*$', '\1', 'g')
+    else
+      let mx = '^\(\s*\)\(.*\)\s*$'
+      let line = substitute(line, mx, '\1/* \2 */', '')
+    endif
+    call setline('.', line)
+    return
+  endif
+
   let curpos = getpos('.')
   while 1
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
