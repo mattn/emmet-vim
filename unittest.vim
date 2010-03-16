@@ -1,10 +1,12 @@
+so zencoding.vim
 if exists('g:user_zen_settings')
   let s:old_user_zen_settings = g:user_zen_settings
   unlet! g:user_zen_settings
 endif
-so zencoding.vim
 
 unlet! testgroups
+let oldmore=&more
+let &more=0
 let testgroups = eval(join(filter(split(substitute(join(readfile(expand('<sfile>')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
 for testgroup in testgroups
   echohl MatchParen | echon "[" testgroup.category."]\n" | echohl None
@@ -32,12 +34,67 @@ endfor
 if exists('g:user_zen_settings')
   let g:user_zen_settings = s:old_user_zen_settings
 endif
+let &more=oldmore
  
 finish
 [
 {
   'category': 'html',
   'tests': [
+    {
+      'name': "div",
+      'query': "div",
+      'type': "html",
+      'result': "<div></div>\n",
+    },
+    {
+      'name': "div#wrapper",
+      'query': "div#wrapper",
+      'type': "html",
+      'result': "<div id=\"wrapper\"></div>\n",
+    },
+    {
+      'name': "div.box",
+      'query': "div.box",
+      'type': "html",
+      'result': "<div class=\"box\"></div>\n",
+    },
+    {
+      'name': "a[title=TITLE]",
+      'query': "a[title=TITLE]",
+      'type': "html",
+      'result': "<a href=\"\" title=\"TITLE\"></a>\n",
+    },
+    {
+      'name': "div#wrapper.box",
+      'query': "div#wrapper.box",
+      'type': "html",
+      'result': "<div id=\"wrapper\" class=\"box\"></div>\n",
+    },
+    {
+      'name': "div#wrapper.box.current",
+      'query': "div#wrapper.box.current",
+      'type': "html",
+      'result': "<div id=\"wrapper\" class=\"box current\"></div>\n",
+    },
+    {
+      'name': "div#wrapper.box.current[title=TITLE rel]",
+      'query': "div#wrapper.box.current[title=TITLE rel]",
+      'type': "html",
+      'result': "<div id=\"wrapper\" rel=\"\" class=\"box current\" title=\"TITLE\"></div>\n",
+    },
+    {
+      'name': "div#main+div#sub",
+      'query': "div#main+div#sub",
+      'type': "html",
+      'result': "<div id=\"main\"></div>\n<div id=\"sub\"></div>\n",
+    },
+    {
+      'name': "div#main>div#sub",
+      'query': "div#main>div#sub",
+      'type': "html",
+      'result': "<div id=\"main\">\n\t<div id=\"sub\"></div>\n</div>\n",
+    },
     {
       'name': "html:xt>div#header>div#logo+ul#nav>li.item-$*5>a",
       'query': "html:xt>div#header>div#logo+ul#nav>li.item-$*5>a",
@@ -195,6 +252,12 @@ finish
       'result': "<ul>\n\t<li></li>\n</ul>\n",
     },
     {
+      'name': "table+",
+      'query': "table+",
+      'type': "html",
+      'result': "<table>\n\t<tr>\n\t\t<td></td>\n\t</tr>\n</table>\n",
+    },
+    {
       'name': "#header>li<#content",
       'query': "#header>li<#content",
       'type': "html",
@@ -317,6 +380,12 @@ finish
 {
   'category': 'xsl',
   'tests': [
+    {
+      'name': "vari",
+      'query': "vari",
+      'type': "xsl",
+      'result': "<xsl:variable name=\"\"></xsl:variable>\n",
+    },
     {
       'name': "ap>wp",
       'query': "ap>wp",
