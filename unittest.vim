@@ -266,6 +266,12 @@ finish
       'type': "html",
       'result': "<div>\n\t<!-- #page -->\n\t<div id=\"page\">\n\t\t<!-- .title -->\n\t\t<p class=\"title\"></p>\n\t\t<!-- /.title -->\n\t\t<p></p>\n\t</div>\n\t<!-- /#page -->\n</div>\n",
     },
+    {
+      'name': "link:css",
+      'query': "link:css",
+      'type': "html",
+      'result': "<link media=\"all\" rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n",
+    },
   ],
 },
 {
@@ -276,12 +282,6 @@ finish
       'query': "@i",
       'type': "css",
       'result': "@import url();",
-    },
-    {
-      'name': "link:css",
-      'query': "link:css",
-      'type': "html",
-      'result': "<link media=\"all\" rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n",
     },
     {
       'name': "fs:n",

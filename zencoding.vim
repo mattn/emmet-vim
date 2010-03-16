@@ -864,6 +864,9 @@ function! s:zen_use_filter(filters, filter)
 endfunction
 
 function! s:zen_is_extends(type, extend)
+  if a:type == a:extend
+    return 1
+  endif
   if !has_key(s:zen_settings, a:type)
     return 0
   endif
@@ -962,7 +965,7 @@ function! s:zen_parseIntoTree(abbr, type)
               endfor
             endfor
           endif
-          if s:zen_is_extends(type, 'html')
+          if has_key(s:zen_settings.html.default_attributes, current.name)
             let current.name = substitute(current.name, ':.*$', '', '')
           endif
           break
