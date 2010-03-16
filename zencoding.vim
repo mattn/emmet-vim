@@ -1916,13 +1916,13 @@ function! ZenCompleteTag(findstart, base)
     let snippets = s:zen_getResource(type, 'snippets', {})
     for item in keys(snippets)
       if stridx(item, a:base) != -1
-        call add(res, substitute(item, '\${cursor}', '', 'g'))
+        call add(res, substitute(item, '\${cursor}\||', '', 'g'))
       endif
     endfor
     let aliases = s:zen_getResource(type, 'aliases', {})
     for item in values(aliases)
       if stridx(item, a:base) != -1
-        call add(res, substitute(item, '\${cursor}', '', 'g'))
+        call add(res, substitute(item, '\${cursor}\||', '', 'g'))
       endif
     endfor
     return res
