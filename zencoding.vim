@@ -843,13 +843,12 @@ let s:zen_settings = {
 \    }
 \}
 
-function! s:zen_expandos(key, type)
-  if has_key(s:zen_settings[a:type], 'expandos')
-    if has_key(s:zen_settings[a:type].expandos, a:key)
-      return s:zen_settings[a:type].expandos[a:key]
-   endif
- endif
- return a:key
+function! s:zen_expandos(type, key)
+  let expandos = s:zen_getResource(a:type, 'expandos', {})
+  if has_key(expandos, a:key)
+    return expandos[a:key]
+  endif
+  return a:key
 endfunction
 
 function! s:zen_use_filter(filters, filter)
@@ -871,10 +870,18 @@ function! s:zen_is_extends(type, extend)
   if !has_key(s:zen_settings[a:type], 'extends')
     return 0
   endif
-  if a:extends != s:zen_settings[a:type].extends
-    return 0
+  let extends = s:zen_settings[a:type].extends
+  if type(extends) == 1
+    let tmp = split(extends, '\s*,\s*')
+    unlet! extends
+    let extends = tmp
   endif
-  return 1
+  for ext in extends
+    if a:extend == ext
+      return 1
+    endif
+  endfor
+  return 0
 endfunction
 
 function! s:zen_parseIntoTree(abbr, type)
@@ -891,13 +898,14 @@ function! s:zen_parseIntoTree(abbr, type)
     let indent = s:zen_settings.indentation
   endif
 
-  let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(submatch(1), type).")".submatch(2)', 'i')
+  let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_expandos(type, submatch(1)).")".submatch(2)', 'i')
   let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
   let parent = root
   let last = root
   let pos = []
   while len(abbr)
+    " parse line
     let match = matchstr(abbr, mx)
     let str = substitute(match, mx, '\0', 'ig')
     let operator = substitute(match, mx, '\1', 'ig')
@@ -915,45 +923,54 @@ function! s:zen_parseIntoTree(abbr, type)
       let tag_name = 'div'
     endif
     if multiplier <= 0 | let multiplier = 1 | endif
+
+    " make default node
     let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
     let current.name = tag_name
-    if has_key(s:zen_settings[type], 'aliases')
-      if has_key(s:zen_settings[type].aliases, tag_name)
-        let current.name = s:zen_settings[type].aliases[tag_name]
-      endif
+
+    " aliases
+    let aliases = s:zen_getResource(type, 'aliases', {})
+    if has_key(aliases, tag_name)
+      let current.name = aliases[tag_name]
     endif
-    if has_key(s:zen_settings[type], 'snippets') && has_key(s:zen_settings[type].snippets, tag_name)
-      let snippet = s:zen_settings[type].snippets[tag_name]
+
+    " snippets
+    let snippets = s:zen_getResource(type, 'snippets', {})
+    if !empty(snippets) && has_key(snippets, tag_name)
+      let snippet = snippets[tag_name]
       let snippet = substitute(snippet, '|', '${cursor}', 'g')
       let lines = split(snippet, "\n")
       call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", indent, "g")')
       let current.snippet = join(lines, "\n")
       let current.name = ''
-    else
-      if has_key(s:zen_settings[type], 'default_attributes')
-        let default_attributes = s:zen_settings[type].default_attributes
-        for pat in [current.name, tag_name]
-          if has_key(default_attributes, pat)
-            if type(default_attributes[pat]) == 4
-              let a = default_attributes[pat]
+    endif
+
+    " default_attributes
+    let default_attributes = s:zen_getResource(type, 'default_attributes', {})
+    if !empty(default_attributes)
+      for pat in [current.name, tag_name]
+        if has_key(default_attributes, pat)
+          if type(default_attributes[pat]) == 4
+            let a = default_attributes[pat]
+            for k in keys(a)
+              let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
+            endfor
+          else
+            for a in default_attributes[pat]
               for k in keys(a)
                 let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
               endfor
-            else
-              for a in default_attributes[pat]
-                for k in keys(a)
-                  let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
-                endfor
-              endfor
-            endif
-            if type == 'html'
-              let current.name = substitute(current.name, ':.*$', '', '')
-            endif
-            break
+            endfor
           endif
-        endfor
-      endif
+          if s:zen_is_extends(type, 'html')
+            let current.name = substitute(current.name, ':.*$', '', '')
+          endif
+          break
+        endif
+      endfor
     endif
+
+    " parse attributes
     if len(attributes)
       let attr = attributes
       while len(attr)
@@ -977,6 +994,8 @@ function! s:zen_parseIntoTree(abbr, type)
         let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
       endwhile
     endif
+
+    " parse text
     if tag_name =~ '^{.*}$'
       let current.name = ''
       let current.value = tag_name
@@ -985,6 +1004,7 @@ function! s:zen_parseIntoTree(abbr, type)
     endif
     let current.multiplier = multiplier
 
+    " parse step inside/outside
     if !empty(last)
       if operator =~ '>'
         unlet! parent
@@ -1012,6 +1032,7 @@ function! s:zen_parseIntoTree(abbr, type)
     call add(parent.child, current)
     let last = current
 
+    " parse block
     if block_start =~ '('
       if operator =~ '>'
         let last.pos += 1
@@ -1020,7 +1041,6 @@ function! s:zen_parseIntoTree(abbr, type)
         let pos += [last.pos]
       endfor
     endif
-
     if block_end =~ ')'
       for n in split(substitute(substitute(block_end, ' ', '', 'g'), ')', ',),', 'g'), ',')
         if n == ')'
@@ -1047,6 +1067,7 @@ function! s:zen_parseIntoTree(abbr, type)
       endfor
     endif
     let abbr = abbr[stridx(abbr, match) + len(match):]
+
     if g:zencoding_debug > 1
       echo "str=".str
       echo "block_start=".block_start
@@ -1260,6 +1281,32 @@ function! s:zen_toString(...)
     let str = substitute(str, '>', '\&gt;', 'g')
   endif
   return str
+endfunction
+
+function! s:zen_getResource(type, name, default)
+  if !has_key(s:zen_settings, a:type)
+    return a:default
+  endif
+  let ret = a:default
+
+  if has_key(s:zen_settings[a:type], a:name)
+    call s:zen_mergeConfig(ret, s:zen_settings[a:type][a:name])
+  endif
+
+  if has_key(s:zen_settings[a:type], 'extends')
+    let extends = s:zen_settings[a:type].extends
+    if type(extends) == 1
+      let tmp = split(extends, '\s*,\s*')
+      unlet! extends
+      let extends = tmp
+    endif
+    for ext in extends
+      if has_key(s:zen_settings, ext) && has_key(s:zen_settings[ext], a:name)
+        call s:zen_mergeConfig(ret, s:zen_settings[ext][a:name])
+      endif
+    endfor
+  endif
+  return ret
 endfunction
 
 function! s:zen_getFileType()
@@ -1708,14 +1755,20 @@ endfunction
 
 function! s:zen_mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
-    call remove(a:lhs, 0, len(a:lhs)-1)
-    for index in a:rhs
-      call add(a:lhs, a:rhs[index])
+    let a:lhs += a:rhs
+    if len(a:lhs)
+      call remove(a:lhs, 0, len(a:lhs)-1)
+    endif
+    for rhi in a:rhs
+      call add(a:lhs, a:rhs[rhi])
     endfor
   elseif type(a:lhs) == 4 && type(a:rhs) == 4
     for key in keys(a:rhs)
       if type(a:rhs[key]) == 3
-        call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
+        if !has_key(a:lhs, key)
+          let a:lhs[key] = []
+        endif
+        let a:lhs[key] += a:rhs[key]
       elseif type(a:rhs[key]) == 4
         if has_key(a:lhs, key)
           call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
@@ -1854,24 +1907,21 @@ function! ZenCompleteTag(findstart, base)
     endwhile
     return start
   else
-    let type = &ft
+    let type = s:zen_getFileType()
     let res = []
-    if !has_key(s:zen_settings, type)
-      return res
-    endif
-    if len(type) == 0 | let type = 'html' | endif
-    for item in keys(s:zen_settings[type].snippets)
+
+    let snippets = s:zen_getResource(type, 'snippets', {})
+    for item in keys(snippets)
       if stridx(item, a:base) != -1
-        call add(res, item)
+        call add(res, substitute(item, '\${cursor}', '', 'g'))
       endif
     endfor
-    if has_key(s:zen_settings[type], 'aliases')
-      for item in values(s:zen_settings[type].aliases)
-        if stridx(item, a:base) != -1
-          call add(res, substitute(item, '\${cursor}', '', 'g'))
-        endif
-      endfor
-    endif
+    let aliases = s:zen_getResource(type, 'aliases', {})
+    for item in values(aliases)
+      if stridx(item, a:base) != -1
+        call add(res, substitute(item, '\${cursor}', '', 'g'))
+      endif
+    endfor
     return res
   endif
 endfunction
