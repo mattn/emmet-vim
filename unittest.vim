@@ -1,13 +1,14 @@
-so zencoding.vim
 if exists('g:user_zen_settings')
   let s:old_user_zen_settings = g:user_zen_settings
   unlet! g:user_zen_settings
 endif
+so zencoding.vim
 
 unlet! testgroups
-let oldmore=&more
-let &more=0
+let oldmore = &more
+let &more = 0
 let testgroups = eval(join(filter(split(substitute(join(readfile(expand('<sfile>')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
+let failed = 0
 for testgroup in testgroups
   echohl MatchParen | echon "[" testgroup.category."]\n" | echohl None
   let tests = testgroup.tests
@@ -23,11 +24,16 @@ for testgroup in testgroups
     else
       echohl WarningMsg | echon "ng\n" | echohl None
       echohl ErrorMsg | echo "failed test #".(n+1) | echohl None
-  	echo "    expect:".tests[n].result
-  	echo "       got:".res
-  	echo ""
+  	  echo "    expect:".tests[n].result
+  	  echo "       got:".res
+  	  echo ""
+      let failed = 1
+      break
     endif
   endfor
+  if failed
+    break
+  endif
   echo "past:".reltimestr(reltime(start))."\n"
 endfor
 
