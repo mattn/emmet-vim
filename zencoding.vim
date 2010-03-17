@@ -1353,7 +1353,7 @@ function! s:zen_expandAbbr(mode) range
     endif
     let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
-      let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
+      let filters = split(matchstr(leader, mx)[1:], '\s*,\s*')
       let leader = substitute(leader, mx, '', '')
     endif
     if leader =~ '\*'
