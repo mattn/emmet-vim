@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 16-Mar-2010.
+" Last Change: 17-Mar-2010.
 " Version: 0.35
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1198,7 +1198,9 @@ function! s:zen_toString(...)
           if attr == 'class' | let comment .= '.' . val | endif
         endif
       endfor
-      if len(comment) > 0 | let tmp = "<!-- " . comment . " -->\n" . comment_indent . tmp | endif
+      if len(comment) > 0
+        let tmp = "<!-- " . comment . " -->" . (inline ? "" : "\n") . comment_indent . tmp
+      endif
       let str .= tmp
       let inner = current.value[1:-2]
       if stridx(','.s:zen_settings.html.inline_elements.',', ','.current.name.',') != -1
@@ -1231,7 +1233,6 @@ function! s:zen_toString(...)
         else
           let str .= ">" . inner . "</" . current.name . ">"
         endif
-        if len(comment) > 0 | let str .= "<!-- /" . comment . " -->\n" . comment_indent | endif
       else
         if inline == 0
           if stridx(','.s:zen_settings.html.empty_elements.',', ','.current.name.',') != -1
@@ -1243,7 +1244,6 @@ function! s:zen_toString(...)
               let str .= ">" . inner . '${cursor}</' . current.name . ">\n"
             endif
           endif
-          if len(comment) > 0 | let str .= "<!-- /" . comment . " -->\n" . comment_indent | endif
         else
           if stridx(','.s:zen_settings.html.empty_elements.',', ','.current.name.',') != -1
             let str .= " />"
@@ -1251,6 +1251,9 @@ function! s:zen_toString(...)
             let str .= ">" . inner . '${cursor}</' . current.name . ">"
           endif
         endif
+      endif
+      if len(comment) > 0
+        let str .= "<!-- /" . comment . " -->" . (inline ? "" : "\n") . comment_indent
       endif
     else
       if len(current.snippet) > 0
