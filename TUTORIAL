@@ -158,7 +158,7 @@ Tutorial of zencoding.vim
   ---------------------
   Type '<c-y>a'
   ---------------------
-  <qa href="http://www.google.com/">Google</a>
+  <a href="http://www.google.com/">Google</a>
   ---------------------
 
 13. Make quoted text from URL

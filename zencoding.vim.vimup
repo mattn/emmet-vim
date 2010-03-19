@@ -53,6 +53,14 @@ detailed_description: |
      | _
      +-------------------------------------
   
+  Tutorial:
+
+    http://github.com/mattn/zencoding-vim/raw/master/TUTORIAL
+
+  How work this:
+
+    http://mattn.github.com/zencoding-vim
+
   Tips:
   
   You can customize behavior of expanding with overriding config.
