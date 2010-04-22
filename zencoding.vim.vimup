@@ -19,6 +19,12 @@ detailed_description: |
 
   This is vim script support expanding abbreviation like zen-coding.
   ref: http://code.google.com/p/zen-coding/
+
+  There is a movie using zencoding.vim
+  ref: http://mattn.github.com/zencoding-vim
+  
+  Source Repository.
+  ref: http://github.com/mattn/zencoding-vim
   
   Type abbreviation
      +-------------------------------------

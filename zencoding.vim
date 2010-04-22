@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 17-Mar-2010.
+" Last Change: 23-Apr-2010.
 " Version: 0.36
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -79,7 +79,8 @@ if !exists('g:user_zen_leader_key')
 endif
 
 let s:target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
-for item in [
+
+for s:item in [
 \ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(0)<cr>a'},
 \ {'mode': 'i', 'var': 'user_zen_expandword_key', 'key': '.', 'plug': 'ZenCodingExpandWord', 'func': '<c-g>u<esc>:call <sid>zen_expandAbbr(1)<cr>a'},
 \ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandVisual', 'func': ':call <sid>zen_expandAbbr(2)<cr>'},
@@ -108,16 +109,18 @@ for item in [
 \ {'mode': 'n', 'var': 'user_zen_anchorizesummary_key', 'key': 'A', 'plug': 'ZenCodingAnchorizeSummary', 'func': ':call <sid>zen_anchorizeURL(1)<cr>'},
 \]
    
-  if !hasmapto('<plug>'.item.plug, item.mode)
-    exe item.mode . 'noremap <plug>' . item.plug . ' ' . item.func
+  if !hasmapto('<plug>'.s:item.plug, s:item.mode)
+    exe s:item.mode . 'noremap <plug>' . s:item.plug . ' ' . s:item.func
   endif
-  if !exists('g:' . item.var)
-    exe 'let g:' . item.var . " = '" . g:user_zen_leader_key . item.key . "'"
+  if !exists('g:' . s:item.var)
+    exe 'let g:' . s:item.var . " = '" . g:user_zen_leader_key . s:item.key . "'"
   endif
-  if !hasmapto(eval('g:' . item.var), item.mode)
-    exe item.mode . 'map ' . s:target . ' ' . eval('g:' . item.var) . ' <plug>' . item.plug
+  if !hasmapto(eval('g:' . s:item.var), s:item.mode)
+    exe s:item.mode . 'map ' . s:target . ' ' . eval('g:' . s:item.var) . ' <plug>' . s:item.plug
   endif
 endfor
+unlet s:target
+unlet s:item
 
 if exists('s:zen_settings') && g:zencoding_debug == 0
   finish
