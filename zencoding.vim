@@ -1456,7 +1456,7 @@ function! s:zen_expandAbbr(mode) range
   endif
   silent! exe "normal! ".len(part)."h"
   if search('\$cursor\$', 'e')
-    silent! exe "normal! a" . repeat("\<c-h>", 8)
+    silent! exe "normal! v7hs"
   endif
 endfunction
 
