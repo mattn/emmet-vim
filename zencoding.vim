@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 10-May-2010.
-" Version: 0.38
+" Last Change: 11-May-2010.
+" Version: 0.39
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -1456,7 +1456,10 @@ function! s:zen_expandAbbr(mode) range
   endif
   silent! exe "normal! ".len(part)."h"
   if search('\$cursor\$', 'e')
+    let oldselection = &selection
+    let &selection = 'inclusive'
     silent! exe "normal! v7h\"_s"
+    let &selection = oldselection
   endif
 endfunction
 
