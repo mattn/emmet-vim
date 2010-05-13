@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 11-May-2010.
-" Version: 0.39
+" Last Change: 13-May-2010.
+" Version: 0.40
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -1506,37 +1506,36 @@ function! s:zen_imageSize()
   if fn !~ '^\(/\|http\)'
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
-  let [w, h] = [-1, -1]
+  let [type, width, height] = ['', -1, -1]
   
-  if has('perl')
-perl <<EOF
-no warnings;
-eval {
-  require Image::Info;
-  my $fn = ''.VIM::Eval('l:fn');
-  my $ii;
-  if ($fn =~ /^https?\:\/\//) {
-    require File::Temp;
-    require LWP::Simple;
-    my $tmp = File::Temp::tmpnam();
-    LWP::Simple::mirror($fn, $tmp);
-    $ii = Image::Info::image_info($tmp);
-    unlink $tmp;
-  } else {
-    $ii = Image::Info::image_info($fn);
-  }
-  VIM::DoCommand(sprintf('let [w, h] = [%d,%d]', $ii->{width} || -1, $ii->{height} || -1));
-  undef $ii;
-};
-VIM::Msg($@, "ErrorMsg") if $@;
-EOF
+  if filereadable(fn)
+    let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
+  else
+    let hex = substitute(system('curl -s "'.fn.'" | xxd -p'), '\n', '', 'g')
   endif
 
-  if w == -1 && h == -1
+  if hex =~ '^89504e470d0a1a0a'
+    let type = 'png'
+    let width = eval('0x'.hex[32:39])
+    let height = eval('0x'.hex[40:47])
+  endif
+  if hex =~ '^ffd8'
+    let pos = match(hex, 'ffc[02]')
+    let type = 'jpg'
+    let height = eval('0x'.hex[pos+10:pos+11])*256 + eval('0x'.hex[pos+12:pos+13])
+    let width = eval('0x'.hex[pos+14:pos+15])*256 + eval('0x'.hex[pos+16:pos+17])
+  endif
+  if hex =~ '^47494638'
+    let type = 'gif'
+    let width = eval('0x'.hex[18:19].hex[16:17])
+    let height = eval('0x'.hex[14:15].hex[12:13])
+  endif
+
+  if width == -1 && height == -1
     return
   endif
-  let current.attr.width = w
-  let current.attr.height = h
+  let current.attr.width = width
+  let current.attr.height = height
   let html = s:zen_toString(current, 'html', 1)
   call s:change_content(img_region, html)
 endfunction
