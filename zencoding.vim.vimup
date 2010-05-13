@@ -96,7 +96,9 @@ install_details: |
 
 versions:
 - '0.40': |
-   This is an upgrade for ZenCoding.vim: add the pure vimscript code for 'get image size'. you can use it without perl interface just now.
+   This is an upgrade for ZenCoding.vim:
+   add the pure vimscript code for 'get image size'. you can use it without perl interface just now.
+   change key assign of ZenCodingExpandWord from ',' to ';'. it don't effect to most users.
 - '0.39': |
    This is an upgrade for ZenCoding.vim: fixed problem about 'selection'. see http://github.com/mattn/zencoding-vim/issues/#issue/2
 - '0.38': |
