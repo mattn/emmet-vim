@@ -861,9 +861,6 @@ function! s:zen_use_filter(filters, filter)
       return 1
     endif
   endfor
-  if a:filter == 'html'
-    return 1
-  endif
   return 0
 endfunction
 
@@ -1260,8 +1257,16 @@ function! s:zen_toString(...)
         let str .= "<!-- /" . comment . " -->" . (inline ? "" : "\n") . comment_indent
       endif
     else
-      if len(current.snippet) > 0
-        let tmp = substitute(current.snippet, '|', '${cursor}', 'g')
+      let snippet = current.snippet
+      if len(current.snippet) <= 0
+        let snippets = s:zen_getResource(type, 'snippets', {})
+        if !empty(snippets) && has_key(snippets, 'zensnippet')
+          let snippet = snippets['zensnippet']
+        endif
+      endif
+      if len(snippet) > 0
+        let tmp = substitute(snippet, '|', '${cursor}', 'g')
+        let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
         if type == 'css' && s:zen_use_filter(filters, 'fc')
           let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
         endif
