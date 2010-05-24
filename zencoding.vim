@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 21-May-2010.
+" Last Change: 24-May-2010.
 " Version: 0.40
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1293,7 +1293,7 @@ function! s:zen_toString(...)
       endif
     else
       let snippet = current.snippet
-      if len(current.snippet) <= 0
+      if len(current.snippet) == 0
         let snippets = s:zen_getResource(type, 'snippets', {})
         if !empty(snippets) && has_key(snippets, 'zensnippet')
           let snippet = snippets['zensnippet']
