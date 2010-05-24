@@ -1300,6 +1300,10 @@ function! s:zen_toString(...)
         if type == 'css' && s:zen_use_filter(filters, 'fc')
           let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
         endif
+        for attr in keys(current.attr)
+          let val = current.attr[attr]
+          let tmp = substitute(tmp, '\${' . attr . '}', val, 'g')
+        endfor
         let str .= tmp
       else
         if len(current.name)
