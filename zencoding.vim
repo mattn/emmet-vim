@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 24-May-2010.
+" Last Change: 31-May-2010.
 " Version: 0.40
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -1288,7 +1288,7 @@ function! s:zen_toString(...)
         let str .= function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
       elseif s:zen_use_filter(filters, 'haml')
         let str .= s:zen_toString_haml(s:zen_settings, current, type, inline, filters, itemno, indent)
-      elseif s:zen_use_filter(filters, 'html')
+      else
         let str .= s:zen_toString_html(s:zen_settings, current, type, inline, filters, itemno, indent)
       endif
     else
