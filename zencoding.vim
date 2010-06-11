@@ -10,7 +10,7 @@
 "
 "   This is vim script support expanding abbreviation like zen-coding.
 "   ref: http://code.google.com/p/zen-coding/
-"   
+"
 "   Type abbreviation
 "      +-------------------------------------
 "      | html:5_
@@ -42,12 +42,12 @@
 "      |    <div class="bar"></div>
 "      |</div>
 "      +-------------------------------------
-"   
+"
 " Tips:
-"   
+"
 "   You can customize behavior of expanding with overriding config.
-"   This configuration will be marged at loading plugin. 
-"   
+"   This configuration will be marged at loading plugin.
+"
 "     let g:user_zen_settings = {
 "     \  'indentation' : '  ',
 "     \  'perl' : {
@@ -109,7 +109,7 @@ for s:item in [
 \ {'mode': 'i', 'var': 'user_zen_anchorizesummary_key', 'key': 'A', 'plug': 'ZenCodingAnchorizeSummary', 'func': '<esc>:call <sid>zen_anchorizeURL(1)<cr>a'},
 \ {'mode': 'n', 'var': 'user_zen_anchorizesummary_key', 'key': 'A', 'plug': 'ZenCodingAnchorizeSummary', 'func': ':call <sid>zen_anchorizeURL(1)<cr>'},
 \]
-   
+
   if !hasmapto('<plug>'.s:item.plug, s:item.mode)
     exe s:item.mode . 'noremap <plug>' . s:item.plug . ' ' . s:item.func
   endif
@@ -1369,16 +1369,16 @@ function! s:zen_getFileType()
   let type = &ft
   if type == 'xslt' | let type = 'xsl' | endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
-    let type = 'css'    
+    let type = 'css'
   endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^html'
-    let type = 'html'    
+    let type = 'html'
   endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^xml'
-    let type = 'xml'    
+    let type = 'xml'
   endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^javaScript'
-    let type = 'javascript'    
+    let type = 'javascript'
   endif
   if len(type) == 0 | let type = 'html' | endif
   return type
@@ -1420,7 +1420,7 @@ function! s:zen_expandAbbr(mode) range
         let expand = substitute(expand, '\$line\$', lpart, '')
       endfor
     else
-      let str = '' 
+      let str = ''
       if a:firstline != a:lastline
         let line = getline(a:firstline)
         let part = substitute(line, '^\s*', '', '')
@@ -1476,7 +1476,7 @@ function! s:zen_expandAbbr(mode) range
   endif
   if len(expand)
     if expand !~ '\${cursor}'
-      if a:mode == 2 | 
+      if a:mode == 2 |
         let expand = '${cursor}' . expand
       else
         let expand .= '${cursor}'
@@ -1557,7 +1557,7 @@ function! s:zen_imageSize()
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
   let [type, width, height] = ['', -1, -1]
-  
+
   if filereadable(fn)
     let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
   else
@@ -2094,7 +2094,7 @@ function! s:region_is_valid(region)
   return 1
 endfunction
 
-" search_region : make region from pattern which is composing start/end 
+" search_region : make region from pattern which is composing start/end
 "   this function return array of position
 function! s:search_region(start, end)
   return [searchpos(a:start, 'bcnW'), searchpos(a:end, 'cneW')]
