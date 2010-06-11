@@ -845,6 +845,9 @@ let s:zen_settings = {
 \    },
 \    'xhtml': {
 \        'extends': 'html'
+\    },
+\    'mustache': {
+\        'extends': 'html'
 \    }
 \}
 
