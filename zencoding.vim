@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 07-Jun-2010.
-" Version: 0.42
+" Last Change: 11-Jun-2010.
+" Version: 0.43
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -1057,7 +1057,9 @@ function! s:zen_parseIntoTree(abbr, type)
               endif
               let parent = tmp
             endfor
-            call remove(pos, -1)
+            if operator =~ '>'
+              call remove(pos, -1)
+            endif
             let last = parent
             let last.pos += 1
           endif

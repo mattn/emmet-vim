@@ -2,7 +2,7 @@ script_name: ZenCoding.vim
 script_id: '2981'
 script_type: utility
 script_package: zencoding.vim
-script_version: '0.42'
+script_version: '0.43'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
@@ -95,6 +95,9 @@ install_details: |
   copy zencoding.vim to your plugin directory.
 
 versions:
+- '0.43': |
+   This is an upgrade for ZenCoding.vim:
+   fixed behavior for nested block. like "html:5>#page>(header#globalHeader>(hgroup>h1+h2)+(nav>ul>li*3>a)+(form>p.siteSearch>input+input[type=button]))+(#contents>(#main>(section>h2+p*5)+p.pagetop>a[href=#page])+(#sub>p+(nav>ul>li>a)))+(footer#globalFoooter>(ul>li>a)+(p.copyright>small))"
 - '0.42': |
    This is an upgrade for ZenCoding.vim:
    fixed select/option indent.
