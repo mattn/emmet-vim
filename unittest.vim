@@ -403,12 +403,18 @@ finish
 {
     'category': 'mustache',
     'tests': [
-        {
+      {
         'name': "div#{{foo}}",
         'query': "div#{{foo}}",
         'type': "mustache",
         'result': "<div id=\"{{foo}}\"></div>\n",
-        },
+      },
+      {
+        'name': "div.{{foo}}",
+        'query': "div.{{foo}}",
+        'type': "mustache",
+        'result': "<div class=\"{{foo}}\"></div>\n",
+      },
     ],
 },
 ]
