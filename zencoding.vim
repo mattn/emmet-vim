@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 11-Jun-2010.
+" Last Change: 03-Jul-2010.
 " Version: 0.43
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -741,7 +741,7 @@ let s:zen_settings = {
 \            'menu:t': {'type': 'toolbar'},
 \            'video': {'src': ''},
 \            'audio': {'src': ''},
-\            'html:xml': [{'xmlns': 'http://www.w3.org/1999/xhtml'}, {'xml:lang': 'ru'}]
+\            'html:xml': [{'xmlns': 'http://www.w3.org/1999/xhtml'}, {'xml:lang': '${lang}'}]
 \        },
 \        'aliases': {
 \            'link:*': 'link',
