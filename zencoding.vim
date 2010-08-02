@@ -1636,6 +1636,9 @@ function! s:zen_toggleComment()
       if !s:region_is_valid(block)
         call setpos('.', curpos)
         let block = s:search_region('<!', '-->')
+        if !s:region_is_valid(block)
+          return
+        endif
       endif
       if s:point_in_region(curpos[1:2], block)
         let comment_region = s:search_region('<!--', '-->')
