@@ -1615,7 +1615,7 @@ function! s:zen_toggleComment()
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if content[-2:] == '/>' && s:point_in_region(curpos[1:2], block)
       let comment_region = s:search_region('<!--', '-->')
-      if !s:region_is_valid(comment_region) || !s:point_in_region(curpos[1:2], comment_region)
+      if !s:region_is_valid(comment_region) || !s:point_in_region(curpos[1:2], comment_region) || !s:point_in_region(comment_region[0], block)
         let content = '<!-- ' . s:get_content(block) . ' -->'
         call s:change_content(block, content)
       else
