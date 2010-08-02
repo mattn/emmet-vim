@@ -1633,6 +1633,10 @@ function! s:zen_toggleComment()
         let pos2 = searchpos('</' . tag_name . '>', 'cneW')
       endif
       let block = [pos1, pos2]
+      if !s:region_is_valid(block)
+        call setpos('.', curpos)
+        let block = s:search_region('<!', '-->')
+      endif
       if s:point_in_region(curpos[1:2], block)
         let comment_region = s:search_region('<!--', '-->')
         if !s:region_is_valid(comment_region) || !s:point_in_region(curpos[1:2], comment_region)
