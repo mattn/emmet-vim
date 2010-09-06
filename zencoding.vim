@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Jul-2010.
-" Version: 0.43
+" Last Change: 06-Sep-2010.
+" Version: 0.44
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -116,7 +116,7 @@ for s:item in [
   if !exists('g:' . s:item.var)
     exe 'let g:' . s:item.var . " = '" . g:user_zen_leader_key . s:item.key . "'"
   endif
-  if !hasmapto(eval('g:' . s:item.var), s:item.mode)
+  if len(maparg(eval('g:' . s:item.var), s:item.mode)) == 0
     exe s:item.mode . 'map ' . s:target . ' ' . eval('g:' . s:item.var) . ' <plug>' . s:item.plug
   endif
 endfor
