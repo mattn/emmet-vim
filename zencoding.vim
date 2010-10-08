@@ -1923,7 +1923,7 @@ function! s:get_text_from_html(buf)
   let buf = a:buf
 
   let buf = strpart(buf, stridx(buf, '</head>'))
-  let buf = substitute(buf, '<script>.\{-}</script>', '', 'g')
+  let buf = substitute(buf, '<script[^>]*>.\{-}</script>', '', 'g')
   let res = ''
   let max = 0
   let mx = '\(<td[^>]\{-}>\)\|\(<\/td>\)\|\(<div[^>]\{-}>\)\|\(<\/div>\)'
