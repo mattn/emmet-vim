@@ -1,8 +1,8 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Sep-2010.
-" Version: 0.44
+" Last Change: 08-Oct-2010.
+" Version: 0.45
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://code.google.com/p/zen-coding/
@@ -994,11 +994,20 @@ function! s:zen_parseIntoTree(abbr, type)
           let current.attr.class = substitute(item[1:], '\.', ' ', 'g')
         endif
         if item[0] == '['
-          let kks = split(item[1:-2], ' ')
-          for kki in kks
-            let kk = split(kki, '=')
-            let current.attr[kk[0]] = len(kk) > 1 ? join(kk[1:], '=') : ''
-          endfor
+          let atts = item[1:-2]
+          while len(atts)
+            let amat = matchstr(atts, '\(\w\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)')
+            if len(amat) == 0
+              break
+            endif
+            let key = split(amat, '=')[0]
+            let val = amat[len(key)+1:]
+            if val =~ '^["'']'
+              let val = val[1:-2]
+            endif
+            let current.attr[key] = val
+            let atts = atts[stridx(atts, amat) + len(amat):]
+          endwhile
         endif
         let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
       endwhile

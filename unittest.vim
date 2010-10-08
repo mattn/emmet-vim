@@ -341,6 +341,12 @@ finish
       'type': "html",
       'result': "<link media=\"all\" rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n",
     },
+    {
+      'name': "a[title=\"Hello', world\" rel]",
+      'query': "a[title=\"Hello', world\" rel]",
+      'type': "html",
+      'result': "<a rel=\"\" href=\"\" title=\"Hello', world\"></a>\n",
+    },
   ],
 },
 {
