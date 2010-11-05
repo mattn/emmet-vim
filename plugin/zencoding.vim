@@ -66,6 +66,14 @@
 " GetLatestVimScripts: 2981 1 :AutoInstall: zencoding.vim
 " script type: plugin
 
+if &cp || (exists('g:loaded_zencoding_vim') && g:loaded_zencoding_vim)
+  finish
+endif
+let g:loaded_zencoding_vim = 1
+
+let s:save_cpo = &cpo
+set cpo&vim
+
 if !exists('g:zencoding_debug')
   let g:zencoding_debug = 0
 endif
@@ -122,5 +130,8 @@ function! s:install_plugin()
   endfor
 endfunction
 call s:install_plugin()
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim:set et:
