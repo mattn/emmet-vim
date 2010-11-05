@@ -176,22 +176,26 @@ Tutorial of zencoding.vim
   </blockquote>
   ---------------------
 
-14. Enable zencoding.vim for language you using.
+14. Installing zencoding.vim for language you using.
 
-  There are two ways to enable zencoding.vim for language you using.
+  # cd ~/.vim
+  # unzip zencoding-vim.zip
 
-  1. Enable with filetype.
+  or if you install pathogen.vim:
+
+  # cd ~/.vim/bundle # or make directory
+  # unzip /path/to/zencoding-vim.zip
+
+  if you get sources from repository:
+
+  # cd ~/.vim/bundle # or make directory
+  # git clone http://github.com/mattn/zencoding-vim.git
+
+15. Enable zencoding.vim for language you using.
+
+  You can customize the behavior of language you using.
+
   ---------------------
-  # mkdir $HOME/.vim/ftplugin/php
-  # cp zencoding.vim $HOME/.vim/ftplugin/php/.
-  ---------------------
-  
-  2. Enable with zen_settings.
-  ---------------------
-  # cp zencoding.vim $HOME/.vim/plugin/.
-
-
-  And you can customize the behavior of language you using.
   # cat >> ~/.vimrc
   let g:user_zen_settings = {
   \  'php' : {
