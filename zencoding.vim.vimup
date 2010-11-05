@@ -1,8 +1,8 @@
 script_name: ZenCoding.vim
 script_id: '2981'
 script_type: utility
-script_package: plugin/zencoding.vim
-script_version: '0.45'
+script_package: zencoding-vim.zip
+script_version: '0.46'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
@@ -83,9 +83,24 @@ detailed_description: |
   You can set language attribute in html using zen_settings['lang'].
 
 install_details: |
-  copy zencoding.vim to your plugin directory.
+
+  # cd ~/.vim
+  # unzip zencoding-vim.zip
+
+  or if you install pathogen.vim:
+
+  # cd ~/.vim/bundle # or make directory
+  # unzip /path/to/zencoding-vim.zip
+
+  if you get sources from repository:
+
+  # cd ~/.vim/bundle # or make directory
+  # git clone http://github.com/mattn/zencoding-vim.git
 
 versions:
+- '0.46': |
+   This is an upgrade for ZenCoding.vim:
+   [drastic changes] enable autoload. you should whole replace older files.
 - '0.45': |
    This is an upgrade for ZenCoding.vim:
    fixed attribute parsing like: a[href="hello', world" rel].
