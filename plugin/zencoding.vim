@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 05-Nov-2010.
+" Last Change: 10-Nov-2010.
 " Version: 0.47
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -87,7 +87,6 @@ if !exists('g:user_zen_leader_key')
 endif
 
 function! s:install_plugin()
-  let target = expand('<sfile>:h') =~ '[\\/]plugin$' ? '' : '<buffer>'
   for item in [
   \ {'mode': 'i', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandAbbr', 'func': '<c-g>u<esc>:call zencoding#expandAbbr(0)<cr>a'},
   \ {'mode': 'v', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandVisual', 'func': ':call zencoding#expandAbbr(2)<cr>'},
@@ -125,11 +124,12 @@ function! s:install_plugin()
       exe 'let g:' . item.var . " = '" . g:user_zen_leader_key . item.key . "'"
     endif
     if len(maparg(eval('g:' . item.var), item.mode)) == 0
-      exe item.mode . 'map ' . target . ' ' . eval('g:' . item.var) . ' <plug>' . item.plug
+      exe item.mode . 'map <unique> ' . eval('g:' . item.var) . ' <plug>' . item.plug
     endif
   endfor
 endfunction
 call s:install_plugin()
+delfunction s:install_plugin
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
