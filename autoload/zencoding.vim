@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 05-Nov-2010.
+" Last Change: 10-Nov-2010.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -940,7 +940,7 @@ endfunction
 
 function! zencoding#balanceTag(flag) range
   let vblock = s:get_visualblock()
-  if abs(a:flag) == 2
+  if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
     let curpos = getpos('.')
@@ -1011,7 +1011,7 @@ function! zencoding#balanceTag(flag) range
       endif
     endif
   endwhile
-  if abs(a:flag) == 2
+  if a:flag == -2 || a:flag == 2
     silent! exe "normal! gv"
   else
     call setpos('.', curpos)
