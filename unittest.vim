@@ -18,7 +18,7 @@ for testgroup in testgroups
     let testtitle = len(testtitle) < 57 ? (testtitle.repeat(' ', 57-len(testtitle))) : strpart(testtitle, 0, 57)
     echohl ModeMsg | echon "testing #".printf("%03d", n+1)
     echohl None | echon ": ".testtitle." ... "
-    unlet! res | let res = zencoding#Expand(tests[n].query, tests[n].type, 0)
+    unlet! res | let res = zencoding#ExpandWord(tests[n].query, tests[n].type, 0)
     if res == tests[n].result
       echohl Title | echon "ok\n" | echohl None
     else
