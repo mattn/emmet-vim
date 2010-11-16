@@ -4,43 +4,96 @@ if exists('g:user_zen_settings')
 endif
 so plugin/zencoding.vim
 
-unlet! testgroups
-let oldmore = &more
-let &more = 0
-let testgroups = eval(join(filter(split(substitute(join(readfile(expand('<sfile>')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
-let failed = 0
-for testgroup in testgroups
-  echohl MatchParen | echon "[" testgroup.category."]\n" | echohl None
-  let tests = testgroup.tests
-  let start = reltime()
-  for n in range(len(tests))
-    let testtitle = tests[n].name
-    let testtitle = len(testtitle) < 57 ? (testtitle.repeat(' ', 57-len(testtitle))) : strpart(testtitle, 0, 57)
-    echohl ModeMsg | echon "testing #".printf("%03d", n+1)
-    echohl None | echon ": ".testtitle." ... "
-    unlet! res | let res = zencoding#ExpandWord(tests[n].query, tests[n].type, 0)
-    if res == tests[n].result
-      echohl Title | echon "ok\n" | echohl None
-    else
-      echohl WarningMsg | echon "ng\n" | echohl None
-      echohl ErrorMsg | echo "failed test #".(n+1) | echohl None
-  	  echo "    expect:".tests[n].result
-  	  echo "       got:".res
-  	  echo ""
-      let failed = 1
+function! s:testExpandAbbr()
+  unlet! testgroups
+  let testgroups = eval(join(filter(split(substitute(join(readfile(expand('%')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
+  let failed = 0
+  for testgroup in testgroups
+    echohl MatchParen | echon "[" testgroup.category."]\n" | echohl None
+    let tests = testgroup.tests
+    let start = reltime()
+    for n in range(len(tests))
+      let testtitle = tests[n].name
+      let testtitle = len(testtitle) < 57 ? (testtitle.repeat(' ', 57-len(testtitle))) : strpart(testtitle, 0, 57)
+      echohl ModeMsg | echon "testing #".printf("%03d", n+1)
+      echohl None | echon ": ".testtitle." ... "
+      unlet! res | let res = zencoding#ExpandWord(tests[n].query, tests[n].type, 0)
+      if res == tests[n].result
+        echohl Title | echon "ok\n" | echohl None
+      else
+        echohl WarningMsg | echon "ng\n" | echohl None
+        echohl ErrorMsg | echo "failed test #".(n+1) | echohl None
+        echo "    expect:".tests[n].result
+        echo "       got:".res
+        echo ""
+        let failed = 1
+        break
+      endif
+    endfor
+    if failed
       break
     endif
+    echo "past:".reltimestr(reltime(start))."\n"
   endfor
-  if failed
-    break
+endfunction
+
+function! s:testImageSize()
+  echohl MatchParen | echon "[image size]\n" | echohl None
+  echohl ModeMsg | echon "testing image size" | echohl None
+  silent! 1new
+  silent! call setline(1, "img[src=http://mattn.kaoriya.net/images/logo.png]")
+  let start = reltime()
+  exe "silent! normal A\<c-y>,\<c-y>i"
+  let time = reltimestr(reltime(start))
+  let line = getline(1)
+  silent! bw!
+  let expect = '<img src="http://mattn.kaoriya.net/images/logo.png" alt="" width="96" height="96" />'
+  if line == expect
+    echo "past:".time."\n"
+    echo
+  else
+    echohl ErrorMsg | echo "failed test image size" | echohl None
+    echo "    expect:".expect
+    echo "       got:".line
+    echo ""
   endif
-  echo "past:".reltimestr(reltime(start))."\n"
-endfor
+endfunction
+
+function! s:testMoveNextPrev()
+  echohl MatchParen | echon "[move next prev]\n" | echohl None
+  echohl ModeMsg | echon "testing move next prev" | echohl None
+  silent! 1new
+  silent! call setline(1, "<foo></foo>")
+  silent! call setline(2, "<bar></bar>")
+  silent! call setline(3, "<baz dankogai=\"kogaidan\"></baz>")
+  let start = reltime()
+  exe "silent! normal gg0\<c-y>n\<c-y>n"
+  let pos = getpos(".")
+  silent! bw!
+  let time = reltimestr(reltime(start))
+  if pos == [0,2,5,0]
+    echo "past:".time."\n"
+  else
+    echohl ErrorMsg | echo "failed test image size" | echohl None
+    echo "    expect:".expect
+    echo "       got:".line
+    echo ""
+  endif
+endfunction
 
 if exists('g:user_zen_settings')
   let g:user_zen_settings = s:old_user_zen_settings
 endif
+
+let oldmore = &more
+let &more = 0
+
+call s:testExpandAbbr()
+call s:testImageSize()
+call s:testMoveNextPrev()
+
 let &more=oldmore
+echo "done"
 
 finish
 [
