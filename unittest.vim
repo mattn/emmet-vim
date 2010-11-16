@@ -38,20 +38,22 @@ function! s:testExpandAbbr()
 endfunction
 
 function! s:testImageSize()
-  echohl MatchParen | echon "[image size]\n" | echohl None
-  echohl ModeMsg | echon "testing image size" | echohl None
   silent! 1new
   silent! call setline(1, "img[src=http://mattn.kaoriya.net/images/logo.png]")
-  let start = reltime()
+  silent! let start = reltime()
   exe "silent! normal A\<c-y>,\<c-y>i"
   let time = reltimestr(reltime(start))
   let line = getline(1)
   silent! bw!
+  echohl MatchParen | echon "[image size]\n" | echohl None
+  echohl ModeMsg | echon "testing image size" . repeat(' ', 54) . '... ' | echohl None
   let expect = '<img src="http://mattn.kaoriya.net/images/logo.png" alt="" width="96" height="96" />'
   if line == expect
+    echohl Title | echon "ok\n" | echohl None
     echo "past:".time."\n"
     echo
   else
+    echohl WarningMsg | echon "ng\n" | echohl None
     echohl ErrorMsg | echo "failed test image size" | echohl None
     echo "    expect:".expect
     echo "       got:".line
@@ -60,23 +62,27 @@ function! s:testImageSize()
 endfunction
 
 function! s:testMoveNextPrev()
-  echohl MatchParen | echon "[move next prev]\n" | echohl None
-  echohl ModeMsg | echon "testing move next prev" | echohl None
   silent! 1new
   silent! call setline(1, "<foo></foo>")
   silent! call setline(2, "<bar></bar>")
-  silent! call setline(3, "<baz dankogai=\"kogaidan\"></baz>")
+  silent! call setline(3, "<baz dankogai=\"\"></baz>")
   let start = reltime()
-  exe "silent! normal gg0\<c-y>n\<c-y>n"
+  exe "silent! normal gg0\<c-y>n\<c-y>n\<c-y>n"
   let pos = getpos(".")
+  let line = substitute(getline("."), '<baz \(\w\+\)=".*', '\1', '')
   silent! bw!
+  echohl MatchParen | echon "[move next prev]\n" | echohl None
+  echohl ModeMsg | echon "testing move next prev" . repeat(' ', 50) . '... ' | echohl None
   let time = reltimestr(reltime(start))
-  if pos == [0,2,5,0]
+  let expect = [0,3,15,0]
+  if pos == expect && line == 'dankogai'
+    echohl Title | echon "ok\n" | echohl None
     echo "past:".time."\n"
   else
+    echohl WarningMsg | echon "ng\n" | echohl None
     echohl ErrorMsg | echo "failed test image size" | echohl None
-    echo "    expect:".expect
-    echo "       got:".line
+    echo "    expect:".string(expect)
+    echo "       got:".string(pos)
     echo ""
   endif
 endfunction
