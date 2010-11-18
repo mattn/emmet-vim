@@ -1,6 +1,7 @@
 all : zencoding-vim.zip
 
 remove-zip:
+	rm doc/tags
 	rm zencoding-vim.zip
 
 zencoding-vim.zip: remove-zip
