@@ -2,7 +2,7 @@ script_name: ZenCoding.vim
 script_id: '2981'
 script_type: utility
 script_package: zencoding-vim.zip
-script_version: '0.48'
+script_version: '0.49'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
@@ -98,6 +98,9 @@ install_details: |
   # git clone http://github.com/mattn/zencoding-vim.git
 
 versions:
+- '0.49': |
+   This is an upgrade for ZenCoding.vim:
+   [doc] add help manual.
 - '0.48': |
    This is an upgrade for ZenCoding.vim:
    [fix] install mappings to global.
