@@ -406,6 +406,12 @@ finish
       'type': "html",
       'result': "<a rel=\"\" href=\"\" title=\"Hello', world\"></a>\n",
     },
+    {
+      'name': "div>a#foo{bar}",
+      'query': "div>a#foo{bar}",
+      'type': "html",
+      'result': "<div>\n\t<a id=\"foo\" href=\"\">bar</a>\n</div>\n",
+    },
   ],
 },
 {
