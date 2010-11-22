@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 10-Nov-2010.
+" Last Change: 22-Nov-2010.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -700,6 +700,7 @@ function! zencoding#expandAbbr(mode) range
       endif
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
+    let expand = substitute(expand, '${charset}', s:zen_settings.charset, 'g')
     let expand = substitute(expand, '\${cursor}', '$cursor$', '')
     let expand = substitute(expand, '\${cursor}', '', 'g')
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
@@ -1315,6 +1316,7 @@ unlet! s:zen_settings
 let s:zen_settings = {
 \    'indentation': "\t",
 \    'lang': "en",
+\    'charset': "UTF-8",
 \    'css': {
 \        'snippets': {
 \            '@i': '@import url(|);',
@@ -1798,7 +1800,7 @@ let s:zen_settings = {
 \            'html:4t': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
 \                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
-\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n"
+\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\">\n"
 \                    ."    <title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
@@ -1806,7 +1808,7 @@ let s:zen_settings = {
 \            'html:4s': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"
 \                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
-\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n"
+\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\">\n"
 \                    ."    <title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
@@ -1814,7 +1816,7 @@ let s:zen_settings = {
 \            'html:xt': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
 \                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
 \                    ."<head>\n"
-\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n"
+\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
 \                    ."    <title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
@@ -1822,7 +1824,7 @@ let s:zen_settings = {
 \            'html:xs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
 \                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
 \                    ."<head>\n"
-\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n"
+\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
 \                    ."    <title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
@@ -1830,7 +1832,7 @@ let s:zen_settings = {
 \            'html:xxs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n"
 \                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
 \                    ."<head>\n"
-\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n"
+\                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
 \                    ."    <title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
@@ -1838,7 +1840,7 @@ let s:zen_settings = {
 \            'html:5': "<!DOCTYPE HTML>\n"
 \                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
-\                    ."    <meta charset=\"UTF-8\">\n"
+\                    ."    <meta charset=\"${charset}\">\n"
 \                    ."    <title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
