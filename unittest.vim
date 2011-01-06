@@ -435,6 +435,12 @@ finish
       'type': "css",
       'result': "float: left;",
     },
+    {
+      'name': "bg+",
+      'query': "bg+",
+      'type': "css",
+      'result': "background:#FFF url() 0 0 no-repeat;",
+    },
   ],
 },
 {
