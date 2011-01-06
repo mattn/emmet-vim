@@ -23,6 +23,7 @@ function! s:testExpandAbbr()
       else
         echohl WarningMsg | echon "ng\n" | echohl None
         echohl ErrorMsg | echo "failed test #".(n+1) | echohl None
+        set more
         echo "    expect:".tests[n].result
         echo "       got:".res
         echo ""
