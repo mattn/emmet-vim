@@ -413,6 +413,12 @@ finish
       'type': "html",
       'result': "<div>\n\t<a id=\"foo\" href=\"\">bar</a>\n</div>\n",
     },
+    {
+      'name': ".content{Hello!}",
+      'query': ".content{Hello!}",
+      'type': "html",
+      'result': "<div class=\"content\">Hello!</div>\n",
+    },
   ],
 },
 {
@@ -464,6 +470,12 @@ finish
       'query': "a*3|haml",
       'type': "haml",
       'result': "%a{ :href => \"\" }\n%a{ :href => \"\" }\n%a{ :href => \"\" }\n",
+    },
+    {
+      'name': ".content{Hello!}|haml",
+      'query': ".content{Hello!}|haml",
+      'type': "haml",
+      'result': "%div.content Hello!\n",
     },
   ],
 },
