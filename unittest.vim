@@ -458,6 +458,12 @@ finish
       'type': "haml",
       'result': "%div\n  %p<\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
     },
+    {
+      'name': "a*3|haml",
+      'query': "a*3|haml",
+      'type': "haml",
+      'result': "%a{ :href => \"\" }\n%a{ :href => \"\" }\n%a{ :href => \"\" }\n",
+    },
   ],
 },
 {
