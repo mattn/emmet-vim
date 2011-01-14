@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 12-Jan-2011.
+" Last Change: 14-Jan-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -642,7 +642,10 @@ function! zencoding#expandAbbr(mode) range
       for n in range(a:firstline, a:lastline)
         let lline = getline(n)
         let lpart = substitute(lline, '^\s*', '', '')
-        let expand = join(split(expand, '\$line\$'), lpart)
+        let pos = stridx(expand, "$line$")
+        if pos != -1
+          let expand = expand[:pos-1] . lpart . expand[pos+6:]
+        endif
       endfor
     else
       let str = ''

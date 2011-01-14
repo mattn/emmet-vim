@@ -98,6 +98,8 @@ install_details: |
   # git clone http://github.com/mattn/zencoding-vim.git
 
 versions:
+- '0.52': |
+   [fix] broken wrap expanding.
 - '0.51': |
    This is an upgrade for ZenCoding.vim:
    [fix] wrap expanding with '&'.
