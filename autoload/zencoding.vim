@@ -353,8 +353,6 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     endif
     if stridx(','.settings.html.empty_elements.',', ','.current.name.',') != -1 && len(current.value) == 0
       let str .= "/"
-    elseif stridx(','.settings.html.block_elements.',', ','.current.name.',') != -1 && (len(current.child) == 0 && len(current.value) == 0)
-      let str .= '<'
     endif
 
     let inner = ''
