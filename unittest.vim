@@ -463,7 +463,7 @@ finish
       'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
       'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
       'type': "haml",
-      'result': "%div\n  %p<\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
+      'result': "%div\n  %p\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
     },
     {
       'name': "a*3|haml",
