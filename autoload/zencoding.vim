@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Jan-2011.
+" Last Change: 23-Feb-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -440,9 +440,13 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
   elseif len(current.child)
     if inline == 0
       if stridx(','.settings.html.inline_elements.',', ','.current.name.',') == -1
-        let inner = substitute(inner, "\n", "\n" . indent, 'g')
-        let inner = substitute(inner, indent . "$", "", 'g')
-        let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
+        if inner =~ "\n$"
+          let inner = substitute(inner, "\n", "\n" . indent, 'g')
+          let inner = substitute(inner, indent . "$", "", 'g')
+          let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
+        else
+          let str .= ">\n" . indent . inner . indent . "\n</" . current.name . ">\n"
+        endif
       else
         let str .= ">" . inner . "</" . current.name . ">\n"
       endif
@@ -645,6 +649,7 @@ function! zencoding#expandAbbr(mode) range
           let expand = expand[:pos-1] . lpart . expand[pos+6:]
         endif
       endfor
+      let expand = substitute(expand, '\$line\$', '', 'g')
     else
       let str = ''
       if a:firstline != a:lastline
