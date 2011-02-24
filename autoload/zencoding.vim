@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 23-Feb-2011.
+" Last Change: 24-Feb-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1807,7 +1807,8 @@ let s:zen_settings = {
 \            'pgba:r': 'page-break-after:right;',
 \            'orp': 'orphans:|;',
 \            'wid': 'widows:|;'
-\        }
+\        },
+\        'filters': 'fc'
 \    },
 \    'html': {
 \        'snippets': {
