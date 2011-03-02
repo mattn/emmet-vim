@@ -35,9 +35,14 @@
 		<div class="blocked-content">
 			<article id="install">
 				<h2 class="maintitle">Install</h2>
-				<p>copy zencoding.vim to your plugin directory</p>
+				<p>copy plugin/zencoding.vim to plugin directory. and copy autoload/zencoding.vim to autoload directory.</p>
 <pre class="code">
-# cp zencoding.vim ~/.vim/plugin/.
+# cp plugin/zencoding.vim ~/.vim/plugin/.
+# cp autoload/zencoding.vim ~/.vim/autoload/.
+</pre>
+				<p>If you install pathogen.vim, you can make it work with only copying zencoding-vim directory to bundle directory.</p>
+<pre class="code">
+# cp -r zencoding-vim ~/.vim/bundle/.
 </pre>
 			</article>
 		</div>
