@@ -23,6 +23,7 @@ function! s:testExpandAbbr()
       else
         echohl WarningMsg | echon "ng\n" | echohl None
         echohl ErrorMsg | echo "failed test #".(n+1) | echohl None
+        set more
         echo "    expect:".tests[n].result
         echo "       got:".res
         echo ""
@@ -412,6 +413,12 @@ finish
       'type': "html",
       'result': "<div>\n\t<a id=\"foo\" href=\"\">bar</a>\n</div>\n",
     },
+    {
+      'name': ".content{Hello!}",
+      'query': ".content{Hello!}",
+      'type': "html",
+      'result': "<div class=\"content\">Hello!</div>\n",
+    },
   ],
 },
 {
@@ -435,6 +442,12 @@ finish
       'type': "css",
       'result': "float: left;",
     },
+    {
+      'name': "bg+",
+      'query': "bg+",
+      'type': "css",
+      'result': "background:#FFF url() 0 0 no-repeat;",
+    },
   ],
 },
 {
@@ -450,7 +463,19 @@ finish
       'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
       'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
       'type': "haml",
-      'result': "%div\n  %p<\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
+      'result': "%div\n  %p\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
+    },
+    {
+      'name': "a*3|haml",
+      'query': "a*3|haml",
+      'type': "haml",
+      'result': "%a{ :href => \"\" }\n%a{ :href => \"\" }\n%a{ :href => \"\" }\n",
+    },
+    {
+      'name': ".content{Hello!}|haml",
+      'query': ".content{Hello!}|haml",
+      'type': "haml",
+      'result': "%div.content Hello!\n",
     },
   ],
 },

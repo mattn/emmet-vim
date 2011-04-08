@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Nov-2010.
+" Last Change: 24-Feb-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -61,8 +61,12 @@ function! s:zen_parseIntoTree(abbr, type)
     let indent = s:zen_settings.indentation
   endif
 
-  let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
-  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+  if s:zen_isExtends(type, "html")
+    let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+  else
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\+\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+  endif
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
   let parent = root
   let last = root
@@ -82,6 +86,10 @@ function! s:zen_parseIntoTree(abbr, type)
       break
     endif
     if tag_name =~ '^#'
+      let attributes = tag_name . attributes
+      let tag_name = 'div'
+    endif
+    if tag_name =~ '^\.'
       let attributes = tag_name . attributes
       let tag_name = 'div'
     endif
@@ -327,8 +335,8 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     for attr in keys(current.attr)
       let val = current.attr[attr]
       if current.multiplier > 1
-        while val =~ '\$[^{]*'
-          let val = substitute(val, '\(\$\+\)\([^{]*\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        while val =~ '\$\([^{]\|$\)'
+          let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
         endwhile
       endif
       if attr == 'id'
@@ -345,8 +353,6 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     endif
     if stridx(','.settings.html.empty_elements.',', ','.current.name.',') != -1 && len(current.value) == 0
       let str .= "/"
-    elseif stridx(','.settings.html.block_elements.',', ','.current.name.',') != -1 && (len(current.child) == 0 && len(current.value) == 0)
-      let str .= '<'
     endif
 
     let inner = ''
@@ -434,9 +440,13 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
   elseif len(current.child)
     if inline == 0
       if stridx(','.settings.html.inline_elements.',', ','.current.name.',') == -1
-        let inner = substitute(inner, "\n", "\n" . indent, 'g')
-        let inner = substitute(inner, indent . "$", "", 'g')
-        let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
+        if inner =~ "\n$"
+          let inner = substitute(inner, "\n", "\n" . indent, 'g')
+          let inner = substitute(inner, indent . "$", "", 'g')
+          let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
+        else
+          let str .= ">\n" . indent . inner . indent . "\n</" . current.name . ">\n"
+        endif
       else
         let str .= ">" . inner . "</" . current.name . ">\n"
       endif
@@ -585,6 +595,8 @@ endfunction
 function! s:zen_getFileType()
   let type = &ft
   if type == 'xslt' | let type = 'xsl' | endif
+  if type == 'htmldjango' | let type = 'html' | endif
+  if type == 'html.django_template' | let type = 'html' | endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
     let type = 'css'
   endif
@@ -634,8 +646,12 @@ function! zencoding#expandAbbr(mode) range
       for n in range(a:firstline, a:lastline)
         let lline = getline(n)
         let lpart = substitute(lline, '^\s*', '', '')
-        let expand = substitute(expand, '\$line\$', lpart, '')
+        let pos = stridx(expand, "$line$")
+        if pos != -1
+          let expand = expand[:pos-1] . lpart . expand[pos+6:]
+        endif
       endfor
+      let expand = substitute(expand, '\$line\$', '', 'g')
     else
       let str = ''
       if a:firstline != a:lastline
@@ -675,9 +691,6 @@ function! zencoding#expandAbbr(mode) range
       let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
-    endif
-    if part =~ '!'
-      let part = substitute(part, '.*!', '!', '')
     endif
     let rest = getline('.')[len(line):]
     let str = part
@@ -729,6 +742,9 @@ function! zencoding#expandAbbr(mode) range
     silent! exe "normal! v7h\"_s"
     let &selection = oldselection
   endif
+  if g:zencoding_debug > 1
+    call getchar()
+  endif
 endfunction
 
 function! zencoding#moveNextPrev(flag)
@@ -775,8 +791,8 @@ function! zencoding#imageSize()
   endif
   if hex =~ '^47494638'
     let type = 'gif'
-    let width = eval('0x'.hex[18:19].hex[16:17])
-    let height = eval('0x'.hex[14:15].hex[12:13])
+    let width = eval('0x'.hex[14:15].hex[12:13])
+    let height = eval('0x'.hex[18:19].hex[16:17])
   endif
 
   if width == -1 && height == -1
@@ -1791,7 +1807,8 @@ let s:zen_settings = {
 \            'pgba:r': 'page-break-after:right;',
 \            'orp': 'orphans:|;',
 \            'wid': 'widows:|;'
-\        }
+\        },
+\        'filters': 'fc'
 \    },
 \    'html': {
 \        'snippets': {
