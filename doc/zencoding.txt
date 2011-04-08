@@ -368,7 +368,7 @@ CUSTOMIZE                                                  *zencoding-customize*
 <
 4. Complete Tag                                         *zencoding-complete-tag*
 
-  If you want to complete tags using |ominifunc| then add this.
+  If you want to complete tags using |omnifunc| then add this.
 >
   let g:use_zen_complete_tag = 1
 <
