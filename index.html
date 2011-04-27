@@ -14,6 +14,12 @@
 		</script>
 	<![endif]--> 
 	<script type="text/javascript" src="static/js/jquery-latest.js"></script>
+	<script type="text/javascript" src="showtty.js"></script>
+	<script type="text/javascript">
+	$(function() {
+		showTTYURL($('#tty')[0], "output.json");
+	});
+	</script>
 </head>
 <body>
 	<img id="logo" src="static/images/zencoding-vim-logo.png" title="禅" />
@@ -29,10 +35,14 @@
 		<div class="blocked-content">
 			<article id="install">
 				<h2 class="maintitle">Install</h2>
-				<p>copy zencoding.vim to your ftplugin directory</p>
+				<p>copy plugin/zencoding.vim to plugin directory. and copy autoload/zencoding.vim to autoload directory.</p>
 <pre class="code">
-# mkdir ~/.vim/ftplugin/html
-# cp zencoding.vim ~/.vim/ftplugin/html/.
+# cp plugin/zencoding.vim ~/.vim/plugin/.
+# cp autoload/zencoding.vim ~/.vim/autoload/.
+</pre>
+				<p>if you install <a href="http://www.vim.org/scripts/script.php?script_id=2332">pathogen.vim</a>, you can make it work with only copying zencoding-vim directory to bundle directory.</p>
+<pre class="code">
+# cp -r zencoding-vim ~/.vim/bundle/.
 </pre>
 			</article>
 		</div>
@@ -40,9 +50,13 @@
 		<div class="blocked-content">
 			<article id="howworkthis">
 				<h2 class="maintitle">How This Work</h2>
-				<p>
-				<em>Under construction. This will be widget of ttyshare?</em>
-				</p>
+				<p>below is a movie when using zencoding.vim</p>
+				<div id="tty">
+				</div>
+				<!--
+				<embed type="application/x-shockwave-flash" src="http://ttyshare.com/t/a474271fe4eea14f6302286d2bfabd968fb40868" width="480" height="288"/>
+				<embed type="application/x-shockwave-flash" src="http://ttyshare.com/t/8e83a40b6e5d6590b2832fc406114dbe348fc96f" width="480" height="288"/>
+				-->
 			</article>
 		</div>
 		<br />
