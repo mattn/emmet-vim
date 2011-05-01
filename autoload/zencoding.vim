@@ -317,6 +317,10 @@ function! s:zen_mergeConfig(lhs, rhs)
 endfunction
 
 
+function! s:zen_toString_sass(settings, current, type, inline, filters, itemno, indent)
+  return 'sassed'
+endfunction
+
 function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
@@ -536,8 +540,12 @@ function! s:zen_toString(...)
       if len(snippet) > 0
         let tmp = substitute(snippet, '|', '${cursor}', 'g')
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
+        echo type
         if type == 'css' && s:zen_useFilter(filters, 'fc')
           let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
+        endif
+        if type == 'sass' && s:zen_useFilter(filters, 'sass')
+          let tmp = substitute(tmp, '^\([^:]\+\):\([^;]*\);$', '\1: \2', '')
         endif
         for attr in keys(current.attr)
           let val = current.attr[attr]
@@ -636,7 +644,7 @@ function! zencoding#expandAbbr(mode) range
     if len(leader) == 0
       return
     endif
-    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(sass\|html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
       let filters = split(matchstr(leader, mx)[1:], '\s*,\s*')
       let leader = substitute(leader, mx, '', '')
@@ -707,7 +715,7 @@ function! zencoding#expandAbbr(mode) range
     endif
     let rest = getline('.')[len(line):]
     let str = part
-    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(sass\|html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
     if str =~ mx
       let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
       let str = substitute(str, mx, '', '')
@@ -1295,7 +1303,7 @@ endfunction
 "==============================================================================
 
 function! zencoding#ExpandWord(abbr, type, orig)
-  let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+  let mx = '|\(\%(sass\|html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
 
