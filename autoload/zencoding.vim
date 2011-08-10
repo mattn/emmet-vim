@@ -691,6 +691,9 @@ function! zencoding#expandAbbr(mode) range
       let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
+      while part =~ '<.*>'
+          let part = substitute(part, '<.\{-}>', '', '')
+      endwhile
     endif
     let rest = getline('.')[len(line):]
     let str = part
