@@ -597,6 +597,7 @@ function! s:zen_getFileType()
   if type == 'xslt' | let type = 'xsl' | endif
   if type == 'htmldjango' | let type = 'html' | endif
   if type == 'html.django_template' | let type = 'html' | endif
+  if type == 'scss' | let type = 'css' | endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
     let type = 'css'
   endif
