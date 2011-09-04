@@ -434,7 +434,7 @@ finish
       'name': "fs:n",
       'query': "fs:n",
       'type': "css",
-      'result': "font-style:normal;",
+      'result': "font-style: normal;",
     },
     {
       'name': "fl:l|fc",
@@ -446,7 +446,7 @@ finish
       'name': "bg+",
       'query': "bg+",
       'type': "css",
-      'result': "background:#FFF url() 0 0 no-repeat;",
+      'result': "background: #FFF url() 0 0 no-repeat;",
     },
   ],
 },
