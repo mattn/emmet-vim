@@ -2058,7 +2058,16 @@ let s:zen_settings = {
 \    },
 \    'mustache': {
 \        'extends': 'html'
-\    }
+\    },
+     'xsd': {
+\        'extends': 'html',
+\        'snippets': {
+\            'xsd:w3c': "<?xml version=\"1.0\"?>\n"
+\                    ."<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n"
+                     ."    <xsd:element name=\"\" type=\"\"/>\n"
+                     ."</xsd:schema>\n"
+         }
+     }
 \}
 
 if exists('g:user_zen_settings')
