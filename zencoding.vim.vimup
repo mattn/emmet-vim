@@ -101,6 +101,7 @@ versions:
 - '0.54': |
    [add] support sass, xsd.
    [fix] expanding with html tag.
+   uploaded again: sorry, fileformat was DOS.
 - '0.53': |
    [fix] gif width/height was swapped.
 - '0.52': |
