@@ -497,6 +497,17 @@ finish
   ],
 },
 {
+  'category': 'xsd',
+  'tests': [
+    {
+      'name': "w3c",
+      'query': "xsd:w3c",
+      'type': "xsd",
+      'result': "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t<xsd:element name=\"\" type=\"\"/>\n</xsd:schema>",
+    },
+  ],
+},
+{
     'category': 'mustache',
     'tests': [
       {
