@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Sep-2011.
+" Last Change: 26-Sep-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -779,7 +779,7 @@ function! zencoding#imageSize()
   if filereadable(fn)
     let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
   else
-    let hex = substitute(system('curl -s "'.fn.'" | xxd -p'), '\n', '', 'g')
+    let hex = substitute(system(g:zencoding_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
   endif
 
   if hex =~ '^89504e470d0a1a0a'
@@ -1089,7 +1089,7 @@ endfunction
 "==============================================================================
 function! s:get_content_from_url(url)
   silent! new
-  silent! exec '0r!curl -s -L "'.substitute(a:url, '#.*', '', '').'"'
+  silent! exec '0r!'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
   let ret = join(getline(1, '$'), "\n")
   silent! bw!
   return ret
@@ -1110,7 +1110,7 @@ function! s:get_text_from_html(buf)
   let m = split(buf, mx)
   for str in m
     let c = split(str, '<[^>]*?>')
-    let str = substitute(str, '<[^>]\{-}>', '', 'g')
+    let str = substitute(str, '<[^>]\{-}>', ' ', 'g')
     let str = substitute(str, '&gt;', '>', 'g')
     let str = substitute(str, '&lt;', '<', 'g')
     let str = substitute(str, '&quot;', '"', 'g')
@@ -1124,8 +1124,8 @@ function! s:get_text_from_html(buf)
     if l > threshold_len
       let per = len(c) / l
       if max < l && per < threshold_per
-          let max = l
-          let res = str
+        let max = l
+        let res = str
       endif
     endif
   endfor
