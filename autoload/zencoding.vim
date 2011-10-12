@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 26-Sep-2011.
+" Last Change: 12-Oct-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -692,9 +692,13 @@ function! zencoding#expandAbbr(mode) range
       let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
-      while part =~ '<.*>'
+      if s:zen_isExtends(type, "html")
+        while part =~ '<.*>'
           let part = substitute(part, '^.*<.\{-}>', '', '')
-      endwhile
+        endwhile
+      elseif s:zen_isExtends(type, "css")
+        let part = substitute(part, '^.*;\s', '', '')
+      endif
     endif
     let rest = getline('.')[len(line):]
     let str = part
