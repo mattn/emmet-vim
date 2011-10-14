@@ -379,9 +379,6 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     endif
   endif
   let str .= "\n"
-  if !empty(current.parent) && empty(current.parent.parent)
-    let str = substitute(str, '\$#', '$line'.(itemno+1).'$', 'g')
-  endif
   return str
 endfunction
 
@@ -478,9 +475,6 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
   if len(comment) > 0
     let str .= "<!-- /" . comment . " -->" . (inline ? "" : "\n") . comment_indent
   endif
-  if !empty(current.parent) && empty(current.parent.parent)
-    let str = substitute(str, '\$#', '$line'.(itemno+1).'$', 'g')
-  endif
   return str
 endfunction
 
@@ -519,13 +513,18 @@ function! s:zen_toString(...)
   let str = ''
   while itemno < current.multiplier
     if len(current.name)
+      let inner = ''
       if exists('*g:zen_toString_'.type)
-        let str .= function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
+        let inner = function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
       elseif s:zen_useFilter(filters, 'haml')
-        let str .= s:zen_toString_haml(s:zen_settings, current, type, inline, filters, itemno, indent)
+        let inner = s:zen_toString_haml(s:zen_settings, current, type, inline, filters, itemno, indent)
       else
-        let str .= s:zen_toString_html(s:zen_settings, current, type, inline, filters, itemno, indent)
+        let inner = s:zen_toString_html(s:zen_settings, current, type, inline, filters, itemno, indent)
       endif
+      if current.multiplier > 1
+        let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
+      endif
+      let str .= inner
     else
       let snippet = current.snippet
       if len(current.snippet) == 0
@@ -645,7 +644,7 @@ function! zencoding#expandAbbr(mode) range
     if leader =~ '\*'
       let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '')
       if query !~ '}\s*$'
-        let query .= '>{$line$}'
+        let query .= '>{$#}'
       endif
       let items = s:zen_parseIntoTree(query, type).child
       for item in items
