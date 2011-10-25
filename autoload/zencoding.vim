@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 12-Oct-2011.
+" Last Change: 14-Oct-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -335,7 +335,7 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     for attr in keys(current.attr)
       let val = current.attr[attr]
       if current.multiplier > 1
-        while val =~ '\$\([^{]\|$\)'
+        while val =~ '\$\([^#{]\|$\)'
           let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
         endwhile
       endif
@@ -404,7 +404,7 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
     endif
     let val = current.attr[attr]
     if current.multiplier > 1
-      while val =~ '\$\([^{]\|$\)'
+      while val =~ '\$\([^#{]\|$\)'
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
     endif
@@ -513,13 +513,18 @@ function! s:zen_toString(...)
   let str = ''
   while itemno < current.multiplier
     if len(current.name)
+      let inner = ''
       if exists('*g:zen_toString_'.type)
-        let str .= function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
+        let inner = function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
       elseif s:zen_useFilter(filters, 'haml')
-        let str .= s:zen_toString_haml(s:zen_settings, current, type, inline, filters, itemno, indent)
+        let inner = s:zen_toString_haml(s:zen_settings, current, type, inline, filters, itemno, indent)
       else
-        let str .= s:zen_toString_html(s:zen_settings, current, type, inline, filters, itemno, indent)
+        let inner = s:zen_toString_html(s:zen_settings, current, type, inline, filters, itemno, indent)
       endif
+      if current.multiplier > 1
+        let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
+      endif
+      let str .= inner
     else
       let snippet = current.snippet
       if len(current.snippet) == 0
@@ -637,7 +642,10 @@ function! zencoding#expandAbbr(mode) range
       let leader = substitute(leader, mx, '', '')
     endif
     if leader =~ '\*'
-      let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '') . '>{$line$}'
+      let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '')
+      if query !~ '}\s*$'
+        let query .= '>{$#}'
+      endif
       let items = s:zen_parseIntoTree(query, type).child
       for item in items
         let expand .= s:zen_toString(item, type, 0, filters)
@@ -647,12 +655,9 @@ function! zencoding#expandAbbr(mode) range
       for n in range(a:firstline, a:lastline)
         let lline = getline(n)
         let lpart = substitute(lline, '^\s*', '', '')
-        let pos = stridx(expand, "$line$")
-        if pos != -1
-          let expand = expand[:pos-1] . lpart . expand[pos+6:]
-        endif
+        let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', lpart, 'g')
       endfor
-      let expand = substitute(expand, '\$line\$', '', 'g')
+      let expand = substitute(expand, '\$line\d*\$', '', 'g')
     else
       let str = ''
       if a:firstline != a:lastline
