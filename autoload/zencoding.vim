@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 14-Oct-2011.
+" Last Change: 25-Oct-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1057,11 +1057,15 @@ function! zencoding#anchorizeURL(flag)
     return
   endif
 
-  let content = s:get_content_from_url(url)
-  let content = substitute(content, '\n', '', 'g')
-  let content = substitute(content, '\n\s*\n', '\n', 'g')
-  let head = strpart(content, 0, stridx(content, '</head>'))
-  let title = substitute(head, '.*<title[^>]*>\([^<]\+\)<\/title[^>]*>.*', '\1', 'g')
+  let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
+  let content = s:get_content_from_url(url, 0)
+  if len(matchstr(content, mx)) == 0
+    let content = s:get_content_from_url(url, 1)
+  endif
+  let content = substitute(content, '\r', '', 'g')
+  let content = substitute(content, '[\s\n]\+', ' ', 'g')
+  let content = substitute(content, '<!--.\{-}-->', '', 'g')
+  let title = matchstr(content, mx)
 
   if a:flag == 0
     let a = s:zen_parseTag('<a>')
@@ -1096,9 +1100,13 @@ endfunction
 "==============================================================================
 " html utils
 "==============================================================================
-function! s:get_content_from_url(url)
+function! s:get_content_from_url(url, utf8)
   silent! new
-  silent! exec '0r!'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
+  if a:utf8
+    silent! exec '0r ++enc=utf8 !'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
+  else
+    silent! exec '0r!'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
+  endif
   let ret = join(getline(1, '$'), "\n")
   silent! bw!
   return ret
@@ -1109,7 +1117,6 @@ function! s:get_text_from_html(buf)
   let threshold_per = 0.1
   let buf = a:buf
 
-  let buf = substitute(buf, '<!--.\{-}-->', '', 'g')
   let buf = strpart(buf, stridx(buf, '</head>'))
   let buf = substitute(buf, '<style[^>]*>.\{-}</style>', '', 'g')
   let buf = substitute(buf, '<script[^>]*>.\{-}</script>', '', 'g')
@@ -1131,8 +1138,8 @@ function! s:get_text_from_html(buf)
     let str = substitute(str, '\s\+', ' ', 'g')
     let l = len(str)
     if l > threshold_len
-      let per = len(c) / l
-      if max < l && per < threshold_per
+      let per = (l+0.0) / len(c)
+      if max < l && per > threshold_per
         let max = l
         let res = str
       endif
