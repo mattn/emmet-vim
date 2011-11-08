@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Oct-2011.
+" Last Change: 08-Nov-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1071,7 +1071,7 @@ function! zencoding#anchorizeURL(flag)
     let content = s:get_content_from_url(url, 1)
   endif
   let content = substitute(content, '\r', '', 'g')
-  let content = substitute(content, '[\s\n]\+', ' ', 'g')
+  let content = substitute(content, '[ \n]\+', ' ', 'g')
   let content = substitute(content, '<!--.\{-}-->', '', 'g')
   let title = matchstr(content, mx)
 
