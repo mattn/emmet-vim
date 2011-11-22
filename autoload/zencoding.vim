@@ -540,7 +540,6 @@ function! s:zen_toString(...)
       if len(snippet) > 0
         let tmp = substitute(snippet, '|', '${cursor}', 'g')
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
-        echo type
         if type == 'css' && s:zen_useFilter(filters, 'fc')
           let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
         endif
