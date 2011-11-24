@@ -346,11 +346,9 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     let tmp = ''
     for attr in keys(current.attr)
       let val = current.attr[attr]
-      if current.multiplier > 1
-        while val =~ '\$\([^#{]\|$\)'
-          let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-        endwhile
-      endif
+      while val =~ '\$\([^#{]\|$\)'
+        let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      endwhile
       if attr == 'id'
         let str .= '#' . val
       elseif attr == 'class'
@@ -417,11 +415,9 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
       continue
     endif
     let val = current.attr[attr]
-    if current.multiplier > 1
-      while val =~ '\$\([^#{]\|$\)'
-        let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-      endwhile
-    endif
+    while val =~ '\$\([^#{]\|$\)'
+      let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+    endwhile
     let tmp .= ' ' . attr . '="' . val . '"'
     if s:zen_useFilter(filters, 'c')
       if attr == 'id' | let comment .= '#' . val | endif
@@ -688,13 +684,8 @@ function! zencoding#expandAbbr(mode) range
             let str .= lpart . "\n"
           endif
         endfor
-        if len(leader)
-          let items = s:zen_parseIntoTree(leader, type).child
-          let items[0].value = "{\n".str."}"
-        else
-          let items = s:zen_parseIntoTree(leader, type).child
-          let items[0].value = "{".str."}"
-        endif
+        let leader .= (str =~ "\n" ? "{\n" : "{") . str . "}"
+        let items = s:zen_parseIntoTree(leader, type).child
       else
         let str .= getline(a:firstline)
         let items = s:zen_parseIntoTree(leader, type).child
