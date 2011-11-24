@@ -790,6 +790,7 @@ function! zencoding#expandAbbr(mode) range
       let expand = substitute(expand, '\n\s*$', '', 'g')
       let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
       let lines = split(expand, '\n')
+      silent! exe "normal! gvc"
       call setline(line('.'), lines[0])
       if len(lines) > 1
         call append(line('.'), lines[1:])
