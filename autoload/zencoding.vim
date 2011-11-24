@@ -408,6 +408,10 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
   return str
 endfunction
 
+function! s:zen_toString_css(settings, current, type, inline, filters, itemno, indent)
+  return ''
+endfunction
+
 function! s:zen_toString_html(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
@@ -543,7 +547,9 @@ function! s:zen_toString(...)
       let inner = ''
       if exists('*g:zen_toString_'.type)
         let inner = function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
-      elseif s:zen_useFilter(filters, 'haml')
+      elseif type == 'css'
+        let inner = s:zen_toString_css(s:zen_settings, current, type, inline, filters, itemno, indent)
+      elseif type == 'haml' || s:zen_useFilter(filters, 'haml')
         let inner = s:zen_toString_haml(s:zen_settings, current, type, inline, filters, itemno, indent)
       else
         let inner = s:zen_toString_html(s:zen_settings, current, type, inline, filters, itemno, indent)
