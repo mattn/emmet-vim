@@ -69,7 +69,7 @@ function! s:zen_parseIntoTree(abbr, type)
       let rabbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9+]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
     endif
     let abbr = rabbr
-    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-$]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   else
     let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\+\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   endif
@@ -257,17 +257,17 @@ function! s:zen_parseIntoTree(abbr, type)
     let abbr = abbr[stridx(abbr, match) + len(match):]
 
     if g:zencoding_debug > 1
-      echo "str=".str
-      echo "block_start=".block_start
-      echo "tag_name=".tag_name
-      echo "operator=".operator
-      echo "attributes=".attributes
-      echo "value=".value
-      echo "multiplier=".multiplier
-      echo "block_end=".block_end
-      echo "abbr=".abbr
-      echo "pos=".string(pos)
-      echo "\n"
+      echomsg "str=".str
+      echomsg "block_start=".block_start
+      echomsg "tag_name=".tag_name
+      echomsg "operator=".operator
+      echomsg "attributes=".attributes
+      echomsg "value=".value
+      echomsg "multiplier=".multiplier
+      echomsg "block_end=".block_end
+      echomsg "abbr=".abbr
+      echomsg "pos=".string(pos)
+      echomsg "---"
     endif
   endwhile
   return root
@@ -339,8 +339,10 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
 
   let comment_indent = ''
   let comment = ''
+  let current_name = current.name
+  let current_name = substitute(current.name, '\$$', itemno+1, '')
   if len(current.name) > 0
-    let str .= '%' . current.name
+    let str .= '%' . current_name
     let tmp = ''
     for attr in keys(current.attr)
       let val = current.attr[attr]
@@ -361,7 +363,7 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     if len(tmp)
       let str .= '{' . tmp . ' }'
     endif
-    if stridx(','.settings.html.empty_elements.',', ','.current.name.',') != -1 && len(current.value) == 0
+    if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1 && len(current.value) == 0
       let str .= "/"
     endif
 
@@ -407,9 +409,11 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
   if s:zen_useFilter(filters, 'c')
     let comment_indent = substitute(str, '^.*\(\s*\)$', '\1', '')
   endif
-  let tmp = '<' . current.name
+  let current_name = current.name
+  let current_name = substitute(current.name, '\$$', itemno+1, '')
+  let tmp = '<' . current_name
   for attr in keys(current.attr)
-    if current.name =~ '^\(xsl:with-param\|xsl:variable\)$' && s:zen_useFilter(filters, 'xsl') && len(current.child) && attr == 'select'
+    if current_name =~ '^\(xsl:with-param\|xsl:variable\)$' && s:zen_useFilter(filters, 'xsl') && len(current.child) && attr == 'select'
       continue
     endif
     let val = current.attr[attr]
@@ -429,7 +433,7 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
   endif
   let str .= tmp
   let inner = current.value[1:-2]
-  if stridx(','.settings.html.inline_elements.',', ','.current.name.',') != -1
+  if stridx(','.settings.html.inline_elements.',', ','.current_name.',') != -1
     let child_inline = 1
   else
     let child_inline = 0
@@ -442,43 +446,43 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
     let inner .= html
   endfor
   if len(current.child) == 1 && current.child[0].name == ''
-    if stridx(','.settings.html.inline_elements.',', ','.current.name.',') == -1
-      let str .= ">" . inner . "</" . current.name . ">\n"
+    if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+      let str .= ">" . inner . "</" . current_name . ">\n"
     else
-      let str .= ">" . inner . "</" . current.name . ">"
+      let str .= ">" . inner . "</" . current_name . ">"
     endif
   elseif len(current.child)
     if inline == 0
-      if stridx(','.settings.html.inline_elements.',', ','.current.name.',') == -1
+      if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
         if inner =~ "\n$"
           let inner = substitute(inner, "\n", "\n" . indent, 'g')
           let inner = substitute(inner, indent . "$", "", 'g')
-          let str .= ">\n" . indent . inner . "</" . current.name . ">\n"
+          let str .= ">\n" . indent . inner . "</" . current_name . ">\n"
         else
-          let str .= ">\n" . indent . inner . indent . "\n</" . current.name . ">\n"
+          let str .= ">\n" . indent . inner . indent . "\n</" . current_name . ">\n"
         endif
       else
-        let str .= ">" . inner . "</" . current.name . ">\n"
+        let str .= ">" . inner . "</" . current_name . ">\n"
       endif
     else
-      let str .= ">" . inner . "</" . current.name . ">"
+      let str .= ">" . inner . "</" . current_name . ">"
     endif
   else
     if inline == 0
-      if stridx(','.settings.html.empty_elements.',', ','.current.name.',') != -1
+      if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
         let str .= " />\n"
       else
-        if stridx(','.settings.html.inline_elements.',', ','.current.name.',') == -1 && len(current.child)
-          let str .= ">\n" . inner . '${cursor}</' . current.name . ">\n"
+        if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1 && len(current.child)
+          let str .= ">\n" . inner . '${cursor}</' . current_name . ">\n"
         else
-          let str .= ">" . inner . '${cursor}</' . current.name . ">\n"
+          let str .= ">" . inner . '${cursor}</' . current_name . ">\n"
         endif
       endif
     else
-      if stridx(','.settings.html.empty_elements.',', ','.current.name.',') != -1
+      if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
         let str .= " />"
       else
-        let str .= ">" . inner . '${cursor}</' . current.name . ">"
+        let str .= ">" . inner . '${cursor}</' . current_name . ">"
       endif
     endif
   endif
