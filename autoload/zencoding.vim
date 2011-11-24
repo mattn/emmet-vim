@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Nov-2011.
+" Last Change: 24-Nov-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -846,59 +846,53 @@ function! zencoding#toggleComment()
     return
   endif
 
+  let orgpos = getpos('.')
   let curpos = getpos('.')
+  let mx = '<\%#[^>]*>'
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
-    let pos1 = searchpos(mx, 'bcnW')
-    let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
-    let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-    if content[-2:] == '/>' && s:point_in_region(curpos[1:2], block)
-      let comment_region = s:search_region('<!--', '-->')
-      if !s:region_is_valid(comment_region) || !s:point_in_region(curpos[1:2], comment_region) || !(s:point_in_region(comment_region[0], block) && s:point_in_region(comment_region[1], block))
-        let content = '<!-- ' . s:get_content(block) . ' -->'
-        call s:change_content(block, content)
-      else
-        let content = s:get_content(comment_region)
-        let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
-        call s:change_content(comment_region, content)
-      endif
+    let block = s:search_region('<!--', '-->')
+    if s:region_is_valid(block)
+      let block[1][1] += 2
+      let content = s:get_content(block)
+      let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
+      call s:change_content(block, content)
+      silent! call setpos('.', orgpos)
       return
-    else
-      if tag_name[0] == '/'
-        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
-        call setpos('.', [0, pos1[0], pos1[1], 0])
-        let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
-      else
-        let pos2 = searchpos('</' . tag_name . '>', 'cneW')
-      endif
-      let block = [pos1, pos2]
-      if !s:region_is_valid(block)
-        call setpos('.', curpos)
-        let block = s:search_region('<!', '-->')
-        if !s:region_is_valid(block)
-          return
-        endif
-      endif
-      if s:point_in_region(curpos[1:2], block)
-        let comment_region = s:search_region('<!--', '-->')
-        if !s:region_is_valid(comment_region) || !s:point_in_region(curpos[1:2], comment_region) || !(s:point_in_region(comment_region[0], block) && s:point_in_region(comment_region[1], block))
-          let content = '<!-- ' . s:get_content(block) . ' -->'
-          call s:change_content(block, content)
-        else
-          let content = s:get_content(comment_region)
-          let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
-          call s:change_content(comment_region, content)
-        endif
+    endif
+    let block = s:search_region('<[^>]', '>')
+    if !s:region_is_valid(block)
+      let pos1 = searchpos('<', 'bcW')
+      if pos1[0] == 0 && pos1[1] == 0
         return
-      else
-        if block[0][0] > 0
-          call setpos('.', [0, block[0][0]-1, block[0][1], 0])
-        else
-          call setpos('.', curpos)
-          return
-        endif
       endif
+      let curpos = getpos('.')
+      continue
+    endif
+    let pos1 = block[0]
+    let pos2 = block[1]
+    let content = s:get_content(block)
+    let tag_name = matchstr(content, '^<\zs/\{0,1}[^ \r\n>]\+')
+    if tag_name[0] == '/'
+      call setpos('.', [0, pos1[0], pos1[1], 0])
+      let pos2 = searchpairpos('<'. tag_name[1:] . '>', '', '</' . tag_name[1:] . '>', 'bnW')
+      let pos1 = searchpos('>', 'cneW')
+      let block = [pos2, pos1]
+    else
+      call setpos('.', [0, pos2[0], pos2[1], 0])
+      let pos2 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
+      call setpos('.', [0, pos2[0], pos2[1], 0])
+      let pos2 = searchpos('>', 'cneW')
+      let block = [pos1, pos2]
+    endif
+    if !s:region_is_valid(block)
+      silent! call setpos('.', orgpos)
+      return
+    endif
+    if s:point_in_region(curpos[1:2], block)
+      let content = '<!-- ' . s:get_content(block) . ' -->'
+      call s:change_content(block, content)
+      silent! call setpos('.', orgpos)
+      return
     endif
   endwhile
 endfunction
@@ -1272,7 +1266,7 @@ endfunction
 " search_region : make region from pattern which is composing start/end
 "   this function return array of position
 function! s:search_region(start, end)
-  return [searchpos(a:start, 'bcnW'), searchpos(a:end, 'cneW')]
+  return [searchpairpos(a:start, '', a:end, 'bcnW'), searchpairpos(a:start, '', a:end, 'nW')]
 endfunction
 
 " get_content : get content in region
