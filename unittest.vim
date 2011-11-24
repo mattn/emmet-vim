@@ -88,16 +88,16 @@ function! s:testMoveNextPrev()
   endif
 endfunction
 
-if exists('g:user_zen_settings')
-  let g:user_zen_settings = s:old_user_zen_settings
-endif
-
 let oldmore = &more
 let &more = 0
 
 call s:testExpandAbbr()
 call s:testImageSize()
 call s:testMoveNextPrev()
+
+if exists('g:user_zen_settings')
+  let g:user_zen_settings = s:old_user_zen_settings
+endif
 
 let &more=oldmore
 echo "done"
