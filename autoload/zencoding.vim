@@ -699,7 +699,6 @@ function! zencoding#expandAbbr(mode) range
         let expand .= s:zen_toString(item, type, 0, filters)
       endfor
     endif
-    silent! exe "normal! gvc"
   else
     let line = getline('.')
     if col('.') < len(line)
@@ -739,8 +738,6 @@ function! zencoding#expandAbbr(mode) range
     endif
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
     let expand = substitute(expand, '${charset}', s:zen_settings.charset, 'g')
-    let expand = substitute(expand, '\${cursor}', '$cursor$', '')
-    let expand = substitute(expand, '\${cursor}', '', 'g')
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:zen_settings.timezone, 'g')
     else
@@ -748,9 +745,12 @@ function! zencoding#expandAbbr(mode) range
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
     if a:mode == 2 && a:firstline == a:lastline
-      let line = getline('.')
-      call setline(line('.'), line[0:col('.')].substitute(expand, '>\n\s*', '>', 'g').line[col('.'):])
+      let expand = substitute(expand, '>\n\s*', '>', 'g')
+      let expand = substitute(expand, '\${cursor}', '', '')
+      call feedkeys("gvc".expand, 'n')
     else
+      let expand = substitute(expand, '\${cursor}', '$cursor$', '')
+      let expand = substitute(expand, '\${cursor}', '', 'g')
       if line[:-len(part)-1] =~ '^\s\+$'
         let indent = line[:-len(part)-1]
       else
