@@ -111,11 +111,15 @@ function! s:zen_parseIntoTree(abbr, type)
       let current.name = aliases[tag_name]
     endif
 
+    let use_pipe_for_cursor = s:zen_getResource(type, 'use_pipe_for_cursor', 1)
+
     " snippets
     let snippets = s:zen_getResource(type, 'snippets', {})
     if !empty(snippets) && has_key(snippets, tag_name)
       let snippet = snippets[tag_name]
-      let snippet = substitute(snippet, '|', '${cursor}', 'g')
+      if use_pipe_for_cursor
+        let snippet = substitute(snippet, '|', '${cursor}', 'g')
+      endif
       let lines = split(snippet, "\n")
       call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", indent, "g")')
       let current.snippet = join(lines, "\n")
@@ -129,14 +133,26 @@ function! s:zen_parseIntoTree(abbr, type)
         if has_key(default_attributes, pat)
           if type(default_attributes[pat]) == 4
             let a = default_attributes[pat]
-            for k in keys(a)
-              let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
-            endfor
-          else
-            for a in default_attributes[pat]
+            if use_pipe_for_cursor
               for k in keys(a)
                 let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
               endfor
+            else
+              for k in keys(a)
+                let current.attr[k] = a[k]
+              endfor
+            endif
+          else
+            for a in default_attributes[pat]
+              if use_pipe_for_cursor
+                for k in keys(a)
+                  let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
+                endfor
+              else
+                for k in keys(a)
+                  let current.attr[k] = a[k]
+                endfor
+              endif
             endfor
           endif
           if has_key(s:zen_settings.html.default_attributes, current.name)
@@ -521,6 +537,7 @@ function! s:zen_toString(...)
   endif
   let itemno = 0
   let str = ''
+  let use_pipe_for_cursor = s:zen_getResource(type, 'use_pipe_for_cursor', 1)
   while itemno < current.multiplier
     if len(current.name)
       let inner = ''
@@ -544,7 +561,10 @@ function! s:zen_toString(...)
         endif
       endif
       if len(snippet) > 0
-        let tmp = substitute(snippet, '|', '${cursor}', 'g')
+        let tmp = snippet
+        if use_pipe_for_cursor
+          let tmp = substitute(tmp, '|', '${cursor}', 'g')
+        endif
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
         if type == 'css' && s:zen_useFilter(filters, 'fc')
           let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
@@ -591,7 +611,12 @@ function! s:zen_getResource(type, name, default)
   let ret = a:default
 
   if has_key(s:zen_settings[a:type], a:name)
-    call s:zen_mergeConfig(ret, s:zen_settings[a:type][a:name])
+    let v = s:zen_settings[a:type][a:name]
+    if type(ret) == 3 || type(ret) == 4
+      call s:zen_mergeConfig(ret, s:zen_settings[a:type][a:name])
+    else
+      let ret = s:zen_settings[a:type][a:name]
+    endif
   endif
 
   if has_key(s:zen_settings[a:type], 'extends')
