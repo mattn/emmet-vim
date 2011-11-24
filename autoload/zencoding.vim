@@ -687,9 +687,13 @@ function! zencoding#expandAbbr(mode) range
         let leader .= (str =~ "\n" ? "{\n" : "{") . str . "}"
         let items = s:zen_parseIntoTree(leader, type).child
       else
-        let str .= getline(a:firstline)
-        let items = s:zen_parseIntoTree(leader, type).child
-        let items[0].value = "{".str."}"
+        let save_regcont = @"
+        let save_regtype = getregtype('"')
+        silent! normal! gvygv
+        let str = @"
+        call setreg('"', save_regcont, save_regtype)
+        "let str .= getline(a:firstline)
+        let items = s:zen_parseIntoTree(leader . "{".str."}", type).child
       endif
       for item in items
         let expand .= s:zen_toString(item, type, 0, filters)
@@ -743,20 +747,25 @@ function! zencoding#expandAbbr(mode) range
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
-    if line[:-len(part)-1] =~ '^\s\+$'
-      let indent = line[:-len(part)-1]
+    if a:firstline == a:lastline
+      let line = getline('.')
+      call setline(line('.'), line[0:col('.')].substitute(expand, '>\n\s*', '>', 'g').line[col('.'):])
     else
-      let indent = ''
-    endif
-    let expand = substitute(expand, '\n\s*$', '', 'g')
-    let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
-    let lines = split(expand, '\n')
-    call setline(line('.'), lines[0])
-    if len(lines) > 1
-      call append(line('.'), lines[1:])
+      if line[:-len(part)-1] =~ '^\s\+$'
+        let indent = line[:-len(part)-1]
+      else
+        let indent = ''
+      endif
+      let expand = substitute(expand, '\n\s*$', '', 'g')
+      let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
+      let lines = split(expand, '\n')
+      call setline(line('.'), lines[0])
+      if len(lines) > 1
+        call append(line('.'), lines[1:])
+      endif
+      silent! exe "normal! ".len(part)."h"
     endif
   endif
-  silent! exe "normal! ".len(part)."h"
   if search('\$cursor\$', 'e')
     let oldselection = &selection
     let &selection = 'inclusive'
