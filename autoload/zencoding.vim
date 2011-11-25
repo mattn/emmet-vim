@@ -367,6 +367,7 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
       while val =~ '\$\([^#{]\|$\)'
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
+      let attr = substitute(attr, '\$$', itemno+1, '')
       if attr == 'id'
         let str .= '#' . val
       elseif attr == 'class'
@@ -440,6 +441,7 @@ function! s:zen_toString_html(settings, current, type, inline, filters, itemno, 
     while val =~ '\$\([^#{]\|$\)'
       let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
     endwhile
+    let attr = substitute(attr, '\$$', itemno+1, '')
     let tmp .= ' ' . attr . '="' . val . '"'
     if s:zen_useFilter(filters, 'c')
       if attr == 'id' | let comment .= '#' . val | endif
@@ -761,6 +763,7 @@ function! zencoding#expandAbbr(mode) range
     for item in items
       let expand .= s:zen_toString(item, type, 0, filters)
     endfor
+    let expand = substitute(expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
   endif
   if len(expand)
     if expand !~ '\${cursor}'
