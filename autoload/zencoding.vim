@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 24-Nov-2011.
+" Last Change: 25-Nov-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -790,7 +790,9 @@ function! zencoding#expandAbbr(mode) range
       let expand = substitute(expand, '\n\s*$', '', 'g')
       let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
       let lines = split(expand, '\n')
-      silent! exe "normal! gvc"
+      if a:mode == 2
+        silent! exe "normal! gvc"
+      endif
       call setline(line('.'), lines[0])
       if len(lines) > 1
         call append(line('.'), lines[1:])
