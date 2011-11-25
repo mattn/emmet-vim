@@ -73,7 +73,7 @@ function! s:zen_parseIntoTree(abbr, type)
   else
     let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\+\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   endif
-  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
   let parent = root
   let last = root
   let pos = []
@@ -88,12 +88,17 @@ function! s:zen_parseIntoTree(abbr, type)
     let value = substitute(match, mx, '\5', 'ig')
     let multiplier = 0 + substitute(match, mx, '\6', 'ig')
     let block_end = substitute(match, mx, '\7', 'ig')
+    let important = 0
     if len(str) == 0
       break
     endif
     if tag_name =~ '^#'
       let attributes = tag_name . attributes
       let tag_name = 'div'
+    endif
+    if tag_name =~ '.!$'
+      let tag_name = tag_name[:-2]
+      let important = 1
     endif
     if tag_name =~ '^\.'
       let attributes = tag_name . attributes
@@ -104,6 +109,8 @@ function! s:zen_parseIntoTree(abbr, type)
     " make default node
     let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
     let current.name = tag_name
+
+    let current.important = important
 
     " aliases
     let aliases = s:zen_getResource(type, 'aliases', {})
@@ -338,11 +345,6 @@ function! s:zen_mergeConfig(lhs, rhs)
   endif
 endfunction
 
-
-function! s:zen_toString_sass(settings, current, type, inline, filters, itemno, indent)
-  return 'sassed'
-endfunction
-
 function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
@@ -547,9 +549,9 @@ function! s:zen_toString(...)
       let inner = ''
       if exists('*g:zen_toString_'.type)
         let inner = function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
-      elseif type == 'css'
+      elseif s:zen_isExtends(type, "css")
         let inner = s:zen_toString_css(s:zen_settings, current, type, inline, filters, itemno, indent)
-      elseif type == 'haml' || s:zen_useFilter(filters, 'haml')
+      elseif s:zen_useFilter(filters, 'haml')
         let inner = s:zen_toString_haml(s:zen_settings, current, type, inline, filters, itemno, indent)
       else
         let inner = s:zen_toString_html(s:zen_settings, current, type, inline, filters, itemno, indent)
@@ -572,11 +574,12 @@ function! s:zen_toString(...)
           let tmp = substitute(tmp, '|', '${cursor}', 'g')
         endif
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
-        if type == 'css' && s:zen_useFilter(filters, 'fc')
-          let tmp = substitute(tmp, '^\([^:]\+\):\(.*\)$', '\1: \2', '')
-        endif
-        if type == 'sass' && s:zen_useFilter(filters, 'sass')
-          let tmp = substitute(tmp, '^\([^:]\+\):\([^;]*\);$', '\1: \2', '')
+        if s:zen_isExtends(type, "css") && s:zen_useFilter(filters, 'fc')
+        let g:hoge = tmp
+          let tmp = substitute(tmp, '^\([^:]\+\):\([^;]*;\)', '\1: \2', '')
+          if current.important
+            let tmp = substitute(tmp, ';', ' !important;', '')
+          endif
         endif
         for attr in keys(current.attr)
           let val = current.attr[attr]
@@ -680,7 +683,7 @@ function! zencoding#expandAbbr(mode) range
     if len(leader) == 0
       return
     endif
-    let mx = '|\(\%(sass\|html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
       let filters = split(matchstr(leader, mx)[1:], '\s*,\s*')
       let leader = substitute(leader, mx, '', '')
@@ -749,7 +752,7 @@ function! zencoding#expandAbbr(mode) range
     endif
     let rest = getline('.')[len(line):]
     let str = part
-    let mx = '|\(\%(sass\|html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
     if str =~ mx
       let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
       let str = substitute(str, mx, '', '')
@@ -1340,7 +1343,7 @@ endfunction
 "==============================================================================
 
 function! zencoding#ExpandWord(abbr, type, orig)
-  let mx = '|\(\%(sass\|html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+  let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
 
@@ -1876,6 +1879,9 @@ let s:zen_settings = {
 \            'wid': 'widows:|;'
 \        },
 \        'filters': 'fc'
+\    },
+\    'sass': {
+\        'extends': 'css',
 \    },
 \    'html': {
 \        'snippets': {
