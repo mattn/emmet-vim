@@ -6,19 +6,19 @@ Installation
 ---
 
 [Download zip
-file](http://www.vim.org/scripts/script.php?script_id=2981)
+file](http://www.vim.org/scripts/script.php?script_id=2981):
 
-  cd ~/.vim
-  unzip zencoding-vim.zip
+    cd ~/.vim
+    unzip zencoding-vim.zip
 
 If you install pathogen.vim:
 
-  cd ~/.vim/bundle # or make directory
-  unzip /path/to/zencoding-vim.zip
+    cd ~/.vim/bundle # or make directory
+    unzip /path/to/zencoding-vim.zip
 
 If you get source from repository:
 
-  git clone http://github.com/mattn/zencoding-vim.git
-  cd ~/.vim/bundle # or make directory
+    git clone http://github.com/mattn/zencoding-vim.git
+    cd ~/.vim/bundle # or make directory
 
 
