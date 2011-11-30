@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Nov-2011.
+" Last Change: 30-Nov-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -944,10 +944,10 @@ endfunction
 function! zencoding#splitJoinTag()
   let curpos = getpos('.')
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
+    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if content[-2:] == '/>' && s:cursor_in_region(block)
       let content = content[:-3] . "></" . tag_name . '>'
