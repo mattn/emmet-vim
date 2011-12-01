@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 30-Nov-2011.
+" Last Change: 01-Dec-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -577,7 +577,6 @@ function! s:zen_toString(...)
         endif
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
         if s:zen_isExtends(type, "css") && s:zen_useFilter(filters, 'fc')
-        let g:hoge = tmp
           let tmp = substitute(tmp, '^\([^:]\+\):\([^;]*;\)', '\1: \2', '')
           if current.important
             let tmp = substitute(tmp, ';', ' !important;', '')
@@ -709,7 +708,7 @@ function! zencoding#expandAbbr(mode) range
       let expand = substitute(expand, '\$line\d*\$', '', 'g')
     else
       let str = ''
-      if a:firstline != a:lastline
+      if visualmode() ==# 'V'
         let line = getline(a:firstline)
         let part = substitute(line, '^\s*', '', '')
         for n in range(a:firstline, a:lastline)
@@ -781,12 +780,17 @@ function! zencoding#expandAbbr(mode) range
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
-    if a:mode == 2 && a:firstline == a:lastline
-      let expand = substitute(expand, '>\n\s*', '>', 'g')
-      let expand = substitute(expand, '\${cursor}', '', '')
+    "if a:mode == 2
+    if visualmode() ==# 'v'
+      if a:firstline == a:lastline
+        let expand = substitute(expand, '\n\s*', '', 'g')
+      else
+        let expand = substitute(expand, '\n\s*', '\n', 'g')
+        let expand = substitute(expand, '\n$', '', 'g')
+      endif
+      let expand = substitute(expand, '\${cursor}', '', 'g')
       call feedkeys("gvc".expand, 'n')
     else
-      let expand = substitute(expand, '\${cursor}', '$cursor$', '')
       let expand = substitute(expand, '\${cursor}', '', 'g')
       if line[:-len(part)-1] =~ '^\s\+$'
         let indent = line[:-len(part)-1]
