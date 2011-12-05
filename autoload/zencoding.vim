@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 01-Dec-2011.
+" Last Change: 05-Dec-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -788,9 +788,20 @@ function! zencoding#expandAbbr(mode) range
         let expand = substitute(expand, '\n\s*', '\n', 'g')
         let expand = substitute(expand, '\n$', '', 'g')
       endif
+      let expand = substitute(expand, '\${cursor}', '$cursor$', '')
       let expand = substitute(expand, '\${cursor}', '', 'g')
-      call feedkeys("gvc".expand, 'n')
+      silent! normal! gvc
+      let line = getline('.')
+      let lhs = matchstr(line, '.*\%'.col('.').'c.')
+      let rhs = matchstr(line, '\%>'.col('.').'c.*')
+      let expand = lhs.expand.rhs
+      let lines = split(expand, '\n')
+      call setline(line('.'), lines[0])
+      if len(lines) > 1
+        call append(line('.'), lines[1:])
+      endif
     else
+      let expand = substitute(expand, '\${cursor}', '$cursor$', '')
       let expand = substitute(expand, '\${cursor}', '', 'g')
       if line[:-len(part)-1] =~ '^\s\+$'
         let indent = line[:-len(part)-1]
@@ -807,7 +818,6 @@ function! zencoding#expandAbbr(mode) range
       if len(lines) > 1
         call append(line('.'), lines[1:])
       endif
-      silent! exe "normal! ".len(part)."h"
     endif
   endif
   if search('\$cursor\$', 'e')
