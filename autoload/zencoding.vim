@@ -780,8 +780,7 @@ function! zencoding#expandAbbr(mode) range
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
-    "if a:mode == 2
-    if visualmode() ==# 'v'
+    if a:mode != 0 && visualmode() ==# 'v'
       if a:firstline == a:lastline
         let expand = substitute(expand, '\n\s*', '', 'g')
       else
