@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Nov-2011.
+" Last Change: 07-Dec-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -69,9 +69,9 @@ function! s:zen_parseIntoTree(abbr, type)
       let rabbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9+]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
     endif
     let abbr = rabbr
-    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-$]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   else
-    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\+\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\+\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   endif
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
   let parent = root
@@ -577,7 +577,6 @@ function! s:zen_toString(...)
         endif
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
         if s:zen_isExtends(type, "css") && s:zen_useFilter(filters, 'fc')
-        let g:hoge = tmp
           let tmp = substitute(tmp, '^\([^:]\+\):\([^;]*;\)', '\1: \2', '')
           if current.important
             let tmp = substitute(tmp, ';', ' !important;', '')
@@ -709,7 +708,7 @@ function! zencoding#expandAbbr(mode) range
       let expand = substitute(expand, '\$line\d*\$', '', 'g')
     else
       let str = ''
-      if a:firstline != a:lastline
+      if visualmode() ==# 'V'
         let line = getline(a:firstline)
         let part = substitute(line, '^\s*', '', '')
         for n in range(a:firstline, a:lastline)
@@ -781,10 +780,25 @@ function! zencoding#expandAbbr(mode) range
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
-    if a:mode == 2 && a:firstline == a:lastline
-      let expand = substitute(expand, '>\n\s*', '>', 'g')
-      let expand = substitute(expand, '\${cursor}', '', '')
-      call feedkeys("gvc".expand, 'n')
+    if a:mode != 0 && visualmode() ==# 'v'
+      if a:firstline == a:lastline
+        let expand = substitute(expand, '\n\s*', '', 'g')
+      else
+        let expand = substitute(expand, '\n\s*', '\n', 'g')
+        let expand = substitute(expand, '\n$', '', 'g')
+      endif
+      let expand = substitute(expand, '\${cursor}', '$cursor$', '')
+      let expand = substitute(expand, '\${cursor}', '', 'g')
+      silent! normal! gvc
+      let line = getline('.')
+      let lhs = matchstr(line, '.*\%'.col('.').'c.')
+      let rhs = matchstr(line, '\%>'.col('.').'c.*')
+      let expand = lhs.expand.rhs
+      let lines = split(expand, '\n')
+      call setline(line('.'), lines[0])
+      if len(lines) > 1
+        call append(line('.'), lines[1:])
+      endif
     else
       let expand = substitute(expand, '\${cursor}', '$cursor$', '')
       let expand = substitute(expand, '\${cursor}', '', 'g')
@@ -803,7 +817,6 @@ function! zencoding#expandAbbr(mode) range
       if len(lines) > 1
         call append(line('.'), lines[1:])
       endif
-      silent! exe "normal! ".len(part)."h"
     endif
   endif
   if search('\$cursor\$', 'e')
@@ -944,10 +957,10 @@ endfunction
 function! zencoding#splitJoinTag()
   let curpos = getpos('.')
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
+    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if content[-2:] == '/>' && s:cursor_in_region(block)
       let content = content[:-3] . "></" . tag_name . '>'
