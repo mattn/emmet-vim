@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 07-Dec-2011.
+" Last Change: 15-Dec-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -719,7 +719,7 @@ function! zencoding#expandAbbr(mode) range
             let str .= lpart . "\n"
           endif
         endfor
-        let leader .= (str =~ "\n" ? "{\n" : "{") . str . "}"
+        let leader .= (str =~ "\n" ? ">{\n" : "{") . str . "}"
         let items = s:zen_parseIntoTree(leader, type).child
       else
         let save_regcont = @"
