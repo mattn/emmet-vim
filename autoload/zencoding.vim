@@ -704,7 +704,8 @@ function! zencoding#expandAbbr(mode) range
         let lline = getline(n)
         let lpart = substitute(lline, '^\s\+', '', '')
         if s:zen_useFilter(filters, 't')
-          let lpart = substitute(lline, '^[0-9.-]\+\s', '', '')
+          let lpart = substitute(lpart, '^[0-9.-]\+\s\+', '', '')
+          let lpart = substitute(lpart, '\s\+$', '', '')
         endif
         let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', lpart, 'g')
       endfor
