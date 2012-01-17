@@ -146,7 +146,7 @@ You should copy this section and create new buffer, paste and write as
       <li class="list3"></li>
   </ul>
 <
-  If cursor is at '*', |<C-Y>d| select from next letter of <ul> to previous
+  If cursor is at '*', |<C-Y>D| select from next letter of <ul> to previous
   letter of </ul>.
   If cursor is at first of <li>, it select <li class="list1"></li>.
 
