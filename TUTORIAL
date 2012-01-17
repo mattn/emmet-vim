@@ -83,7 +83,7 @@ Tutorial of zencoding.vim
   	<li class="list3"></li>
   </ul>
   ---------------------
-  and type 'J'
+  and type '<c-y>m'
   ---------------------
   <ul>
   	<li class="list1"></li><li class="list2"></li><li class="list3"></li>

@@ -195,7 +195,8 @@ You should copy this section and create new buffer, paste and write as
       <li class="list3"></li>
   </ul>
 <
-  If you select part of line include <li> and type |J|, it will be following.
+  If you select part of line include <li> and type |<C-Y>m|, it will be
+  following.
 >
   <ul>
       <li class="list1"></li><li class="list2"></li><li class="list3"></li>

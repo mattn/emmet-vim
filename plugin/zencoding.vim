@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Nov-2011.
+" Last Change: 17-Jan-2012.
 " Version: 0.58
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -111,6 +111,7 @@ function! s:install_plugin()
   \ {'mode': 'n', 'var': 'user_zen_imagesize_key', 'key': 'i', 'plug': 'ZenCodingImageSize', 'func': ':call zencoding#imageSize()<cr>'},
   \ {'mode': 'i', 'var': 'user_zen_togglecomment_key', 'key': '/', 'plug': 'ZenCodingToggleComment', 'func': '<esc>:call zencoding#toggleComment()<cr>a'},
   \ {'mode': 'n', 'var': 'user_zen_togglecomment_key', 'key': '/', 'plug': 'ZenCodingToggleComment', 'func': ':call zencoding#toggleComment()<cr>'},
+  \ {'mode': 'v', 'var': 'user_zen_mergelines_key', 'key': 'm', 'plug': 'ZenCodingMergeLines', 'func': ':call zencoding#mergeLines()<cr>'},
   \ {'mode': 'i', 'var': 'user_zen_splitjointag_key', 'key': 'j', 'plug': 'ZenCodingSplitJoinTagInsert', 'func': '<esc>:call zencoding#splitJoinTag()<cr>a'},
   \ {'mode': 'n', 'var': 'user_zen_splitjointag_key', 'key': 'j', 'plug': 'ZenCodingSplitJoinTagNormal', 'func': ':call zencoding#splitJoinTag()<cr>'},
   \ {'mode': 'i', 'var': 'user_zen_removetag_key', 'key': 'k', 'plug': 'ZenCodingRemoveTag', 'func': '<esc>:call zencoding#removeTag()<cr>a'},
@@ -125,10 +126,14 @@ function! s:install_plugin()
       exe item.mode . 'noremap <plug>' . item.plug . ' ' . item.func
     endif
     if !exists('g:' . item.var)
-      exe 'let g:' . item.var . " = '" . g:user_zen_leader_key . item.key . "'"
     endif
-    if len(maparg(eval('g:' . item.var), item.mode)) == 0
-      exe item.mode . 'map <unique> ' . eval('g:' . item.var) . ' <plug>' . item.plug
+    if exists('g:' . item.var)
+      let key = eval('g:' . item.var)
+    else
+      let key = g:user_zen_leader_key . item.key
+    endif
+    if len(maparg(key, item.mode)) == 0
+      exe item.mode . 'map <unique> ' . key . ' <plug>' . item.plug
     endif
   endfor
 endfunction

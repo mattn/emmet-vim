@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 11-Jan-2012.
+" Last Change: 17-Jan-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -997,6 +997,13 @@ function! zencoding#splitJoinTag()
       endif
     endif
   endwhile
+endfunction
+
+function! zencoding#mergeLines() range
+  let lines = join(map(getline(a:firstline, a:lastline), 'matchstr(v:val, "^\\s*\\zs.*\\ze\\s*$")'), '')
+  let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+  silent! exe "normal! gvc"
+  call setline('.', indent . lines)
 endfunction
 
 function! zencoding#removeTag()
