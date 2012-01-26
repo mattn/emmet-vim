@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 17-Jan-2012.
+" Last Change: 26-Jan-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -939,6 +939,16 @@ function! zencoding#toggleComment()
       let pos2 = searchpairpos('<'. tag_name[1:] . '>', '', '</' . tag_name[1:] . '>', 'bnW')
       let pos1 = searchpos('>', 'cneW')
       let block = [pos2, pos1]
+    elseif tag_name =~ '/$'
+      if !s:point_in_region(orgpos[1:2], block)
+        " it's broken tree
+        call setpos('.', orgpos)
+        let block = s:search_region('>', '<')
+        let content = '><!-- ' . s:get_content(block)[1:-2] . ' --><'
+        call s:change_content(block, content)
+        silent! call setpos('.', orgpos)
+        return
+      endif
     else
       call setpos('.', [0, pos2[0], pos2[1], 0])
       let pos2 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
@@ -1265,32 +1275,32 @@ endfunction
 "   baz:end
 "   --------------------
 function! s:change_content(region, content)
-  let newlines = split(a:content, '\n')
+  let newlines = split(a:content, '\n', 1)
   let oldlines = getline(a:region[0][0], a:region[1][0])
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
   if len(newlines) == 0
     let tmp = ''
-    if a:region[0][1] > 1
+    if a:region[0][1] >= 1
       let tmp = oldlines[0][:a:region[0][1]-2]
     endif
-    if a:region[1][1] > 1
+    if a:region[1][1] >= 1
       let tmp .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), tmp)
   elseif len(newlines) == 1
-    if a:region[0][1] > 1
+    if a:region[0][1] >= 1
       let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
-    if a:region[1][1] > 1
+    if a:region[1][1] >= 1
       let newlines[0] .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), newlines[0])
   else
-    if a:region[0][1] > 1
+    if a:region[0][1] >= 1
       let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
-    if a:region[1][1] > 1
+    if a:region[1][1] >= 1
       let newlines[-1] .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), newlines[0])
@@ -1335,7 +1345,7 @@ endfunction
 " search_region : make region from pattern which is composing start/end
 "   this function return array of position
 function! s:search_region(start, end)
-  return [searchpairpos(a:start, '', a:end, 'bcnW'), searchpairpos(a:start, '', a:end, 'nW')]
+  return [searchpairpos(a:start, '', a:end, 'bcnW'), searchpairpos(a:start, '\%#', a:end, 'nW')]
 endfunction
 
 " get_content : get content in region
