@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 26-Jan-2012.
+" Last Change: 31-Jan-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -785,7 +785,7 @@ function! zencoding#expandAbbr(mode) range
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
-    if a:mode != 0 && visualmode() ==# 'v'
+    if a:mode == 2 && visualmode() ==# 'v'
       if a:firstline == a:lastline
         let expand = substitute(expand, '\n\s*', '', 'g')
       else
@@ -1281,7 +1281,7 @@ function! s:change_content(region, content)
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
   if len(newlines) == 0
     let tmp = ''
-    if a:region[0][1] >= 1
+    if a:region[0][1] > 1
       let tmp = oldlines[0][:a:region[0][1]-2]
     endif
     if a:region[1][1] >= 1
@@ -1289,7 +1289,7 @@ function! s:change_content(region, content)
     endif
     call setline(line('.'), tmp)
   elseif len(newlines) == 1
-    if a:region[0][1] >= 1
+    if a:region[0][1] > 1
       let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
     if a:region[1][1] >= 1
@@ -1297,7 +1297,7 @@ function! s:change_content(region, content)
     endif
     call setline(line('.'), newlines[0])
   else
-    if a:region[0][1] >= 1
+    if a:region[0][1] > 1
       let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
     if a:region[1][1] >= 1
