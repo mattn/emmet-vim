@@ -2173,7 +2173,10 @@ let s:zen_settings = {
 \                    ."    <xsd:element name=\"\" type=\"\"/>\n"
 \                    ."</xsd:schema>\n"
 \        }
-\    }
+\    },
+\   'mako': {
+\       'extends': 'html'
+\   }
 \}
 
 if exists('g:user_zen_settings')
