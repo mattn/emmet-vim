@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 02-Feb-2012.
+" Last Change: 21-Feb-2012.
 " Version: 0.59
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -79,7 +79,7 @@ if !exists('g:zencoding_debug')
 endif
 
 if !exists('g:zencoding_curl_command')
-  let g:zencoding_curl_command = 'curl -s -L'
+  let g:zencoding_curl_command = 'curl -s -L -A Mozilla/5.0'
 endif
 
 if exists('g:use_zen_complete_tag') && g:use_zen_complete_tag
