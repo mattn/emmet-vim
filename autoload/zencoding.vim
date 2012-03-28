@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 21-Feb-2012.
+" Last Change: 28-Mar-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1194,10 +1194,6 @@ function! s:get_content_from_url(url, utf8)
     silent! exec '0r!'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
   endif
   let ret = join(getline(1, '$'), "\n")
-  let ic = iconv(ret, "utf-8", &encoding)
-  if ret != ic
-    let ret = ic
-  endif
   silent! bw!
   return ret
 endfunction
