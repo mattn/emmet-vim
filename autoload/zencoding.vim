@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 28-Mar-2012.
+" Last Change: 23-Apr-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -66,7 +66,7 @@ function! s:zen_parseIntoTree(abbr, type)
     let rabbr = s:zen_getExpandos(type, abbr)
     if rabbr == abbr
       " try 'foo+(' to (foo-x)
-      let rabbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9+]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
+      let rabbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9+]*\)+\(\.#[()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
     endif
     let abbr = rabbr
     let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|{.\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
