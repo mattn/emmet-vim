@@ -419,6 +419,12 @@ finish
       'type': "html",
       'result': "<div class=\"content\">Hello!</div>\n",
     },
+    {
+      'name': "div.logo+(div#navigation)+(div#links)",
+      'query': "div.logo+(div#navigation)+(div#links)",
+      'type': "html",
+      'result': "<div class=\"logo\"></div>\n<div id=\"navigation\"></div>\n<div id=\"links\"></div>\n",
+    },
   ],
 },
 {
