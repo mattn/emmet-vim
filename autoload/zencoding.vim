@@ -714,7 +714,6 @@ function! zencoding#expandAbbr(mode) range
       let content = join(getline(a:firstline, a:lastline), "\n")
       if stridx(expand, '$#') < len(expand)-2
         let expand = substitute(expand, '^\(.*\)\$#\s*$', '\1', '')
-          echo expand
       endif
       let expand = substitute(expand, '\$#', content, 'g')
     else
