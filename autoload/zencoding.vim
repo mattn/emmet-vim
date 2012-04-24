@@ -711,6 +711,12 @@ function! zencoding#expandAbbr(mode) range
         let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', lpart, 'g')
       endfor
       let expand = substitute(expand, '\$line\d*\$', '', 'g')
+      let content = join(getline(a:firstline, a:lastline), "\n")
+      if stridx(expand, '$#') < len(expand)-2
+        let expand = substitute(expand, '^\(.*\)\$#\s*$', '\1', '')
+          echo expand
+      endif
+      let expand = substitute(expand, '\$#', content, 'g')
     else
       let str = ''
       if visualmode() ==# 'V'
