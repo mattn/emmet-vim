@@ -88,18 +88,20 @@ function! s:testMoveNextPrev()
   endif
 endfunction
 
-let oldmore = &more
-let &more = 0
-
-call s:testExpandAbbr()
-call s:testImageSize()
-call s:testMoveNextPrev()
+try
+  let oldmore = &more
+  let &more = 0
+  call s:testExpandAbbr()
+  call s:testImageSize()
+  call s:testMoveNextPrev()
+finally
+  let &more=oldmore
+endtry
 
 if exists('g:user_zen_settings')
   let g:user_zen_settings = s:old_user_zen_settings
 endif
 
-let &more=oldmore
 echo "done"
 
 finish
@@ -424,6 +426,12 @@ finish
       'query': "div.logo+(div#navigation)+(div#links)",
       'type': "html",
       'result': "<div class=\"logo\"></div>\n<div id=\"navigation\"></div>\n<div id=\"links\"></div>\n",
+    },
+    {
+      'name': "h1{header}+{Text}+a[href=http://link.org]{linktext}+{again some text}+a[href=http://anoterlink.org]{click me!}+{some final text}",
+      'query': "h1{header}+{Text}+a[href=http://link.org]{linktext}+{again some text}+a[href=http://anoterlink.org]{click me!}+{some final text}",
+      'type': "html",
+      'result': "<h1>header</h1>\nText<a href=\"http://link.org\">linktext</a>\nagain some text<a href=\"http://anoterlink.org\">click me!</a>\nsome final text",
     },
   ],
 },
