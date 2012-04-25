@@ -4,62 +4,84 @@ if exists('g:user_zen_settings')
 endif
 so plugin/zencoding.vim
 
+function! s:show_category(category)
+  echohl MatchParen | echon "[" a:category "]\n" | echohl None
+  echo "\r"
+endfunction
+
+function! s:show_title(no, title)
+  let width = &columns - 23
+  echohl ModeMsg | echon "\rtesting #".printf("%03d", a:no)
+  echohl None | echon ": " . (len(a:title) < width ? (a:title.repeat(' ', width-len(a:title))) : strpart(a:title, 0, width)) . ' ... '
+endfunction
+
+function! s:show_ok()
+  echohl Title | echon "ok\n" | echohl None
+  echo ""
+endfunction
+
+function! s:show_ng(no, expect, got)
+  echohl WarningMsg | echon "ng\n" | echohl None
+  echohl ErrorMsg | echo "failed test #".a:no | echohl None
+  set more
+  echo "    expect:".a:expect
+  echo "       got:".a:got
+  echo ""
+  throw "stop"
+endfunction
+
 function! s:testExpandAbbr()
   unlet! testgroups
   let testgroups = eval(join(filter(split(substitute(join(readfile(expand('%')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
-  let failed = 0
   for testgroup in testgroups
-    echohl MatchParen | echon "[" testgroup.category."]\n" | echohl None
+    call s:show_category(testgroup.category)
     let tests = testgroup.tests
     let start = reltime()
     for n in range(len(tests))
-      let testtitle = tests[n].name
-      let testtitle = len(testtitle) < 57 ? (testtitle.repeat(' ', 57-len(testtitle))) : strpart(testtitle, 0, 57)
-      echohl ModeMsg | echon "testing #".printf("%03d", n+1)
-      echohl None | echon ": ".testtitle." ... "
+      call s:show_title(n+1, tests[n].name)
       unlet! res | let res = zencoding#ExpandWord(tests[n].query, tests[n].type, 0)
       if res == tests[n].result
-        echohl Title | echon "ok\n" | echohl None
+        call s:show_ok()
       else
-        echohl WarningMsg | echon "ng\n" | echohl None
-        echohl ErrorMsg | echo "failed test #".(n+1) | echohl None
-        set more
-        echo "    expect:".tests[n].result
-        echo "       got:".res
-        echo ""
-        let failed = 1
-        break
+        call s:show_ng(n+1, tests[n].result, res)
       endif
     endfor
-    if failed
-      break
-    endif
     echo "past:".reltimestr(reltime(start))."\n"
   endfor
 endfunction
 
 function! s:testImageSize()
+  call s:show_category("image size")
+
   silent! 1new
   silent! call setline(1, "img[src=http://mattn.kaoriya.net/images/logo.png]")
   silent! let start = reltime()
-  exe "silent! normal A\<c-y>,\<c-y>i"
-  let time = reltimestr(reltime(start))
-  let line = getline(1)
+  silent! exe "silent! normal A\<c-y>,\<c-y>i"
+  silent! let line = getline(1)
   silent! bw!
-  echohl MatchParen | echon "[image size]\n" | echohl None
-  echohl ModeMsg | echon "testing image size" . repeat(' ', 54) . '... ' | echohl None
   let expect = '<img src="http://mattn.kaoriya.net/images/logo.png" alt="" width="96" height="96" />'
+  call s:show_title(1, "existing image")
   if line == expect
-    echohl Title | echon "ok\n" | echohl None
-    echo "past:".time."\n"
-    echo
+    call s:show_ok()
   else
-    echohl WarningMsg | echon "ng\n" | echohl None
-    echohl ErrorMsg | echo "failed test image size" | echohl None
-    echo "    expect:".expect
-    echo "       got:".line
-    echo ""
+    call s:show_ng(1, expect, line)
   endif
+
+  silent! 1new
+  silent! call setline(1, "img[src=/logo.png]")
+  silent! let start = reltime()
+  silent! exe "silent! normal A\<c-y>,\<c-y>i"
+  silent! let line = getline(1)
+  silent! bw!
+  let expect = '<img src="/logo.png" alt="" />'
+  call s:show_title(2, "not existing image")
+  if line == expect
+    call s:show_ok()
+  else
+    call s:show_ng(2, expect, line)
+  endif
+
+  echo "past:".reltimestr(reltime(start))."\n"
 endfunction
 
 function! s:testMoveNextPrev()
@@ -72,19 +94,14 @@ function! s:testMoveNextPrev()
   let pos = getpos(".")
   let line = substitute(getline("."), '<baz \(\w\+\)=".*', '\1', '')
   silent! bw!
-  echohl MatchParen | echon "[move next prev]\n" | echohl None
-  echohl ModeMsg | echon "testing move next prev" . repeat(' ', 50) . '... ' | echohl None
-  let time = reltimestr(reltime(start))
+  call s:show_category("move next prev")
+  call s:show_title(1, "move next prev")
   let expect = [0,3,15,0]
   if pos == expect && line == 'dankogai'
-    echohl Title | echon "ok\n" | echohl None
-    echo "past:".time."\n"
+    call s:show_ok()
+    echo "past:".reltimestr(reltime(start))."\n"
   else
-    echohl WarningMsg | echon "ng\n" | echohl None
-    echohl ErrorMsg | echo "failed test image size" | echohl None
-    echo "    expect:".string(expect)
-    echo "       got:".string(pos)
-    echo ""
+    call s:show_ng(1, string(expect), string(pos))
   endif
 endfunction
 
@@ -94,6 +111,7 @@ try
   call s:testExpandAbbr()
   call s:testImageSize()
   call s:testMoveNextPrev()
+catch
 finally
   let &more=oldmore
 endtry
