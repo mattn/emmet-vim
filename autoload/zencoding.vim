@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 02-May-2012.
+" Last Change: 06-May-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -745,7 +745,6 @@ function! zencoding#expandAbbr(mode) range
         silent! normal! gvygv
         let str = @"
         call setreg('"', save_regcont, save_regtype)
-        "let str .= getline(a:firstline)
         let items = s:zen_parseIntoTree(leader . "{".str."}", type).child
       endif
       for item in items
@@ -802,7 +801,6 @@ function! zencoding#expandAbbr(mode) range
       if a:firstline == a:lastline
         let expand = substitute(expand, '\n\s*', '', 'g')
       else
-        let expand = substitute(expand, '\n\s*', '\n', 'g')
         let expand = substitute(expand, '\n$', '', 'g')
       endif
       let expand = substitute(expand, '\${cursor}', '$cursor$', '')
