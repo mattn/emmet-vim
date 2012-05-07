@@ -451,6 +451,12 @@ finish
       'type': "html",
       'result': "<h1>header</h1>\nText<a href=\"http://link.org\">linktext</a>\nagain some text<a href=\"http://anoterlink.org\">click me!</a>\nsome final text",
     },
+    {
+      'name': "a{&}+div{&&}",
+      'query': "a{&}+div{&&}",
+      'type': "html",
+      'result': "<a href=\"\">&</a>\n<div>&&</div>\n",
+    },
   ],
 },
 {
