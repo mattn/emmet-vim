@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-May-2012.
+" Last Change: 07-May-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -805,10 +805,12 @@ function! zencoding#expandAbbr(mode) range
       endif
       let expand = substitute(expand, '\${cursor}', '$cursor$', '')
       let expand = substitute(expand, '\${cursor}', '', 'g')
-      silent! normal! gvc
+      silent! normal! gv
+      let col = col("'<")
+      silent! normal! c
       let line = getline('.')
-      let lhs = matchstr(line, '.*\%'.col('.').'c.')
-      let rhs = matchstr(line, '\%>'.col('.').'c.*')
+      let lhs = matchstr(line, '.*\%'.(col-1).'c.')
+      let rhs = matchstr(line, '\%>'.(col-1).'c.*')
       let expand = lhs.expand.rhs
       let lines = split(expand, '\n')
       call setline(line('.'), lines[0])
