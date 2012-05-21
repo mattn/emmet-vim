@@ -38,8 +38,17 @@ function! s:testExpandAbbr()
     let tests = testgroup.tests
     let start = reltime()
     for n in range(len(tests))
-      call s:show_title(n+1, tests[n].name)
-      unlet! res | let res = zencoding#ExpandWord(tests[n].query, tests[n].type, 0)
+      if tests[n].name =~ '\$\$\$\$'
+        silent! 1new
+        silent! call setline(1, tests[n].query)
+        silent! exe "normal gg0/\\$\\$\\$\\$\ri\<del>\<del>\<del>\<del>\<c-y>,"
+        unlet! res | let res = join(getline(1, line('$')), "\n")
+        silent! bw!
+        call s:show_title(n+1, tests[n].name)
+      else
+        call s:show_title(n+1, tests[n].name)
+        unlet! res | let res = zencoding#ExpandWord(tests[n].query, tests[n].type, 0)
+      endif
       if res == tests[n].result
         call s:show_ok()
       else
@@ -456,6 +465,24 @@ finish
       'query': "a{&}+div{&&}",
       'type': "html",
       'result': "<a href=\"\">&</a>\n<div>&&</div>\n",
+    },
+    {
+      'name': "<foo/>span$$$$",
+      'query': "<foo/>span$$$$",
+      'type': "html",
+      'result': "<foo/><span></span>",
+    },
+    {
+      'name': "foo span$$$$",
+      'query': "foo span$$$$",
+      'type': "html",
+      'result': "foo <span></span>",
+    },
+    {
+      'name': "foo span$$$$ bar",
+      'query': "foo span$$$$ bar",
+      'type': "html",
+      'result': "foo <span></span> bar",
     },
   ],
 },
