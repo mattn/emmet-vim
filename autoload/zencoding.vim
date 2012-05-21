@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 07-May-2012.
+" Last Change: 21-May-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -764,6 +764,7 @@ function! zencoding#expandAbbr(mode) range
         while part =~ '<.\{-}>'
           let part = substitute(part, '^.*<.\{-}>', '', '')
         endwhile
+        let part = substitute(part, '^.*\s', '', '')
       elseif s:zen_isExtends(type, "css")
         let part = substitute(part, '^.*[;{]\s*', '', '')
       endif
