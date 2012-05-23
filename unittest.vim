@@ -47,16 +47,21 @@ function! s:testExpandAbbr()
     let tests = testgroup.tests
     let start = reltime()
     for n in range(len(tests))
-      if tests[n].name =~ '\$\$\$\$'
+      let name = tests[n].name
+      let query = tests[n].query
+      if stridx(query, '$$$$') != -1
         silent! 1new
-        silent! call setline(1, tests[n].query)
-        silent! exe "normal gg0/\\$\\$\\$\\$\ri\<del>\<del>\<del>\<del>\<c-y>,"
+        silent! let key = matchstr(query, '.*\$\$\$\$\zs.*\ze\$\$\$\$')
+        silent! exe printf('let key = "%s"', key)
+        silent! let query = substitute(query, '\$\$\$\$.*\$\$\$\$', '$$$$', '')
+        silent! call setline(1, query)
+        silent! exe "normal gg0/\\$\\$\\$\\$\ri\<del>\<del>\<del>\<del>".key
         unlet! res | let res = join(getline(1, line('$')), "\n")
         silent! bw!
-        call s:show_title(n+1, tests[n].name)
+        call s:show_title(n+1, name)
       else
-        call s:show_title(n+1, tests[n].name)
-        unlet! res | let res = zencoding#ExpandWord(tests[n].query, tests[n].type, 0)
+        call s:show_title(n+1, name)
+        unlet! res | let res = zencoding#ExpandWord(query, tests[n].type, 0)
       endif
       if res == tests[n].result
         call s:show_ok()
@@ -476,22 +481,34 @@ finish
       'result': "<a href=\"\">&</a>\n<div>&&</div>\n",
     },
     {
-      'name': "<foo/>span$$$$",
-      'query': "<foo/>span$$$$",
+      'name': "<foo/>span$$$$\\<c-y>,$$$$",
+      'query': "<foo/>span$$$$\\<c-y>,$$$$",
       'type': "html",
       'result': "<foo/><span></span>",
     },
     {
-      'name': "foo span$$$$",
-      'query': "foo span$$$$",
+      'name': "foo span$$$$\\<c-y>,$$$$",
+      'query': "foo span$$$$\\<c-y>,$$$$",
       'type': "html",
       'result': "foo <span></span>",
     },
     {
-      'name': "foo span$$$$ bar",
-      'query': "foo span$$$$ bar",
+      'name': "foo span$$$$\\<c-y>,$$$$ bar",
+      'query': "foo span$$$$\\<c-y>,$$$$ bar",
       'type': "html",
       'result': "foo <span></span> bar",
+    },
+    {
+      'name': "foo $$$$\\<c-o>ve\\<c-y>,p\\<cr>$$$$bar baz",
+      'query': "foo $$$$\\<c-o>ve\\<c-y>,p\\<cr>$$$$bar baz",
+      'type': "html",
+      'result': "foo <p>bar</p> baz",
+    },
+    {
+      'name': "foo $$$$\\<c-o>vee\\<c-y>,p\\<cr>$$$$bar baz",
+      'query': "foo $$$$\\<c-o>vee\\<c-y>,p\\<cr>$$$$bar baz",
+      'type': "html",
+      'result': "foo <p>bar baz</p>",
     },
   ],
 },
