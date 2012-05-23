@@ -47,26 +47,45 @@ function! s:testExpandAbbr()
     let tests = testgroup.tests
     let start = reltime()
     for n in range(len(tests))
+      let type = tests[n].type
       let name = tests[n].name
       let query = tests[n].query
+      let result = tests[n].result
       if stridx(query, '$$$$') != -1
         silent! 1new
+        silent! exe "setlocal ft=".type
         silent! let key = matchstr(query, '.*\$\$\$\$\zs.*\ze\$\$\$\$')
-        silent! exe printf('let key = "%s"', key)
+        if len(key) > 0
+          exe printf('let key = "%s"', key)
+        else
+          let key = "\<c-y>,"
+        endif
         silent! let query = substitute(query, '\$\$\$\$.*\$\$\$\$', '$$$$', '')
         silent! call setline(1, query)
-        silent! exe "normal gg0/\\$\\$\\$\\$\ri\<del>\<del>\<del>\<del>".key
+        let cmd = "normal gg0/\\$\\$\\$\\$\ri\<del>\<del>\<del>\<del>".key
+        if stridx(result, '$$$$') != -1
+          let cmd .= '$$$$'
+        endif
+        silent! exe cmd
         unlet! res | let res = join(getline(1, line('$')), "\n")
         silent! bw!
         call s:show_title(n+1, name)
       else
         call s:show_title(n+1, name)
-        unlet! res | let res = zencoding#ExpandWord(query, tests[n].type, 0)
+        unlet! res | let res = zencoding#ExpandWord(query, type, 0)
       endif
-      if res == tests[n].result
-        call s:show_ok()
+      if stridx(result, '$$$$') != -1
+        if res == result
+          call s:show_ok()
+        else
+          call s:show_ng(n+1, result, res)
+        endif
       else
-        call s:show_ng(n+1, tests[n].result, res)
+        if res == result
+          call s:show_ok()
+        else
+          call s:show_ng(n+1, result, res)
+        endif
       endif
     endfor
     echo "past:".reltimestr(reltime(start))."\n"
@@ -534,10 +553,10 @@ finish
       'result': "float: left;",
     },
     {
-      'name': "bg+",
-      'query': "bg+",
+      'name': "bg+$$$$",
+      'query': "bg+$$$$",
       'type': "css",
-      'result': "background: #FFF url() 0 0 no-repeat;",
+      'result': "background: #FFF url($$$$) 0 0 no-repeat;",
     },
   ],
 },
