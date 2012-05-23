@@ -54,7 +54,7 @@ function! zencoding#parseIntoTree(abbr, type)
   return zencoding#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
-function! s:zen_parseTag(tag)
+function! s:parseTag(tag)
   let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
   let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
@@ -75,7 +75,7 @@ function! s:zen_parseTag(tag)
   return current
 endfunction
 
-function! s:zen_mergeConfig(lhs, rhs)
+function! s:mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
     let a:lhs += a:rhs
     if len(a:lhs)
@@ -93,7 +93,7 @@ function! s:zen_mergeConfig(lhs, rhs)
         let a:lhs[key] += a:rhs[key]
       elseif type(a:rhs[key]) == 4
         if has_key(a:lhs, key)
-          call s:zen_mergeConfig(a:lhs[key], a:rhs[key])
+          call s:mergeConfig(a:lhs[key], a:rhs[key])
         else
           let a:lhs[key] = a:rhs[key]
         endif
@@ -211,7 +211,7 @@ function! zencoding#getResource(type, name, default)
   if has_key(s:zen_settings[a:type], a:name)
     let v = s:zen_settings[a:type][a:name]
     if type(ret) == 3 || type(ret) == 4
-      call s:zen_mergeConfig(ret, s:zen_settings[a:type][a:name])
+      call s:mergeConfig(ret, s:zen_settings[a:type][a:name])
     else
       let ret = s:zen_settings[a:type][a:name]
     endif
@@ -226,14 +226,14 @@ function! zencoding#getResource(type, name, default)
     endif
     for ext in extends
       if has_key(s:zen_settings, ext) && has_key(s:zen_settings[ext], a:name)
-        call s:zen_mergeConfig(ret, s:zen_settings[ext][a:name])
+        call s:mergeConfig(ret, s:zen_settings[ext][a:name])
       endif
     endfor
   endif
   return ret
 endfunction
 
-function! s:zen_getFileType()
+function! zencoding#getFileType()
   let type = &ft
   if type == 'xslt' | let type = 'xsl' | endif
   if type == 'htmldjango' | let type = 'html' | endif
@@ -256,7 +256,7 @@ function! s:zen_getFileType()
 endfunction
 
 function! zencoding#expandAbbr(mode) range
-  let type = s:zen_getFileType()
+  let type = zencoding#getFileType()
   let expand = ''
   let filters = ['html']
   let line = ''
@@ -446,7 +446,7 @@ function! zencoding#imageSize()
   if content !~ '^<img[^><]\+>$'
     return
   endif
-  let current = s:zen_parseTag(content)
+  let current = s:parseTag(content)
   let fn = current.attr.src
   if fn !~ '^\(/\|http\)'
     let fn = simplify(expand('%:h') . '/' . fn)
@@ -486,7 +486,7 @@ function! zencoding#imageSize()
 endfunction
 
 function! zencoding#toggleComment()
-  if s:zen_getFileType() == 'css'
+  if zencoding#getFileType() == 'css'
     let line = getline('.')
     let mx = '^\(\s*\)/\*\s*\(.*\)\s*\*/\s*$'
     if line =~ mx
@@ -747,7 +747,7 @@ function! zencoding#anchorizeURL(flag)
   let title = matchstr(content, mx)
 
   if a:flag == 0
-    let a = s:zen_parseTag('<a>')
+    let a = s:parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
     let expand = zencoding#toString(a, 'html', 0, [])
@@ -756,16 +756,16 @@ function! zencoding#anchorizeURL(flag)
     let body = s:get_text_from_html(content)
     let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
 
-    let blockquote = s:zen_parseTag('<blockquote class="quote">')
-    let a = s:zen_parseTag('<a>')
+    let blockquote = s:parseTag('<blockquote class="quote">')
+    let a = s:parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
     call add(blockquote.child, a)
-    call add(blockquote.child, s:zen_parseTag('<br/>'))
-    let p = s:zen_parseTag('<p>')
+    call add(blockquote.child, s:parseTag('<br/>'))
+    let p = s:parseTag('<p>')
     let p.value = body
     call add(blockquote.child, p)
-    let cite = s:zen_parseTag('<cite>')
+    let cite = s:parseTag('<cite>')
     let cite.value = '{' . url . '}'
     call add(blockquote.child, cite)
     let expand = zencoding#toString(blockquote, 'html', 0, [])
@@ -1009,7 +1009,7 @@ function! zencoding#CompleteTag(findstart, base)
     endwhile
     return start
   else
-    let type = s:zen_getFileType()
+    let type = zencoding#getFileType()
     let res = []
 
     let snippets = zencoding#getResource(type, 'snippets', {})
@@ -1774,7 +1774,7 @@ let s:zen_settings = {
 \}
 
 if exists('g:user_zen_settings')
-  call s:zen_mergeConfig(s:zen_settings, g:user_zen_settings)
+  call s:mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 
 let &cpo = s:save_cpo
