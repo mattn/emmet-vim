@@ -390,7 +390,7 @@ function! zencoding#expandAbbr(mode) range
       let col = col("'<")
       silent! normal! c
       let line = getline('.')
-      let lhs = matchstr(line, '.*\%'.(col-1).'c.')
+      let lhs = matchstr(line, '.*\%<'.col.'c.')
       let rhs = matchstr(line, '\%>'.(col-1).'c.*')
       let expand = lhs.expand.rhs
       let lines = split(expand, '\n')
