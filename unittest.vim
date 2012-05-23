@@ -24,8 +24,17 @@ function! s:show_ng(no, expect, got)
   echohl WarningMsg | echon "ng\n" | echohl None
   echohl ErrorMsg | echo "failed test #".a:no | echohl None
   set more
-  echo "    expect:".a:expect
-  echo "       got:".a:got
+  echo printf("    expect(%d):%s", len(a:expect), a:expect)
+  echo printf("       got(%d):%s", len(a:got), a:got)
+  let cs = split(a:expect, '\zs')
+  for c in range(len(cs))
+    if c < len(a:got)
+      if a:expect[c] != a:got[c]
+        echo printf("     differ at:%s", a:expect[c :-1])
+        break
+      endif
+    endif
+  endfor
   echo ""
   throw "stop"
 endfunction
@@ -522,12 +531,12 @@ finish
       'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
       'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
       'type': "haml",
-      'result': "<div>\n\t<p></p>\n\t<ul id=\"foo\">\n\t\t<li foo=\"bar\" bar=\"baz\" class=\"bar1\">baz</li>\n\t\t<li foo=\"bar\" bar=\"baz\" class=\"bar2\">baz</li>\n\t\t<li foo=\"bar\" bar=\"baz\" class=\"bar3\">baz</li>\n\t</ul>\n</div>\n",
+      'result': "%div\n  %p\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
     },
     {
       'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
       'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml",
-      'type': "haml",
+      'type': "html",
       'result': "%div\n  %p\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n",
     },
     {
@@ -541,6 +550,35 @@ finish
       'query': ".content{Hello!}|haml",
       'type': "haml",
       'result': "%div.content Hello!\n",
+    },
+  ],
+},
+{
+  'category': 'slim',
+  'tests': [
+    {
+      'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
+      'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
+      'type': "slim",
+      'result': "div\n  p\n  ul id=\"foo\"\n    li foo=\"bar\" bar=\"baz\" class=\"bar1\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar2\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar3\"\n     | baz\n",
+    },
+    {
+      'name': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|slim",
+      'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|slim",
+      'type': "html",
+      'result': "div\n  p\n  ul id=\"foo\"\n    li foo=\"bar\" bar=\"baz\" class=\"bar1\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar2\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar3\"\n     | baz\n",
+    },
+    {
+      'name': "a*3|slim",
+      'query': "a*3|slim",
+      'type': "slim",
+      'result': "a href=\"\"\na href=\"\"\na href=\"\"\n",
+    },
+    {
+      'name': ".content{Hello!}|slim",
+      'query': ".content{Hello!}|slim",
+      'type': "slim",
+      'result': "div class=\"content\"\n | Hello!\n",
     },
   ],
 },

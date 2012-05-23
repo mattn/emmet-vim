@@ -6,8 +6,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:zen_getExpandos(type, key)
-  let expandos = s:zen_getResource(a:type, 'expandos', {})
+function! zencoding#getExpandos(type, key)
+  let expandos = zencoding#getResource(a:type, 'expandos', {})
   if has_key(expandos, a:key)
     return expandos[a:key]
   endif
@@ -23,7 +23,7 @@ function! zencoding#useFilter(filters, filter)
   return 0
 endfunction
 
-function! s:zen_isExtends(type, extend)
+function! zencoding#isExtends(type, extend)
   if a:type == a:extend
     return 1
   endif
@@ -47,261 +47,11 @@ function! s:zen_isExtends(type, extend)
   return 0
 endfunction
 
-function! s:zen_parseIntoTree(abbr, type)
+function! zencoding#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
-  if !has_key(s:zen_settings, type)
-    let type = 'html'
-  endif
-  if len(type) == 0 | let type = 'html' | endif
-
-  if has_key(s:zen_settings[type], 'indentation')
-    let indent = s:zen_settings[type].indentation
-  else
-    let indent = s:zen_settings.indentation
-  endif
-
-  if s:zen_isExtends(type, "html")
-    " try 'foo' to (foo-x)
-    let rabbr = s:zen_getExpandos(type, abbr)
-    if rabbr == abbr
-      " try 'foo+(' to (foo-x)
-      let rabbr = substitute(abbr, '\%(+\|^\)\([a-zA-Z][a-zA-Z0-9+]\+\)+\([(){}>]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
-    endif
-    let abbr = rabbr
-    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|'
-    \       .'{.\{-}}[ \t\r\n}]*\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|'
-    \       .'#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|'
-    \       .'\%(\.{[{}a-zA-Z0-9_\-\$]\+\|'
-    \       .'\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\+\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
-  else
-    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\+\-]*\|'
-    \       .'{\+.\{-}}[ \t\r\n}]*\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|'
-    \       .'#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|'
-    \       .'\%(\.{[{}a-zA-Z0-9_\-\$]\+\|'
-    \       .'\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\+\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
-  endif
-  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
-  let parent = root
-  let last = root
-  let pos = []
-  while len(abbr)
-    " parse line
-    let match = matchstr(abbr, mx)
-    let str = substitute(match, mx, '\0', 'ig')
-    let operator = substitute(match, mx, '\1', 'ig')
-    let block_start = substitute(match, mx, '\2', 'ig')
-    let tag_name = substitute(match, mx, '\3', 'ig')
-    let attributes = substitute(match, mx, '\4', 'ig')
-    let value = substitute(match, mx, '\5', 'ig')
-    let multiplier = 0 + substitute(match, mx, '\6', 'ig')
-    let block_end = substitute(match, mx, '\7', 'ig')
-    let important = 0
-    if len(str) == 0
-      break
-    endif
-    if tag_name =~ '^#'
-      let attributes = tag_name . attributes
-      let tag_name = 'div'
-    endif
-    if tag_name =~ '.!$'
-      let tag_name = tag_name[:-2]
-      let important = 1
-    endif
-    if tag_name =~ '^\.'
-      let attributes = tag_name . attributes
-      let tag_name = 'div'
-    endif
-    if multiplier <= 0 | let multiplier = 1 | endif
-
-    " make default node
-    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
-    let current.name = tag_name
-
-    let current.important = important
-
-    " aliases
-    let aliases = s:zen_getResource(type, 'aliases', {})
-    if has_key(aliases, tag_name)
-      let current.name = aliases[tag_name]
-    endif
-
-    let use_pipe_for_cursor = s:zen_getResource(type, 'use_pipe_for_cursor', 1)
-
-    " snippets
-    let snippets = s:zen_getResource(type, 'snippets', {})
-    if !empty(snippets) && has_key(snippets, tag_name)
-      let snippet = snippets[tag_name]
-      if use_pipe_for_cursor
-        let snippet = substitute(snippet, '|', '${cursor}', 'g')
-      endif
-      let lines = split(snippet, "\n")
-      call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", indent, "g")')
-      let current.snippet = join(lines, "\n")
-      let current.name = ''
-    endif
-
-    " default_attributes
-    let default_attributes = s:zen_getResource(type, 'default_attributes', {})
-    if !empty(default_attributes)
-      for pat in [current.name, tag_name]
-        if has_key(default_attributes, pat)
-          if type(default_attributes[pat]) == 4
-            let a = default_attributes[pat]
-            if use_pipe_for_cursor
-              for k in keys(a)
-                let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
-              endfor
-            else
-              for k in keys(a)
-                let current.attr[k] = a[k]
-              endfor
-            endif
-          else
-            for a in default_attributes[pat]
-              if use_pipe_for_cursor
-                for k in keys(a)
-                  let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
-                endfor
-              else
-                for k in keys(a)
-                  let current.attr[k] = a[k]
-                endfor
-              endif
-            endfor
-          endif
-          if has_key(s:zen_settings.html.default_attributes, current.name)
-            let current.name = substitute(current.name, ':.*$', '', '')
-          endif
-          break
-        endif
-      endfor
-    endif
-
-    " parse attributes
-    if len(attributes)
-      let attr = attributes
-      while len(attr)
-        let item = matchstr(attr, '\(\%(\%(#[{}a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.[{}a-zA-Z0-9_\-\$]\+\)*\)\)')
-        if len(item) == 0
-          break
-        endif
-        if item[0] == '#'
-          let current.attr.id = item[1:]
-        endif
-        if item[0] == '.'
-          let current.attr.class = substitute(item[1:], '\.', ' ', 'g')
-        endif
-        if item[0] == '['
-          let atts = item[1:-2]
-          while len(atts)
-            let amat = matchstr(atts, '\(\w\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)')
-            if len(amat) == 0
-              break
-            endif
-            let key = split(amat, '=')[0]
-            let val = amat[len(key)+1:]
-            if val =~ '^["'']'
-              let val = val[1:-2]
-            endif
-            let current.attr[key] = val
-            let atts = atts[stridx(atts, amat) + len(amat):]
-          endwhile
-        endif
-        let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
-      endwhile
-    endif
-
-    " parse text
-    if tag_name =~ '^{.*}$'
-      let current.name = ''
-      let current.value = tag_name
-    else
-      let current.value = value
-    endif
-    let current.multiplier = multiplier
-
-    " parse step inside/outside
-    if !empty(last)
-      if operator =~ '>'
-        unlet! parent
-        let parent = last
-        let current.parent = last
-        let current.pos = last.pos + 1
-      else
-        let current.parent = parent
-        let current.pos = last.pos
-      endif
-    else
-      let current.parent = parent
-      let current.pos = 1
-    endif
-    if operator =~ '<'
-      for c in range(len(operator))
-        let tmp = parent.parent
-        if empty(tmp)
-          break
-        endif
-        let parent = tmp
-      endfor
-    endif
-
-    call add(parent.child, current)
-    let last = current
-
-    " parse block
-    if block_start =~ '('
-      if operator =~ '>'
-        let last.pos += 1
-      endif
-      for n in range(len(block_start))
-        let pos += [last.pos]
-      endfor
-    endif
-    if block_end =~ ')'
-      for n in split(substitute(substitute(block_end, ' ', '', 'g'), ')', ',),', 'g'), ',')
-        if n == ')'
-          if len(pos) > 0 && last.pos >= pos[-1]
-            for c in range(last.pos - pos[-1])
-              let tmp = parent.parent
-              if !has_key(tmp, 'parent')
-                break
-              endif
-              let parent = tmp
-            endfor
-            if operator =~ '>'
-              call remove(pos, -1)
-            endif
-            let last = parent
-            let last.pos += 1
-          endif
-        elseif len(n)
-          let cl = last.child
-          let cls = []
-          for c in range(n[1:])
-            let cls += cl
-          endfor
-          let last.child = cls
-        endif
-      endfor
-    endif
-    let abbr = abbr[stridx(abbr, match) + len(match):]
-
-    if g:zencoding_debug > 1
-      echomsg "str=".str
-      echomsg "block_start=".block_start
-      echomsg "tag_name=".tag_name
-      echomsg "operator=".operator
-      echomsg "attributes=".attributes
-      echomsg "value=".value
-      echomsg "multiplier=".multiplier
-      echomsg "block_end=".block_end
-      echomsg "abbr=".abbr
-      echomsg "pos=".string(pos)
-      echomsg "---"
-    endif
-  endwhile
-  return root
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
+  return zencoding#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
 function! s:zen_parseTag(tag)
@@ -387,7 +137,7 @@ function! zencoding#toString(...)
   endif
   let itemno = 0
   let str = ''
-  let use_pipe_for_cursor = s:zen_getResource(type, 'use_pipe_for_cursor', 1)
+  let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
   while itemno < current.multiplier
     if len(current.name)
       let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
@@ -399,7 +149,7 @@ function! zencoding#toString(...)
     else
       let snippet = current.snippet
       if len(current.snippet) == 0
-        let snippets = s:zen_getResource(type, 'snippets', {})
+        let snippets = zencoding#getResource(type, 'snippets', {})
         if !empty(snippets) && has_key(snippets, 'zensnippet')
           let snippet = snippets['zensnippet']
         endif
@@ -410,7 +160,7 @@ function! zencoding#toString(...)
           let tmp = substitute(tmp, '|', '${cursor}', 'g')
         endif
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
-        if s:zen_isExtends(type, "css") && zencoding#useFilter(filters, 'fc')
+        if zencoding#isExtends(type, "css") && zencoding#useFilter(filters, 'fc')
           let tmp = substitute(tmp, '^\([^:]\+\):\([^;]*;\)', '\1: \2', '')
           if current.important
             let tmp = substitute(tmp, ';', ' !important;', '')
@@ -448,7 +198,11 @@ function! zencoding#toString(...)
   return str
 endfunction
 
-function! s:zen_getResource(type, name, default)
+function! zencoding#getSettings()
+  return s:zen_settings
+endfunction
+
+function! zencoding#getResource(type, name, default)
   if !has_key(s:zen_settings, a:type)
     return a:default
   endif
@@ -518,7 +272,7 @@ function! zencoding#expandAbbr(mode) range
     if len(leader) == 0
       return
     endif
-    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
       let filters = split(matchstr(leader, mx)[1:], '\s*,\s*')
       let leader = substitute(leader, mx, '', '')
@@ -528,7 +282,7 @@ function! zencoding#expandAbbr(mode) range
       if query !~ '}\s*$'
         let query .= '>{$#}'
       endif
-      let items = s:zen_parseIntoTree(query, type).child
+      let items = zencoding#parseIntoTree(query, type).child
       for item in items
         let expand .= zencoding#toString(item, type, 0, filters)
       endfor
@@ -563,14 +317,14 @@ function! zencoding#expandAbbr(mode) range
           endif
         endfor
         let leader .= (str =~ "\n" ? ">{\n" : "{") . str . "}"
-        let items = s:zen_parseIntoTree(leader, type).child
+        let items = zencoding#parseIntoTree(leader, type).child
       else
         let save_regcont = @"
         let save_regtype = getregtype('"')
         silent! normal! gvygv
         let str = @"
         call setreg('"', save_regcont, save_regtype)
-        let items = s:zen_parseIntoTree(leader . "{".str."}", type).child
+        let items = zencoding#parseIntoTree(leader . "{".str."}", type).child
       endif
       for item in items
         let expand .= zencoding#toString(item, type, 0, filters)
@@ -585,23 +339,23 @@ function! zencoding#expandAbbr(mode) range
       let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
-      if s:zen_isExtends(type, "html")
+      if zencoding#isExtends(type, "html")
         while part =~ '<.\{-}>'
           let part = substitute(part, '^.*<.\{-}>', '', '')
         endwhile
         let part = substitute(part, '^.*\s', '', '')
-      elseif s:zen_isExtends(type, "css")
+      elseif zencoding#isExtends(type, "css")
         let part = substitute(part, '^.*[;{]\s*', '', '')
       endif
     endif
     let rest = getline('.')[len(line):]
     let str = part
-    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
     if str =~ mx
       let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
       let str = substitute(str, mx, '', '')
     endif
-    let items = s:zen_parseIntoTree(str, type).child
+    let items = zencoding#parseIntoTree(str, type).child
     for item in items
       let expand .= zencoding#toString(item, type, 0, filters)
     endfor
@@ -1220,7 +974,7 @@ endfunction
 "==============================================================================
 
 function! zencoding#ExpandWord(abbr, type, orig)
-  let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
+  let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
 
@@ -1233,7 +987,7 @@ function! zencoding#ExpandWord(abbr, type, orig)
   else
     let filters = ['html']
   endif
-  let items = s:zen_parseIntoTree(str, a:type).child
+  let items = zencoding#parseIntoTree(str, a:type).child
   let expand = ''
   for item in items
     let expand .= zencoding#toString(item, a:type, 0, filters)
@@ -1258,13 +1012,13 @@ function! zencoding#CompleteTag(findstart, base)
     let type = s:zen_getFileType()
     let res = []
 
-    let snippets = s:zen_getResource(type, 'snippets', {})
+    let snippets = zencoding#getResource(type, 'snippets', {})
     for item in keys(snippets)
       if stridx(item, a:base) != -1
         call add(res, substitute(item, '\${cursor}\||', '', 'g'))
       endif
     endfor
-    let aliases = s:zen_getResource(type, 'aliases', {})
+    let aliases = zencoding#getResource(type, 'aliases', {})
     for item in values(aliases)
       if stridx(item, a:base) != -1
         call add(res, substitute(item, '\${cursor}\||', '', 'g'))
@@ -1997,6 +1751,9 @@ let s:zen_settings = {
 \        }
 \    },
 \    'haml': {
+\        'extends': 'html'
+\    },
+\    'slim': {
 \        'extends': 'html'
 \    },
 \    'xhtml': {
