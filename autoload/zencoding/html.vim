@@ -8,7 +8,9 @@ function! zencoding#html#findTokens(str)
   let str = a:str
   while len(str) > 0
     let token = matchstr(str, s:mx.'\s*$')
-    if token =~ '^\s'
+    if token == ''
+      break
+    elseif token =~ '^\s'
       let token = substitute(token, '^\s*', '', '')
       let str = str[0 : -len(token)-1]
       break
