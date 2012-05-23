@@ -390,16 +390,8 @@ function! zencoding#toString(...)
   let use_pipe_for_cursor = s:zen_getResource(type, 'use_pipe_for_cursor', 1)
   while itemno < current.multiplier
     if len(current.name)
-      let inner = ''
-      if globpath(&rtp, 'autoload/zencoding/'.type.'.vim')
-        let inner = function('g:zen_toString_'.type)(s:zen_settings, current, type, inline, filters, itemno, indent)
-      elseif s:zen_isExtends(type, "css")
-        let inner = zencoding#css#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
-      elseif zencoding#useFilter(filters, 'haml')
-        let inner = zencoding#haml#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
-      else
-        let inner = zencoding#html#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
-      endif
+      let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
+      let inner = zencoding#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
       endif
