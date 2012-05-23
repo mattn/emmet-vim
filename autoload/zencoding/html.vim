@@ -1,3 +1,23 @@
+let s:mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|'
+\       .'{.\{-}}[ \t\r\n}]*\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|'
+\       .'#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|'
+\       .'\%(\.{[{}a-zA-Z0-9_\-\$]\+\|'
+\       .'\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\+\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+
+function! zencoding#html#findTokens(str)
+  let str = a:str
+  while len(str) > 0
+    let token = matchstr(str, s:mx.'\s*$')
+    if token =~ '^\s'
+      let token = substitute(token, '^\s*', '', '')
+      let str = str[0 : -len(token)-1]
+      break
+    endif
+    let str = str[0 : -len(token)-1]
+  endwhile
+  return a:str[len(str) :-1]
+endfunction
+
 function! zencoding#html#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
@@ -23,11 +43,6 @@ function! zencoding#html#parseIntoTree(abbr, type)
     let rabbr = substitute(abbr, '\%(+\|^\)\([a-zA-Z][a-zA-Z0-9+]\+\)+\([(){}>]\|$\)', '\="(".zencoding#getExpandos(type, submatch(1)).")".submatch(2)', 'i')
   endif
   let abbr = rabbr
-  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|'
-  \       .'{.\{-}}[ \t\r\n}]*\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|'
-  \       .'#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|'
-  \       .'\%(\.{[{}a-zA-Z0-9_\-\$]\+\|'
-  \       .'\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\+\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
 
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
   let parent = root
@@ -35,15 +50,15 @@ function! zencoding#html#parseIntoTree(abbr, type)
   let pos = []
   while len(abbr)
     " parse line
-    let match = matchstr(abbr, mx)
-    let str = substitute(match, mx, '\0', 'ig')
-    let operator = substitute(match, mx, '\1', 'ig')
-    let block_start = substitute(match, mx, '\2', 'ig')
-    let tag_name = substitute(match, mx, '\3', 'ig')
-    let attributes = substitute(match, mx, '\4', 'ig')
-    let value = substitute(match, mx, '\5', 'ig')
-    let multiplier = 0 + substitute(match, mx, '\6', 'ig')
-    let block_end = substitute(match, mx, '\7', 'ig')
+    let match = matchstr(abbr, s:mx)
+    let str = substitute(match, s:mx, '\0', 'ig')
+    let operator = substitute(match, s:mx, '\1', 'ig')
+    let block_start = substitute(match, s:mx, '\2', 'ig')
+    let tag_name = substitute(match, s:mx, '\3', 'ig')
+    let attributes = substitute(match, s:mx, '\4', 'ig')
+    let value = substitute(match, s:mx, '\5', 'ig')
+    let multiplier = 0 + substitute(match, s:mx, '\6', 'ig')
+    let block_end = substitute(match, s:mx, '\7', 'ig')
     let important = 0
     if len(str) == 0
       break

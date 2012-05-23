@@ -343,7 +343,8 @@ function! zencoding#expandAbbr(mode) range
         while part =~ '<.\{-}>'
           let part = substitute(part, '^.*<.\{-}>', '', '')
         endwhile
-        let part = substitute(part, '^.*\s', '', '')
+        let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
+        let part = zencoding#{rtype}#findTokens(part)
       elseif zencoding#isExtends(type, "css")
         let part = substitute(part, '^.*[;{]\s*', '', '')
       endif

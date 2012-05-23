@@ -1,3 +1,7 @@
+function! zencoding#haml#findTokens(str)
+  return zencoding#html#findTokens(a:str)
+endfunction
+
 function! zencoding#haml#parseIntoTree(abbr, type)
   return zencoding#html#parseIntoTree(a:abbr, a:type)
 endfunction

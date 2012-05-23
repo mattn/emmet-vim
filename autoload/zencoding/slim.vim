@@ -1,3 +1,7 @@
+function! zencoding#slim#findTokens(str)
+  return zencoding#html#findTokens(a:str)
+endfunction
+
 function! zencoding#slim#parseIntoTree(abbr, type)
   return zencoding#html#parseIntoTree(a:abbr, a:type)
 endfunction

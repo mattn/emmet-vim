@@ -1,3 +1,7 @@
+function! zencoding#css#findTokens(str)
+  return substitute(a:str, '^.*[;{]\s*', '', '')
+endfunction
+
 function! zencoding#css#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
