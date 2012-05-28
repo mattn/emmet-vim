@@ -101,6 +101,7 @@ versions:
 - '0.70': |
    This is an upgrade for ZenCoding.vim:
    [mod] Changed behavior of expanding. "div div>a|" should keep first div element.
+   [add] Supported slim formatter.
 - '0.60': |
    This is an upgrade for ZenCoding.vim:
    [fix] fixed expanding {{}}.
