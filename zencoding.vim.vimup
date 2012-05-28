@@ -98,10 +98,10 @@ install_details: |
   # git clone http://github.com/mattn/zencoding-vim.git
 
 versions:
-- '0.71': |
+- '0.72': |
    This is an upgrade for ZenCoding.vim:
    [fix] fix finding tokens.
-- '0.72': |
+- '0.71': |
    This is an upgrade for ZenCoding.vim:
    [fix] fix finding begin of tokens.
 - '0.70': |
