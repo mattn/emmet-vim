@@ -64,7 +64,7 @@ Read more about current Zen Coding syntax
 
 Abbreviation engine has a modular structure which allows you to expand
 abbreviations into different languages. Zen Coding currently supports CSS,
-HTML, XML/XSL and HAML languages via filters.
+HTML, XML/XSL and HAML, Slim languages via filters.
 
 ==============================================================================
 INSTALL                                                      *zencoding-install*
