@@ -1,23 +1,24 @@
+"let s:mx = '\([+>]\|<\+\)\{-}\((*\)\{-}\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|'
 let s:mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|'
 \       .'{.\{-}}[ \t\r\n}]*\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|'
 \       .'#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|'
 \       .'\%(\.{[{}a-zA-Z0-9_\-\$]\+\|'
-\       .'\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\+\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+\       .'\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\+\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}\(\%()\%(\*[0-9]\+\)\{0,1}\)*\)'
 
 function! zencoding#html#findTokens(str)
   let str = a:str
+  let last_pos = 0
   while len(str) > 0
-    let token = matchstr(str, s:mx.'\s*$')
+    let token = matchstr(str, '\s'.s:mx)
     if token == ''
       break
-    elseif token =~ '^\s'
-      let token = substitute(token, '^\s*', '', '')
-      let str = str[0 : -len(token)-1]
-      break
     endif
-    let str = str[0 : -len(token)-1]
+	if token =~ '^\s'
+      let last_pos = stridx(str, matchstr(token, '^\s*\zs.*'))
+    endif
+    let str = str[stridx(str, token) + len(token):]
   endwhile
-  return a:str[len(str) :-1]
+  return a:str[last_pos :-1]
 endfunction
 
 function! zencoding#html#parseIntoTree(abbr, type)

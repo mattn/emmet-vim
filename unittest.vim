@@ -529,6 +529,12 @@ finish
       'type': "html",
       'result': "foo <p>bar baz</p>",
     },
+    {
+      'name': "f div.boxes>article.box2>header>(hgroup>h2{aaa}+h3{bbb})+p{ccc}$$$$",
+      'query': "f div.boxes>article.box2>header>(hgroup>h2{aaa}+h3{bbb})+p{ccc}$$$$",
+      'type': "html",
+      'result': "f <div class=\"boxes\">\n\t<article class=\"box2\">\n\t\t<header>\n\t\t\t<hgroup>\n\t\t\t\t<h2>aaa</h2>\n\t\t\t\t<h3>bbb</h3>\n\t\t\t</hgroup>\n\t\t\t<p>ccc</p>\n\t\t</header>\n\t</article>\n</div>",
+    },
   ],
 },
 {
