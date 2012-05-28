@@ -7,16 +7,17 @@ let s:mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!
 
 function! zencoding#html#findTokens(str)
   let str = a:str
-  let last_pos = 0
+  let [pos, last_pos] = [0, 0]
   while len(str) > 0
-    let token = matchstr(str, '\s'.s:mx)
+    let token = matchstr(str, s:mx, pos)
     if token == ''
       break
     endif
 	if token =~ '^\s'
-      let last_pos = stridx(str, matchstr(token, '^\s*\zs.*'))
+      let token = matchstr(token, '^\s*\zs.*')
+      let last_pos = stridx(str, token)
     endif
-    let str = str[stridx(str, token) + len(token):]
+    let pos = stridx(str, token) + len(token)
   endwhile
   return a:str[last_pos :-1]
 endfunction
