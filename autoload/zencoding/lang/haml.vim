@@ -1,5 +1,5 @@
 function! zencoding#lang#haml#findTokens(str)
-  return zencoding#html#findTokens(a:str)
+  return zencoding#lang#html#findTokens(a:str)
 endfunction
 
 function! zencoding#lang#haml#parseIntoTree(abbr, type)
@@ -70,4 +70,46 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
   endif
   let str .= "\n"
   return str
+endfunction
+
+function! zencoding#lang#haml#imageSize()
+  let line = getline('.')
+  let current = zencoding#lang#haml#parseTag(line)
+  if empty(current) || !has_key(current.attr, 'src')
+    return
+  endif
+  let fn = current.attr.src
+  if fn !~ '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
+
+  let [width, height] = zencoding#util#getImageSize(fn)
+  if width == -1 && height == -1
+    return
+  endif
+  let current.attr.width = width
+  let current.attr.height = height
+  let haml = zencoding#toString(current, 'haml', 1)
+  call setline('.', substitute(matchstr(line, '^\s*') . haml, "\n", "", "g"))
+endfunction
+
+function! zencoding#lang#haml#parseTag(tag)
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let mx = '%\([a-zA-Z][a-zA-Z0-9]*\)\s*\%({\(.*\)}\)'
+  let match = matchstr(a:tag, mx)
+  let current.name = substitute(match, mx, '\1', 'i')
+  let attrs = substitute(match, mx, '\2', 'i')
+  let mx = '\([a-zA-Z0-9]\+\)\s*=>\s*\%(\([^"'' \t]\+\)\|"\([^"]\{-}\)"\|''\([^'']\{-}\)''\)'
+  while len(attrs) > 0
+    let match = matchstr(attrs, mx)
+    if len(match) == 0
+      break
+    endif
+    let attr_match = matchlist(match, mx)
+    let name = attr_match[1]
+    let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
+    let current.attr[name] = value
+    let attrs = attrs[stridx(attrs, match) + len(match):]
+  endwhile
+  return current
 endfunction

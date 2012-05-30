@@ -52,3 +52,10 @@ endfunction
 function! zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
   return ''
 endfunction
+
+function! zencoding#lang#css#imageSize()
+endfunction
+
+function! zencoding#lang#css#parseTag(tag)
+  return {}
+endfunction
