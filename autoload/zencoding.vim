@@ -435,17 +435,17 @@ function! zencoding#toggleComment()
   let curpos = getpos('.')
   let mx = '<\%#[^>]*>'
   while 1
-    let block = zencoding#util#search_region('<!--', '-->')
-    if zencoding#util#region_is_valid(block)
+    let block = zencoding#util#searchRegion('<!--', '-->')
+    if zencoding#util#regionIsValid(block)
       let block[1][1] += 2
-      let content = zencoding#util#get_content(block)
+      let content = zencoding#util#getContent(block)
       let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
-      call zencoding#util#change_content(block, content)
+      call zencoding#util#setContent(block, content)
       silent! call setpos('.', orgpos)
       return
     endif
-    let block = zencoding#util#search_region('<[^>]', '>')
-    if !zencoding#util#region_is_valid(block)
+    let block = zencoding#util#searchRegion('<[^>]', '>')
+    if !zencoding#util#regionIsValid(block)
       let pos1 = searchpos('<', 'bcW')
       if pos1[0] == 0 && pos1[1] == 0
         return
@@ -455,7 +455,7 @@ function! zencoding#toggleComment()
     endif
     let pos1 = block[0]
     let pos2 = block[1]
-    let content = zencoding#util#get_content(block)
+    let content = zencoding#util#getContent(block)
     let tag_name = matchstr(content, '^<\zs/\{0,1}[^ \r\n>]\+')
     if tag_name[0] == '/'
       call setpos('.', [0, pos1[0], pos1[1], 0])
@@ -463,12 +463,12 @@ function! zencoding#toggleComment()
       let pos1 = searchpos('>', 'cneW')
       let block = [pos2, pos1]
     elseif tag_name =~ '/$'
-      if !zencoding#util#point_in_region(orgpos[1:2], block)
+      if !zencoding#util#pointInRegion(orgpos[1:2], block)
         " it's broken tree
         call setpos('.', orgpos)
-        let block = zencoding#util#search_region('>', '<')
-        let content = '><!-- ' . zencoding#util#get_content(block)[1:-2] . ' --><'
-        call zencoding#util#change_content(block, content)
+        let block = zencoding#util#searchRegion('>', '<')
+        let content = '><!-- ' . zencoding#util#getContent(block)[1:-2] . ' --><'
+        call zencoding#util#setContent(block, content)
         silent! call setpos('.', orgpos)
         return
       endif
@@ -479,13 +479,13 @@ function! zencoding#toggleComment()
       let pos2 = searchpos('>', 'cneW')
       let block = [pos1, pos2]
     endif
-    if !zencoding#util#region_is_valid(block)
+    if !zencoding#util#regionIsValid(block)
       silent! call setpos('.', orgpos)
       return
     endif
-    if zencoding#util#point_in_region(curpos[1:2], block)
-      let content = '<!-- ' . zencoding#util#get_content(block) . ' -->'
-      call zencoding#util#change_content(block, content)
+    if zencoding#util#pointInRegion(curpos[1:2], block)
+      let content = '<!-- ' . zencoding#util#getContent(block) . ' -->'
+      call zencoding#util#setContent(block, content)
       silent! call setpos('.', orgpos)
       return
     endif
@@ -500,9 +500,9 @@ function! zencoding#splitJoinTag()
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-    if content[-2:] == '/>' && zencoding#util#cursor_in_region(block)
+    if content[-2:] == '/>' && zencoding#util#cursorInRegion(block)
       let content = content[:-3] . "></" . tag_name . '>'
-      call zencoding#util#change_content(block, content)
+      call zencoding#util#setContent(block, content)
       call setpos('.', [0, block[0][0], block[0][1], 0])
       return
     else
@@ -514,10 +514,10 @@ function! zencoding#splitJoinTag()
         let pos2 = searchpos('</' . tag_name . '>', 'cneW')
       endif
       let block = [pos1, pos2]
-      let content = zencoding#util#get_content(block)
-      if zencoding#util#point_in_region(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+      let content = zencoding#util#getContent(block)
+      if zencoding#util#pointInRegion(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
         let content = matchstr(content, mx)[:-2] . '/>'
-        call zencoding#util#change_content(block, content)
+        call zencoding#util#setContent(block, content)
         call setpos('.', [0, block[0][0], block[0][1], 0])
         return
       else
@@ -547,8 +547,8 @@ function! zencoding#removeTag()
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9:_\-]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-    if content[-2:] == '/>' && zencoding#util#cursor_in_region(block)
-      call zencoding#util#change_content(block, '')
+    if content[-2:] == '/>' && zencoding#util#cursorInRegion(block)
+      call zencoding#util#setContent(block, '')
       call setpos('.', [0, block[0][0], block[0][1], 0])
       return
     else
@@ -560,9 +560,9 @@ function! zencoding#removeTag()
         let pos2 = searchpos('</' . tag_name . '>', 'cneW')
       endif
       let block = [pos1, pos2]
-      let content = zencoding#util#get_content(block)
-      if zencoding#util#point_in_region(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
-        call zencoding#util#change_content(block, '')
+      let content = zencoding#util#getContent(block)
+      if zencoding#util#pointInRegion(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+        call zencoding#util#setContent(block, '')
         call setpos('.', [0, block[0][0], block[0][1], 0])
         return
       else
@@ -578,7 +578,7 @@ function! zencoding#removeTag()
 endfunction
 
 function! zencoding#balanceTag(flag) range
-  let vblock = zencoding#util#get_visualblock()
+  let vblock = zencoding#util#getVisualBlock()
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
@@ -590,11 +590,11 @@ function! zencoding#balanceTag(flag) range
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9:_\-]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-    if !zencoding#util#region_is_valid(block)
+    if !zencoding#util#regionIsValid(block)
       break
     endif
-    if content[-2:] == '/>' && zencoding#util#point_in_region(curpos[1:2], block)
-      call zencoding#util#select_region(block)
+    if content[-2:] == '/>' && zencoding#util#pointInRegion(curpos[1:2], block)
+      call zencoding#util#selectRegion(block)
       return
     else
       if tag_name[0] == '/'
@@ -608,14 +608,14 @@ function! zencoding#balanceTag(flag) range
         let pos2 = searchpos('</' . tag_name . '>', 'cneW')
       endif
       let block = [pos1, pos2]
-      if !zencoding#util#region_is_valid(block)
+      if !zencoding#util#regionIsValid(block)
         break
       endif
-      let content = zencoding#util#get_content(block)
+      let content = zencoding#util#getContent(block)
       if a:flag == -2
-        let check = zencoding#util#region_in_region(vblock, block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+        let check = zencoding#util#regionInRegion(vblock, block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
       else
-        let check = zencoding#util#point_in_region(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+        let check = zencoding#util#pointInRegion(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
       endif
       if check
         if a:flag < 0
@@ -631,10 +631,10 @@ function! zencoding#balanceTag(flag) range
           let pos2 = searchpos('</' . tag_name . '>', 'cneW')
         endif
         let block = [pos1, pos2]
-        call zencoding#util#select_region(block)
+        call zencoding#util#selectRegion(block)
         return
       else
-        if zencoding#util#region_is_valid(block)
+        if zencoding#util#regionIsValid(block)
           if a:flag == -2
             if setpos('.', [0, block[0][0]+1, block[0][1], 0]) == -1
               break
@@ -662,14 +662,14 @@ function! zencoding#anchorizeURL(flag)
   let pos1 = searchpos(mx, 'bcnW')
   let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
   let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
-  if !zencoding#util#cursor_in_region(block)
+  if !zencoding#util#cursorInRegion(block)
     return
   endif
 
   let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
-  let content = zencoding#util#get_content_from_url(url, 0)
+  let content = zencoding#util#getContentFromURL(url, 0)
   if len(matchstr(content, mx)) == 0
-    let content = zencoding#util#get_content_from_url(url, 1)
+    let content = zencoding#util#getContentFromURL(url, 1)
   endif
   let content = substitute(content, '\r', '', 'g')
   let content = substitute(content, '[ \n]\+', ' ', 'g')
@@ -683,7 +683,7 @@ function! zencoding#anchorizeURL(flag)
     let expand = zencoding#toString(a, 'html', 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
   else
-    let body = zencoding#util#get_text_from_html(content)
+    let body = zencoding#util#getTextFromHTML(content)
     let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
 
     let blockquote = zencoding#lang#html#parseTag('<blockquote class="quote">')
@@ -703,7 +703,7 @@ function! zencoding#anchorizeURL(flag)
     let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
     let expand = substitute(expand, "\n", "\n" . indent, 'g')
   endif
-  call zencoding#util#change_content(block, expand)
+  call zencoding#util#setContent(block, expand)
 endfunction
 
 function! zencoding#ExpandWord(abbr, type, orig)

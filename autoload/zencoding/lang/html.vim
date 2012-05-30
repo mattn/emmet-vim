@@ -384,11 +384,11 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
 endfunction
 
 function! zencoding#lang#html#imageSize()
-  let img_region = zencoding#util#search_region('<img\s', '>')
-  if !zencoding#util#region_is_valid(img_region) || !zencoding#util#cursor_in_region(img_region)
+  let img_region = zencoding#util#searchRegion('<img\s', '>')
+  if !zencoding#util#regionIsValid(img_region) || !zencoding#util#cursorInRegion(img_region)
     return
   endif
-  let content = zencoding#util#get_content(img_region)
+  let content = zencoding#util#getContent(img_region)
   if content !~ '^<img[^><]\+>$'
     return
   endif
@@ -408,7 +408,7 @@ function! zencoding#lang#html#imageSize()
   let current.attr.width = width
   let current.attr.height = height
   let html = zencoding#toString(current, 'html', 1)
-  call zencoding#util#change_content(img_region, html)
+  call zencoding#util#setContent(img_region, html)
 endfunction
 
 function! zencoding#lang#html#parseTag(tag)
