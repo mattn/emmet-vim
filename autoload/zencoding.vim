@@ -421,7 +421,8 @@ function! zencoding#imageSize()
 endfunction
 
 function! zencoding#toggleComment()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.&ft.'.vim')) ? &ft : 'html'
+  let type = zencoding#getFileType()
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   return zencoding#lang#{rtype}#toggleComment()
 endfunction
 
