@@ -1,6 +1,4 @@
 function! zencoding#lang#css#findTokens(str)
-	echo "fooooooooo"
-	echo getchar()
   return substitute(a:str, '^.*[;{]\s*', '', '')
 endfunction
 
