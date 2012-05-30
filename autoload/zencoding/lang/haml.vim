@@ -115,5 +115,11 @@ function! zencoding#lang#haml#parseTag(tag)
 endfunction
 
 function! zencoding#lang#haml#toggleComment()
-  " TODO
+  let line = getline('.')
+  let space = matchstr(line, '^\s*')
+  if line =~ '^\s*-#'
+    call setline('.', space . matchstr(line[len(space)+2:], '^\s*\zs.*'))
+  elseif line =~ '^\s*%[a-z]'
+    call setline('.', space . '-# ' . line[len(space):])
+  endif
 endfunction
