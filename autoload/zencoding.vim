@@ -54,27 +54,6 @@ function! zencoding#parseIntoTree(abbr, type)
   return zencoding#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
-function! s:parseTag(tag)
-  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
-  let match = matchstr(a:tag, mx)
-  let current.name = substitute(match, mx, '\1', 'i')
-  let attrs = substitute(match, mx, '\2', 'i')
-  let mx = '\([a-zA-Z0-9]\+\)=\%(\([^"'' \t]\+\)\|"\([^"]\{-}\)"\|''\([^'']\{-}\)''\)'
-  while len(attrs) > 0
-    let match = matchstr(attrs, mx)
-    if len(match) == 0
-      break
-    endif
-    let attr_match = matchlist(match, mx)
-    let name = attr_match[1]
-    let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
-    let current.attr[name] = value
-    let attrs = attrs[stridx(attrs, match) + len(match):]
-  endwhile
-  return current
-endfunction
-
 function! s:mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
     let a:lhs += a:rhs
@@ -431,58 +410,9 @@ function! zencoding#moveNextPrev(flag)
   endif
 endfunction
 
-function! zencoding#getImageSize(fn)
-  let fn = a:fn
-  if filereadable(fn)
-    let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
-  else
-    let hex = substitute(system(g:zencoding_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
-  endif
-
-  let [type, width, height] = ['', -1, -1]
-  if hex =~ '^89504e470d0a1a0a'
-    let type = 'png'
-    let width = eval('0x'.hex[32:39])
-    let height = eval('0x'.hex[40:47])
-  endif
-  if hex =~ '^ffd8'
-    let pos = match(hex, 'ffc[02]')
-    let type = 'jpg'
-    let height = eval('0x'.hex[pos+10:pos+11])*256 + eval('0x'.hex[pos+12:pos+13])
-    let width = eval('0x'.hex[pos+14:pos+15])*256 + eval('0x'.hex[pos+16:pos+17])
-  endif
-  if hex =~ '^47494638'
-    let type = 'gif'
-    let width = eval('0x'.hex[14:15].hex[12:13])
-    let height = eval('0x'.hex[18:19].hex[16:17])
-  endif
-
-  return [width, height]
-endfunction
-
 function! zencoding#imageSize()
-  let img_region = zencoding#util#search_region('<img\s', '>')
-  if !zencoding#util#region_is_valid(img_region) || !zencoding#util#cursor_in_region(img_region)
-    return
-  endif
-  let content = zencoding#util#get_content(img_region)
-  if content !~ '^<img[^><]\+>$'
-    return
-  endif
-  let current = s:parseTag(content)
-  let fn = current.attr.src
-  if fn !~ '^\(/\|http\)'
-    let fn = simplify(expand('%:h') . '/' . fn)
-  endif
-
-  let [width, height] = zencoding#getImageSize(fn)
-  if width == -1 && height == -1
-    return
-  endif
-  let current.attr.width = width
-  let current.attr.height = height
-  let html = zencoding#toString(current, 'html', 1)
-  call zencoding#util#change_content(img_region, html)
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.&ft.'.vim')) ? &ft : 'html'
+  return zencoding#lang#{rtype}#imageSize()
 endfunction
 
 function! zencoding#toggleComment()
@@ -747,7 +677,7 @@ function! zencoding#anchorizeURL(flag)
   let title = matchstr(content, mx)
 
   if a:flag == 0
-    let a = s:parseTag('<a>')
+    let a = zencoding#lang#html#parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
     let expand = zencoding#toString(a, 'html', 0, [])
@@ -756,16 +686,16 @@ function! zencoding#anchorizeURL(flag)
     let body = zencoding#util#get_text_from_html(content)
     let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
 
-    let blockquote = s:parseTag('<blockquote class="quote">')
-    let a = s:parseTag('<a>')
+    let blockquote = zencoding#lang#html#parseTag('<blockquote class="quote">')
+    let a = zencoding#lang#html#parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
     call add(blockquote.child, a)
-    call add(blockquote.child, s:parseTag('<br/>'))
-    let p = s:parseTag('<p>')
+    call add(blockquote.child, zencoding#lang#html#parseTag('<br/>'))
+    let p = zencoding#lang#html#parseTag('<p>')
     let p.value = body
     call add(blockquote.child, p)
-    let cite = s:parseTag('<cite>')
+    let cite = zencoding#lang#html#parseTag('<cite>')
     let cite.value = '{' . url . '}'
     call add(blockquote.child, cite)
     let expand = zencoding#toString(blockquote, 'html', 0, [])

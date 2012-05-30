@@ -193,3 +193,32 @@ function! zencoding#util#get_text_from_html(buf)
   return res
 endfunction
 
+function! zencoding#util#getImageSize(fn)
+  let fn = a:fn
+  if filereadable(fn)
+    let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
+  else
+    let hex = substitute(system(g:zencoding_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
+  endif
+
+  let [type, width, height] = ['', -1, -1]
+  if hex =~ '^89504e470d0a1a0a'
+    let type = 'png'
+    let width = eval('0x'.hex[32:39])
+    let height = eval('0x'.hex[40:47])
+  endif
+  if hex =~ '^ffd8'
+    let pos = match(hex, 'ffc[02]')
+    let type = 'jpg'
+    let height = eval('0x'.hex[pos+10:pos+11])*256 + eval('0x'.hex[pos+12:pos+13])
+    let width = eval('0x'.hex[pos+14:pos+15])*256 + eval('0x'.hex[pos+16:pos+17])
+  endif
+  if hex =~ '^47494638'
+    let type = 'gif'
+    let width = eval('0x'.hex[14:15].hex[12:13])
+    let height = eval('0x'.hex[18:19].hex[16:17])
+  endif
+
+  return [width, height]
+endfunction
+

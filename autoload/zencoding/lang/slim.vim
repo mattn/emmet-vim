@@ -28,7 +28,11 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
-      let str .= ' ' . attr . '="' . val . '"'
+      if val =~ '\s'
+        let str .= ' ' . attr . '="' . val . '"'
+      else
+        let str .= ' ' . attr . '=' . val
+      endif
     endfor
 
     let inner = ''
@@ -56,4 +60,46 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
     let str .= "\n"
   endif
   return str
+endfunction
+
+function! zencoding#lang#slim#imageSize()
+  let line = getline('.')
+  let current = zencoding#lang#slim#parseTag(line)
+  if empty(current) || !has_key(current.attr, 'src')
+    return
+  endif
+  let fn = current.attr.src
+  if fn !~ '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
+
+  let [width, height] = zencoding#util#getImageSize(fn)
+  if width == -1 && height == -1
+    return
+  endif
+  let current.attr.width = width
+  let current.attr.height = height
+  let slim = zencoding#toString(current, 'slim', 1)
+  call setline('.', substitute(matchstr(line, '^\s*') . slim, "\n", "", "g"))
+endfunction
+
+function! zencoding#lang#slim#parseTag(tag)
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let mx = '\([a-zA-Z][a-zA-Z0-9]*\)\s\+\(.*\)'
+  let match = matchstr(a:tag, mx)
+  let current.name = substitute(match, mx, '\1', 'i')
+  let attrs = substitute(match, mx, '\2', 'i')
+  let mx = '\([a-zA-Z0-9]\+\)=\%(\([^"'' \t]\+\)\|"\([^"]\{-}\)"\|''\([^'']\{-}\)''\)'
+  while len(attrs) > 0
+    let match = matchstr(attrs, mx)
+    if len(match) == 0
+      break
+    endif
+    let attr_match = matchlist(match, mx)
+    let name = attr_match[1]
+    let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
+    let current.attr[name] = value
+    let attrs = attrs[stridx(attrs, match) + len(match):]
+  endwhile
+  return current
 endfunction

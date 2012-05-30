@@ -382,3 +382,53 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   endif
   return str
 endfunction
+
+function! zencoding#lang#html#imageSize()
+  let img_region = zencoding#util#search_region('<img\s', '>')
+  if !zencoding#util#region_is_valid(img_region) || !zencoding#util#cursor_in_region(img_region)
+    return
+  endif
+  let content = zencoding#util#get_content(img_region)
+  if content !~ '^<img[^><]\+>$'
+    return
+  endif
+  let current = zencoding#lang#html#parseTag(content)
+  if empty(current) || !has_key(current.attr, 'src')
+    return
+  endif
+  let fn = current.attr.src
+  if fn !~ '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
+
+  let [width, height] = zencoding#util#getImageSize(fn)
+  if width == -1 && height == -1
+    return
+  endif
+  let current.attr.width = width
+  let current.attr.height = height
+  let html = zencoding#toString(current, 'html', 1)
+  call zencoding#util#change_content(img_region, html)
+endfunction
+
+function! zencoding#lang#html#parseTag(tag)
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
+  let match = matchstr(a:tag, mx)
+  let current.name = substitute(match, mx, '\1', 'i')
+  let attrs = substitute(match, mx, '\2', 'i')
+  let mx = '\([a-zA-Z0-9]\+\)=\%(\([^"'' \t]\+\)\|"\([^"]\{-}\)"\|''\([^'']\{-}\)''\)'
+  while len(attrs) > 0
+    let match = matchstr(attrs, mx)
+    if len(match) == 0
+      break
+    endif
+    let attr_match = matchlist(match, mx)
+    let name = attr_match[1]
+    let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
+    let current.attr[name] = value
+    let attrs = attrs[stridx(attrs, match) + len(match):]
+  endwhile
+  return current
+endfunction
+
