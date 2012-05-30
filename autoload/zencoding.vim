@@ -50,7 +50,7 @@ endfunction
 function! zencoding#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   return zencoding#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
@@ -140,7 +140,7 @@ function! zencoding#toString(...)
   let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
   while itemno < current.multiplier
     if len(current.name)
-      let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
+      let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
       let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
@@ -339,15 +339,8 @@ function! zencoding#expandAbbr(mode) range
       let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
-      if zencoding#isExtends(type, "html")
-        while part =~ '<.\{-}>'
-          let part = substitute(part, '^.*<.\{-}>', '', '')
-        endwhile
-        let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
-        let part = zencoding#lang#{rtype}#findTokens(part)
-      elseif zencoding#isExtends(type, "css")
-        let part = substitute(part, '^.*[;{]\s*', '', '')
-      endif
+      let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+      let part = zencoding#lang#{rtype}#findTokens(part)
     endif
     let rest = getline('.')[len(line):]
     let str = part

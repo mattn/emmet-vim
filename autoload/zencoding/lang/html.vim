@@ -8,6 +8,9 @@ let s:mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!
 function! zencoding#lang#html#findTokens(str)
   let str = a:str
   let [pos, last_pos] = [0, 0]
+  while str =~ '<.\{-}>'
+    let str = substitute(str, '^.*<.\{-}>', '', '')
+  endwhile
   while len(str) > 0
     let token = matchstr(str, s:mx, pos)
     if token == ''
