@@ -103,3 +103,7 @@ function! zencoding#lang#slim#parseTag(tag)
   endwhile
   return current
 endfunction
+
+function! zencoding#lang#slim#toggleComment()
+  " TODO
+endfunction

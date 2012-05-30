@@ -59,3 +59,17 @@ endfunction
 function! zencoding#lang#css#parseTag(tag)
   return {}
 endfunction
+
+function! zencoding#lang#css#toggleComment()
+  let line = getline('.')
+  let mx = '^\(\s*\)/\*\s*\(.*\)\s*\*/\s*$'
+  if line =~ mx
+    let space = substitute(matchstr(line, mx), mx, '\1', '')
+    let line = substitute(matchstr(line, mx), mx, '\2', '')
+    let line = space . substitute(line, '^\s*\|\s*$', '\1', 'g')
+  else
+    let mx = '^\(\s*\)\(.*\)\s*$'
+    let line = substitute(line, mx, '\1/* \2 */', '')
+  endif
+  call setline('.', line)
+endfunction

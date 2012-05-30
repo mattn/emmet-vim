@@ -113,3 +113,7 @@ function! zencoding#lang#haml#parseTag(tag)
   endwhile
   return current
 endfunction
+
+function! zencoding#lang#haml#toggleComment()
+  " TODO
+endfunction

@@ -416,80 +416,8 @@ function! zencoding#imageSize()
 endfunction
 
 function! zencoding#toggleComment()
-  if zencoding#getFileType() == 'css'
-    let line = getline('.')
-    let mx = '^\(\s*\)/\*\s*\(.*\)\s*\*/\s*$'
-    if line =~ mx
-      let space = substitute(matchstr(line, mx), mx, '\1', '')
-      let line = substitute(matchstr(line, mx), mx, '\2', '')
-      let line = space . substitute(line, '^\s*\|\s*$', '\1', 'g')
-    else
-      let mx = '^\(\s*\)\(.*\)\s*$'
-      let line = substitute(line, mx, '\1/* \2 */', '')
-    endif
-    call setline('.', line)
-    return
-  endif
-
-  let orgpos = getpos('.')
-  let curpos = getpos('.')
-  let mx = '<\%#[^>]*>'
-  while 1
-    let block = zencoding#util#searchRegion('<!--', '-->')
-    if zencoding#util#regionIsValid(block)
-      let block[1][1] += 2
-      let content = zencoding#util#getContent(block)
-      let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
-      call zencoding#util#setContent(block, content)
-      silent! call setpos('.', orgpos)
-      return
-    endif
-    let block = zencoding#util#searchRegion('<[^>]', '>')
-    if !zencoding#util#regionIsValid(block)
-      let pos1 = searchpos('<', 'bcW')
-      if pos1[0] == 0 && pos1[1] == 0
-        return
-      endif
-      let curpos = getpos('.')
-      continue
-    endif
-    let pos1 = block[0]
-    let pos2 = block[1]
-    let content = zencoding#util#getContent(block)
-    let tag_name = matchstr(content, '^<\zs/\{0,1}[^ \r\n>]\+')
-    if tag_name[0] == '/'
-      call setpos('.', [0, pos1[0], pos1[1], 0])
-      let pos2 = searchpairpos('<'. tag_name[1:] . '>', '', '</' . tag_name[1:] . '>', 'bnW')
-      let pos1 = searchpos('>', 'cneW')
-      let block = [pos2, pos1]
-    elseif tag_name =~ '/$'
-      if !zencoding#util#pointInRegion(orgpos[1:2], block)
-        " it's broken tree
-        call setpos('.', orgpos)
-        let block = zencoding#util#searchRegion('>', '<')
-        let content = '><!-- ' . zencoding#util#getContent(block)[1:-2] . ' --><'
-        call zencoding#util#setContent(block, content)
-        silent! call setpos('.', orgpos)
-        return
-      endif
-    else
-      call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos2 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
-      call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos2 = searchpos('>', 'cneW')
-      let block = [pos1, pos2]
-    endif
-    if !zencoding#util#regionIsValid(block)
-      silent! call setpos('.', orgpos)
-      return
-    endif
-    if zencoding#util#pointInRegion(curpos[1:2], block)
-      let content = '<!-- ' . zencoding#util#getContent(block) . ' -->'
-      call zencoding#util#setContent(block, content)
-      silent! call setpos('.', orgpos)
-      return
-    endif
-  endwhile
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.&ft.'.vim')) ? &ft : 'html'
+  return zencoding#lang#{rtype}#toggleComment()
 endfunction
 
 function! zencoding#splitJoinTag()
