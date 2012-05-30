@@ -218,17 +218,22 @@ function! zencoding#getFileType()
   if type == 'htmldjango' | let type = 'html' | endif
   if type == 'html.django_template' | let type = 'html' | endif
   if type == 'scss' | let type = 'css' | endif
-  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
-    let type = 'css'
+  if len(type) == 0 && len(globpath(&rtp, 'autoload/zencoding/lang/'.&ft.'.vim'))
+    let type = &ft
   endif
-  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^html'
-    let type = 'html'
-  endif
-  if synIDattr(synID(line("."), col("."), 1), "name") =~ '^javaScript'
-    let type = 'javascript'
-  endif
-  if len(type) == 0 && synIDattr(synID(line("."), col("."), 1), "name") =~ '^xml'
-    let type = 'xml'
+  if type == 'html'
+    if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
+      let type = 'css'
+    endif
+    if synIDattr(synID(line("."), col("."), 1), "name") =~ '^html'
+      let type = 'html'
+    endif
+    if synIDattr(synID(line("."), col("."), 1), "name") =~ '^javaScript'
+      let type = 'javascript'
+    endif
+    if len(type) == 0 && synIDattr(synID(line("."), col("."), 1), "name") =~ '^xml'
+      let type = 'xml'
+    endif
   endif
   if len(type) == 0 | let type = 'html' | endif
   return type

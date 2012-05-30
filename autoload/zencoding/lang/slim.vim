@@ -105,5 +105,11 @@ function! zencoding#lang#slim#parseTag(tag)
 endfunction
 
 function! zencoding#lang#slim#toggleComment()
-  " TODO
+  let line = getline('.')
+  let space = matchstr(line, '^\s*')
+  if line =~ '^\s*/'
+    call setline('.', space . line[len(space)+1:])
+  elseif line =~ '^\s*[a-z]'
+    call setline('.', space . '/' . line[len(space):])
+  endif
 endfunction
