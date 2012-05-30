@@ -63,13 +63,27 @@ endfunction
 function! zencoding#lang#css#toggleComment()
   let line = getline('.')
   let mx = '^\(\s*\)/\*\s*\(.*\)\s*\*/\s*$'
-  if line =~ mx
-    let space = substitute(matchstr(line, mx), mx, '\1', '')
-    let line = substitute(matchstr(line, mx), mx, '\2', '')
-    let line = space . substitute(line, '^\s*\|\s*$', '\1', 'g')
+  if line =~ '{\s*$'
+    let block = zencoding#util#searchRegion('/\*', '\*/\zs')
+    if zencoding#util#regionIsValid(block)
+      let content = zencoding#util#getContent(block)
+      let content = substitute(content, '/\*\s\(.*\)\s\*/', '\1', '')
+      call zencoding#util#setContent(block, content)
+    else
+      let node = expand('<cword>')
+      if len(node)
+        exe "normal ciw\<c-r>='/* '.node.' */'\<cr>"
+      endif
+    endif
   else
-    let mx = '^\(\s*\)\(.*\)\s*$'
-    let line = substitute(line, mx, '\1/* \2 */', '')
+    if line =~ mx
+      let space = substitute(matchstr(line, mx), mx, '\1', '')
+      let line = substitute(matchstr(line, mx), mx, '\2', '')
+      let line = space . substitute(line, '^\s*\|\s*$', '\1', 'g')
+    else
+      let mx = '^\(\s*\)\(.*\)\s*$'
+      let line = substitute(line, mx, '\1/* \2 */', '')
+    endif
+    call setline('.', line)
   endif
-  call setline('.', line)
 endfunction
