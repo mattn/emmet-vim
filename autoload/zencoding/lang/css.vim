@@ -1,8 +1,8 @@
-function! zencoding#css#findTokens(str)
+function! zencoding#lang#css#findTokens(str)
   return substitute(a:str, '^.*[;{]\s*', '', '')
 endfunction
 
-function! zencoding#css#parseIntoTree(abbr, type)
+function! zencoding#lang#css#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
 
@@ -49,6 +49,6 @@ function! zencoding#css#parseIntoTree(abbr, type)
   return root
 endfunction
 
-function! zencoding#css#toString(settings, current, type, inline, filters, itemno, indent)
+function! zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
   return ''
 endfunction

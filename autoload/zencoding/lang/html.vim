@@ -5,7 +5,7 @@ let s:mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!
 \       .'\%(\.{[{}a-zA-Z0-9_\-\$]\+\|'
 \       .'\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\+\)\)\{0,1}\%(\*\([0-9]\+\)\)\{0,1}\(\%()\%(\*[0-9]\+\)\{0,1}\)*\)'
 
-function! zencoding#html#findTokens(str)
+function! zencoding#lang#html#findTokens(str)
   let str = a:str
   let [pos, last_pos] = [0, 0]
   while len(str) > 0
@@ -22,7 +22,7 @@ function! zencoding#html#findTokens(str)
   return a:str[last_pos :-1]
 endfunction
 
-function! zencoding#html#parseIntoTree(abbr, type)
+function! zencoding#lang#html#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
 
@@ -271,7 +271,7 @@ function! zencoding#html#parseIntoTree(abbr, type)
   return root
 endfunction
 
-function! zencoding#html#toString(settings, current, type, inline, filters, itemno, indent)
+function! zencoding#lang#html#toString(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
   let type = a:type
@@ -282,10 +282,10 @@ function! zencoding#html#toString(settings, current, type, inline, filters, item
   let str = ""
 
   if zencoding#useFilter(filters, 'haml')
-    return zencoding#haml#toString(settings, current, type, inline, filters, itemno, indent)
+    return zencoding#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
   endif
   if zencoding#useFilter(filters, 'slim')
-    return zencoding#slim#toString(settings, current, type, inline, filters, itemno, indent)
+    return zencoding#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
   endif
 
   let comment_indent = ''

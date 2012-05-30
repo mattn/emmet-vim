@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 29-May-2012.
+" Last Change: 30-May-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -51,7 +51,7 @@ function! zencoding#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
   let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
-  return zencoding#{rtype}#parseIntoTree(abbr, type)
+  return zencoding#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
 function! s:parseTag(tag)
@@ -141,7 +141,7 @@ function! zencoding#toString(...)
   while itemno < current.multiplier
     if len(current.name)
       let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
-      let inner = zencoding#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
+      let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
       endif
@@ -344,7 +344,7 @@ function! zencoding#expandAbbr(mode) range
           let part = substitute(part, '^.*<.\{-}>', '', '')
         endwhile
         let rtype = len(globpath(&rtp, 'autoload/zencoding/'.type.'.vim')) ? type : 'html'
-        let part = zencoding#{rtype}#findTokens(part)
+        let part = zencoding#lang#{rtype}#findTokens(part)
       elseif zencoding#isExtends(type, "css")
         let part = substitute(part, '^.*[;{]\s*', '', '')
       endif
@@ -438,28 +438,15 @@ function! zencoding#moveNextPrev(flag)
   endif
 endfunction
 
-function! zencoding#imageSize()
-  let img_region = s:search_region('<img\s', '>')
-  if !s:region_is_valid(img_region) || !s:cursor_in_region(img_region)
-    return
-  endif
-  let content = s:get_content(img_region)
-  if content !~ '^<img[^><]\+>$'
-    return
-  endif
-  let current = s:parseTag(content)
-  let fn = current.attr.src
-  if fn !~ '^\(/\|http\)'
-    let fn = simplify(expand('%:h') . '/' . fn)
-  endif
-  let [type, width, height] = ['', -1, -1]
-
+function! zencoding#getImageSize(fn)
+  let fn = a:fn
   if filereadable(fn)
     let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
   else
     let hex = substitute(system(g:zencoding_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
   endif
 
+  let [type, width, height] = ['', -1, -1]
   if hex =~ '^89504e470d0a1a0a'
     let type = 'png'
     let width = eval('0x'.hex[32:39])
@@ -477,6 +464,25 @@ function! zencoding#imageSize()
     let height = eval('0x'.hex[18:19].hex[16:17])
   endif
 
+  return [width, height]
+endfunction
+
+function! zencoding#imageSize()
+  let img_region = s:search_region('<img\s', '>')
+  if !s:region_is_valid(img_region) || !s:cursor_in_region(img_region)
+    return
+  endif
+  let content = s:get_content(img_region)
+  if content !~ '^<img[^><]\+>$'
+    return
+  endif
+  let current = s:parseTag(content)
+  let fn = current.attr.src
+  if fn !~ '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
+
+  let [width, height] = zencoding#getImageSize(fn)
   if width == -1 && height == -1
     return
   endif
