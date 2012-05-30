@@ -15,7 +15,7 @@ function! zencoding#html#findTokens(str)
     endif
 	if token =~ '^\s'
       let token = matchstr(token, '^\s*\zs.*')
-      let last_pos = stridx(str, token)
+      let last_pos = stridx(str, token, pos)
     endif
     let pos = stridx(str, token, pos) + len(token)
   endwhile
