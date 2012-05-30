@@ -113,3 +113,6 @@ function! zencoding#lang#slim#toggleComment()
     call setline('.', space . '/' . line[len(space):])
   endif
 endfunction
+
+function! zencoding#lang#slim#balanceTag(flag) range
+endfunction

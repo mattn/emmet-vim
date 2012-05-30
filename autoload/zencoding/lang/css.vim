@@ -87,3 +87,41 @@ function! zencoding#lang#css#toggleComment()
     call setline('.', line)
   endif
 endfunction
+
+function! zencoding#lang#css#balanceTag(flag) range
+  if a:flag == -2 || a:flag == 2
+    let curpos = [0, line("'<"), col("'<"), 0]
+  else
+    let curpos = getpos('.')
+  endif
+  let block = zencoding#util#getVisualBlock()
+  if !zencoding#util#regionIsValid(block)
+    if a:flag > 0
+      let block = zencoding#util#searchRegion('^', ';')
+      call zencoding#util#selectRegion(block)
+	  return
+    endif
+  else
+    if a:flag > 0
+      let content = zencoding#util#getContent(block)
+      if content !~ '^{.*}$'
+        let block = zencoding#util#searchRegion('{', '}')
+        call zencoding#util#selectRegion(block)
+        return
+	  endif
+    else
+      let pos = searchpos('.*;', 'nW')
+      if pos[0] != 0
+        call setpos('.', [0, pos[0], pos[1], 0])
+        let block = zencoding#util#searchRegion('^', ';')
+        call zencoding#util#selectRegion(block)
+		return
+      endif
+    endif
+  endif
+  if a:flag == -2 || a:flag == 2
+    silent! exe "normal! gv"
+  else
+    call setpos('.', curpos)
+  endif
+endfunction

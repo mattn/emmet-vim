@@ -123,3 +123,6 @@ function! zencoding#lang#haml#toggleComment()
     call setline('.', space . '-# ' . line[len(space):])
   endif
 endfunction
+
+function! zencoding#lang#haml#balanceTag(flag) range
+endfunction
