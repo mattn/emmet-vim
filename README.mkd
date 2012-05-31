@@ -1,12 +1,10 @@
-ZenCoding-vim
-====
+# ZenCoding-vim
+
 [zencoding-vim](http://mattn.github.com/zencoding-vim) is vim script support for expanding abbreviation like zen-coding.
 
-Installation
----
+## Installation
 
-[Download zip
-file](http://www.vim.org/scripts/script.php?script_id=2981):
+[Download zip file](http://www.vim.org/scripts/script.php?script_id=2981):
 
     cd ~/.vim
     unzip zencoding-vim.zip
@@ -29,8 +27,7 @@ or:
     cp autoload/zencoding.vim ~/.vim/autoload/
 
 
-Quick Tutorial
----
+## Quick Tutorial
 
 Open or create New File:
     
@@ -53,10 +50,34 @@ Then type "<c-y>," (Ctrl + y + ','), you should see:
     </body>
     </html>
 
-[More
-Tutorials](https://raw.github.com/mattn/zencoding-vim/master/TUTORIAL)
+[More Tutorials](https://raw.github.com/mattn/zencoding-vim/master/TUTORIAL)
 
 
-Project Authors
----
+## Project Authors
+
 [Yasuhiro Matsumoto](http://mattn.kaoriya.net/)
+
+## Links
+
+### zen-coding official site:
+
+    http://code.google.com/p/zen-coding/
+
+### zencoding.vim:
+    http://mattn.github.com/zencoding-vim
+
+### development repository:
+    https://github.com/mattn/zencoding-vim
+
+### my blog posts about zencoding-vim:
+    http://mattn.kaoriya.net/software/vim/20100222103327.htm
+    http://mattn.kaoriya.net/software/vim/20100306021632.htm
+  
+### japanese blog posts about zencoding-vim:
+    http://d.hatena.ne.jp/idesaku/20100424/1272092255
+    http://d.hatena.ne.jp/griefworker/20110118/vim_zen_coding
+    http://d.hatena.ne.jp/sakurako_s/20110126/1295988873
+    http://looxu.blogspot.jp/2010/02/zencodingvimhtml.html
+
+### tutorial traslated in chinese:
+    http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html
