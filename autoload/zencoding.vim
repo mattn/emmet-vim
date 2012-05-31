@@ -534,11 +534,13 @@ function! zencoding#anchorizeURL(flag)
   let content = substitute(content, '<!--.\{-}-->', '', 'g')
   let title = matchstr(content, mx)
 
+  let type = zencoding#getFileType()
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   if a:flag == 0
     let a = zencoding#lang#html#parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
-    let expand = zencoding#toString(a, 'html', 0, [])
+    let expand = zencoding#toString(a, rtype, 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
   else
     let body = zencoding#util#getTextFromHTML(content)
@@ -556,11 +558,11 @@ function! zencoding#anchorizeURL(flag)
     let cite = zencoding#lang#html#parseTag('<cite>')
     let cite.value = '{' . url . '}'
     call add(blockquote.child, cite)
-    let expand = zencoding#toString(blockquote, 'html', 0, [])
+    let expand = zencoding#toString(blockquote, rtype, 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
-    let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
-    let expand = substitute(expand, "\n", "\n" . indent, 'g')
   endif
+  let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+  let expand = substitute(expand, "\n", "\n" . indent, 'g')
   call zencoding#util#setContent(block, expand)
 endfunction
 
