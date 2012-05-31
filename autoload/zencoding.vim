@@ -596,7 +596,7 @@ function! zencoding#getSnippets(type)
   if len(type) == 0 || !has_key(s:zen_settings, type)
     let type = 'html'
   endif
-  return s:zen_getResource(type, 'snippets', {})
+  return zencoding#getResource(type, 'snippets', {})
 endfunction
 
 function! zencoding#CompleteTag(findstart, base)
