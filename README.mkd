@@ -60,24 +60,23 @@ Then type "<c-y>," (Ctrl + y + ','), you should see:
 ## Links
 
 ### zen-coding official site:
-
-    http://code.google.com/p/zen-coding/
+    [http://code.google.com/p/zen-coding/](http://code.google.com/p/zen-coding/)
 
 ### zencoding.vim:
-    http://mattn.github.com/zencoding-vim
+    [http://mattn.github.com/zencoding-vim](http://mattn.github.com/zencoding-vim)
 
 ### development repository:
-    https://github.com/mattn/zencoding-vim
+    [https://github.com/mattn/zencoding-vim](https://github.com/mattn/zencoding-vim)
 
 ### my blog posts about zencoding-vim:
-    http://mattn.kaoriya.net/software/vim/20100222103327.htm
-    http://mattn.kaoriya.net/software/vim/20100306021632.htm
+    [http://mattn.kaoriya.net/software/vim/20100222103327.htm](http://mattn.kaoriya.net/software/vim/20100222103327.htm)
+    [http://mattn.kaoriya.net/software/vim/20100306021632.htm](http://mattn.kaoriya.net/software/vim/20100306021632.htm)
   
 ### japanese blog posts about zencoding-vim:
-    http://d.hatena.ne.jp/idesaku/20100424/1272092255
-    http://d.hatena.ne.jp/griefworker/20110118/vim_zen_coding
-    http://d.hatena.ne.jp/sakurako_s/20110126/1295988873
-    http://looxu.blogspot.jp/2010/02/zencodingvimhtml.html
+    [http://d.hatena.ne.jp/idesaku/20100424/1272092255](http://d.hatena.ne.jp/idesaku/20100424/1272092255)
+    [http://d.hatena.ne.jp/griefworker/20110118/vim_zen_coding](http://d.hatena.ne.jp/griefworker/20110118/vim_zen_coding)
+    [http://d.hatena.ne.jp/sakurako_s/20110126/1295988873](http://d.hatena.ne.jp/sakurako_s/20110126/1295988873)
+    [http://looxu.blogspot.jp/2010/02/zencodingvimhtml.html](http://looxu.blogspot.jp/2010/02/zencodingvimhtml.html)
 
 ### tutorial traslated in chinese:
-    http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html
+    [http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html](http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html)
