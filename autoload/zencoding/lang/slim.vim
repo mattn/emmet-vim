@@ -29,11 +29,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
       let sval = substitute(val, '\${cursor}', '', '')
-      if sval =~ '\s' || sval == ''
-        let str .= ' ' . attr . '="' . val . '"'
-      else
-        let str .= ' ' . attr . '=' . val
-      endif
+      let str .= ' ' . attr . '="' . val . '"'
     endfor
 
     let inner = ''
