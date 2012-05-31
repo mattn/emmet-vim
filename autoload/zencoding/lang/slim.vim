@@ -28,7 +28,8 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
-      if val =~ '\s'
+      let sval = substitute(val, '\${cursor}', '', '')
+      if sval =~ '\s' || sval == ''
         let str .= ' ' . attr . '="' . val . '"'
       else
         let str .= ' ' . attr . '=' . val
@@ -115,4 +116,14 @@ function! zencoding#lang#slim#toggleComment()
 endfunction
 
 function! zencoding#lang#slim#balanceTag(flag) range
+endfunction
+
+function! zencoding#lang#slim#moveNextPrev(flag)
+  let pos = search('""\|\(^\s*|\s*\zs\)', a:flag ? 'Wpb' : 'Wp')
+  if pos == 2
+    startinsert!
+  elseif pos != 0
+    silent! normal! l
+    startinsert
+  endif
 endfunction

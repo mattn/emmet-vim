@@ -131,3 +131,13 @@ function! zencoding#lang#css#balanceTag(flag) range
     call setpos('.', curpos)
   endif
 endfunction
+
+function! zencoding#lang#css#moveNextPrev(flag)
+  let pos = search('""\|()\|\(:\s*\zs$\)', a:flag ? 'Wbp' : 'Wp')
+  if pos == 2
+    startinsert!
+  else
+    silent! normal! l
+    startinsert
+  endif
+endfunction

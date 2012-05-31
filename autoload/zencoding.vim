@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 30-May-2012.
+" Last Change: 31-May-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -407,16 +407,14 @@ function! zencoding#expandAbbr(mode) range
 endfunction
 
 function! zencoding#moveNextPrev(flag)
-  if search('><\/\|\(""\)\|^\s*$', a:flag ? 'Wpb' : 'Wp') == 3
-    startinsert!
-  else
-    silent! normal! l
-    startinsert
-  endif
+  let type = zencoding#getFileType()
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  return zencoding#lang#{rtype}#moveNextPrev(a:flag)
 endfunction
 
 function! zencoding#imageSize()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.&ft.'.vim')) ? &ft : 'html'
+  let type = zencoding#getFileType()
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   return zencoding#lang#{rtype}#imageSize()
 endfunction
 
@@ -424,6 +422,12 @@ function! zencoding#toggleComment()
   let type = zencoding#getFileType()
   let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   return zencoding#lang#{rtype}#toggleComment()
+endfunction
+
+function! zencoding#balanceTag(flag) range
+  let type = zencoding#getFileType()
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  return zencoding#lang#{rtype}#balanceTag(a:flag)
 endfunction
 
 function! zencoding#splitJoinTag()
@@ -509,11 +513,6 @@ function! zencoding#removeTag()
       endif
     endif
   endwhile
-endfunction
-
-function! zencoding#balanceTag(flag) range
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.&ft.'.vim')) ? &ft : 'html'
-  return zencoding#lang#{rtype}#balanceTag(a:flag)
 endfunction
 
 function! zencoding#anchorizeURL(flag)

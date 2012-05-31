@@ -125,4 +125,40 @@ function! zencoding#lang#haml#toggleComment()
 endfunction
 
 function! zencoding#lang#haml#balanceTag(flag) range
+  if a:flag == -2 || a:flag == 2
+    let curpos = [0, line("'<"), col("'<"), 0]
+  else
+    let curpos = getpos('.')
+  endif
+  let n = curpos[1]
+  let ml = len(matchstr(getline(n), '^\s*'))
+
+  while n > 0
+    let l = len(matchstr(getline(n), '^\s*\ze%[a-z]'))
+    if l > 0 && l < ml
+      let ml = l
+      break
+	endif
+    let n -= 1
+  endwhile
+  let sn = n
+  while n < line('$')
+    let l = len(matchstr(getline(n), '^\s*%[a-z]'))
+    if l > 0 && l <= ml
+      let n -= 1
+      break
+	endif
+    let n += 1
+  endwhile
+  call setpos('.', [0, sn, 1, 0])
+  normal! V
+  call setpos('.', [0, n, 1, 0])
+endfunction
+
+function! zencoding#lang#haml#moveNextPrev(flag)
+  let pos = search('""', a:flag ? 'Wb' : 'W')
+  if pos != 0
+    silent! normal! l
+    startinsert
+  endif
 endfunction

@@ -573,3 +573,13 @@ function! zencoding#lang#html#balanceTag(flag) range
     call setpos('.', curpos)
   endif
 endfunction
+
+function! zencoding#lang#html#moveNextPrev(flag)
+  let pos = search('><\/\|\(""\)\|^\s*$', a:flag ? 'Wpb' : 'Wp')
+  if pos == 3
+    startinsert!
+  elseif pos != 0
+    silent! normal! l
+    startinsert
+  endif
+endfunction
