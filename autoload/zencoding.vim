@@ -591,6 +591,14 @@ function! zencoding#ExpandWord(abbr, type, orig)
   return expand
 endfunction
 
+function! zencoding#getSnippets(type)
+  let type = a:type
+  if len(type) == 0 || !has_key(s:zen_settings, type)
+    let type = 'html'
+  endif
+  return s:zen_getResource(type, 'snippets', {})
+endfunction
+
 function! zencoding#CompleteTag(findstart, base)
   if a:findstart
     let line = getline('.')
