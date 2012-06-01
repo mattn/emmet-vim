@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 31-May-2012.
+" Last Change: 01-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -90,9 +90,6 @@ function! zencoding#toString(...)
   else
     let type = &ft
   endif
-"  if !has_key(s:zen_settings, type)
-"    let type = 'html'
-"  endif
   if len(type) == 0 | let type = 'html' | endif
   if a:0 > 2
     let inline = a:3
@@ -117,9 +114,9 @@ function! zencoding#toString(...)
   let itemno = 0
   let str = ''
   let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   while itemno < current.multiplier
     if len(current.name)
-      let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
       let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')

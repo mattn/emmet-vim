@@ -296,13 +296,14 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     return zencoding#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
   endif
 
-  let comment_indent = ''
   let comment = ''
-  if zencoding#useFilter(filters, 'c')
-    let comment_indent = substitute(str, '^.*\(\s*\)$', '\1', '')
-  endif
   let current_name = current.name
   let current_name = substitute(current.name, '\$$', itemno+1, '')
+
+  if len(current.parent.name) > 0 && current.multiplier > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+    let str .= "\n"
+  endif
+
   let tmp = '<' . current_name
   for attr in keys(current.attr)
     if current_name =~ '^\(xsl:with-param\|xsl:variable\)$' && zencoding#useFilter(filters, 'xsl') && len(current.child) && attr == 'select'
@@ -320,7 +321,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     endif
   endfor
   if len(comment) > 0
-    let tmp = "<!-- " . comment . " -->" . (inline ? "" : "\n") . comment_indent . tmp
+    let tmp = "<!-- " . comment . " -->" . (inline ? "" : "\n") . tmp
   endif
   let str .= tmp
   let inner = current.value[1:-2]
@@ -334,11 +335,14 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     if child.name == 'br'
       let inner = substitute(inner, '\n\s*$', '', '')
     endif
+    let html = substitute(html, '^\n', '', 'g')
     let inner .= html
   endfor
-  if len(current.child) == 1 && current.child[0].name == ''
-    if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-      let str .= ">" . inner . "</" . current_name . ">\n"
+  if len(current.child) == 1
+    if stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1
+      let inner = substitute(inner, "\n", "\n" . indent, 'g')
+      let inner = substitute(inner, indent . "$", "", 'g')
+      let str .= ">\n" . indent . inner . "</" . current_name . ">"
     else
       let str .= ">" . inner . "</" . current_name . ">"
     endif
@@ -348,12 +352,12 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
         if inner =~ "\n$"
           let inner = substitute(inner, "\n", "\n" . indent, 'g')
           let inner = substitute(inner, indent . "$", "", 'g')
-          let str .= ">\n" . indent . inner . "</" . current_name . ">\n"
+          let str .= ">\n" . indent . inner . "</" . current_name . ">"
         else
-          let str .= ">\n" . indent . inner . indent . "\n</" . current_name . ">\n"
+          let str .= ">\n" . indent . inner . indent . "\n</" . current_name . ">"
         endif
       else
-        let str .= ">" . inner . "</" . current_name . ">\n"
+        let str .= ">" . inner . "</" . current_name . ">"
       endif
     else
       let str .= ">" . inner . "</" . current_name . ">"
@@ -363,11 +367,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
       if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
         let str .= " />\n"
       else
-        if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1 && len(current.child)
-          let str .= ">\n" . inner . '${cursor}</' . current_name . ">\n"
-        else
-          let str .= ">" . inner . '${cursor}</' . current_name . ">\n"
-        endif
+        let str .= ">" . inner . '${cursor}</' . current_name . ">"
       endif
     else
       if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
@@ -377,8 +377,13 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
       endif
     endif
   endif
+
+  if len(current.parent.name) == 0 || (current.multiplier > 0 && current.multiplier == itemno+1 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1)
+    let str .= "\n"
+  endif
+
   if len(comment) > 0
-    let str .= "<!-- /" . comment . " -->" . (inline ? "" : "\n") . comment_indent
+    let str .= "<!-- /" . comment . " -->" . (inline ? "" : "\n")
   endif
   return str
 endfunction
