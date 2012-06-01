@@ -112,6 +112,68 @@ function! zencoding#lang#slim#toggleComment()
 endfunction
 
 function! zencoding#lang#slim#balanceTag(flag) range
+  let block = zencoding#util#getVisualBlock()
+  if a:flag == -2 || a:flag == 2
+    let curpos = [0, line("'<"), col("'<"), 0]
+  else
+    let curpos = getpos('.')
+  endif
+  let n = curpos[1]
+  let ml = len(matchstr(getline(n), '^\s*'))
+
+  if a:flag > 0
+    if a:flag == 1 || !zencoding#util#regionIsValid(block)
+      let n = line('.')
+    else
+      while n > 0
+        let l = len(matchstr(getline(n), '^\s*\ze[a-z]'))
+        if l > 0 && l < ml
+          let ml = l
+          break
+        endif
+        let n -= 1
+      endwhile
+    endif
+    let sn = n
+    if n == 0
+      let ml = 0
+    endif
+    while n < line('$')
+      let l = len(matchstr(getline(n), '^\s*[a-z]'))
+      if l > 0 && l <= ml
+        let n -= 1
+        break
+      endif
+      let n += 1
+    endwhile
+    call setpos('.', [0, n, 1, 0])
+    normal! V
+    call setpos('.', [0, sn, 1, 0])
+  else
+    while n > 0
+      let l = len(matchstr(getline(n), '^\s*\ze[a-z]'))
+      if l > 0 && l > ml
+        let ml = l
+        break
+      endif
+      let n += 1
+    endwhile
+    let sn = n
+    if n == 0
+      let ml = 0
+    endif
+    while n < line('$')
+      let l = len(matchstr(getline(n), '^\s*[a-z]'))
+      if l > 0 && l <= ml
+        let n -= 1
+        break
+      endif
+      let n += 1
+    endwhile
+    call setpos('.', [0, n, 1, 0])
+    normal! V
+    call setpos('.', [0, sn, 1, 0])
+  endif
 endfunction
 
 function! zencoding#lang#slim#moveNextPrev(flag)
