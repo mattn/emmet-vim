@@ -236,7 +236,7 @@ function! zencoding#getFileType()
   return type
 endfunction
 
-function! zencoding#expandAbbr(mode) range
+function! zencoding#expandAbbr(mode, abbr) range
   let type = zencoding#getFileType()
   let expand = ''
   let filters = ['html']
@@ -311,6 +311,11 @@ function! zencoding#expandAbbr(mode) range
         let expand .= zencoding#toString(item, type, 0, filters)
       endfor
     endif
+  elseif a:mode == 4
+    call setline('.', a:abbr)
+    normal! $
+    call zencoding#expandAbbr(0, "")
+    return
   else
     let line = getline('.')
     if col('.') < len(line)
