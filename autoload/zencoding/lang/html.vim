@@ -342,7 +342,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     let inner .= html
   endfor
   if len(current.child) == 1
-    if stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1
+    if len(current.child[0].name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1
       let inner = substitute(inner, "\n", "\n" . indent, 'g')
       let inner = substitute(inner, indent . "$", "", 'g')
       let str .= ">\n" . indent . inner . "</" . current_name . ">"
