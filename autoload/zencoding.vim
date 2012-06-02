@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 01-Jun-2012.
+" Last Change: 02-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim

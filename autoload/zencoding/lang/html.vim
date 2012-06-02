@@ -21,7 +21,7 @@ function! zencoding#lang#html#findTokens(str)
     if token == ''
       break
     endif
-	if token =~ '^\s'
+    if token =~ '^\s'
       let token = matchstr(token, '^\s*\zs.*')
       let last_pos = stridx(str, token, pos)
     endif
@@ -218,6 +218,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
           break
         endif
         let parent = tmp
+        let current.parent = tmp
       endfor
     endif
 
@@ -301,7 +302,9 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   let current_name = substitute(current.name, '\$$', itemno+1, '')
 
   if len(current.parent.name) > 0 && current.multiplier > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-    let str .= "\n"
+    if current.parent.multiplier > 0
+      let str .= "\n"
+    endif
   endif
 
   let tmp = '<' . current_name
@@ -365,7 +368,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   else
     if inline == 0
       if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
-        let str .= " />\n"
+        let str .= " />"
       else
         let str .= ">" . inner . '${cursor}</' . current_name . ">"
       endif

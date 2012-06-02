@@ -321,15 +321,13 @@ finish
       'name': "a>b>i<<b",
       'query': "a>b>i<<b",
       'type': "html",
-      'result': "<a href=\"\"><b><i></i></b></a>\n<b></b>",
-      'skip': 0,
+      'result': "<a href=\"\"><b><i></i></b></a>\n<b></b>\n",
     },
     {
       'name': "blockquote>b>i<<b",
       'query': "blockquote>b>i<<b",
       'type': "html",
-      'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>",
-      'skip': 0,
+      'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>\n",
     },
     {
       'name': "a[href=foo][class=bar]",
@@ -414,7 +412,6 @@ finish
       'query': "#header>li<#content",
       'type': "html",
       'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
-      'skip': 1,
     },
     {
       'name': "(#header>li)<#content",
@@ -427,7 +424,6 @@ finish
       'query': "a>b>i<<div",
       'type': "html",
       'result': "<a href=\"\"><b><i></i></b></a>\n<div></div>\n",
-      'skip': 1,
     },
     {
       'name': "(#header>h1)+#content+#footer",
@@ -439,8 +435,7 @@ finish
       'name': "(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)",
       'query': "(#header>h1)+(#content>(#main>h2+div#entry$.section*5>(h3>a)+div>p*3+ul+)+(#utilities))+(#footer>address)",
       'type': "html",
-      'result': "<div id=\"header\">\n\t<h1></h1>\n</div>\n<div id=\"content\">\n\t<div id=\"main\">\n\t\t<h2></h2>\n\t\t<div id=\"entry1\" class=\"section\">\n\t\t\t<h3>\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry2\" class=\"section\">\n\t\t\t<h3>\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry3\" class=\"section\">\n\t\t\t<h3>\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry4\" class=\"section\">\n\t\t\t<h3>\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry5\" class=\"section\">\n\t\t\t<h3>\n\t\t\t\t<a href=\"\"></a>\n\t\t\t</h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\t<div id=\"utilities\"></div>\n</div>\n<div id=\"footer\">\n\t<address></address>\n</div>\n",
-      'skip': 1,
+      'result': "<div id=\"header\">\n\t<h1></h1>\n</div>\n<div id=\"content\">\n\t<div id=\"main\">\n\t\t<h2></h2>\n\t\t<div id=\"entry1\" class=\"section\">\n\t\t\t<h3><a href=\"\"></a></h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry2\" class=\"section\">\n\t\t\t<h3><a href=\"\"></a></h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry3\" class=\"section\">\n\t\t\t<h3><a href=\"\"></a></h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry4\" class=\"section\">\n\t\t\t<h3><a href=\"\"></a></h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"entry5\" class=\"section\">\n\t\t\t<h3><a href=\"\"></a></h3>\n\t\t\t<div>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<p></p>\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\t<div id=\"utilities\"></div>\n</div>\n<div id=\"footer\">\n\t<address></address>\n</div>\n",
     },
     {
       'name': "(div>(ul*2)*2)+(#utilities)",
@@ -489,7 +484,6 @@ finish
       'query': "link:css",
       'type': "html",
       'result': "<link media=\"all\" rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n",
-      'skip': 1,
     },
     {
       'name': "a[title=\"Hello', world\" rel]",
