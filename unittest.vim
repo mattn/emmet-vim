@@ -6,7 +6,7 @@ endif
 function! s:reload(d)
   exe "so" a:d."/plugin/zencoding.vim"
   for f in split(globpath(a:d, 'autoload/**/*.vim'), "\n")
-    exe "so" f
+    silent! exe "so" f
   endfor
 endfunction
 
@@ -69,7 +69,7 @@ function! s:testExpandAbbr()
       let name = tests[n].name
       let query = tests[n].query
       let result = tests[n].result
-      if has_key(tests[n], 'skip')
+      if has_key(tests[n], 'skip') && tests[n].skip != 0
         call s:show_skip(n+1, name)
         continue
       endif
@@ -322,14 +322,14 @@ finish
       'query': "a>b>i<<b",
       'type': "html",
       'result': "<a href=\"\"><b><i></i></b></a>\n<b></b>",
-      'skip': 1,
+      'skip': 0,
     },
     {
       'name': "blockquote>b>i<<b",
       'query': "blockquote>b>i<<b",
       'type': "html",
       'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>",
-      'skip': 1,
+      'skip': 0,
     },
     {
       'name': "a[href=foo][class=bar]",
