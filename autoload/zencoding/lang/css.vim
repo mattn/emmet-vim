@@ -141,3 +141,7 @@ function! zencoding#lang#css#moveNextPrev(flag)
     startinsert
   endif
 endfunction
+
+function! zencoding#lang#css#splitJoinTag()
+  " nothing to do
+endfunction

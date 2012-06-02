@@ -185,3 +185,7 @@ function! zencoding#lang#slim#moveNextPrev(flag)
     startinsert
   endif
 endfunction
+
+function! zencoding#lang#slim#splitJoinTag()
+  " TODO
+endfunction

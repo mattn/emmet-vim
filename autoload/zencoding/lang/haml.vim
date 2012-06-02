@@ -196,3 +196,7 @@ function! zencoding#lang#haml#moveNextPrev(flag)
     startinsert
   endif
 endfunction
+
+function! zencoding#lang#haml#splitJoinTag()
+  " TODO
+endfunction

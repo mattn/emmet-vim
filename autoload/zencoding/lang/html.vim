@@ -591,3 +591,43 @@ function! zencoding#lang#html#moveNextPrev(flag)
     startinsert
   endif
 endfunction
+
+function! zencoding#lang#html#splitJoinTag()
+  let curpos = getpos('.')
+  while 1
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+    let pos1 = searchpos(mx, 'bcnW')
+    let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
+    let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+    if content[-2:] == '/>' && zencoding#util#cursorInRegion(block)
+      let content = content[:-3] . "></" . tag_name . '>'
+      call zencoding#util#setContent(block, content)
+      call setpos('.', [0, block[0][0], block[0][1], 0])
+      return
+    else
+      if tag_name[0] == '/'
+        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+        call setpos('.', [0, pos1[0], pos1[1], 0])
+        let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+      else
+        let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+      endif
+      let block = [pos1, pos2]
+      let content = zencoding#util#getContent(block)
+      if zencoding#util#pointInRegion(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+        let content = matchstr(content, mx)[:-2] . '/>'
+        call zencoding#util#setContent(block, content)
+        call setpos('.', [0, block[0][0], block[0][1], 0])
+        return
+      else
+        if block[0][0] > 0
+          call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+        else
+          call setpos('.', curpos)
+          return
+        endif
+      endif
+    endif
+  endwhile
+endfunction
