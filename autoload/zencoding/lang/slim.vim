@@ -193,12 +193,11 @@ function! zencoding#lang#slim#splitJoinTag()
       let sn = n
       let n += 1
       if getline(n) =~ '^\s*|'
-        while n < line('$')
+        while n <= line('$')
           if getline(n) !~ '^\s*|'
             break
           endif
           exe n "delete"
-          let n += 1
         endwhile
         call setpos('.', [0, sn, 1, 0])
       else
