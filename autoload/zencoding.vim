@@ -324,7 +324,13 @@ function! zencoding#expandAbbr(mode, abbr) range
       endfor
     endif
   elseif a:mode == 4
-    call setline('.', a:abbr)
+    let line = getline('.')
+    let spaces = matchstr(line, '^\s*')
+    if line !~ '^\s*$'
+      put =spaces.a:abbr
+    else
+      call setline('.', spaces.a:abbr)
+    endif
     normal! $
     call zencoding#expandAbbr(0, "")
     return
