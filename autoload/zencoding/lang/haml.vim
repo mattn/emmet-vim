@@ -202,24 +202,29 @@ function! zencoding#lang#haml#splitJoinTag()
   while n > 0
     if getline(n) =~ '^\s*\ze%[a-z]'
       let line = getline(n)
-      call setline(n, matchstr(line, '^\s*%\w\+\s*{[^}]*}'))
+      call setline(n, substitute(line, '^\s*%\w\+\%(\s*{[^}]*}\|\s\)\zs.*', '', ''))
       let sn = n
       let n += 1
       let ml = len(matchstr(getline(n), '^\s*%[a-z]'))
-      if getline(n) =~ '^\s*|'
-        while n < line('$')
+      if len(matchstr(getline(n), '^\s*')) > ml
+        while n <= line('$')
           let l = len(matchstr(getline(n), '^\s*'))
           if l <= ml
             break
           endif
           exe n "delete"
-          let n += 1
         endwhile
         call setpos('.', [0, sn, 1, 0])
       else
+        let tag = matchstr(getline(sn), '^\s*%\zs\(\w\+\)')
         let spaces = matchstr(getline(sn), '^\s*')
-        call append(sn, spaces . '  | ')
-        call setpos('.', [0, sn+1, 1, 0])
+        let settings = zencoding#getSettings()
+        if stridx(','.settings.html.inline_elements.',', ','.tag.',') == -1
+          call append(sn, spaces . '   ')
+          call setpos('.', [0, sn+1, 1, 0])
+        else
+          call setpos('.', [0, sn, 1, 0])
+        endif
         startinsert!
       endif
       break
