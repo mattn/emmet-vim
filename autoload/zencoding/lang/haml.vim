@@ -198,5 +198,30 @@ function! zencoding#lang#haml#moveNextPrev(flag)
 endfunction
 
 function! zencoding#lang#haml#splitJoinTag()
-  " TODO
+endfunction
+
+function! zencoding#lang#haml#removeTag()
+  let n = line('.')
+  let ml = 0
+  while n > 0
+    if getline(n) =~ '^\s*\ze[a-z]'
+      let ml = len(matchstr(getline(n), '^\s*%[a-z]'))
+      break
+    endif
+    let n -= 1
+  endwhile
+  let sn = n
+  while n < line('$')
+    let l = len(matchstr(getline(n), '^\s*%[a-z]'))
+    if l > 0 && l <= ml
+      let n -= 1
+      break
+    endif
+    let n += 1
+  endwhile
+  if sn == n
+    exe "delete"
+  else
+    exe sn "," (n-1) "delete"
+  endif
 endfunction
