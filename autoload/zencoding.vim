@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 03-Jun-2012.
+" Last Change: 04-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -21,6 +21,22 @@ function! zencoding#useFilter(filters, filter)
     endif
   endfor
   return 0
+endfunction
+
+function! zencoding#getIndentation(...)
+  if a:0 > 0
+    let type = a:1
+  else
+    let type = zencoding#getFileType()
+  endif
+  if has_key(s:zen_settings, type) && has_key(s:zen_settings[type], 'indentation')
+    let indent = s:zen_settings[type].indentation
+  elseif has_key(s:zen_settings, 'indentation')
+    let indent = s:zen_settings.indentation
+  else
+    let indent = (&l:expandtab || &l:tabstop != &l:shiftwidth) ? repeat(' ', &l:shiftwidth) : "\t"
+  endif
+  return indent
 endfunction
 
 function! zencoding#isExtends(type, extend)
@@ -106,11 +122,7 @@ function! zencoding#toString(...)
     let filters = ['html']
   endif
 
-  if has_key(s:zen_settings, type) && has_key(s:zen_settings[type], 'indentation')
-    let indent = s:zen_settings[type].indentation
-  else
-    let indent = s:zen_settings.indentation
-  endif
+  let indent = zencoding#getIndentation(type)
   let itemno = 0
   let str = ''
   let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
@@ -599,7 +611,6 @@ endfunction
 
 unlet! s:zen_settings
 let s:zen_settings = {
-\    'indentation': "\t",
 \    'lang': "en",
 \    'charset': "UTF-8",
 \    'css': {

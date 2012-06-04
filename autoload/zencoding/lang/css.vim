@@ -7,12 +7,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
   let type = a:type
 
   let settings = zencoding#getSettings()
-
-  if has_key(settings[type], 'indentation')
-    let indent = settings[type].indentation
-  else
-    let indent = settings.indentation
-  endif
+  let indent = zencoding#getIndentation(type)
 
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
 

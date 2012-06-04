@@ -41,12 +41,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
   if len(type) == 0 | let type = 'html' | endif
 
   let settings = zencoding#getSettings()
-
-  if has_key(settings[type], 'indentation')
-    let indent = settings[type].indentation
-  else
-    let indent = settings.indentation
-  endif
+  let indent = zencoding#getIndentation(type)
 
   " try 'foo' to (foo-x)
   let rabbr = zencoding#getExpandos(type, abbr)

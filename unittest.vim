@@ -1,6 +1,6 @@
 if exists('g:user_zen_settings')
   let s:old_user_zen_settings = g:user_zen_settings
-  unlet! g:user_zen_settings
+  let g:user_zen_settings = { 'indentation': "\t" }
 endif
 
 function! s:reload(d)
@@ -97,13 +97,13 @@ function! s:testExpandAbbr()
         unlet! res | let res = zencoding#ExpandWord(query, type, 0)
       endif
       if stridx(result, '$$$$') != -1
-        if res == result
+        if res ==# result
           call s:show_ok()
         else
           call s:show_ng(n+1, result, res)
         endif
       else
-        if res == result
+        if res ==# result
           call s:show_ok()
         else
           call s:show_ng(n+1, result, res)
