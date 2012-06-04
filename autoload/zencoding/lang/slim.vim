@@ -187,7 +187,30 @@ function! zencoding#lang#slim#moveNextPrev(flag)
 endfunction
 
 function! zencoding#lang#slim#splitJoinTag()
-  " TODO
+  let n = line('.')
+  while n > 0
+    if getline(n) =~ '^\s*\ze[a-z]'
+      let sn = n
+      let n += 1
+      if getline(n) =~ '^\s*|'
+        while n < line('$')
+          if getline(n) !~ '^\s*|'
+            break
+          endif
+          exe n "delete"
+          let n += 1
+        endwhile
+        call setpos('.', [0, sn, 1, 0])
+      else
+        let spaces = matchstr(getline(sn), '^\s*')
+        call append(sn, spaces . '  | ')
+        call setpos('.', [0, sn+1, 1, 0])
+        startinsert!
+      endif
+      break
+    endif
+    let n -= 1
+  endwhile
 endfunction
 
 function! zencoding#lang#slim#removeTag()

@@ -198,6 +198,34 @@ function! zencoding#lang#haml#moveNextPrev(flag)
 endfunction
 
 function! zencoding#lang#haml#splitJoinTag()
+  let n = line('.')
+  while n > 0
+    if getline(n) =~ '^\s*\ze%[a-z]'
+      let line = getline(n)
+      call setline(n, matchstr(line, '^\s*%\w\+\s*{[^}]*}'))
+      let sn = n
+      let n += 1
+      let ml = len(matchstr(getline(n), '^\s*%[a-z]'))
+      if getline(n) =~ '^\s*|'
+        while n < line('$')
+          let l = len(matchstr(getline(n), '^\s*'))
+          if l <= ml
+            break
+          endif
+          exe n "delete"
+          let n += 1
+        endwhile
+        call setpos('.', [0, sn, 1, 0])
+      else
+        let spaces = matchstr(getline(sn), '^\s*')
+        call append(sn, spaces . '  | ')
+        call setpos('.', [0, sn+1, 1, 0])
+        startinsert!
+      endif
+      break
+    endif
+    let n -= 1
+  endwhile
 endfunction
 
 function! zencoding#lang#haml#removeTag()

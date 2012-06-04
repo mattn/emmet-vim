@@ -140,3 +140,7 @@ endfunction
 function! zencoding#lang#css#splitJoinTag()
   " nothing to do
 endfunction
+
+function! zencoding#lang#css#removeTag()
+  " nothing to do
+endfunction
