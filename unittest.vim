@@ -1,7 +1,4 @@
-if exists('g:user_zen_settings')
-  let s:old_user_zen_settings = g:user_zen_settings
-  let g:user_zen_settings = { 'indentation': "\t" }
-endif
+let s:sfile = expand('<sfile>')
 
 function! s:reload(d)
   exe "so" a:d."/plugin/zencoding.vim"
@@ -71,17 +68,23 @@ function! s:show_ng(no, expect, got)
   throw "stop"
 endfunction
 
-function! s:test()
-  unlet! testgroups
-  let testgroups = eval(join(filter(split(substitute(join(readfile(expand('%')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
+function! s:test(...)
+  let type = get(a:000, 0, '')
+  let name = get(a:000, 1, '')
+  let index = get(a:000, 2, '')
+
+  let testgroups = eval(join(filter(split(substitute(join(readfile(s:sfile), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
   for testgroup in testgroups
+    if len(type) > 0 && testgroup.type != type | continue | endif
     call s:show_type(testgroup.type)
     let type = testgroup.type
     for category in testgroup.categories
+      if len(name) > 0 && substitute(category.name,' ','_','g') != name | continue | endif
       call s:show_category(category.name)
       let tests = category.tests
       let start = reltime()
       for n in range(len(tests))
+        if len(index) > 0 && n != index | continue | endif
         let query = tests[n].query
         let result = tests[n].result
         if has_key(tests[n], 'skip') && tests[n].skip != 0
@@ -130,20 +133,41 @@ function! s:test()
   endfor
 endfunction
 
-try
-  let oldmore = &more
-  let &more = 0
-  call s:test()
-catch
-finally
-  let &more=oldmore
-endtry
+function! s:do_tests(...)
+  try
+    if exists('g:user_zen_settings')
+      let s:old_user_zen_settings = g:user_zen_settings
+      let g:user_zen_settings = { 'indentation': "\t" }
+    endif
+    let oldmore = &more
+    let &more = 0
+    call call('s:test', a:000)
+    echo "done"
+  catch
+    echoerr v:exception
+  finally
+    let &more=oldmore
+    if exists('g:user_zen_settings')
+      let g:user_zen_settings = s:old_user_zen_settings
+    endif
+  endtry
+endfunction
 
-if exists('g:user_zen_settings')
-  let g:user_zen_settings = s:old_user_zen_settings
-endif
+function! g:zencoding_unittest_complete(arglead, cmdline, cmdpos)
+  let args = split(a:cmdline, '\s\+', 1)
+  let testgroups = eval(join(filter(split(substitute(join(readfile(s:sfile), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
+  try
+    if len(args) == 2
+      return filter(map(testgroups, 'v:val.type'), 'stridx(v:val,args[1])!=-1')
+    elseif len(args) == 3
+      return map(filter(testgroups, 'v:val.type==args[1]')[0].categories, 'substitute(v:val.name," ","_","g")')
+    endif
+  catch
+  endtry
+  return []
+endfunction
 
-echo "done"
+command! -nargs=* -complete=customlist,g:zencoding_unittest_complete ZenCodingUnitTest call s:do_tests(<f-args>)
 
 finish
 [
