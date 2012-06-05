@@ -83,7 +83,7 @@ function! s:testExpandAbbr()
           let key = "\<c-y>,"
         endif
         silent! let query = substitute(query, '\$\$\$\$.*\$\$\$\$', '$$$$', '')
-        silent! call setline(1, query)
+        silent! call setline(1, split(query, "\n"))
         let cmd = "normal gg0/\\$\\$\\$\\$\ri\<del>\<del>\<del>\<del>".key
         if stridx(result, '$$$$') != -1
           let cmd .= '$$$$'
@@ -647,17 +647,15 @@ finish
     },
     {
       'name': "join tag",
-      'query': "",
+      'query': "%a foo\n  bar$$$$\\<c-y>j$$$$",
       'type': "haml",
-      'result': "",
-      'skip': 1,
+      'result': "%a ",
     },
     {
       'name': "split tag",
-      'query': "",
+      'query': "$$$$\\<c-y>j$$$$%a ",
       'type': "haml",
-      'result': "",
-      'skip': 1,
+      'result': "%a $$$$",
     },
     {
       'name': "comment tag",
@@ -702,17 +700,15 @@ finish
     },
     {
       'name': "join tag",
-      'query': "",
+      'query': "a\n  | foo$$$$\\<c-y>j$$$$",
       'type': "slim",
-      'result': "",
-      'skip': 1,
+      'result': "a",
     },
     {
       'name': "split tag",
-      'query': "",
+      'query': "a$$$$\\<c-y>j$$$$",
       'type': "slim",
-      'result': "",
-      'skip': 1,
+      'result': "a\n  | $$$$",
     },
     {
       'name': "comment tag",
