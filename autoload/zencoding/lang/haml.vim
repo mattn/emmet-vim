@@ -202,7 +202,7 @@ function! zencoding#lang#haml#splitJoinTag()
   let sml = len(matchstr(getline(n), '^\s*%[a-z]'))
   while n > 0
     if getline(n) =~ '^\s*\ze%[a-z]'
-      if len(matchstr(getline(n), '^\s*%[a-z]')) > sml
+      if len(matchstr(getline(n), '^\s*%[a-z]')) < sml
         break
       endif
       let line = getline(n)
