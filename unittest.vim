@@ -71,7 +71,7 @@ function! s:show_ng(no, expect, got)
   throw "stop"
 endfunction
 
-function! s:testExpandAbbr()
+function! s:test()
   unlet! testgroups
   let testgroups = eval(join(filter(split(substitute(join(readfile(expand('%')), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
   for testgroup in testgroups
@@ -130,67 +130,10 @@ function! s:testExpandAbbr()
   endfor
 endfunction
 
-function! s:testImageSize()
-  call s:show_category("image size")
-
-  silent! 1new
-  silent! call setline(1, "img[src=http://mattn.kaoriya.net/images/logo.png]")
-  silent! let start = reltime()
-  silent! exe "silent! normal A\<c-y>,\<c-y>i"
-  silent! let line = getline(1)
-  silent! bw!
-  let expect = '<img src="http://mattn.kaoriya.net/images/logo.png" alt="" width="96" height="96" />'
-  call s:show_title(1, "existing image")
-  if line == expect
-    call s:show_ok()
-  else
-    call s:show_ng(1, expect, line)
-  endif
-
-  silent! 1new
-  silent! call setline(1, "img[src=/logo.png]")
-  silent! let start = reltime()
-  silent! exe "silent! normal A\<c-y>,\<c-y>i"
-  silent! let line = getline(1)
-  silent! bw!
-  let expect = '<img src="/logo.png" alt="" />'
-  call s:show_title(2, "not existing image")
-  if line == expect
-    call s:show_ok()
-  else
-    call s:show_ng(2, expect, line)
-  endif
-
-  echo "past:".reltimestr(reltime(start))."\n"
-endfunction
-
-function! s:testMoveNextPrev()
-  silent! 1new
-  silent! call setline(1, "<foo></foo>")
-  silent! call setline(2, "<bar></bar>")
-  silent! call setline(3, "<baz dankogai=\"\"></baz>")
-  let start = reltime()
-  exe "silent! normal gg0\<c-y>n\<c-y>n\<c-y>n"
-  let pos = getpos(".")
-  let line = substitute(getline("."), '<baz \(\w\+\)=".*', '\1', '')
-  silent! bw!
-  call s:show_category("move next prev")
-  call s:show_title(1, "move next prev")
-  let expect = [0,3,15,0]
-  if pos == expect && line == 'dankogai'
-    call s:show_ok()
-    echo "past:".reltimestr(reltime(start))."\n"
-  else
-    call s:show_ng(1, string(expect), string(pos))
-  endif
-endfunction
-
 try
   let oldmore = &more
   let &more = 0
-  call s:testExpandAbbr()
-  call s:testImageSize()
-  call s:testMoveNextPrev()
+  call s:test()
 catch
 finally
   let &more=oldmore
@@ -483,6 +426,28 @@ finish
         {
           'query': "<div>\n\t<!-- <span>$$$$\\<c-y>/$$$$</span> -->\n</div>",
           'result': "<div>\n\t<span></span>\n</div>",
+        },
+      ],
+    },
+    {
+      'name': 'image size',
+      'tests': [
+        {
+          'query': "img[src=http://mattn.kaoriya.net/images/logo.png]$$$$\\<c-y>,\\<c-y>i$$$$",
+          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\" />",
+        },
+        {
+          'query': "img[src=/logo.png]$$$$\\<c-y>,\\<c-y>i$$$$",
+          'result': "<img src=\"/logo.png\" alt=\"\" />",
+        },
+      ],
+    },
+    {
+      'name': 'move next prev',
+      'tests': [
+        {
+          'query': "foo+bar+baz[dankogai=\"\"]$$$$\\<c-y>,\\<esc>gg0\\<c-y>n\\<c-y>n\\<c-y>n\\<esc>Byw:%d _\\<cr>p$$$$",
+          'result': "dankogai",
         },
       ],
     },
