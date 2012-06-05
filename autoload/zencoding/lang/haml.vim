@@ -199,8 +199,12 @@ endfunction
 
 function! zencoding#lang#haml#splitJoinTag()
   let n = line('.')
+  let sml = len(matchstr(getline(n), '^\s*%[a-z]'))
   while n > 0
     if getline(n) =~ '^\s*\ze%[a-z]'
+      if len(matchstr(getline(n), '^\s*%[a-z]')) > sml
+        break
+      endif
       let line = getline(n)
       call setline(n, substitute(line, '^\s*%\w\+\%(\s*{[^}]*}\|\s\)\zs.*', '', ''))
       let sn = n
