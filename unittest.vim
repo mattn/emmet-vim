@@ -7,8 +7,6 @@ function! s:reload(d)
   endfor
 endfunction
 
-call s:reload(expand('<sfile>:h'))
-
 function! s:show_type(type)
   echohl Search | echon "[" a:type "]\n" | echohl None
   echo "\r"
@@ -139,6 +137,7 @@ function! s:do_tests(...)
       let s:old_user_zen_settings = g:user_zen_settings
       let g:user_zen_settings = { 'indentation': "\t" }
     endif
+    call s:reload(expand('<sfile>:h'))
     let oldmore = &more
     let &more = 0
     call call('s:test', a:000)
