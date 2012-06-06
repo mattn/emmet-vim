@@ -17,6 +17,14 @@ function! s:show_category(category)
   echo "\r"
 endfunction
 
+function! s:show_pass(pass)
+  echohl Title | echo "pass".a:pass."\n" | echohl None
+endfunction
+
+function! s:show_done()
+  echohl IncSearch | echo "done" | echohl None
+endfunction
+
 function! s:escape(str)
   let str = a:str
   let str = substitute(str, "\n", '\\n', 'g')
@@ -27,7 +35,7 @@ endfunction
 function! s:show_title(no, title)
   let title = s:escape(a:title)
   let width = &columns - 23
-  echohl ModeMsg | echon "\rtesting #".printf("%03d", a:no)
+  echohl MoreMsg | echon "\rtesting #".printf("%03d", a:no)
   echohl None | echon ": " . (len(title) < width ? (title.repeat(' ', width-len(title))) : strpart(title, 0, width)) . ' ... '
 endfunction
 
@@ -126,7 +134,7 @@ function! s:test(...)
           endif
         endif
       endfor
-      echo "past:".reltimestr(reltime(start))."\n"
+      call s:show_pass(reltimestr(reltime(start)))
     endfor
   endfor
 endfunction
@@ -137,11 +145,11 @@ function! s:do_tests(...)
       let s:old_user_zen_settings = g:user_zen_settings
       let g:user_zen_settings = { 'indentation': "\t" }
     endif
-    call s:reload(expand('<sfile>:h'))
     let oldmore = &more
+    call s:reload(fnamemodify(s:sfile, ':h'))
     let &more = 0
     call call('s:test', a:000)
-    echo "done"
+    call s:show_done()
   catch
     echoerr v:exception
   finally
@@ -167,6 +175,9 @@ function! g:zencoding_unittest_complete(arglead, cmdline, cmdpos)
 endfunction
 
 command! -nargs=* -complete=customlist,g:zencoding_unittest_complete ZenCodingUnitTest call s:do_tests(<f-args>)
+if expand('<sfile>') == expand('%')
+  ZenCodingUnitTest
+endif
 
 finish
 [
