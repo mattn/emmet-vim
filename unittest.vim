@@ -175,7 +175,7 @@ function! g:zencoding_unittest_complete(arglead, cmdline, cmdpos)
 endfunction
 
 command! -nargs=* -complete=customlist,g:zencoding_unittest_complete ZenCodingUnitTest call s:do_tests(<f-args>)
-if expand('<sfile>') == expand('%')
+if s:sfile == expand('%:p')
   ZenCodingUnitTest
 endif
 
@@ -656,15 +656,11 @@ finish
       'name': 'expand abbreviation',
       'tests': [
         {
-          'name': "div#{{foo}}",
           'query': "div#{{foo}}",
-          'type': "mustache",
           'result': "<div id=\"{{foo}}\"></div>\n",
         },
         {
-          'name': "div.{{foo}}",
           'query': "div.{{foo}}",
-          'type': "mustache",
           'result': "<div class=\"{{foo}}\"></div>\n",
         },
       ],
