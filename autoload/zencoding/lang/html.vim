@@ -296,7 +296,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   let current_name = current.name
   let current_name = substitute(current.name, '\$$', itemno+1, '')
 
-  if len(current.parent.name) > 0 && current.multiplier > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+  if !empty(current.parent) && len(current.parent.name) > 0 && current.multiplier > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
     if current.parent.multiplier > 0
       let str .= "\n"
     endif
@@ -376,7 +376,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     endif
   endif
 
-  if len(current.parent.name) == 0 || (current.multiplier > 0 && current.multiplier == itemno+1 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1)
+  if !empty(current.parent) && len(current.parent.name) == 0 || (current.multiplier > 0 && current.multiplier == itemno+1 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1)
     let str .= "\n"
   endif
 
