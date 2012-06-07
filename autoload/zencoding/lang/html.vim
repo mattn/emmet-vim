@@ -376,13 +376,14 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     endif
   endif
 
+  if len(comment) > 0
+    let str .= "\n<!-- /" . comment . " -->" . (inline ? "" : "\n")
+  endif
+
   if !empty(current.parent) && len(current.parent.name) == 0 || (current.multiplier > 0 && current.multiplier == itemno+1 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1)
     let str .= "\n"
   endif
 
-  if len(comment) > 0
-    let str .= "<!-- /" . comment . " -->" . (inline ? "" : "\n")
-  endif
   return str
 endfunction
 
