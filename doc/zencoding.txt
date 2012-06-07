@@ -29,6 +29,7 @@ Tutorial               |zencoding-tutorial|
  11. Toggle Comment                 |zencoding-toggle-comment|
  12. Make anchor from URL           |zencoding-make-anchor-url|
  13. Make quoted text from URL      |zencoding-quoted-text-url|
+ 14. Code Pretty                    |zencoding-code-pretty|
 Customize             |zencoding-customize|
   1. Key Mappings                   |zencoding-customize-keymappings|
   2. Indent Size                    |zencoding-indent-size|
@@ -279,6 +280,24 @@ You should copy this section and create new buffer, paste and write as
       <p>How does it work? Get up and running in seconds by forking a project, pushing an existing repository...</p>
       <cite>http://github.com/</cite>
   </blockquote>
+<
+14. Code Pretty                                   *zencoding-code-pretty* *<C-Y>c*
+
+  Select code block, for example select following code from "int main()".
+>
+  <p>Writing in C language</p>
+
+  int main() {
+    puts("hello world");
+  }
+<
+  Type |<C-Y>c|
+>
+  <p>Writing in C language</p>
+
+  <span class="Type">int</span>&nbsp;main() {<br />
+  &nbsp;&nbsp;puts(<span class="Constant">&quot;hello world&quot;</span>);<br />
+  }<br />
 <
 ==============================================================================
 CUSTOMIZE                                                  *zencoding-customize*
