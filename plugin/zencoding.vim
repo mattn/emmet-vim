@@ -1,7 +1,7 @@
 "=============================================================================
 " File: zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 04-Jun-2012.
+" Last Change: 07-Jun-2012.
 " Version: 0.72
 " WebPage: http://github.com/mattn/zencoding-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -120,6 +120,7 @@ function! s:install_plugin()
   \ {'mode': 'n', 'var': 'user_zen_anchorizeurl_key', 'key': 'a', 'plug': 'ZenCodingAnchorizeURL', 'func': ':call zencoding#anchorizeURL(0)<cr>'},
   \ {'mode': 'i', 'var': 'user_zen_anchorizesummary_key', 'key': 'A', 'plug': 'ZenCodingAnchorizeSummary', 'func': '<esc>:call zencoding#anchorizeURL(1)<cr>a'},
   \ {'mode': 'n', 'var': 'user_zen_anchorizesummary_key', 'key': 'A', 'plug': 'ZenCodingAnchorizeSummary', 'func': ':call zencoding#anchorizeURL(1)<cr>'},
+  \ {'mode': 'v', 'var': 'user_zen_codepretty_key', 'key': 'c', 'plug': 'ZenCodingCodePretty', 'func': ':call zencoding#codePretty()<cr>'},
   \]
 
     if !hasmapto('<plug>'.item.plug, item.mode)

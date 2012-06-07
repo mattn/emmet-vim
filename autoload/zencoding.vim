@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 04-Jun-2012.
+" Last Change: 07-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -518,6 +518,27 @@ function! zencoding#anchorizeURL(flag)
   let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   let expand = substitute(expand, "\n", "\n" . indent, 'g')
   call zencoding#util#setContent(block, expand)
+endfunction
+
+function! zencoding#codePretty() range
+  let type = input('FileType: ', '', 'filetype')
+  if len(type) == 0
+    return
+  endif
+  let block = zencoding#util#getVisualBlock()
+  let content = zencoding#util#getContent(block)
+  silent! 1new
+  let &l:filetype = type
+  call setline(1, split(content, "\n"))
+  let old_lazyredraw = &lazyredraw
+  set lazyredraw
+  silent! TOhtml
+  let &lazyredraw = old_lazyredraw
+  let content = join(getline(1, '$'), "\n")
+  silent! bw!
+  silent! bw!
+  let content = matchstr(content, '<body[^>]*>[\s\n]*\zs.*\ze</body>')
+  call zencoding#util#setContent(block, content)
 endfunction
 
 function! zencoding#ExpandWord(abbr, type, orig)
