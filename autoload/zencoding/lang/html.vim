@@ -317,6 +317,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   else
     let str .= ">"
     let str .= current.value[1:-2]
+    let str .= '${cursor}'
     for n in range(len(current.child))
       let child = current.child[n]
       if len(current.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
