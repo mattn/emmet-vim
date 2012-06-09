@@ -317,21 +317,25 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   else
     let str .= ">"
     let str .= current.value[1:-2]
-    let str .= '${cursor}'
-    for n in range(len(current.child))
-      let child = current.child[n]
-      if len(current.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-        if len(current.child) > 1 || stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1
-          let str .= "\n" . indent
+    let nc = len(current.child)
+    if nc > 0
+      for n in range(nc)
+        let child = current.child[n]
+        if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+          if nc > 1 || stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1
+            let str .= "\n" . indent
+          endif
         endif
-      endif
-      let inner = zencoding#toString(child, type, 0, filters)
-      let inner = substitute(inner, "\n", "\n" . indent, 'g')
-      let inner = substitute(inner, "\n" . indent . '$', '', 'g')
-      let str .= inner
-    endfor
-    if len(current.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-      if len(current.child) > 1 || (len(current.child) == 1 && stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1)
+        let inner = zencoding#toString(child, type, 0, filters)
+        let inner = substitute(inner, "\n", "\n" . indent, 'g')
+        let inner = substitute(inner, "\n" . indent . '$', '', 'g')
+        let str .= inner
+      endfor
+    else
+      let str .= '${cursor}'
+    endif
+    if nc > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+      if nc > 1 || (nc == 1 && stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1)
         let str .= "\n"
       endif
     endif

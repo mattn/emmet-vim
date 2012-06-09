@@ -425,7 +425,7 @@ finish
         },
         {
           'query': "f div.boxes>article.box2>header>(hgroup>h2{aaa}+h3{bbb})+p{ccc}$$$$",
-          'result': "f <div class=\"boxes\">\n\t<article class=\"box2\">\n\t\t<header>\n\t\t\t<hgroup>\n\t\t\t\t<h2>aaa</h2>\n\t\t\t\t<h3>bbb</h3>\n\t\t\t</hgroup>\n\t\t\t<p>ccc</p>\n\t\t</header>\n\t</article>\n</div>\n",
+          'result': "f <div class=\"boxes\">\n\t<article class=\"box2\">\n\t\t<header>\n\t\t\t<hgroup>\n\t\t\t\t<h2>aaa</h2>\n\t\t\t\t<h3>bbb</h3>\n\t\t\t</hgroup>\n\t\t\t<p>ccc</p>\n\t\t</header>\n\t</article>\n</div>",
         },
         {
           'query': "div.boxes>(div.box2>section>h2{a}+p{b})+(div.box1>section>h2{c}+p{d}+p{e}+(bq>h2{f}+h3{g})+p{h})",
