@@ -283,7 +283,6 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   let filters = a:filters
   let itemno = a:itemno
   let indent = a:indent
-  let str = ""
 
   if zencoding#useFilter(filters, 'haml')
     return zencoding#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
@@ -294,96 +293,55 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
 
   let comment = ''
   let current_name = current.name
-  let current_name = substitute(current.name, '\$$', itemno+1, '')
+  let current_name = substitute(current_name, '\$$', itemno+1, '')
 
-  if !empty(current.parent) && len(current.parent.name) > 0 && current.multiplier > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-    if current.parent.multiplier > 0
-      let str .= "\n"
-    endif
-  endif
-
-  let tmp = '<' . current_name
+  let str = ''
+  let str .= '<' . current_name
   for attr in keys(current.attr)
-    if current_name =~ '^\(xsl:with-param\|xsl:variable\)$' && zencoding#useFilter(filters, 'xsl') && len(current.child) && attr == 'select'
-      continue
-    endif
     let val = current.attr[attr]
     while val =~ '\$\([^#{]\|$\)'
       let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
     endwhile
     let attr = substitute(attr, '\$$', itemno+1, '')
-    let tmp .= ' ' . attr . '="' . val . '"'
+    let str .= ' ' . attr . '="' . val . '"'
     if zencoding#useFilter(filters, 'c')
       if attr == 'id' | let comment .= '#' . val | endif
       if attr == 'class' | let comment .= '.' . val | endif
     endif
   endfor
   if len(comment) > 0
-    let tmp = "<!-- " . comment . " -->" . (inline ? "" : "\n") . tmp
+    let str = "<!-- " . comment . " -->\n" . str
   endif
-  let str .= tmp
-  let inner = current.value[1:-2]
-  if stridx(','.settings.html.inline_elements.',', ','.current_name.',') != -1
-    let child_inline = 1
+  if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
+    let str .= " />"
   else
-    let child_inline = 0
-  endif
-  for child in current.child
-    let html = zencoding#toString(child, type, child_inline, filters)
-    if child.name == 'br'
-      let inner = substitute(inner, '\n\s*$', '', '')
-    endif
-    let html = substitute(html, '^\n', '', 'g')
-    let inner .= html
-  endfor
-  if len(current.child) == 1
-    if len(current.child[0].name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1
-      let inner = substitute(inner, "\n", "\n" . indent, 'g')
-      let inner = substitute(inner, indent . "$", "", 'g')
-      let str .= ">\n" . indent . inner . "</" . current_name . ">"
-    else
-      let str .= ">" . inner . "</" . current_name . ">"
-    endif
-  elseif len(current.child)
-    if inline == 0
-      if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-        if inner =~ "\n$"
-          let inner = substitute(inner, "\n", "\n" . indent, 'g')
-          let inner = substitute(inner, indent . "$", "", 'g')
-          let str .= ">\n" . indent . inner . "</" . current_name . ">"
-        else
-          let str .= ">\n" . indent . inner . indent . "\n</" . current_name . ">"
+    let str .= ">"
+    let str .= current.value[1:-2]
+    for n in range(len(current.child))
+      let child = current.child[n]
+      if len(current.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+        if len(current.child) > 1 || stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1
+          let str .= "\n" . indent
         endif
-      else
-        let str .= ">" . inner . "</" . current_name . ">"
       endif
-    else
-      let str .= ">" . inner . "</" . current_name . ">"
-    endif
-  else
-    if inline == 0
-      if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
-        let str .= " />"
-      else
-        let str .= ">" . inner . '${cursor}</' . current_name . ">"
-      endif
-    else
-      if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
-        let str .= " />"
-      else
-        let str .= ">" . inner . '${cursor}</' . current_name . ">"
+      let inner = zencoding#toString(child, type, 0, filters)
+      let inner = substitute(inner, "\n", "\n" . indent, 'g')
+      let inner = substitute(inner, "\n" . indent . '$', '', 'g')
+      let str .= inner
+    endfor
+    if len(current.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+      if len(current.child) > 1 || (len(current.child) == 1 && stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1)
+        let str .= "\n"
       endif
     endif
+    let str .= "</" . current_name . ">"
   endif
-
   if len(comment) > 0
-    let str .= "\n<!-- /" . comment . " -->" . (inline ? "" : "\n")
+    let str .= "\n<!-- /" . comment . " -->"
   endif
-
-  if !empty(current.parent) && len(current.parent.name) == 0 || (current.multiplier > 0 && current.multiplier == itemno+1 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1)
+  if (current.multiplier > 0 && !empty(current.parent) && len(current.parent.child) > 1)|| stridx(','.settings.html.block_elements.',', ','.current_name.',') != -1
     let str .= "\n"
   endif
-
   return str
 endfunction
 
