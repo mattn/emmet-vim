@@ -321,8 +321,8 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     if nc > 0
       for n in range(nc)
         let child = current.child[n]
-        if stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-          if nc > 1 || stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1
+        if len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+          if nc > 1 || (len(child.name) > 0 && stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1)
             let str .= "\n" . indent
           endif
         endif
@@ -335,7 +335,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
       let str .= '${cursor}'
     endif
     if nc > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-      if nc > 1 || (nc == 1 && stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1)
+      if nc > 1 || (nc == 1 && len(current.child[0].name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current.child[0].name.',') == -1)
         let str .= "\n"
       endif
     endif
@@ -344,7 +344,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   if len(comment) > 0
     let str .= "\n<!-- /" . comment . " -->"
   endif
-  if (current.multiplier > 0 && !empty(current.parent) && len(current.parent.child) > 1)|| stridx(','.settings.html.block_elements.',', ','.current_name.',') != -1
+  if len(current_name) > 0 && (current.multiplier > 0 && !empty(current.parent) && len(current.parent.child) > 1)|| stridx(','.settings.html.block_elements.',', ','.current_name.',') != -1
     let str .= "\n"
   endif
   return str
