@@ -173,7 +173,11 @@ function! zencoding#toString(...)
           let str .= current.name
         endif
         if len(current.value)
-          let str .= current.value[1:-2]
+          let text = current.value[1:-2]
+          let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+          let text = substitute(text, '\${nr}', "\n", 'g')
+          let text = substitute(text, '\\\$', '$', 'g')
+          let str .= text
         endif
       endif
       let inner = ''
