@@ -236,16 +236,17 @@ function! zencoding#getFileType()
     let type = &ft
   endif
   if type == 'html'
-    if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
+    let type = synIDattr(synID(line("."), col("."), 1), "name")
+    if type =~ '^css\w'
       let type = 'css'
     endif
-    if synIDattr(synID(line("."), col("."), 1), "name") =~ '^html'
+    if type =~ '^html\w'
       let type = 'html'
     endif
-    if synIDattr(synID(line("."), col("."), 1), "name") =~ '^javaScript'
+    if type =~ '^javaScript'
       let type = 'javascript'
     endif
-    if len(type) == 0 && synIDattr(synID(line("."), col("."), 1), "name") =~ '^xml'
+    if len(type) == 0 && type =~ '^xml'
       let type = 'xml'
     endif
   endif
