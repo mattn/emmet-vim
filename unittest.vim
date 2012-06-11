@@ -201,7 +201,7 @@ finish
         },
         {
           'query': "a[title=TITLE]",
-          'result': "<a href=\"\" title=\"TITLE\"></a>",
+          'result': "<a href=\"\" title=\"TITLE\"></a>\n",
         },
         {
           'query': "div#wrapper.box",
@@ -233,7 +233,7 @@ finish
         },
         {
           'query': "a",
-          'result': "<a href=\"\"></a>",
+          'result': "<a href=\"\"></a>\n",
         },
         {
           'query': "obj",
@@ -249,11 +249,11 @@ finish
         },
         {
           'query': "a[href=http://www.google.com/].foo#hoge",
-          'result': "<a id=\"hoge\" href=\"http://www.google.com/\" class=\"foo\"></a>",
+          'result': "<a id=\"hoge\" href=\"http://www.google.com/\" class=\"foo\"></a>\n",
         },
         {
           'query': "a[href=http://www.google.com/]{Google}",
-          'result': "<a href=\"http://www.google.com/\">Google</a>",
+          'result': "<a href=\"http://www.google.com/\">Google</a>\n",
         },
         {
           'query': "{ZenCoding}",
@@ -265,7 +265,7 @@ finish
         },
         {
           'query': "a>b>i<b",
-          'result': "<a href=\"\"><b><i></i></b><b></b></a>",
+          'result': "<a href=\"\"><b><i></i></b><b></b></a>\n",
         },
         {
           'query': "a>b>i<<b",
@@ -277,11 +277,11 @@ finish
         },
         {
           'query': "a[href=foo][class=bar]",
-          'result': "<a href=\"foo\" class=\"bar\"></a>",
+          'result': "<a href=\"foo\" class=\"bar\"></a>\n",
         },
         {
           'query': "a[a=b][b=c=d][e]{foo}*2",
-          'result': "<a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a><a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a>",
+          'result': "<a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a>\n<a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a>\n",
         },
         {
           'query': "a[a=b][b=c=d][e]*2{foo}",
@@ -293,7 +293,7 @@ finish
         },
         {
           'query': "a{foo}*2>b",
-          'result': "<a href=\"\">foo<b></b></a><a href=\"\">foo<b></b></a>",
+          'result': "<a href=\"\">foo<b></b></a>\n<a href=\"\">foo<b></b></a>\n",
         },
         {
           'query': "a*2{foo}>b",
@@ -317,7 +317,7 @@ finish
         },
         {
           'query': "a#foo$$$*3",
-          'result': "<a id=\"foo001\" href=\"\"></a><a id=\"foo002\" href=\"\"></a><a id=\"foo003\" href=\"\"></a>",
+          'result': "<a id=\"foo001\" href=\"\"></a>\n<a id=\"foo002\" href=\"\"></a>\n<a id=\"foo003\" href=\"\"></a>\n",
         },
         {
           'query': "ul+",
@@ -381,7 +381,7 @@ finish
         },
         {
           'query': "a[title=\"Hello', world\" rel]",
-          'result': "<a rel=\"\" href=\"\" title=\"Hello', world\"></a>",
+          'result': "<a rel=\"\" href=\"\" title=\"Hello', world\"></a>\n",
         },
         {
           'query': "div>a#foo{bar}",
@@ -464,7 +464,7 @@ finish
       'tests': [
         {
           'query': "img[src=http://mattn.kaoriya.net/images/logo.png]$$$$\\<c-y>,\\<c-y>i$$$$",
-          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\" />",
+          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\" />\n",
         },
         {
           'query': "img[src=/logo.png]$$$$\\<c-y>,\\<c-y>i$$$$",
