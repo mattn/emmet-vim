@@ -35,13 +35,21 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
     let inner = ''
     if len(current.value) > 0
       let str .= "\n"
-      for line in split(current.value[1:-2], "\n")
+      let text = current.value[1:-2]
+      let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      let text = substitute(text, '\${nr}', "\n", 'g')
+      let text = substitute(text, '\\\$', '$', 'g')
+      for line in split(text, "\n")
         let str .= " | " . line . "\n"
       endfor
     endif
     if len(current.child) == 1 && len(current.child[0].name) == 0
       let str .= "\n"
-      for line in split(current.child[0].value[1:-2], "\n")
+      let text = current.child[0].value[1:-2]
+      let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      let text = substitute(text, '\${nr}', "\n", 'g')
+      let text = substitute(text, '\\\$', '$', 'g')
+      for line in split(text, "\n")
         let str .= " | " . line . "\n"
       endfor
     elseif len(current.child) > 0

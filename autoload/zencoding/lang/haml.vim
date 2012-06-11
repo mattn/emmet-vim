@@ -47,14 +47,22 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
 
     let inner = ''
     if len(current.value) > 0
-      let lines = split(current.value[1:-2], "\n")
+      let text = current.value[1:-2]
+      let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      let text = substitute(text, '\${nr}', "\n", 'g')
+      let text = substitute(text, '\\\$', '$', 'g')
+      let lines = split(text, "\n")
       let str .= " " . lines[0]
       for line in lines[1:]
         let str .= " |\n" . line
       endfor
     endif
     if len(current.child) == 1 && len(current.child[0].name) == 0
-      let lines = split(current.child[0].value[1:-2], "\n")
+      let text = current.child[0].value[1:-2]
+      let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      let text = substitute(text, '\${nr}', "\n", 'g')
+      let text = substitute(text, '\\\$', '$', 'g')
+      let lines = split(text, "\n")
       let str .= " " . lines[0]
       for line in lines[1:]
         let str .= " |\n" . line

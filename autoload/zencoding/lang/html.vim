@@ -323,7 +323,11 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     let str .= " />"
   else
     let str .= ">"
-    let str .= current.value[1:-2]
+    let text = current.value[1:-2]
+    let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+    let text = substitute(text, '\${nr}', "\n", 'g')
+    let text = substitute(text, '\\\$', '$', 'g')
+    let str .= text
     let nc = len(current.child)
     let dr = 0
     if nc > 0
