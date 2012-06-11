@@ -83,7 +83,6 @@ function! s:test(...)
   for testgroup in testgroups
     if len(type) > 0 && testgroup.type != type | continue | endif
     call s:show_type(testgroup.type)
-    let type = testgroup.type
     for category in testgroup.categories
       if len(name) > 0 && substitute(category.name,' ','_','g') != name | continue | endif
       call s:show_category(category.name)
@@ -99,7 +98,7 @@ function! s:test(...)
         endif
         if stridx(query, '$$$$') != -1
           silent! 1new
-          silent! exe "setlocal ft=".type
+          silent! exe "setlocal ft=".testgroup.type
           silent! let key = matchstr(query, '.*\$\$\$\$\zs.*\ze\$\$\$\$')
           if len(key) > 0
             exe printf('let key = "%s"', key)
@@ -118,7 +117,7 @@ function! s:test(...)
           call s:show_title(n+1, query)
         else
           call s:show_title(n+1, query)
-          unlet! res | let res = zencoding#ExpandWord(query, type, 0)
+          unlet! res | let res = zencoding#ExpandWord(query, testgroup.type, 0)
         endif
         if stridx(result, '$$$$') != -1
           if res ==# result
