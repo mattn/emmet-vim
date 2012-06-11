@@ -454,6 +454,10 @@ finish
           'query': "{test case \\$ }*3",
           'result': "test case $ test case $ test case $ ",
         },
+        {
+          'query': "{test case $$$ }*3",
+          'result': "test case 001 test case 002 test case 003 ",
+        },
       ],
     },
     {
