@@ -211,134 +211,134 @@ finish
           'query': "div#wrapper.box.current",
           'result': "<div id=\"wrapper\" class=\"box current\"></div>\n",
         },
-"        {
-"          'query': "div#wrapper.box.current[title=TITLE rel]",
-"          'result': "<div id=\"wrapper\" rel=\"\" class=\"box current\" title=\"TITLE\"></div>\n",
-"        },
-"        {
-"          'query': "div#main+div#sub",
-"          'result': "<div id=\"main\"></div>\n<div id=\"sub\"></div>\n",
-"        },
-"        {
-"          'query': "div#main>div#sub",
-"          'result': "<div id=\"main\">\n\t<div id=\"sub\"></div>\n</div>\n",
-"        },
-"        {
-"          'query': "html:xt>div#header>div#logo+ul#nav>li.item-$*5>a",
-"          'result': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n<head>\n\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n\t<title></title>\n</head>\n<body>\n\t<div id=\"header\">\n\t\t<div id=\"logo\"></div>\n\t\t<ul id=\"nav\">\n\t\t\t<li class=\"item-1\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-2\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-3\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-4\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-5\"><a href=\"\"></a></li>\n\t\t</ul>\n\t</div>\n\t\n</body>\n</html>",
-"        },
-"        {
-"          'query': "ol>li*2",
-"          'result': "<ol>\n\t<li></li>\n\t<li></li>\n</ol>\n",
-"        },
-"        {
-"          'query': "a",
-"          'result': "<a href=\"\"></a>",
-"        },
-"        {
-"          'query': "obj",
-"          'result': "<object data=\"\" type=\"\"></object>\n",
-"        },
-"        {
-"          'query': "cc:ie6>p+blockquote#sample$.so.many.classes*2",
-"          'result': "<!--[if lte IE 6]>\n\t<p></p>\n\t<blockquote id=\"sample1\" class=\"so many classes\"></blockquote>\n\t<blockquote id=\"sample2\" class=\"so many classes\"></blockquote>\n\t\n<![endif]-->",
-"        },
-"        {
-"          'query': "html:4t>div#wrapper>div#header+div#contents+div#footer",
-"          'result': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html lang=\"en\">\n<head>\n\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n\t<title></title>\n</head>\n<body>\n\t<div id=\"wrapper\">\n\t\t<div id=\"header\"></div>\n\t\t<div id=\"contents\"></div>\n\t\t<div id=\"footer\"></div>\n\t</div>\n\t\n</body>\n</html>",
-"        },
-"        {
-"          'query': "a[href=http://www.google.com/].foo#hoge",
-"          'result': "<a id=\"hoge\" href=\"http://www.google.com/\" class=\"foo\"></a>",
-"        },
-"        {
-"          'query': "a[href=http://www.google.com/]{Google}",
-"          'result': "<a href=\"http://www.google.com/\">Google</a>",
-"        },
-"        {
-"          'query': "{ZenCoding}",
-"          'result': "ZenCoding",
-"        },
-"        {
-"          'query': "a+b",
-"          'result': "<a href=\"\"></a><b></b>",
-"        },
-"        {
-"          'query': "a>b>i<b",
-"          'result': "<a href=\"\"><b><i></i></b><b></b></a>",
-"        },
-"        {
-"          'query': "a>b>i<<b",
-"          'result': "<a href=\"\"><b><i></i></b></a><b></b>",
-"        },
-"        {
-"          'query': "blockquote>b>i<<b",
-"          'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>",
-"        },
-"        {
-"          'query': "a[href=foo][class=bar]",
-"          'result': "<a href=\"foo\" class=\"bar\"></a>",
-"        },
-"        {
-"          'query': "a[a=b][b=c=d][e]{foo}*2",
-"          'result': "<a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a>\n<a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a>\n",
-"        },
-"        {
-"          'query': "a[a=b][b=c=d][e]*2{foo}",
-"          'result': "<a a=\"b\" b=\"c=d\" e=\"\" href=\"\"></a>\n<a a=\"b\" b=\"c=d\" e=\"\" href=\"\"></a>\nfoo",
-"        },
-"        {
-"          'query': "a*2{foo}a",
-"          'result': "<a href=\"\"></a>\n<a href=\"\"></a>\nfoo<a href=\"\"></a>",
-"        },
-"        {
-"          'query': "a{foo}*2>b",
-"          'result': "<a href=\"\">foo<b></b></a>\n<a href=\"\">foo<b></b></a>\n",
-"        },
-"        {
-"          'query': "a*2{foo}>b",
-"          'result': "<a href=\"\"></a>\n<a href=\"\"></a>\nfoo",
-"        },
-"        {
-"          'query': "table>tr>td.name#foo+td*3",
-"          'result': "<table>\n\t<tr>\n\t\t<td id=\"foo\" class=\"name\"></td>\n\t\t<td></td>\n\t\t<td></td>\n\t\t<td></td>\n\t</tr>\n</table>\n",
-"        },
-"        {
-"          'query': "div#header + div#footer",
-"          'result': "<div id=\"header\"></div>\n<div id=\"footer\"></div>\n",
-"        },
-"        {
-"          'query': "#header + div#footer",
-"          'result': "<div id=\"header\"></div>\n<div id=\"footer\"></div>\n",
-"        },
-"        {
-"          'query': "#header > ul > li < p{Footer}",
-"          'result': "<div id=\"header\">\n\t<ul>\n\t\t<li></li>\n\t</ul>\n\t<p>Footer</p>\n</div>\n",
-"        },
-"        {
-"          'query': "a#foo$$$*3",
-"          'result': "<a id=\"foo001\" href=\"\"></a>\n<a id=\"foo002\" href=\"\"></a>\n<a id=\"foo003\" href=\"\"></a>\n",
-"        },
-"        {
-"          'query': "ul+",
-"          'result': "<ul>\n\t<li></li>\n</ul>\n",
-"        },
-"        {
-"          'query': "table+",
-"          'result': "<table>\n\t<tr>\n\t\t<td></td>\n\t</tr>\n</table>\n",
-"        },
-"        {
-"          'query': "#header>li<#content",
-"          'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
-"        },
-"        {
-"          'query': "(#header>li)<#content",
-"          'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
-"        },
-"        {
-"          'query': "a>b>i<<div",
-"          'result': "<a href=\"\"><b><i></i></b></a>\n<div></div>\n",
-"        },
+        {
+          'query': "div#wrapper.box.current[title=TITLE rel]",
+          'result': "<div id=\"wrapper\" rel=\"\" class=\"box current\" title=\"TITLE\"></div>\n",
+        },
+        {
+          'query': "div#main+div#sub",
+          'result': "<div id=\"main\"></div>\n<div id=\"sub\"></div>\n",
+        },
+        {
+          'query': "div#main>div#sub",
+          'result': "<div id=\"main\">\n\t<div id=\"sub\"></div>\n</div>\n",
+        },
+        {
+          'query': "html:xt>div#header>div#logo+ul#nav>li.item-$*5>a",
+          'result': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n<head>\n\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n\t<title></title>\n</head>\n<body>\n\t<div id=\"header\">\n\t\t<div id=\"logo\"></div>\n\t\t<ul id=\"nav\">\n\t\t\t<li class=\"item-1\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-2\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-3\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-4\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-5\"><a href=\"\"></a></li>\n\t\t</ul>\n\t</div>\n\t\n</body>\n</html>",
+        },
+        {
+          'query': "ol>li*2",
+          'result': "<ol>\n\t<li></li>\n\t<li></li>\n</ol>\n",
+        },
+        {
+          'query': "a",
+          'result': "<a href=\"\"></a>",
+        },
+        {
+          'query': "obj",
+          'result': "<object data=\"\" type=\"\"></object>\n",
+        },
+        {
+          'query': "cc:ie6>p+blockquote#sample$.so.many.classes*2",
+          'result': "<!--[if lte IE 6]>\n\t<p></p>\n\t<blockquote id=\"sample1\" class=\"so many classes\"></blockquote>\n\t<blockquote id=\"sample2\" class=\"so many classes\"></blockquote>\n\t\n<![endif]-->",
+        },
+        {
+          'query': "html:4t>div#wrapper>div#header+div#contents+div#footer",
+          'result': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html lang=\"en\">\n<head>\n\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n\t<title></title>\n</head>\n<body>\n\t<div id=\"wrapper\">\n\t\t<div id=\"header\"></div>\n\t\t<div id=\"contents\"></div>\n\t\t<div id=\"footer\"></div>\n\t</div>\n\t\n</body>\n</html>",
+        },
+        {
+          'query': "a[href=http://www.google.com/].foo#hoge",
+          'result': "<a id=\"hoge\" href=\"http://www.google.com/\" class=\"foo\"></a>",
+        },
+        {
+          'query': "a[href=http://www.google.com/]{Google}",
+          'result': "<a href=\"http://www.google.com/\">Google</a>",
+        },
+        {
+          'query': "{ZenCoding}",
+          'result': "ZenCoding",
+        },
+        {
+          'query': "a+b",
+          'result': "<a href=\"\"></a>\n<b></b>\n",
+        },
+        {
+          'query': "a>b>i<b",
+          'result': "<a href=\"\"><b><i></i></b><b></b></a>",
+        },
+        {
+          'query': "a>b>i<<b",
+          'result': "<a href=\"\"><b><i></i></b></a>\n<b></b>\n",
+        },
+        {
+          'query': "blockquote>b>i<<b",
+          'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>\n",
+        },
+        {
+          'query': "a[href=foo][class=bar]",
+          'result': "<a href=\"foo\" class=\"bar\"></a>",
+        },
+        {
+          'query': "a[a=b][b=c=d][e]{foo}*2",
+          'result': "<a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a><a a=\"b\" b=\"c=d\" e=\"\" href=\"\">foo</a>",
+        },
+        {
+          'query': "a[a=b][b=c=d][e]*2{foo}",
+          'result': "<a a=\"b\" b=\"c=d\" e=\"\" href=\"\"></a>\n<a a=\"b\" b=\"c=d\" e=\"\" href=\"\"></a>\nfoo",
+        },
+        {
+          'query': "a*2{foo}a",
+          'result': "<a href=\"\"></a>\n<a href=\"\"></a>\nfoo<a href=\"\"></a>\n",
+        },
+        {
+          'query': "a{foo}*2>b",
+          'result': "<a href=\"\">foo<b></b></a><a href=\"\">foo<b></b></a>",
+        },
+        {
+          'query': "a*2{foo}>b",
+          'result': "<a href=\"\"></a>\n<a href=\"\"></a>\nfoo",
+        },
+        {
+          'query': "table>tr>td.name#foo+td*3",
+          'result': "<table>\n\t<tr>\n\t\t<td id=\"foo\" class=\"name\"></td>\n\t\t<td></td>\n\t\t<td></td>\n\t\t<td></td>\n\t</tr>\n</table>\n",
+        },
+        {
+          'query': "div#header + div#footer",
+          'result': "<div id=\"header\"></div>\n<div id=\"footer\"></div>\n",
+        },
+        {
+          'query': "#header + div#footer",
+          'result': "<div id=\"header\"></div>\n<div id=\"footer\"></div>\n",
+        },
+        {
+          'query': "#header > ul > li < p{Footer}",
+          'result': "<div id=\"header\">\n\t<ul>\n\t\t<li></li>\n\t</ul>\n\t<p>Footer</p>\n</div>\n",
+        },
+        {
+          'query': "a#foo$$$*3",
+          'result': "<a id=\"foo001\" href=\"\"></a><a id=\"foo002\" href=\"\"></a><a id=\"foo003\" href=\"\"></a>",
+        },
+        {
+          'query': "ul+",
+          'result': "<ul>\n\t<li></li>\n</ul>\n",
+        },
+        {
+          'query': "table+",
+          'result': "<table>\n\t<tr>\n\t\t<td></td>\n\t</tr>\n</table>\n",
+        },
+        {
+          'query': "#header>li<#content",
+          'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
+        },
+        {
+          'query': "(#header>li)<#content",
+          'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
+        },
+        {
+          'query': "a>b>i<<div",
+          'result': "<a href=\"\"><b><i></i></b></a>\n<div></div>\n",
+        },
         {
           'query': "(#header>h1)+#content+#footer",
           'result': "<div id=\"header\">\n\t<h1></h1>\n</div>\n<div id=\"content\"></div>\n<div id=\"footer\"></div>\n",
