@@ -75,6 +75,11 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
       let inner = substitute(inner, "\n  $", "", 'g')
       let str .= "\n  " . inner
     endif
+  else
+    let str = current.value[1:-2]
+    let str = substitute(str, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+    let str = substitute(str, '\${nr}', "\n", 'g')
+    let str = substitute(str, '\\\$', '$', 'g')
   endif
   let str .= "\n"
   return str
@@ -99,6 +104,9 @@ function! zencoding#lang#haml#imageSize()
   let current.attr.height = height
   let haml = zencoding#toString(current, 'haml', 1)
   call setline('.', substitute(matchstr(line, '^\s*') . haml, "\n", "", "g"))
+endfunction
+
+function! zencoding#lang#haml#encodeImage()
 endfunction
 
 function! zencoding#lang#haml#parseTag(tag)

@@ -15,9 +15,11 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
   if tag_name =~ '.!$'
     let tag_name = tag_name[:-2]
     let important = 1
+  else
+    let important = 0
   endif
   " make default node
-  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': important }
   let current.name = tag_name
 
   " aliases
@@ -45,10 +47,19 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
 endfunction
 
 function! zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
-  return ''
+  let current = a:current
+  let value = current.value[1:-2]
+  let value = substitute(value, '^\([^:]\+\):\([^;]*;\)', '\1: \2', '')
+  if current.important
+    let value = substitute(value, ';', ' !important;', '')
+  endif
+  return value
 endfunction
 
 function! zencoding#lang#css#imageSize()
+endfunction
+
+function! zencoding#lang#css#encodeImage()
 endfunction
 
 function! zencoding#lang#css#parseTag(tag)

@@ -60,6 +60,11 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
       let inner = substitute(inner, "\n  $", "", 'g')
       let str .= "\n  " . inner
     endif
+  else
+    let str = current.value[1:-2]
+    let str = substitute(str, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+    let str = substitute(str, '\${nr}', "\n", 'g')
+    let str = substitute(str, '\\\$', '$', 'g')
   endif
   if str !~ "\n$"
     let str .= "\n"
@@ -86,6 +91,9 @@ function! zencoding#lang#slim#imageSize()
   let current.attr.height = height
   let slim = zencoding#toString(current, 'slim', 1)
   call setline('.', substitute(matchstr(line, '^\s*') . slim, "\n", "", "g"))
+endfunction
+
+function! zencoding#lang#slim#encodeImage()
 endfunction
 
 function! zencoding#lang#slim#parseTag(tag)

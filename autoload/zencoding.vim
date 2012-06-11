@@ -157,17 +157,8 @@ function! zencoding#toString(...)
           let tmp = substitute(tmp, '|', '${cursor}', 'g')
         endif
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
-        if zencoding#isExtends(type, "css") && zencoding#useFilter(filters, 'fc')
-          let tmp = substitute(tmp, '^\([^:]\+\):\([^;]*;\)', '\1: \2', '')
-          if current.important
-            let tmp = substitute(tmp, ';', ' !important;', '')
-          endif
-        endif
-        for attr in keys(current.attr)
-          let val = current.attr[attr]
-          let tmp = substitute(tmp, '\${' . attr . '}', val, 'g')
-        endfor
-        let str .= tmp
+        let snippet_node = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 0, 'parent': {}, 'value': '{'.tmp.'}', 'pos': 0, 'important': current.important }
+        let str = zencoding#lang#{rtype}#toString(s:zen_settings, snippet_node, type, inline, filters, group_itemno, indent)
       else
         if len(current.name)
           let str .= current.name
@@ -209,15 +200,6 @@ function! zencoding#getResource(type, name, default)
   endif
   let ret = a:default
 
-  if has_key(s:zen_settings[a:type], a:name)
-    let v = s:zen_settings[a:type][a:name]
-    if type(ret) == 3 || type(ret) == 4
-      call s:mergeConfig(ret, s:zen_settings[a:type][a:name])
-    else
-      let ret = s:zen_settings[a:type][a:name]
-    endif
-  endif
-
   if has_key(s:zen_settings[a:type], 'extends')
     let extends = s:zen_settings[a:type].extends
     if type(extends) == 1
@@ -231,6 +213,16 @@ function! zencoding#getResource(type, name, default)
       endif
     endfor
   endif
+
+  if has_key(s:zen_settings[a:type], a:name)
+    let v = s:zen_settings[a:type][a:name]
+    if type(ret) == 3 || type(ret) == 4
+      call s:mergeConfig(ret, s:zen_settings[a:type][a:name])
+    else
+      let ret = s:zen_settings[a:type][a:name]
+    endif
+  endif
+
   return ret
 endfunction
 
@@ -449,6 +441,12 @@ function! zencoding#imageSize()
   let type = zencoding#getFileType()
   let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   return zencoding#lang#{rtype}#imageSize()
+endfunction
+
+function! zencoding#encodeImage()
+  let type = zencoding#getFileType()
+  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  return zencoding#lang#{rtype}#encodeImage()
 endfunction
 
 function! zencoding#toggleComment()
@@ -1339,10 +1337,30 @@ let s:zen_settings = {
 \        }
 \    },
 \    'haml': {
-\        'extends': 'html'
+\        'indentation': '  ',
+\        'extends': 'html',
+\        'snippets': {
+\            'html:5': "!!! 5\n"
+\                    ."%html{:lang => \"${lang}\"}\n"
+\                    ."\t%head\n"
+\                    ."\t\t%meta{:charset => \"${charset}\"\n"
+\                    ."\t\t%title\n"
+\                    ."\t%body\n"
+\                    ."\t\t${child}|\n"
+\        },
 \    },
 \    'slim': {
-\        'extends': 'html'
+\        'indentation': '  ',
+\        'extends': 'html',
+\        'snippets': {
+\            'html:5': "doctype 5\n"
+\                    ."html lang=\"${lang}\"\n"
+\                    ."\thead\n"
+\                    ."\t\tmeta charset=\"${charset}\"\n"
+\                    ."\t\ttitle\n"
+\                    ."\tbody\n"
+\                    ."\t\t${child}|\n"
+\        },
 \    },
 \    'xhtml': {
 \        'extends': 'html'

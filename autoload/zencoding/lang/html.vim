@@ -303,6 +303,14 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   let current_name = substitute(current_name, '\$$', itemno+1, '')
 
   let str = ''
+  if len(current_name) == 0
+    let text = current.value[1:-2]
+    let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+    let text = substitute(text, '\${nr}', "\n", 'g')
+    let text = substitute(text, '\\\$', '$', 'g')
+    return text
+  endif
+  if len(current_name) > 0
   let str .= '<' . current_name
   for attr in keys(current.attr)
     let val = current.attr[attr]
@@ -365,6 +373,34 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
 endfunction
 
 function! zencoding#lang#html#imageSize()
+  let img_region = zencoding#util#searchRegion('<img\s', '>')
+  if !zencoding#util#regionIsValid(img_region) || !zencoding#util#cursorInRegion(img_region)
+    return
+  endif
+  let content = zencoding#util#getContent(img_region)
+  if content !~ '^<img[^><]\+>$'
+    return
+  endif
+  let current = zencoding#lang#html#parseTag(content)
+  if empty(current) || !has_key(current.attr, 'src')
+    return
+  endif
+  let fn = current.attr.src
+  if fn !~ '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
+
+  let [width, height] = zencoding#util#getImageSize(fn)
+  if width == -1 && height == -1
+    return
+  endif
+  let current.attr.width = width
+  let current.attr.height = height
+  let html = zencoding#toString(current, 'html', 1)
+  call zencoding#util#setContent(img_region, html)
+endfunction
+
+function! zencoding#lang#html#encodeImage()
   let img_region = zencoding#util#searchRegion('<img\s', '>')
   if !zencoding#util#regionIsValid(img_region) || !zencoding#util#cursorInRegion(img_region)
     return

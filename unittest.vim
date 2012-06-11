@@ -532,6 +532,10 @@ finish
           'query': "bg+$$$$",
           'result': "background: #FFF url($$$$) 0 0 no-repeat;",
         },
+        {
+          'query': "bg+!$$$$",
+          'result': "background: #FFF url($$$$) 0 0 no-repeat !important;",
+        },
       ],
     },
   ],
