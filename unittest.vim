@@ -450,6 +450,10 @@ finish
           'query': "{test case $${nr}}*3",
           'result': "test case 1\ntest case 2\ntest case 3\n",
         },
+        {
+          'query': "{test case \\$ }*3",
+          'result': "test case $ test case $ test case $ ",
+        },
       ],
     },
     {
