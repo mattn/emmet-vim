@@ -442,6 +442,14 @@ finish
           'query': "div#id-$*5>div#id2-$",
           'result': "<div id=\"id-1\">\n\t<div id=\"id2-1\"></div>\n</div>\n<div id=\"id-2\">\n\t<div id=\"id2-2\"></div>\n</div>\n<div id=\"id-3\">\n\t<div id=\"id2-3\"></div>\n</div>\n<div id=\"id-4\">\n\t<div id=\"id2-4\"></div>\n</div>\n<div id=\"id-5\">\n\t<div id=\"id2-5\"></div>\n</div>\n",
         },
+        {
+          'query': "{test case $ }*3",
+          'result': "test case 1 test case 2 test case 3 ",
+        },
+        {
+          'query': "{test case $${nr}}*3",
+          'result': "test case 1\ntest case 2\ntest case 3\n",
+        },
       ],
     },
     {
