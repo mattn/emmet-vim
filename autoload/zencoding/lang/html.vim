@@ -592,7 +592,7 @@ function! zencoding#lang#html#balanceTag(flag) range
 endfunction
 
 function! zencoding#lang#html#moveNextPrev(flag)
-  let pos = search('\%(</\w\+\)\@<!\zs><\/\|\(""\)\|^\s*$', a:flag ? 'Wpb' : 'Wp')
+  let pos = search('\%(</\w\+\)\@<!\zs><\/\|\(""\)\|^\(\s*\)$', a:flag ? 'Wpb' : 'Wp')
   if pos == 3
     startinsert!
   elseif pos != 0
