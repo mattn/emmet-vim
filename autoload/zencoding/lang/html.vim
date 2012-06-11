@@ -331,7 +331,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
             let dr = 1
           endif
         endif
-        let inner = zencoding#toString(child, type, 0, filters)
+        let inner = zencoding#toString(child, type, 0, filters, itemno)
         let inner = substitute(inner, "\n", "\n" . indent, 'g')
         let inner = substitute(inner, "\n" . indent . '$', '', 'g')
         let str .= inner

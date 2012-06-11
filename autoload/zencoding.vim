@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 10-Jun-2012.
+" Last Change: 11-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -121,6 +121,11 @@ function! zencoding#toString(...)
   else
     let filters = ['html']
   endif
+  if a:0 > 4
+    let group_itemno = a:5
+  else
+    let group_itemno = 0
+  endif
 
   let indent = zencoding#getIndentation(type)
   let itemno = 0
@@ -129,7 +134,11 @@ function! zencoding#toString(...)
   let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
   while itemno < current.multiplier
     if len(current.name)
-      let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
+      if group_itemno != 0
+        let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, group_itemno, indent)
+      else
+        let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
+      endif
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
       endif
@@ -170,7 +179,7 @@ function! zencoding#toString(...)
       let inner = ''
       if len(current.child)
         for n in current.child
-          let inner .= zencoding#toString(n, type, inline, filters)
+          let inner .= zencoding#toString(n, type, inline, filters, group_itemno)
         endfor
         let inner = substitute(inner, "\n", "\n" . indent, 'g')
       endif
