@@ -54,7 +54,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
       endfor
     elseif len(current.child) > 0
       for child in current.child
-        let inner .= zencoding#toString(child, type, inline, filters)
+        let inner .= zencoding#toString(child, type, inline, filters, itemno)
       endfor
       let inner = substitute(inner, "\n", "\n  ", 'g')
       let inner = substitute(inner, "\n  $", "", 'g')
