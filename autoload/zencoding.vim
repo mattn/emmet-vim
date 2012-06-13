@@ -1345,7 +1345,7 @@ let s:zen_settings = {
 \            'html:5': "!!! 5\n"
 \                    ."%html{:lang => \"${lang}\"}\n"
 \                    ."\t%head\n"
-\                    ."\t\t%meta{:charset => \"${charset}\"\n"
+\                    ."\t\t%meta{:charset => \"${charset}\"}\n"
 \                    ."\t\t%title\n"
 \                    ."\t%body\n"
 \                    ."\t\t${child}|\n"
