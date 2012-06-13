@@ -1,8 +1,8 @@
-function! zencoding#lang#sass#findTokens(str)
+function! zencoding#lang#scss#findTokens(str)
   return zencoding#lang#html#findTokens(a:str)
 endfunction
 
-function! zencoding#lang#sass#parseIntoTree(abbr, type)
+function! zencoding#lang#scss#parseIntoTree(abbr, type)
   if a:abbr =~ '>'
     return zencoding#lang#html#parseIntoTree(a:abbr, a:type)
   else
@@ -10,7 +10,7 @@ function! zencoding#lang#sass#parseIntoTree(abbr, type)
   endif
 endfunction
 
-function! zencoding#lang#sass#toString(settings, current, type, inline, filters, itemno, indent)
+function! zencoding#lang#scss#toString(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
   let type = a:type
@@ -62,23 +62,23 @@ function! zencoding#lang#sass#toString(settings, current, type, inline, filters,
   return str
 endfunction
 
-function! zencoding#lang#sass#imageSize()
+function! zencoding#lang#scss#imageSize()
   call zencoding#lang#css#imageSize()
 endfunction
 
-function! zencoding#lang#sass#encodeImage()
+function! zencoding#lang#scss#encodeImage()
   return zencoding#lang#css#encodeImage()
 endfunction
 
-function! zencoding#lang#sass#parseTag(tag)
+function! zencoding#lang#scss#parseTag(tag)
   return zencoding#lang#css#parseTag(a:tag)
 endfunction
 
-function! zencoding#lang#sass#toggleComment()
+function! zencoding#lang#scss#toggleComment()
   call zencoding#lang#css#toggleComment()
 endfunction
 
-function! zencoding#lang#sass#balanceTag(flag) range
+function! zencoding#lang#scss#balanceTag(flag) range
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
     call setpos('.', curpos)
@@ -110,14 +110,14 @@ function! zencoding#lang#sass#balanceTag(flag) range
   endif
 endfunction
 
-function! zencoding#lang#sass#moveNextPrev(flag)
+function! zencoding#lang#scss#moveNextPrev(flag)
   call zencoding#lang#css#moveNextPrev(a:flag)
 endfunction
 
-function! zencoding#lang#sass#splitJoinTag()
+function! zencoding#lang#scss#splitJoinTag()
   call zencoding#lang#css#splitJoinTag()
 endfunction
 
-function! zencoding#lang#sass#removeTag()
+function! zencoding#lang#scss#removeTag()
   call zencoding#lang#ss#removeTag()
 endfunction
