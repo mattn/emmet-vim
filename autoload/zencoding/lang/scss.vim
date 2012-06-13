@@ -56,8 +56,7 @@ function! zencoding#lang#scss#toString(settings, current, type, inline, filters,
     let inner = substitute(inner, "\n" . indent . "$", "", 'g')
     let str .= indent . inner . "\n}\n"
   else
-    let text = zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
-    return substitute(text, ';$', '', '')
+    return zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
   endif
   return str
 endfunction
