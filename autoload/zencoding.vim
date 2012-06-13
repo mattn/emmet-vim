@@ -531,7 +531,7 @@ function! zencoding#anchorizeURL(flag)
 endfunction
 
 function! zencoding#codePretty() range
-  let type = input('FileType: ', '', 'filetype')
+  let type = input('FileType: ', &ft, 'filetype')
   if len(type) == 0
     return
   endif
