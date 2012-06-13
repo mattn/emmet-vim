@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 11-Jun-2012.
+" Last Change: 13-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -176,8 +176,9 @@ function! zencoding#toString(...)
         for n in current.child
           let inner .= zencoding#toString(n, type, inline, filters, group_itemno)
         endfor
-        let inner = substitute(inner, "\n", "\n" . indent, 'g')
+        "let inner = substitute(inner, "\n", "\n" . indent, 'g')
       endif
+      let inner = substitute(inner, "\n", "\n" . indent, 'g')
       let str = substitute(str, '\${child}', inner, '')
     endif
     let itemno = itemno + 1

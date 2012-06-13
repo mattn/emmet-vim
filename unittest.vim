@@ -600,11 +600,11 @@ finish
       'tests': [
         {
           'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}",
-          'result': "div\n  p\n  ul id=\"foo\"\n    li foo=\"bar\" bar=\"baz\" class=\"bar1\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar2\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar3\"\n     | baz\n",
+          'result': "div\n  p\n  ul id=\"foo\"\n    li foo=\"bar\" bar=\"baz\" class=\"bar1\"\n      | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar2\"\n      | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar3\"\n      | baz\n",
         },
         {
           'query': "div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|slim",
-          'result': "div\n  p\n  ul id=\"foo\"\n    li foo=\"bar\" bar=\"baz\" class=\"bar1\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar2\"\n     | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar3\"\n     | baz\n",
+          'result': "div\n  p\n  ul id=\"foo\"\n    li foo=\"bar\" bar=\"baz\" class=\"bar1\"\n      | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar2\"\n      | baz\n    li foo=\"bar\" bar=\"baz\" class=\"bar3\"\n      | baz\n",
         },
         {
           'query': "a*3|slim",
@@ -612,7 +612,7 @@ finish
         },
         {
           'query': ".content{Hello!}|slim",
-          'result': "div class=\"content\"\n | Hello!\n",
+          'result': "div class=\"content\"\n  | Hello!\n",
         },
       ],
     },

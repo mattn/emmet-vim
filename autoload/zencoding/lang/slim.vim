@@ -40,7 +40,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
       let text = substitute(text, '\${nr}', "\n", 'g')
       let text = substitute(text, '\\\$', '$', 'g')
       for line in split(text, "\n")
-        let str .= " | " . line . "\n"
+        let str .= indent . "| " . line . "\n"
       endfor
     endif
     if len(current.child) == 1 && len(current.child[0].name) == 0
@@ -50,15 +50,15 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
       let text = substitute(text, '\${nr}', "\n", 'g')
       let text = substitute(text, '\\\$', '$', 'g')
       for line in split(text, "\n")
-        let str .= " | " . line . "\n"
+        let str .= indent . "| " . line . "\n"
       endfor
     elseif len(current.child) > 0
       for child in current.child
         let inner .= zencoding#toString(child, type, inline, filters, itemno)
       endfor
-      let inner = substitute(inner, "\n", "\n  ", 'g')
+      let inner = substitute(inner, "\n", "\n" . indent, 'g')
       let inner = substitute(inner, "\n  $", "", 'g')
-      let str .= "\n  " . inner
+      let str .= "\n" . indent . inner
     endif
   else
     let str = current.value[1:-2]
