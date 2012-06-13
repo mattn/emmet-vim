@@ -144,16 +144,12 @@ endfunction
 "==============================================================================
 " html utils
 "==============================================================================
-function! zencoding#util#getContentFromURL(url, utf8)
-  silent! new
-  if a:utf8
-    silent! exec '0r ++enc=utf8 !'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
-  else
-    silent! exec '0r!'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
-  endif
-  let ret = join(getline(1, '$'), "\n")
-  silent! bw!
-  return ret
+function! zencoding#util#getContentFromURL(url)
+  let res = system(printf("%s %s", g:zencoding_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
+  let s1 = len(split(res, '?'))
+  let utf8 = iconv(res, 'utf-8', &encoding)
+  let s2 = len(split(utf8, '?'))
+  return s2 > s1 * 2 ? utf8 : res
 endfunction
 
 function! zencoding#util#getTextFromHTML(buf)

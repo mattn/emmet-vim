@@ -492,10 +492,7 @@ function! zencoding#anchorizeURL(flag)
   endif
 
   let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
-  let content = zencoding#util#getContentFromURL(url, 0)
-  if len(matchstr(content, mx)) == 0
-    let content = zencoding#util#getContentFromURL(url, 1)
-  endif
+  let content = zencoding#util#getContentFromURL(url)
   let content = substitute(content, '\r', '', 'g')
   let content = substitute(content, '[ \n]\+', ' ', 'g')
   let content = substitute(content, '<!--.\{-}-->', '', 'g')
