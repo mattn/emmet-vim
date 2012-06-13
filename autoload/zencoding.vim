@@ -176,9 +176,9 @@ function! zencoding#toString(...)
         for n in current.child
           let inner .= zencoding#toString(n, type, inline, filters, group_itemno)
         endfor
-        "let inner = substitute(inner, "\n", "\n" . indent, 'g')
       endif
-      let inner = substitute(inner, "\n", "\n" . indent, 'g')
+      let spaces = matchstr(str, '\s*\ze\${child}')
+      let inner = substitute(inner, "\n", "\n" . spaces, 'g')
       let str = substitute(str, '\${child}', inner, '')
     endif
     let itemno = itemno + 1

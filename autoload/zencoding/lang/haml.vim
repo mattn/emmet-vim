@@ -36,7 +36,7 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
       else
         if len(tmp) > 0 | let tmp .= ',' | endif
         let val = substitute(val, '\${cursor}', '', '')
-        let tmp .= ' :' . attr . ' => "' . val . '${cursor}' . '"'
+        let tmp .= ' :' . attr . ' => "' . val . '"'
       endif
     endfor
     if len(tmp)

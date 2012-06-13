@@ -28,7 +28,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
-      let str .= ' ' . attr . '="' . val . '${cursor}' . '"'
+      let str .= ' ' . attr . '="' . val . '"'
     endfor
 
     let inner = ''
@@ -56,7 +56,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
         let inner .= zencoding#toString(child, type, inline, filters, itemno)
       endfor
       let inner = substitute(inner, "\n", "\n" . indent, 'g')
-      let inner = substitute(inner, "\n  $", "", 'g')
+      let inner = substitute(inner, "\n" . indent . "$", "", 'g')
       let str .= "\n" . indent . inner
     endif
   else
