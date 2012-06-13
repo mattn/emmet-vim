@@ -56,7 +56,9 @@ function! zencoding#lang#sass#toString(settings, current, type, inline, filters,
     let inner = substitute(inner, "\n" . indent . "$", "", 'g')
     let str .= indent . inner
   else
-    return zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
+    let text = zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
+    let text = substitute(text, '\s*;$', '', '');
+    return
   endif
   return str
 endfunction
