@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 13-Jun-2012.
+" Last Change: 20-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -424,6 +424,7 @@ function! zencoding#expandAbbr(mode, abbr) range
   if search('\$cursor\$', 'e')
     let oldselection = &selection
     let &selection = 'inclusive'
+    silent! foldopen
     silent! exe "normal! v7h\"_s"
     let &selection = oldselection
   endif
