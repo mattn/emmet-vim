@@ -519,72 +519,50 @@ function! zencoding#lang#html#balanceTag(flag) range
   else
     let curpos = getpos('.')
   endif
-  while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
-    let pos1 = searchpos(mx, (a:flag == -2 ? 'nW' : 'bcnW'))
-    let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9:_\-]*\).*$', '\1', '')
-    let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-    if !zencoding#util#regionIsValid(block)
-      break
-    endif
-    if content[-2:] == '/>' && zencoding#util#pointInRegion(curpos[1:2], block)
-      call zencoding#util#selectRegion(block)
-      return
-    else
-      if tag_name[0] == '/'
-        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', a:flag == -2 ? 'nW' : 'bcnW')
-        if pos1[0] == 0
-          break
-        endif
-        call setpos('.', [0, pos1[0], pos1[1], 0])
-        let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+  let settings = zencoding#getSettings()
+
+  if a:flag > 0
+    while 1
+      let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+      let pos1 = searchpos(mx, 'bW')
+      let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+      let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
+	  echo tag_name
+      if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
+        let pos2 = searchpos('>', 'nW')
       else
-        let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '>\zs', 'nW')
       endif
       let block = [pos1, pos2]
-      if !zencoding#util#regionIsValid(block)
+      if pos1[0] == 0 && pos1[1] == 0
         break
       endif
-      let content = zencoding#util#getContent(block)
-      if a:flag == -2
-        let check = zencoding#util#regionInRegion(vblock, block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
-      else
-        let check = zencoding#util#pointInRegion(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
-      endif
-      if check
-        if a:flag < 0
-          let l = getline(pos1[0])
-          let content = matchstr(l[pos1[1]-1:], mx)
-          if pos1[1] + len(content) > len(l)
-            let pos1[0] += 1
-          else
-            let pos1[1] += len(content)
-          endif
-          let pos2 = searchpos('\(\n\|.\)</' . tag_name . '>', 'cnW')
-        else
-          let pos2 = searchpos('</' . tag_name . '>', 'cneW')
-        endif
-        let block = [pos1, pos2]
+      if zencoding#util#pointInRegion(curpos[1:2], block) && zencoding#util#regionIsValid(block)
         call zencoding#util#selectRegion(block)
-        return
-      else
-        if zencoding#util#regionIsValid(block)
-          if a:flag == -2
-            if setpos('.', [0, block[0][0]+1, block[0][1], 0]) == -1
-              break
-            endif
-          else
-            if setpos('.', [0, block[0][0]-1, block[0][1], 0]) == -1
-              break
-            endif
-          endif
-        else
-          break
-        endif
+	    return
       endif
-    endif
-  endwhile
+    endwhile
+  else
+    while 1
+      let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+      let pos1 = searchpos(mx, 'W')
+      let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+      let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
+      if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
+        let pos2 = searchpos('>', 'nW')
+      else
+        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '>\zs', 'nW')
+      endif
+      let block = [pos1, pos2]
+      if pos1[0] == 0 && pos1[1] == 0
+        break
+      endif
+      if zencoding#util#regionIsValid(block)
+        call zencoding#util#selectRegion(block)
+	    return
+      endif
+    endwhile
+  endif
   if a:flag == -2 || a:flag == 2
     silent! exe "normal! gv"
   else
