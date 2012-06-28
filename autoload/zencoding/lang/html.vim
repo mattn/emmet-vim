@@ -344,7 +344,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
         if child.multiplier > 1
           let str .= "\n" . indent
           let dr = 1
-		elseif len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+        elseif len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
           if nc > 1 || (len(child.name) > 0 && stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1)
             let str .= "\n" . indent
             let dr = 1
@@ -397,7 +397,7 @@ function! zencoding#lang#html#imageSize()
   endif
   let current.attr.width = width
   let current.attr.height = height
-  let html = zencoding#toString(current, 'html', 1)
+  let html = substitute(zencoding#toString(current, 'html', 1), '\n', '', '')
   call zencoding#util#setContent(img_region, html)
 endfunction
 
@@ -527,7 +527,6 @@ function! zencoding#lang#html#balanceTag(flag) range
       let pos1 = searchpos(mx, 'bW')
       let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
       let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
-	  echo tag_name
       if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
         let pos2 = searchpos('>', 'nW')
       else
@@ -539,7 +538,7 @@ function! zencoding#lang#html#balanceTag(flag) range
       endif
       if zencoding#util#pointInRegion(curpos[1:2], block) && zencoding#util#regionIsValid(block)
         call zencoding#util#selectRegion(block)
-	    return
+        return
       endif
     endwhile
   else
@@ -559,7 +558,7 @@ function! zencoding#lang#html#balanceTag(flag) range
       endif
       if zencoding#util#regionIsValid(block)
         call zencoding#util#selectRegion(block)
-	    return
+        return
       endif
     endwhile
   endif
