@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 20-Jun-2012.
+" Last Change: 29-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -66,7 +66,7 @@ endfunction
 function! zencoding#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
@@ -131,7 +131,7 @@ function! zencoding#toString(...)
   let itemno = 0
   let str = ''
   let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   while itemno < current.multiplier
     if len(current.name)
       if group_itemno != 0
@@ -232,7 +232,7 @@ function! zencoding#getFileType()
   if type == 'xslt' | let type = 'xsl' | endif
   if type == 'htmldjango' | let type = 'html' | endif
   if type == 'html.django_template' | let type = 'html' | endif
-  if len(type) == 0 && len(globpath(&rtp, 'autoload/zencoding/lang/'.&ft.'.vim'))
+  if len(type) == 0 && zencoding#lang#exists(&ft)
     let type = &ft
   endif
   if type == 'html'
@@ -349,7 +349,7 @@ function! zencoding#expandAbbr(mode, abbr) range
       let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
-      let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+      let rtype = zencoding#lang#exists(type) ? type : 'html'
       let part = zencoding#lang#{rtype}#findTokens(part)
     endif
     let rest = getline('.')[len(line):]
@@ -435,37 +435,37 @@ endfunction
 
 function! zencoding#moveNextPrev(flag)
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#moveNextPrev(a:flag)
 endfunction
 
 function! zencoding#imageSize()
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#imageSize()
 endfunction
 
 function! zencoding#encodeImage()
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#encodeImage()
 endfunction
 
 function! zencoding#toggleComment()
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#toggleComment()
 endfunction
 
 function! zencoding#balanceTag(flag) range
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#balanceTag(a:flag)
 endfunction
 
 function! zencoding#splitJoinTag()
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#splitJoinTag()
 endfunction
 
@@ -478,7 +478,7 @@ endfunction
 
 function! zencoding#removeTag()
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   return zencoding#lang#{rtype}#removeTag()
 endfunction
 
@@ -499,7 +499,7 @@ function! zencoding#anchorizeURL(flag)
   let title = matchstr(content, mx)
 
   let type = zencoding#getFileType()
-  let rtype = len(globpath(&rtp, 'autoload/zencoding/lang/'.type.'.vim')) ? type : 'html'
+  let rtype = zencoding#lang#exists(type) ? type : 'html'
   if a:flag == 0
     let a = zencoding#lang#html#parseTag('<a>')
     let a.attr.href = url
