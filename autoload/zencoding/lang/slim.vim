@@ -78,7 +78,9 @@ function! zencoding#lang#slim#imageSize()
     return
   endif
   let fn = current.attr.src
-  if fn !~ '^\(/\|http\)'
+  if fn =~ '^\s*$'
+    return
+  elseif fn !~ '^\(/\|http\)'
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
 
