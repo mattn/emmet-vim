@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 29-Jun-2012.
+" Last Change: 02-Jul-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -183,11 +183,6 @@ function! zencoding#toString(...)
     endif
     let itemno = itemno + 1
   endwhile
-  if zencoding#useFilter(filters, 'e')
-    let str = substitute(str, '&', '\&amp;', 'g')
-    let str = substitute(str, '<', '\&lt;', 'g')
-    let str = substitute(str, '>', '\&gt;', 'g')
-  endif
   return str
 endfunction
 
@@ -285,6 +280,11 @@ function! zencoding#expandAbbr(mode, abbr) range
       for item in items
         let expand .= zencoding#toString(item, type, 0, filters)
       endfor
+      if zencoding#useFilter(filters, 'e')
+        let expand = substitute(expand, '&', '\&amp;', 'g')
+        let expand = substitute(expand, '<', '\&lt;', 'g')
+        let expand = substitute(expand, '>', '\&gt;', 'g')
+      endif
       let line = getline(a:firstline)
       let part = substitute(line, '^\s*', '', '')
       for n in range(a:firstline, a:lastline)
@@ -328,6 +328,11 @@ function! zencoding#expandAbbr(mode, abbr) range
       for item in items
         let expand .= zencoding#toString(item, type, 0, filters)
       endfor
+      if zencoding#useFilter(filters, 'e')
+        let expand = substitute(expand, '&', '\&amp;', 'g')
+        let expand = substitute(expand, '<', '\&lt;', 'g')
+        let expand = substitute(expand, '>', '\&gt;', 'g')
+      endif
     endif
   elseif a:mode == 4
     let line = getline('.')
@@ -363,6 +368,11 @@ function! zencoding#expandAbbr(mode, abbr) range
     for item in items
       let expand .= zencoding#toString(item, type, 0, filters)
     endfor
+    if zencoding#useFilter(filters, 'e')
+      let expand = substitute(expand, '&', '\&amp;', 'g')
+      let expand = substitute(expand, '<', '\&lt;', 'g')
+      let expand = substitute(expand, '>', '\&gt;', 'g')
+    endif
     let expand = substitute(expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
   endif
   if len(expand)
