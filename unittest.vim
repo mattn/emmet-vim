@@ -368,7 +368,7 @@ finish
         },
         {
           'query': "div#box$*3>h3+p.bar*2|e",
-          'result': "&lt;div id=\"box1\"&gt;\n\t&amp;lt;h3&amp;gt;&amp;lt;/h3&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n&lt;/div&gt;\n&lt;div id=\"box2\"&gt;\n\t&amp;lt;h3&amp;gt;&amp;lt;/h3&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n&lt;/div&gt;\n&lt;div id=\"box3\"&gt;\n\t&amp;lt;h3&amp;gt;&amp;lt;/h3&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n\t&amp;lt;p class=\"bar\"&amp;gt;&amp;lt;/p&amp;gt;\n&lt;/div&gt;\n",
+          'result': "&lt;div id=\"box1\"&gt;\n\t&lt;h3&gt;&lt;/h3&gt;\n\t&lt;p class=\"bar\"&gt;&lt;/p&gt;\n\t&lt;p class=\"bar\"&gt;&lt;/p&gt;\n&lt;/div&gt;\n&lt;div id=\"box2\"&gt;\n\t&lt;h3&gt;&lt;/h3&gt;\n\t&lt;p class=\"bar\"&gt;&lt;/p&gt;\n\t&lt;p class=\"bar\"&gt;&lt;/p&gt;\n&lt;/div&gt;\n&lt;div id=\"box3\"&gt;\n\t&lt;h3&gt;&lt;/h3&gt;\n\t&lt;p class=\"bar\"&gt;&lt;/p&gt;\n\t&lt;p class=\"bar\"&gt;&lt;/p&gt;\n&lt;/div&gt;\n",
         },
         {
           'query': "div>div#page>p.title+p|c",

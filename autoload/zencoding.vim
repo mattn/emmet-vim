@@ -580,6 +580,11 @@ function! zencoding#ExpandWord(abbr, type, orig)
   for item in items
     let expand .= zencoding#toString(item, a:type, 0, filters)
   endfor
+  if zencoding#useFilter(filters, 'e')
+    let expand = substitute(expand, '&', '\&amp;', 'g')
+    let expand = substitute(expand, '<', '\&lt;', 'g')
+    let expand = substitute(expand, '>', '\&gt;', 'g')
+  endif
   if a:orig == 0
     let expand = substitute(expand, '\${lang}', s:zen_settings.lang, 'g')
     let expand = substitute(expand, '\${charset}', s:zen_settings.charset, 'g')
