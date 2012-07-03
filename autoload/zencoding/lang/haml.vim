@@ -29,9 +29,10 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
-      if attr == 'id'
+      let valtmp = substitute(val, '\${cursor}', '', '')
+      if attr == 'id' && len(valtmp) > 0
         let str .= '#' . val
-      elseif attr == 'class'
+      elseif attr == 'class' && len(valtmp) > 0
         let str .= '.' . substitute(val, ' ', '.', 'g')
       else
         if len(tmp) > 0 | let tmp .= ',' | endif
