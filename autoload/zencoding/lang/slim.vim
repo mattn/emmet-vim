@@ -14,19 +14,24 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
   let filters = a:filters
   let itemno = a:itemno
   let indent = a:indent
+  let dollar_expr = zencoding#getResource(type, 'dollar_expr', 1)
   let str = ""
 
   let comment_indent = ''
   let comment = ''
   let current_name = current.name
-  let current_name = substitute(current.name, '\$$', itemno+1, '')
+  if dollar_expr
+    let current_name = substitute(current.name, '\$$', itemno+1, '')
+  endif
   if len(current.name) > 0
     let str .= current_name
     for attr in keys(current.attr)
       let val = current.attr[attr]
-      while val =~ '\$\([^#{]\|$\)'
-        let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-      endwhile
+      if dollar_expr
+        while val =~ '\$\([^#{]\|$\)'
+          let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        endwhile
+      endif
       let attr = substitute(attr, '\$$', itemno+1, '')
       let str .= ' ' . attr . '="' . val . '"'
     endfor
@@ -35,9 +40,11 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
     if len(current.value) > 0
       let str .= "\n"
       let text = current.value[1:-2]
-      let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-      let text = substitute(text, '\${nr}', "\n", 'g')
-      let text = substitute(text, '\\\$', '$', 'g')
+      if dollar_expr
+        let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        let text = substitute(text, '\${nr}', "\n", 'g')
+        let text = substitute(text, '\\\$', '$', 'g')
+      endif
       for line in split(text, "\n")
         let str .= indent . "| " . line . "\n"
       endfor
@@ -45,9 +52,11 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
     if len(current.child) == 1 && len(current.child[0].name) == 0
       let str .= "\n"
       let text = current.child[0].value[1:-2]
-      let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-      let text = substitute(text, '\${nr}', "\n", 'g')
-      let text = substitute(text, '\\\$', '$', 'g')
+      if dollar_expr
+        let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        let text = substitute(text, '\${nr}', "\n", 'g')
+        let text = substitute(text, '\\\$', '$', 'g')
+      endif
       for line in split(text, "\n")
         let str .= indent . "| " . line . "\n"
       endfor
@@ -61,9 +70,11 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
     endif
   else
     let str = current.value[1:-2]
-    let str = substitute(str, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-    let str = substitute(str, '\${nr}', "\n", 'g')
-    let str = substitute(str, '\\\$', '$', 'g')
+    if dollar_expr
+      let str = substitute(str, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      let str = substitute(str, '\${nr}', "\n", 'g')
+      let str = substitute(str, '\\\$', '$', 'g')
+    endif
   endif
   if str !~ "\n$"
     let str .= "\n"
