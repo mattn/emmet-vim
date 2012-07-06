@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 02-Jul-2012.
+" Last Change: 06-Jul-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -127,6 +127,7 @@ function! zencoding#toString(...)
     let group_itemno = 0
   endif
 
+  let dollar_expr = zencoding#getResource(type, 'dollar_expr', 1)
   let indent = zencoding#getIndentation(type)
   let itemno = 0
   let str = ''
@@ -165,9 +166,11 @@ function! zencoding#toString(...)
         endif
         if len(current.value)
           let text = current.value[1:-2]
-          let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-          let text = substitute(text, '\${nr}', "\n", 'g')
-          let text = substitute(text, '\\\$', '$', 'g')
+          if dollar_expr
+            let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+            let text = substitute(text, '\${nr}', "\n", 'g')
+            let text = substitute(text, '\\\$', '$', 'g')
+          endif
           let str .= text
         endif
       endif
