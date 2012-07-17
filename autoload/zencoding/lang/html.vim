@@ -16,7 +16,7 @@ function! zencoding#lang#html#findTokens(str)
   let str = a:str
   let [pos, last_pos] = [0, 0]
   while 1
-    let tag = matchstr(str, '<.\{-}>', pos)
+    let tag = matchstr(str, '<[a-zA-Z].\{-}>', pos)
     if len(tag) == 0
       break
     endif
@@ -247,7 +247,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
               endif
               let parent = tmp
             endfor
-            if operator =~ '>'
+            if len(pos) > 0
               call remove(pos, -1)
             endif
             let last = parent
