@@ -431,6 +431,10 @@ finish
           'result': "<div class=\"boxes\">\n\t<div class=\"box2\">\n\t\t<section>\n\t\t\t<h2>a</h2>\n\t\t\t<p>b</p>\n\t\t</section>\n\t</div>\n\t<div class=\"box1\">\n\t\t<section>\n\t\t\t<h2>c</h2>\n\t\t\t<p>d</p>\n\t\t\t<p>e</p>\n\t\t\t<blockquote>\n\t\t\t\t<h2>f</h2>\n\t\t\t\t<h3>g</h3>\n\t\t\t</blockquote>\n\t\t\t<p>h</p>\n\t\t</section>\n\t</div>\n</div>\n",
         },
         {
+          'query': "(div>(label+input))+div",
+          'result': "<div>\n\t<label for=\"\"></label>\n\t<input type=\"\" />\n</div>\n<div></div>\n",
+        },
+        {
           'query': "test1\ntest2\ntest3$$$$\\<esc>ggVG\\<c-y>,ul>li>span*>a\\<cr>$$$$",
           'result': "<ul>\n\t<li>\n\t\t<span><a href=\"\">test1</a></span>\n\t\t<span><a href=\"\">test2</a></span>\n\t\t<span><a href=\"\">test3</a></span>\n\t</li>\n</ul>",
         },
