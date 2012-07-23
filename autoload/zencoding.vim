@@ -282,7 +282,7 @@ function! zencoding#expandAbbr(mode, abbr) range
     endif
     let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
-      let filters = map(split(matchstr(leader, mx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\,", ",", "g")')
+      let filters = map(split(matchstr(leader, mx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\\\\\zs.\\\\ze", "&", "g")')
       let leader = substitute(leader, mx, '', '')
     endif
     if leader =~ '\*'
