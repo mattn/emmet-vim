@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Jul-2012.
+" Last Change: 23-Jul-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -14,9 +14,20 @@ function! zencoding#getExpandos(type, key)
   return a:key
 endfunction
 
+function! zencoding#splitFilterArg(filters)
+  for f in a:filters
+    if f =~ '^/'
+      return f[1:]
+    endif
+  endfor
+  return ''
+endfunction
+
 function! zencoding#useFilter(filters, filter)
   for f in a:filters
-    if f == a:filter
+    if a:filter == '/' && f =~ '^/'
+      return 1
+    elseif f == a:filter
       return 1
     endif
   endfor
@@ -269,15 +280,20 @@ function! zencoding#expandAbbr(mode, abbr) range
     if len(leader) == 0
       return
     endif
-    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
-      let filters = split(matchstr(leader, mx)[1:], '\s*,\s*')
+      let filters = map(split(matchstr(leader, mx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\,", ",", "g")')
       let leader = substitute(leader, mx, '', '')
     endif
     if leader =~ '\*'
       let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '')
       if query !~ '}\s*$'
         let query .= '>{$#}'
+      endif
+      if zencoding#useFilter(filters, '/')
+        let spl = zencoding#splitFilterArg(filters)
+        let fline = getline(a:firstline)
+        let query = substitute(query, '>\{0,1}{\$#}\s*$', '{\\$column\\$}*' . len(split(fline, spl)), '')
       endif
       let items = zencoding#parseIntoTree(query, type).child
       for item in items
@@ -297,7 +313,13 @@ function! zencoding#expandAbbr(mode, abbr) range
           let lpart = substitute(lpart, '^[0-9.-]\+\s\+', '', '')
           let lpart = substitute(lpart, '\s\+$', '', '')
         endif
-        let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', '\=lpart', 'g')
+        if zencoding#useFilter(filters, '/')
+          for column in split(lpart, spl)
+            let expand = substitute(expand, '\$column\$', '\=column', '')
+          endfor
+        else
+          let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', '\=lpart', 'g')
+        endif
       endfor
       let expand = substitute(expand, '\$line\d*\$', '', 'g')
       let content = join(getline(a:firstline, a:lastline), "\n")
@@ -362,7 +384,7 @@ function! zencoding#expandAbbr(mode, abbr) range
     endif
     let rest = getline('.')[len(line):]
     let str = part
-    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
     if str =~ mx
       let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
       let str = substitute(str, mx, '', '')
@@ -565,7 +587,7 @@ function! zencoding#codePretty() range
 endfunction
 
 function! zencoding#ExpandWord(abbr, type, orig)
-  let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
+  let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
 
