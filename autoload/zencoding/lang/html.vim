@@ -113,7 +113,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
         let snippet = substitute(snippet, '|', '${cursor}', 'g')
       endif
       let lines = split(snippet, "\n")
-      call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", indent, "g")')
+      call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
       let current.snippet = join(lines, "\n")
       let current.name = ''
     endif
@@ -361,8 +361,8 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
         endif
         let inner = zencoding#toString(child, type, 0, filters, itemno)
         let inner = substitute(inner, "^\n", "", 'g')
-        let inner = substitute(inner, "\n", "\n" . indent, 'g')
-        let inner = substitute(inner, "\n" . indent . '$', '', 'g')
+        let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
+        let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
         let str .= inner
       endfor
     else

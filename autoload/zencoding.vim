@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 23-Jul-2012.
+" Last Change: 24-Jul-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -322,6 +322,7 @@ function! zencoding#expandAbbr(mode, abbr) range
         endif
       endfor
       let expand = substitute(expand, '\$line\d*\$', '', 'g')
+      let expand = substitute(expand, '\$column\$', '', 'g')
       let content = join(getline(a:firstline, a:lastline), "\n")
       if stridx(expand, '$#') < len(expand)-2
         let expand = substitute(expand, '^\(.*\)\$#\s*$', '\1', '')

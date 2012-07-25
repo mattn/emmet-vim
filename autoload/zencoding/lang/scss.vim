@@ -52,8 +52,8 @@ function! zencoding#lang#scss#toString(settings, current, type, inline, filters,
     for child in current.child
       let inner .= zencoding#toString(child, type, inline, filters, itemno)
     endfor
-    let inner = substitute(inner, "\n", "\n" . indent, 'g')
-    let inner = substitute(inner, "\n" . indent . "$", "", 'g')
+    let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
+    let inner = substitute(inner, "\n" . escape(indent, '\') . "$", "", 'g')
     let str .= indent . inner . "\n}\n"
   else
     return zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)

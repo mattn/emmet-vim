@@ -37,7 +37,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
       let snippet = substitute(snippet, '|', '${cursor}', 'g')
     endif
     let lines = split(snippet, "\n")
-    call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", indent, "g")')
+    call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
     let current.snippet = join(lines, "\n")
     let current.name = ''
   endif
