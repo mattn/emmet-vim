@@ -106,7 +106,7 @@ function! zencoding#lang#css#balanceTag(flag) range
       let block = zencoding#util#searchRegion('^', ';')
       if zencoding#util#regionIsValid(block)
         call zencoding#util#selectRegion(block)
-	    return
+        return
       endif
     endif
   else
@@ -118,7 +118,7 @@ function! zencoding#lang#css#balanceTag(flag) range
           call zencoding#util#selectRegion(block)
           return
         endif
-	  endif
+      endif
     else
       let pos = searchpos('.*;', 'nW')
       if pos[0] != 0
@@ -126,7 +126,7 @@ function! zencoding#lang#css#balanceTag(flag) range
         let block = zencoding#util#searchRegion('^', ';')
         if zencoding#util#regionIsValid(block)
           call zencoding#util#selectRegion(block)
-		  return
+          return
         endif
       endif
     endif
