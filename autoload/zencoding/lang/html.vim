@@ -357,6 +357,9 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
           if nc > 1 || (len(child.name) > 0 && stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1)
             let str .= "\n" . indent
             let dr = 1
+          elseif nc == 1 && len(child.name) == 0
+            let str .= "\n" . indent
+            let dr = 1
           endif
         endif
         let inner = zencoding#toString(child, type, 0, filters, itemno)
