@@ -357,7 +357,8 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
           if nc > 1 || (len(child.name) > 0 && stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1)
             let str .= "\n" . indent
             let dr = 1
-          elseif nc == 1 && len(child.name) == 0
+          elseif current.multiplier == 1 && nc == 1 && len(child.name) == 0
+			  echo current.multiplier
             let str .= "\n" . indent
             let dr = 1
           endif
