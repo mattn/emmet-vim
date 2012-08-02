@@ -207,7 +207,7 @@ function! zencoding#util#getImageSize(fn)
     while pos < len(hex)
       let bs = hex[pos+0:pos+3]
       let pos += 4
-      if bs == 'ffc0'
+      if bs == 'ffc0' || bs == 'ffc2'
         let pos += 6
         let height = eval('0x'.hex[pos+0:pos+1])*256 + eval('0x'.hex[pos+2:pos+3])
         let pos += 4
@@ -215,10 +215,8 @@ function! zencoding#util#getImageSize(fn)
         break
       elseif bs =~ 'ffd[9a]'
         break
-      elseif bs =~ 'ff\(e[0-9a-d]\|fe\|db\|dd\|c4\)'
+      elseif bs =~ 'ff\(e[0-9a-e]\|fe\|db\|dd\|c4\)'
         let pos += (eval('0x'.hex[pos+0:pos+1])*256 + eval('0x'.hex[pos+2:pos+3])) * 2
-      else
-        let pos += 4
       endif
     endwhile
   endif
