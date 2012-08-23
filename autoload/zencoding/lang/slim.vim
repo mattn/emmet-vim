@@ -48,6 +48,8 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
       for line in split(text, "\n")
         let str .= indent . "| " . line . "\n"
       endfor
+    elseif len(current.child) == 0
+      let str .= '${cursor}'
     endif
     if len(current.child) == 1 && len(current.child[0].name) == 0
       let str .= "\n"

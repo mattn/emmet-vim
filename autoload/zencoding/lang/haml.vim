@@ -68,6 +68,8 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
           let str .= "\n" . indent . line . " |"
         endfor
       endif
+    elseif len(current.child) == 0
+      let str .= '${cursor}'
     endif
     if len(current.child) == 1 && len(current.child[0].name) == 0
       let text = current.child[0].value[1:-2]
