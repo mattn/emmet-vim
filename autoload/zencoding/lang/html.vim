@@ -335,7 +335,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
     let str = "<!-- " . comment . " -->\n" . str
   endif
   if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
-    let str .= " />"
+    let str .= settings.html.empty_element_suffix
   else
     let str .= ">"
     let text = current.value[1:-2]
