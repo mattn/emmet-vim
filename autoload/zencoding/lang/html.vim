@@ -1,4 +1,4 @@
-let s:mx = '\([+>]\|<\+\)\{-}\s*'
+let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
 \     .'\((*\)\{-}\s*'
 \       .'\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|{\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}[ \t\r\n}]*\)'
 \       .'\('
@@ -213,7 +213,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
       let current.parent = parent
       let current.pos = 1
     endif
-    if operator =~ '<'
+    if operator =~ '[<^]'
       for c in range(len(operator))
         let tmp = parent.parent
         if empty(tmp)
