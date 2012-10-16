@@ -17,7 +17,10 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
       let abbr = abbr[1:]
     endif
     let value = prop[2]
-    if value =~ 'p$'
+    if abbr =~ '^[z]'
+      " TODO
+	  let value = substitute(value, '[^0-9.]*$', '', '')
+	elseif value =~ 'p$'
       let value = substitute(prop[2], 'p$', '%', '')
     elseif value =~ '\.'
       let value .= 'em'
