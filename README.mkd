@@ -1,6 +1,6 @@
 # ZenCoding-vim
 
-[zencoding-vim](http://mattn.github.com/zencoding-vim) is vim script support for expanding abbreviation like zen-coding.
+[zencoding-vim](http://mattn.github.com/zencoding-vim) is vim script support for expanding abbreviation like zen-coding(emmet).
 
 ## Installation
 
