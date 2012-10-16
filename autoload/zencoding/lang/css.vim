@@ -85,6 +85,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
     call add(root.child, deepcopy(current))
     let current.snippet = '-moz-' . snippet . "\n"
     call add(root.child, deepcopy(current))
+    let current.snippet = snippet
     call add(root.child, current)
   else
     call add(root.child, current)
