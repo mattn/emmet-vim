@@ -267,11 +267,23 @@ finish
           'result': "<a href=\"\"><b><i></i></b><b></b></a>\n",
         },
         {
+          'query': "a>b>i^b",
+          'result': "<a href=\"\"><b><i></i></b><b></b></a>\n",
+        },
+        {
           'query': "a>b>i<<b",
           'result': "<a href=\"\"><b><i></i></b></a>\n<b></b>\n",
         },
         {
+          'query': "a>b>i^^b",
+          'result': "<a href=\"\"><b><i></i></b></a>\n<b></b>\n",
+        },
+        {
           'query': "blockquote>b>i<<b",
+          'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>\n",
+        },
+        {
+          'query': "blockquote>b>i^^b",
           'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>\n",
         },
         {
@@ -315,6 +327,10 @@ finish
           'result': "<div id=\"header\">\n\t<ul>\n\t\t<li></li>\n\t</ul>\n\t<p>Footer</p>\n</div>\n",
         },
         {
+          'query': "#header > ul > li ^ p{Footer}",
+          'result': "<div id=\"header\">\n\t<ul>\n\t\t<li></li>\n\t</ul>\n\t<p>Footer</p>\n</div>\n",
+        },
+        {
           'query': "a#foo$$$*3",
           'result': "<a id=\"foo001\" href=\"\"></a>\n<a id=\"foo002\" href=\"\"></a>\n<a id=\"foo003\" href=\"\"></a>\n",
         },
@@ -331,11 +347,23 @@ finish
           'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
         },
         {
+          'query': "#header>li^#content",
+          'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
+        },
+        {
           'query': "(#header>li)<#content",
           'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
         },
         {
+          'query': "(#header>li)^#content",
+          'result': "<div id=\"header\">\n\t<li></li>\n</div>\n<div id=\"content\"></div>\n",
+        },
+        {
           'query': "a>b>i<<div",
+          'result': "<a href=\"\"><b><i></i></b></a>\n<div></div>\n",
+        },
+        {
+          'query': "a>b>i^^div",
           'result': "<a href=\"\"><b><i></i></b></a>\n<div></div>\n",
         },
         {
