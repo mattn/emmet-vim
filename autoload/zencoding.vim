@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 24-Jul-2012.
+" Last Change: 16-Oct-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -861,7 +861,7 @@ let s:zen_settings = {
 \            'bdr+': 'border-right:1px solid #000;',
 \            'bdr:n': 'border-right:none;',
 \            'bdrw': 'border-right-width:|;',
-\            'bdrs': 'border-right-style:|;',
+\            'bdrt': 'border-right-style:|;',
 \            'bdrs:n': 'border-right-style:none;',
 \            'bdrc': 'border-right-color:#000;',
 \            'bdb': 'border-bottom:|;',
@@ -878,7 +878,7 @@ let s:zen_settings = {
 \            'bdls': 'border-left-style:|;',
 \            'bdls:n': 'border-left-style:none;',
 \            'bdlc': 'border-left-color:#000;',
-\            'bdrz': 'border-radius:|;',
+\            'bdrs': 'border-radius:|;',
 \            'bdtrrz': 'border-top-right-radius:|;',
 \            'bdtlrz': 'border-top-left-radius:|;',
 \            'bdbrrz': 'border-bottom-right-radius:|;',

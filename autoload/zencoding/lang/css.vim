@@ -5,7 +5,26 @@ endfunction
 function! zencoding#lang#css#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
+  let prefix = 0
+  let value = ''
 
+  " emmet
+  let prop = matchlist(abbr, '^\(-\{0,1}[a-zA-Z]\+\)\([0-9.]\+p\{0,1}\)$')
+  if len(prop)
+    let abbr = prop[1]
+    if abbr =~ '^-'
+      let prefix = 1
+      let abbr = abbr[1:]
+    endif
+    let value = prop[2]
+    if value =~ 'p$'
+      let value = substitute(prop[2], 'p$', '%', '')
+    elseif value =~ '\.'
+      let value .= 'em'
+    else
+      let value .= 'px'
+    endif
+  endif
   let settings = zencoding#getSettings()
   let indent = zencoding#getIndentation(type)
 
@@ -40,9 +59,33 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
     call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
     let current.snippet = join(lines, "\n")
     let current.name = ''
+    let current.snippet = substitute(current.snippet, ';', value . ';', '')
   endif
+
   let current.pos = 0
-  call add(root.child, current)
+  let lg = matchlist(abbr, '^\%(linear-gradient\|lg\)(\s*\(\w\+\)\s*,\s*\(\w\+\)\s*,\s*\(\w\+\)\s*)$')
+  if len(lg)
+    let current.name = ''
+    let current.snippet = printf("background-image: -webkit-gradient(%s, 0 0, 0 100%, from(%s), to(%s));\n", lg[1], lg[2], lg[3])
+    call add(root.child, deepcopy(current))
+    let current.snippet = printf("background-image: -webkit-linear-gradient(%s, %s);\n", lg[2], lg[3])
+    call add(root.child, deepcopy(current))
+    let current.snippet = printf("background-image: -moz-linear-gradient(%s, %s);\n", lg[2], lg[3])
+    call add(root.child, deepcopy(current))
+    let current.snippet = printf("background-image: -o-linear-gradient(%s, %s);\n", lg[2], lg[3])
+    call add(root.child, deepcopy(current))
+    let current.snippet = printf("background-image: linear-gradient(%s, %s);\n", lg[2], lg[3])
+    call add(root.child, deepcopy(current))
+  elseif prefix
+    let snippet = current.snippet
+    let current.snippet = '-webkit-' . snippet . "\n"
+    call add(root.child, deepcopy(current))
+    let current.snippet = '-moz-' . snippet . "\n"
+    call add(root.child, deepcopy(current))
+    call add(root.child, current)
+  else
+    call add(root.child, current)
+  endif
   return root
 endfunction
 
