@@ -63,7 +63,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
   endif
 
   let current.pos = 0
-  let lg = matchlist(abbr, '^\%(linear-gradient\|lg\)(\s*\(\w\+\)\s*,\s*\(\w\+\)\s*,\s*\(\w\+\)\s*)$')
+  let lg = matchlist(abbr, '^\%(linear-gradient\|lg\)(\s*\(\w\+\)\s*,\s*\([^,]\+\)\s*,\s*\([^)]\+\)\s*)$')
   if len(lg)
     let current.name = ''
     let current.snippet = printf("background-image: -webkit-gradient(%s, 0 0, 0 100%, from(%s), to(%s));\n", lg[1], lg[2], lg[3])
