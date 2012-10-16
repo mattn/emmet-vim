@@ -568,6 +568,34 @@ finish
           'query': "bg+!$$$$",
           'result': "background: #FFF url($$$$) 0 0 no-repeat !important;",
         },
+        {
+          'query': "m$$$$",
+          'result': "margin: $$$$;",
+        },
+        {
+          'query': "m0.1p$$$$",
+          'result': "margin: 0.1%;",
+        },
+        {
+          'query': "m1.0$$$$",
+          'result': "margin: 1.0em;",
+        },
+        {
+          'query': "m2$$$$",
+          'result': "margin: 2px;",
+        },
+        {
+          'query': "bdrs10$$$$",
+          'result': "border-radius: 10px;",
+        },
+        {
+          'query': "-bdrs20$$$$",
+          'result': "-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\n-moz-border-radius: 20px;",
+        },
+        {
+          'query': "lg(top,#fff,#000)$$$$",
+          'result': "background-image:  -webkit-gradient(top, 0 0, 0 100, from(#fff), to(#000));\nbackground-image:  -webkit-linear-gradient(#fff, #000);\nbackground-image:  -moz-linear-gradient(#fff, #000);\nbackground-image:  -o-linear-gradient(#fff, #000);\nbackground-image:  linear-gradient(#fff, #000);\n",
+        },
       ],
     },
   ],
