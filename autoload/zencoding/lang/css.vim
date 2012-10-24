@@ -117,7 +117,7 @@ function! zencoding#lang#css#toString(settings, current, type, inline, filters, 
   let current = a:current
   let value = current.value[1:-2]
   if zencoding#useFilter(a:filters, 'fc')
-    let value = substitute(value, '\([^:]\+\):\([^;]*;\)', '\1: \2', '')
+    let value = substitute(value, '\([^:]\+\):\([^;]*;\)', '\1: \2', 'g')
   else
     let value = substitute(value, '\([^:]\+\):\([^;]*;\)', '\1:\2', 'g')
   endif
