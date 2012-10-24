@@ -616,6 +616,10 @@ finish
           'query': "h50e$$$$",
           'result': "height: 50em;",
         },
+        {
+          'query': "(bg+)+c$$$$",
+          'result': "background: #FFF url($$$$) 0 0 no-repeat;\ncolor: #000;",
+        },
       ],
     },
   ],
