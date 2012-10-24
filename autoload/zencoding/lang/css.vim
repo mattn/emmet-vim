@@ -72,6 +72,9 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
     let current.snippet = join(lines, "\n")
     let current.name = ''
     let current.snippet = substitute(current.snippet, ';', value . ';', '')
+    if use_pipe_for_cursor
+      let current.snippet = substitute(current.snippet, '${cursor}', '', 'g') . '${cursor}'
+    endif
   endif
 
   let current.pos = 0
