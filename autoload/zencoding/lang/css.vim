@@ -116,7 +116,11 @@ endfunction
 function! zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
   let current = a:current
   let value = current.value[1:-2]
-  let value = substitute(value, '^\([^:]\+\):\([^;]*;\)', '\1: \2', '')
+  if zencoding#useFilter(a:filters, 'fc')
+    let value = substitute(value, '\([^:]\+\):\([^;]*;\)', '\1: \2', '')
+  else
+    let value = substitute(value, '\([^:]\+\):\([^;]*;\)', '\1:\2', 'g')
+  endif
   if current.important
     let value = substitute(value, ';', ' !important;', '')
   endif
