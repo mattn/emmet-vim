@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 16-Oct-2012.
+" Last Change: 24-Oct-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1139,6 +1139,15 @@ let s:zen_settings = {
 \    },
 \    'sass': {
 \        'extends': 'css',
+\        'snippets': {
+\            '@if': "@if {\n\t|\n}",
+\            '@e': "@else {\n\t|\n}",
+\            '@in': "@include |",
+\            '@ex': "@extend |",
+\            '@mx': "@mixin {\n\t|\n}",
+\            '@fn': "@function {\n\t|\n}",
+\            '@r': "@return |",
+\        },
 \    },
 \    'scss': {
 \        'extends': 'css',
