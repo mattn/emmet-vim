@@ -596,6 +596,26 @@ finish
           'query': "lg(top,#fff,#000)$$$$",
           'result': "background-image:  -webkit-gradient(top, 0 0, 0 100, from(#fff), to(#000));\nbackground-image:  -webkit-linear-gradient(#fff, #000);\nbackground-image:  -moz-linear-gradient(#fff, #000);\nbackground-image:  -o-linear-gradient(#fff, #000);\nbackground-image:  linear-gradient(#fff, #000);\n",
         },
+        {
+          'query': "m10-5-0$$$$",
+          'result': "margin: 10px 5px 0px;",
+        },
+        {
+          'query': "m-10--5$$$$",
+          'result': "margin: -10px -5px;",
+        },
+        {
+          'query': "m10-auto$$$$",
+          'result': "margin: 10px auto;",
+        },
+        {
+          'query': "w100p$$$$",
+          'result': "width: 100%;",
+        },
+        {
+          'query': "h50e$$$$",
+          'result': "height: 50em;",
+        },
       ],
     },
   ],
