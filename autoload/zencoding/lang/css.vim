@@ -9,24 +9,30 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
   let value = ''
 
   " emmet
-  let prop = matchlist(abbr, '^\(-\{0,1}[a-zA-Z]\+\)\([0-9.]\+p\{0,1}\)$')
+  let prop = matchlist(abbr, '^\(-\{0,1}[a-zA-Z]\+\)\(\%([0-9.-]\+[pe]\{0,1}-\{0,1}\|-auto\)*\)$')
+  echo prop
   if len(prop)
     let abbr = prop[1]
     if abbr =~ '^-'
       let prefix = 1
       let abbr = abbr[1:]
     endif
-    let value = prop[2]
-    if abbr =~ '^[z]'
-      " TODO
-	  let value = substitute(value, '[^0-9.]*$', '', '')
-	elseif value =~ 'p$'
-      let value = substitute(prop[2], 'p$', '%', '')
-    elseif value =~ '\.'
-      let value .= 'em'
-    else
-      let value .= 'px'
-    endif
+    let value = ''
+    for v in split(prop[2], '\d\zs-')
+      if len(value) > 0
+        let value .= ' '
+      endif
+      if abbr =~ '^[z]'
+        " TODO
+        let value .= substitute(v, '[^0-9.]*$', '', '')
+      elseif v =~ 'p$'
+        let value .= substitute(v, 'p$', '%', '')
+      elseif v =~ '\.' || v =~ 'e$'
+        let value .= v . 'em'
+      else
+        let value .= v . 'px'
+      endif
+    endfor
   endif
   let settings = zencoding#getSettings()
   let indent = zencoding#getIndentation(type)
