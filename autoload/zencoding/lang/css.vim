@@ -10,7 +10,6 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
 
   " emmet
   let prop = matchlist(abbr, '^\(-\{0,1}[a-zA-Z]\+\)\(\%([0-9.-]\+[pe]\{0,1}-\{0,1}\|-auto\)*\)$')
-  echo prop
   if len(prop)
     let abbr = prop[1]
     if abbr =~ '^-'
@@ -27,8 +26,12 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
         let value .= substitute(v, '[^0-9.]*$', '', '')
       elseif v =~ 'p$'
         let value .= substitute(v, 'p$', '%', '')
-      elseif v =~ '\.' || v =~ 'e$'
+      elseif v =~ 'e$'
+        let value .= substitute(v, 'e$', 'em', '')
+      elseif v =~ '\.'
         let value .= v . 'em'
+      elseif v == 'auto'
+        let value .= v
       else
         let value .= v . 'px'
       endif
