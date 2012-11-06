@@ -20,7 +20,6 @@ function! zencoding#lang#scss#toString(settings, current, type, inline, filters,
   let indent = a:indent
   let str = ""
 
-  let current_name = current.name
   let current_name = substitute(current.name, '\$$', itemno+1, '')
   if len(current.name) > 0
     let str .= current_name
