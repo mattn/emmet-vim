@@ -358,7 +358,6 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
             let str .= "\n" . indent
             let dr = 1
           elseif current.multiplier == 1 && nc == 1 && len(child.name) == 0
-			  echo current.multiplier
             let str .= "\n" . indent
             let dr = 1
           endif
@@ -536,9 +535,9 @@ function! zencoding#lang#html#balanceTag(flag) range
   endif
   let settings = zencoding#getSettings()
 
-  if a:flag > 0
+  if a:flag > 0 || abs(a:flag) == 1
+    let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     while 1
-      let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
       let pos1 = searchpos(mx, 'bW')
       let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
       let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
@@ -557,9 +556,18 @@ function! zencoding#lang#html#balanceTag(flag) range
       endif
     endwhile
   else
+    let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     while 1
-      let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
       let pos1 = searchpos(mx, 'W')
+      if pos1 == curpos[1:2]
+        let pos1 = searchpos(mx . '\zs', 'W')
+        let pos2 = searchpos('.\ze<', 'W')
+        let block = [pos1, pos2]
+        if zencoding#util#regionIsValid(block)
+          call zencoding#util#selectRegion(block)
+          return
+        endif
+      endif
       let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
       let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
       if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
