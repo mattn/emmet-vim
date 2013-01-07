@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 24-Oct-2012.
+" Last Change: 07-Jan-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1197,7 +1197,7 @@ let s:zen_settings = {
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
-\            'html:5': "<!DOCTYPE HTML>\n"
+\            'html:5': "<!DOCTYPE html>\n"
 \                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."\t<meta charset=\"${charset}\">\n"
