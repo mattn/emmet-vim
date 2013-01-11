@@ -149,7 +149,7 @@ function! zencoding#util#getContentFromURL(url)
   let s1 = len(split(res, '?'))
   let utf8 = iconv(res, 'utf-8', &encoding)
   let s2 = len(split(utf8, '?'))
-  return s2 > s1 * 2 ? utf8 : res
+  return (s2 == s1 || s2 >= s1 * 2) ? utf8 : res
 endfunction
 
 function! zencoding#util#getTextFromHTML(buf)
