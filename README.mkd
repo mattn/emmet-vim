@@ -53,7 +53,7 @@ Then type "<c-y>," (Ctrl + y + ','), you should see:
 [More Tutorials](https://raw.github.com/mattn/zencoding-vim/master/TUTORIAL)
 
 
-## Enable in differnt mode
+## Enable in different mode
 
 If you don't want enable zencoding in all mode,
 you can use set a option in `vimrc`:
