@@ -53,6 +53,15 @@ Then type "<c-y>," (Ctrl + y + ','), you should see:
 [More Tutorials](https://raw.github.com/mattn/zencoding-vim/master/TUTORIAL)
 
 
+## Enable in differnt mode
+
+If you don't want enable zencoding in all mode,
+you can use set a option in `vimrc`:
+   
+    let g:user_zen_mode='n'    "only enable normal mode functions.
+    let g:user_zen_mode='inv'  "enable all functions, which is equal to
+    let g:user_zen_mode='a'    "enable all function in all mode.
+
 ## Project Authors
 
 [Yasuhiro Matsumoto](http://mattn.kaoriya.net/)
