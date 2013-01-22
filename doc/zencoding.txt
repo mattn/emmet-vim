@@ -393,6 +393,15 @@ CUSTOMIZE                                                  *zencoding-customize*
 >
   let g:use_zen_complete_tag = 1
 <
+
+5. Enable functions in different mode
+
+  If you want to use zencoding only in some modes, set an mode option:
+
+    let g:user_zen_mode='n'    "only enable normal mode functions, or
+    let g:user_zen_mode='inv'  "enable all functions, which is equal to
+    let g:user_zen_mode='a'    "enable all function in all mode.
+
 ==============================================================================
 LINKS                                                          *zencoding-links*
 
