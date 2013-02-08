@@ -242,5 +242,5 @@ function! zencoding#util#imageSizeWithImageMagick(fn)
 endfunction
 
 function! zencoding#util#isImageMagickInstalled()
-    return !(empty(system('command identify')))
+    return executable('identify')
 endfunction
