@@ -192,8 +192,8 @@ endfunction
 function! zencoding#util#getImageSize(fn)
   let fn = a:fn
 
-  if filereadable(fn) && zencoding#util#isImageMagickInstalled()
-      return zencoding#util#imageSizeWithImageMagick(fn)
+  if zencoding#util#isImageMagickInstalled()
+    return zencoding#util#imageSizeWithImageMagick(fn)
   endif
 
   if filereadable(fn)
@@ -234,13 +234,16 @@ function! zencoding#util#getImageSize(fn)
 endfunction
 
 function! zencoding#util#imageSizeWithImageMagick(fn)
-    let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
-    let img_size = split(img_info, 'x')
-    let width = img_size[0]
-    let height = substitute(img_size[1], '\n', '', '')
-    return [width, height]
+  let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
+  let img_size = split(img_info, 'x')
+  let width = img_size[0]
+  let height = substitute(img_size[1], '\n', '', '')
+  return [width, height]
 endfunction
 
 function! zencoding#util#isImageMagickInstalled()
-    return executable('identify')
+  if !get(s:, 'zencoding_use_identify', 1)
+    return 0
+  endif
+  return executable('identify')
 endfunction
