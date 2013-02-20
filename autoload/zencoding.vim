@@ -1152,6 +1152,9 @@ let s:zen_settings = {
 \    'scss': {
 \        'extends': 'css',
 \    },
+\    'less': {
+\        'extends': 'css',
+\    },
 \    'html': {
 \        'snippets': {
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
