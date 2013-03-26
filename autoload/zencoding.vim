@@ -241,6 +241,7 @@ function! zencoding#getFileType()
   if type == 'xslt' | let type = 'xsl' | endif
   if type == 'htmldjango' | let type = 'html' | endif
   if type == 'html.django_template' | let type = 'html' | endif
+  if type == 'css.drupal' | let type = 'css' | endif
   if len(type) == 0 && zencoding#lang#exists(&ft)
     let type = &ft
   endif
