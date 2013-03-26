@@ -258,9 +258,10 @@ endfunction
 
 function! zencoding#getFileType()
   let type = &ft
-  let type = zencoding#getBaseType(type)
-  if len(type) == 0 && zencoding#lang#exists(&ft)
+  if zencoding#lang#exists(&ft)
     let type = &ft
+  else
+    let type = zencoding#getBaseType(type)
   endif
   if type == 'html'
     let type = synIDattr(synID(line("."), col("."), 1), "name")
