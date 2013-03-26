@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 07-Jan-2013.
+" Last Change: 26-Mar-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -48,6 +48,26 @@ function! zencoding#getIndentation(...)
     let indent = (&l:expandtab || &l:tabstop != &l:shiftwidth) ? repeat(' ', &l:shiftwidth) : "\t"
   endif
   return indent
+endfunction
+
+function! zencoding#getBaseType(type)
+  if !has_key(s:zen_settings, a:type)
+    return ''
+  endif
+  if !has_key(s:zen_settings[a:type], 'extends')
+    return a:type
+  endif
+  let extends = s:zen_settings[a:type].extends
+  if type(extends) == 1
+    let tmp = split(extends, '\s*,\s*')
+    let ext = tmp[0]
+  else
+    let ext = extends[0]
+  endif
+  if a:type != ext
+    return zencoding#getBaseType(ext)
+  endif
+  return ''
 endfunction
 
 function! zencoding#isExtends(type, extend)
@@ -238,9 +258,7 @@ endfunction
 
 function! zencoding#getFileType()
   let type = &ft
-  if type == 'xslt' | let type = 'xsl' | endif
-  if type == 'htmldjango' | let type = 'html' | endif
-  if type == 'html.django_template' | let type = 'html' | endif
+  let type = zencoding#getBaseType(type)
   if len(type) == 0 && zencoding#lang#exists(&ft)
     let type = &ft
   endif
@@ -1155,6 +1173,9 @@ let s:zen_settings = {
 \    'less': {
 \        'extends': 'css',
 \    },
+\    'css.drupal': {
+\        'extends': 'css',
+\    },
 \    'html': {
 \        'snippets': {
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
@@ -1354,6 +1375,12 @@ let s:zen_settings = {
 \        'inline_elements': 'a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',
 \        'empty_element_suffix': ' />'
 \    },
+\    'htmldjango': {
+\        'extends': 'html',
+\    },
+\    'html.django_template': {
+\        'extends': 'html',
+\    },
 \    'xsl': {
 \        'extends': 'html',
 \        'default_attributes': {
@@ -1391,6 +1418,9 @@ let s:zen_settings = {
 \        'expandos': {
 \            'choose': 'xsl:choose>xsl:when+xsl:otherwise'
 \        }
+\    },
+\    'xslt': {
+\        'extends': 'xsl',
 \    },
 \    'haml': {
 \        'indentation': '  ',
