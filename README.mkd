@@ -25,6 +25,7 @@ or:
     cd zencoding-vim
     cp plugin/zencoding.vim ~/.vim/plugin/
     cp autoload/zencoding.vim ~/.vim/autoload/
+    cp -a autoload/zencoding ~/.vim/autoload/
 
 
 ## Quick Tutorial
