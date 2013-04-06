@@ -125,6 +125,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
         if has_key(default_attributes, pat)
           if type(default_attributes[pat]) == 4
             let a = default_attributes[pat]
+            let current.attrs_order += keys(a)
             if use_pipe_for_cursor
               for k in keys(a)
                 let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
@@ -136,6 +137,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
             endif
           else
             for a in default_attributes[pat]
+              let current.attrs_order += keys(a)
               if use_pipe_for_cursor
                 for k in keys(a)
                   let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
@@ -450,7 +452,7 @@ function! zencoding#lang#html#encodeImage()
 endfunction
 
 function! zencoding#lang#html#parseTag(tag)
-  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'attrs_order': [] }
   let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')
@@ -465,6 +467,7 @@ function! zencoding#lang#html#parseTag(tag)
     let name = attr_match[1]
     let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
     let current.attr[name] = value
+    let current.attrs_order += [name]
     let attrs = attrs[stridx(attrs, match) + len(match):]
   endwhile
   return current

@@ -136,7 +136,7 @@ function! zencoding#lang#haml#encodeImage()
 endfunction
 
 function! zencoding#lang#haml#parseTag(tag)
-  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'attrs_order': [] }
   let mx = '%\([a-zA-Z][a-zA-Z0-9]*\)\s*\%({\(.*\)}\)'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')
@@ -151,6 +151,7 @@ function! zencoding#lang#haml#parseTag(tag)
     let name = attr_match[1]
     let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
     let current.attr[name] = value
+    let current.attrs_order += [name]
     let attrs = attrs[stridx(attrs, match) + len(match):]
   endwhile
   return current
