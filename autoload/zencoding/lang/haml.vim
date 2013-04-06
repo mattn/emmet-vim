@@ -128,7 +128,9 @@ function! zencoding#lang#haml#imageSize()
   endif
   let current.attr.width = width
   let current.attr.height = height
+  let current.attrs_order += ['width', 'height']
   let haml = zencoding#toString(current, 'haml', 1)
+  let haml = substitute(haml, '\${cursor}', '', '')
   call setline('.', substitute(matchstr(line, '^\s*') . haml, "\n", "", "g"))
 endfunction
 

@@ -421,6 +421,7 @@ function! zencoding#lang#html#imageSize()
   let current.attr.height = height
   let current.attrs_order += ['width', 'height']
   let html = substitute(zencoding#toString(current, 'html', 1), '\n', '', '')
+  let html = substitute(html, '\${cursor}', '', '')
   call zencoding#util#setContent(img_region, html)
 endfunction
 

@@ -106,7 +106,9 @@ function! zencoding#lang#slim#imageSize()
   endif
   let current.attr.width = width
   let current.attr.height = height
+  let current.attrs_order += ['width', 'height']
   let slim = zencoding#toString(current, 'slim', 1)
+  let slim = substitute(slim, '\${cursor}', '', '')
   call setline('.', substitute(matchstr(line, '^\s*') . slim, "\n", "", "g"))
 endfunction
 
