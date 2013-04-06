@@ -58,7 +58,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
   endif
   let abbr = rabbr
 
-  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
+  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
   let parent = root
   let last = root
   let pos = []
@@ -419,6 +419,7 @@ function! zencoding#lang#html#imageSize()
   endif
   let current.attr.width = width
   let current.attr.height = height
+  let current.attrs_order += ['width', 'height']
   let html = substitute(zencoding#toString(current, 'html', 1), '\n', '', '')
   call zencoding#util#setContent(img_region, html)
 endfunction
@@ -452,7 +453,7 @@ function! zencoding#lang#html#encodeImage()
 endfunction
 
 function! zencoding#lang#html#parseTag(tag)
-  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
+  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'attrs_order': ['id', 'class'] }
   let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')
@@ -469,6 +470,7 @@ function! zencoding#lang#html#parseTag(tag)
     let current.attr[name] = value
     let attrs = attrs[stridx(attrs, match) + len(match):]
   endwhile
+  let current.attrs_order = keys(current.attr)
   return current
 endfunction
 
