@@ -518,7 +518,7 @@ function! zencoding#lang#html#toggleComment()
       call setpos('.', [0, pos2[0], pos2[1], 0])
       let pos2 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
       call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos2 = searchpos('>', 'cneW')
+      let pos2 = searchpos('>', 'neW')
       let block = [pos1, pos2]
     endif
     if !zencoding#util#regionIsValid(block)
