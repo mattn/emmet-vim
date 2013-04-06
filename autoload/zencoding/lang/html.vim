@@ -92,7 +92,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
     if multiplier <= 0 | let multiplier = 1 | endif
 
     " make default node
-    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
+    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': [] }
     let current.name = tag_name
 
     let current.important = important
@@ -121,6 +121,9 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
     " default_attributes
     let default_attributes = zencoding#getResource(type, 'default_attributes', {})
     if !empty(default_attributes)
+      if has_key(default_attributes, '__GLOBAL_ORDER__')
+        let current.attrs_order += default_attributes['__GLOBAL_ORDER__']
+      endif
       for pat in [current.name, tag_name]
         if has_key(default_attributes, pat)
           if type(default_attributes[pat]) == 4
@@ -137,6 +140,14 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
             endif
           else
             for a in default_attributes[pat]
+              " let simple strings be added to default_attribute's list
+              " without impacting how it will expand, but allow a different
+              " ordering
+              if type(a) == type("")
+                let current.attrs_order += [a]
+                unlet a
+                continue
+              endif
               let current.attrs_order += keys(a)
               if use_pipe_for_cursor
                 for k in keys(a)
@@ -147,6 +158,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
                   let current.attr[k] = a[k]
                 endfor
               endif
+              unlet a
             endfor
           endif
           if has_key(settings.html.default_attributes, current.name)
