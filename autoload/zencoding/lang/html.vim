@@ -125,6 +125,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
         if has_key(default_attributes, pat)
           if type(default_attributes[pat]) == 4
             let a = default_attributes[pat]
+            let current.attrs_order += keys(a)
             if use_pipe_for_cursor
               for k in keys(a)
                 let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
@@ -136,6 +137,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
             endif
           else
             for a in default_attributes[pat]
+              let current.attrs_order += keys(a)
               if use_pipe_for_cursor
                 for k in keys(a)
                   let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
