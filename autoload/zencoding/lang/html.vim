@@ -182,7 +182,9 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
               let val = val[1:-2]
             endif
             let current.attr[key] = val
-            let current.attrs_order = current.attrs_order + [key]
+            if index(current.attrs_order, key) == -1
+              let current.attrs_order += [key]
+            endif
             let atts = atts[stridx(atts, amat) + len(amat):]
           endwhile
         endif
@@ -319,7 +321,9 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   if len(current_name) > 0
   let str .= '<' . current_name
   for attr in current.attrs_order
-    if (has_key(current.attr, attr))
+    if has_key(current.attr, attr)
+      continue
+    endif
     let val = current.attr[attr]
     if dollar_expr
       while val =~ '\$\([^#{]\|$\)'
@@ -332,7 +336,6 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
       if attr == 'id' | let comment .= '#' . val | endif
       if attr == 'class' | let comment .= '.' . val | endif
     endif
-  endif
   endfor
   if len(comment) > 0
     let str = "<!-- " . comment . " -->\n" . str
