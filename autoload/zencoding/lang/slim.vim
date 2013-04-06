@@ -25,7 +25,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
   endif
   if len(current.name) > 0
     let str .= current_name
-    for attr in current.attrs_order
+    for attr in zencoding#util#fixAttributeOrder(current)
       if !has_key(current.attr, attr)
         continue
       endif
@@ -106,6 +106,7 @@ function! zencoding#lang#slim#imageSize()
   endif
   let current.attr.width = width
   let current.attr.height = height
+  let current.attrs_order += ['width', 'height']
   let slim = zencoding#toString(current, 'slim', 1)
   call setline('.', substitute(matchstr(line, '^\s*') . slim, "\n", "", "g"))
 endfunction
