@@ -26,7 +26,10 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
   if len(current.name) > 0
     let str .= '%' . current_name
     let tmp = ''
-    for attr in keys(current.attr)
+    for attr in current.attrs_order
+      if !has_key(current.attr, attr)
+        continue
+      endif
       let val = current.attr[attr]
       if dollar_expr
         while val =~ '\$\([^#{]\|$\)'
