@@ -235,9 +235,9 @@ endfunction
 
 function! zencoding#util#imageSizeWithImageMagick(fn)
   let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
-  let img_size = split(img_info, 'x')
+  let img_size = split(substitute(img_info, '\n', '', ''), 'x')
   let width = img_size[0]
-  let height = substitute(img_size[1], '\n', '', '')
+  let height = img_size[1]
   return [width, height]
 endfunction
 
