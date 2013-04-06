@@ -92,7 +92,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
     if multiplier <= 0 | let multiplier = 1 | endif
 
     " make default node
-    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
+    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
     let current.name = tag_name
 
     let current.important = important
@@ -182,6 +182,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
               let val = val[1:-2]
             endif
             let current.attr[key] = val
+            let current.attrs_order = current.attrs_order + [key]
             let atts = atts[stridx(atts, amat) + len(amat):]
           endwhile
         endif
@@ -317,7 +318,8 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   endif
   if len(current_name) > 0
   let str .= '<' . current_name
-  for attr in keys(current.attr)
+  for attr in current.attrs_order
+    if (has_key(current.attr, attr))
     let val = current.attr[attr]
     if dollar_expr
       while val =~ '\$\([^#{]\|$\)'
@@ -330,6 +332,7 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
       if attr == 'id' | let comment .= '#' . val | endif
       if attr == 'class' | let comment .= '.' . val | endif
     endif
+  endif
   endfor
   if len(comment) > 0
     let str = "<!-- " . comment . " -->\n" . str
