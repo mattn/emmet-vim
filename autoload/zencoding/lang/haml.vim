@@ -153,6 +153,7 @@ function! zencoding#lang#haml#parseTag(tag)
     let current.attr[name] = value
     let attrs = attrs[stridx(attrs, match) + len(match):]
   endwhile
+  let current.attrs_order = keys(current.attr)
   return current
 endfunction
 
