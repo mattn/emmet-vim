@@ -26,7 +26,7 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
   if len(current.name) > 0
     let str .= '%' . current_name
     let tmp = ''
-    for attr in current.attrs_order
+    for attr in zencoding#util#fixAttributeOrder(current)
       if !has_key(current.attr, attr)
         continue
       endif
