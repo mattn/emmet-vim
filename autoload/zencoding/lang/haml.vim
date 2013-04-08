@@ -26,7 +26,7 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
   if len(current.name) > 0
     let str .= '%' . current_name
     let tmp = ''
-    for attr in current.attrs_order
+    for attr in zencoding#util#fixAttributeOrder(current)
       if !has_key(current.attr, attr)
         continue
       endif
@@ -153,6 +153,7 @@ function! zencoding#lang#haml#parseTag(tag)
     let name = attr_match[1]
     let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
     let current.attr[name] = value
+    let current.attrs_order += [name]
     let attrs = attrs[stridx(attrs, match) + len(match):]
   endwhile
   let current.attrs_order = keys(current.attr)
