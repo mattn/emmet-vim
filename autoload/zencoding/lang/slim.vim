@@ -134,7 +134,6 @@ function! zencoding#lang#slim#parseTag(tag)
     let current.attrs_order += [name]
     let attrs = attrs[stridx(attrs, match) + len(match):]
   endwhile
-  let current.attrs_order = keys(current.attr)
   return current
 endfunction
 
