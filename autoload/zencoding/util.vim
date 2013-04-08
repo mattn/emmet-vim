@@ -247,3 +247,19 @@ function! zencoding#util#isImageMagickInstalled()
   endif
   return executable('identify')
 endfunction
+
+function! zencoding#util#fixAttributeOrder(current)
+  if !has_key(a:current, 'attrs_order')
+    let a:current.attrs_order = keys(a:current.attr)
+    return a:current.attrs_order
+  endif
+
+  " if there are attrs that weren't added to the attrs_order, so tack them on
+  for attr in keys(a:current.attr)
+    if index(a:current.attrs_order, attr) < 0
+      let a:current.attrs_order += [attr]
+    endif
+  endfor
+
+  return a:current.attrs_order
+endfunction

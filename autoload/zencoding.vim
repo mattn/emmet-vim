@@ -1232,6 +1232,7 @@ let s:zen_settings = {
 \                    ."</html>"
 \        },
 \        'default_attributes': {
+\            '__GLOBAL_ORDER__': ['id', 'class'],
 \            'a': {'href': ''},
 \            'a:link': {'href': 'http://|'},
 \            'a:mail': {'href': 'mailto:|'},
