@@ -207,6 +207,7 @@ function! zencoding#toString(...)
       endif
       let inner = ''
       if len(current.child)
+        let render_type = zencoding#getFileType(1)
         for n in current.child
           let inner .= zencoding#toString(n, type, inline, filters, group_itemno)
         endfor
@@ -256,12 +257,20 @@ function! zencoding#getResource(type, name, default)
   return ret
 endfunction
 
-function! zencoding#getFileType()
+function! zencoding#getFileType(...)
+  let flg = get(a:000, 0, 0)
   let type = &ft
   if zencoding#lang#exists(&ft)
     let type = &ft
-  elseif zencoding#getBaseType(type) != ""
-    let type = &ft
+  else
+    let base = zencoding#getBaseType(type)
+    if base != ""
+      if flg
+        let type = &ft
+      else
+        let type = base
+      endif
+    endif
   endif
   if type == 'html'
     let type = synIDattr(synID(line("."), col("."), 1), "name")
@@ -284,6 +293,7 @@ endfunction
 
 function! zencoding#expandAbbr(mode, abbr) range
   let type = zencoding#getFileType()
+  let rtype = zencoding#getFileType(1)
   let expand = ''
   let filters = ['html']
   let line = ''
@@ -399,8 +409,8 @@ function! zencoding#expandAbbr(mode, abbr) range
       let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
-      let rtype = zencoding#lang#exists(type) ? type : 'html'
-      let part = zencoding#lang#{rtype}#findTokens(part)
+      let ftype = zencoding#lang#exists(type) ? type : 'html'
+      let part = zencoding#lang#{ftype}#findTokens(part)
     endif
     let rest = getline('.')[len(line):]
     let str = part
@@ -409,9 +419,9 @@ function! zencoding#expandAbbr(mode, abbr) range
       let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
       let str = substitute(str, mx, '', '')
     endif
-    let items = zencoding#parseIntoTree(str, type).child
+    let items = zencoding#parseIntoTree(str, rtype).child
     for item in items
-      let expand .= zencoding#toString(item, type, 0, filters)
+      let expand .= zencoding#toString(item, rtype, 0, filters)
     endfor
     if zencoding#useFilter(filters, 'e')
       let expand = substitute(expand, '&', '\&amp;', 'g')
