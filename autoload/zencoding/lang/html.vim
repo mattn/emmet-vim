@@ -547,7 +547,7 @@ function! zencoding#lang#html#balanceTag(flag) range
   endif
   let settings = zencoding#getSettings()
 
-  if a:flag > 0 || abs(a:flag) == 1
+  if a:flag > 0
     let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     while 1
       let pos1 = searchpos(mx, 'bW')
@@ -597,10 +597,9 @@ function! zencoding#lang#html#balanceTag(flag) range
       endif
     endwhile
   endif
+  call setpos('.', curpos)
   if a:flag == -2 || a:flag == 2
     silent! exe "normal! gv"
-  else
-    call setpos('.', curpos)
   endif
 endfunction
 
