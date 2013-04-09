@@ -47,6 +47,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
         let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
         let text = substitute(text, '\${nr}', "\n", 'g')
         let text = substitute(text, '\\\$', '$', 'g')
+        let str = substitute(str, '\$#', text, 'g')
       endif
       for line in split(text, "\n")
         let str .= indent . "| " . line . "\n"
