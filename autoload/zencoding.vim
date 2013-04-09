@@ -172,7 +172,7 @@ function! zencoding#toString(...)
         let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
       endif
       if current.multiplier > 1
-        let inner = substitute(inner, '\("\zs$#\ze"\|\s\zs\$#"\|"\$#\ze\s\)', '$line'.(itemno+1).'$', 'g')
+        let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
       endif
       let str .= inner
     else
