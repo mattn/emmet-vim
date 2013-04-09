@@ -490,6 +490,10 @@ finish
           'query': "{test case $$$ }*3",
           'result': "test case 001 test case 002 test case 003 ",
         },
+        {
+          'query': "a[title=$#]{foo}",
+          'result': "<a href=\"\" title=\"foo\">foo</a>\n",
+        },
       ],
     },
     {
@@ -646,6 +650,10 @@ finish
           'query': ".content{Hello!}|haml",
           'result': "%div.content Hello!\n",
         },
+        {
+          'query': "a[title=$#]{foo}",
+          'result': "%a{ :href => \"\", :title => \"foo\" } foo\n",
+        },
       ],
     },
     {
@@ -697,6 +705,10 @@ finish
         {
           'query': ".content{Hello!}|slim",
           'result': "div class=\"content\"\n  | Hello!\n",
+        },
+        {
+          'query': "a[title=$#]{foo}",
+          'result': "a href=\"\" title=\"foo\"\n  | foo\n",
         },
       ],
     },
