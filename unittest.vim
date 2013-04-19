@@ -533,6 +533,10 @@ finish
           'query': "img[src=/logo.png]$$$$\\<c-y>,\\<c-y>i$$$$",
           'result': "<img src=\"/logo.png\" alt=\"\" />",
         },
+        {
+          'query': "img[src=http://mattn.kaoriya.net/images/logo.png width=foo height=bar]$$$$\\<c-y>,\\<c-y>i$$$$",
+          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\" />",
+        },
       ],
     },
     {
