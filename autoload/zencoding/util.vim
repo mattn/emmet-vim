@@ -247,3 +247,15 @@ function! zencoding#util#isImageMagickInstalled()
   endif
   return executable('identify')
 endfunction
+
+function! zencoding#util#unique(arr)
+  let m = {}
+  let r = []
+  for i in a:arr
+    if !has_key(m, i)
+      let m[i] = 1
+      call add(r, i)
+    endif
+  endfor
+  return r
+endfunction
