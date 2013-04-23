@@ -494,7 +494,6 @@ finish
           'query': "a[title=$#]{foo}",
           'result': "<a href=\"\" title=\"foo\">foo</a>\n",
         },
-        
         {
           'query': "span.item$*2>{item $}",
           'result': "<span class=\"item1\">item 1</span>\n<span class=\"item2\">item 2</span>\n",
