@@ -17,7 +17,7 @@ Introduction           |zencoding-introduction|
 Install                |zencoding-install|
 Tutorial               |zencoding-tutorial|
   1. Expand Abbreviation            |zencoding-expandabbr|
-  2. Wrap with Abbreviation         |zencoding-wrap-wtih-abbreviation|
+  2. Wrap with Abbreviation         |zencoding-wrap-with-abbreviation|
   3. Balance Tag Inward             |zencoding-balance-tag-inward|
   4. Balance Tag Outward            |zencoding-balance-tag-outward|
   5. Go to Next Edit Point          |zencoding-goto-next-point| |<C-Y>n|
@@ -100,7 +100,7 @@ You should copy this section and create new buffer, paste and write as
       </p>
   </div>
 <
-2. Wrap with Abbreviation            *zencoding-wrap-wtih-abbreviation* *v_<C-Y>,*
+2. Wrap with Abbreviation            *zencoding-wrap-with-abbreviation* *v_<C-Y>,*
 
   Write as below.
 >
@@ -228,7 +228,7 @@ You should copy this section and create new buffer, paste and write as
       cursor is here
   </div>
 <
-  Type |<C-Y>j| in insert mode. then,
+  Type |<C-Y>j| in insert mode. Then,
 >
   <div class="foo"/>
 <
@@ -343,7 +343,7 @@ CUSTOMIZE                                                  *zencoding-customize*
 3. Define Tag's Behavior                        *zencoding-define-tags-behavior*
 
   zencoding.vim can change behavior of expanding abbreviation for each
-  filetypes as |Dictionary|. for details, see official site of zencoding.
+  filetypes as |Dictionary|. For details, see official site of zencoding.
   for example, vimmer can add following.
 >
   let g:user_zen_settings = {
@@ -418,13 +418,13 @@ my blog posts about zencoding-vim:
   http://mattn.kaoriya.net/software/vim/20100222103327.htm
   http://mattn.kaoriya.net/software/vim/20100306021632.htm
 
-japanese blog posts about zencoding-vim:
+Japanese blog posts about zencoding-vim:
   http://d.hatena.ne.jp/idesaku/20100424/1272092255
   http://d.hatena.ne.jp/griefworker/20110118/vim_zen_coding
   http://d.hatena.ne.jp/sakurako_s/20110126/1295988873
   http://looxu.blogspot.jp/2010/02/zencodingvimhtml.html
 
-tutorial traslated in chinese:
+tutorial translated in Chinese:
   http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html
 
 ==============================================================================
@@ -432,7 +432,7 @@ TODO                                                            *zencoding-todo*
   * wrapping inline selected.
   * more documents.
   * more contributor.
-  * more time to improve zencodig.vim.
+  * more time to improve zencoding.vim.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:

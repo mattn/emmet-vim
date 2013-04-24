@@ -87,7 +87,7 @@ you can use set a option in `vimrc`:
 
 > <http://mattn.kaoriya.net/software/vim/20100306021632.htm>
   
-### japanese blog posts about zencoding-vim:
+### Japanese blog posts about zencoding-vim:
 
 > <http://d.hatena.ne.jp/idesaku/20100424/1272092255>
 
@@ -97,7 +97,7 @@ you can use set a option in `vimrc`:
 
 > <http://looxu.blogspot.jp/2010/02/zencodingvimhtml.html>
 
-### tutorial traslated in chinese:
+### tutorial translated in Chinese:
 
 > <http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html>
 
