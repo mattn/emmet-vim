@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 23-Apr-2013.
+" Last Change: 24-Apr-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -157,9 +157,13 @@ function! zencoding#toString(...)
   else
     let group_itemno = 0
   endif
+  if a:0 > 5
+    let indent = a:6
+  else
+    let indent = ''
+  endif
 
   let dollar_expr = zencoding#getResource(type, 'dollar_expr', 1)
-  let indent = zencoding#getIndentation(type)
   let itemno = 0
   let str = ''
   let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
@@ -209,7 +213,7 @@ function! zencoding#toString(...)
       if len(current.child)
         let render_type = zencoding#getFileType(1)
         for n in current.child
-          let inner .= zencoding#toString(n, type, inline, filters, group_itemno)
+          let inner .= zencoding#toString(n, type, inline, filters, group_itemno, indent)
         endfor
       endif
       let spaces = matchstr(str, '\s*\ze\${child}')
@@ -294,6 +298,7 @@ endfunction
 function! zencoding#expandAbbr(mode, abbr) range
   let type = zencoding#getFileType()
   let rtype = zencoding#getFileType(1)
+  let indent = zencoding#getIndentation(type)
   let expand = ''
   let filters = ['html']
   let line = ''
@@ -326,7 +331,7 @@ function! zencoding#expandAbbr(mode, abbr) range
       endif
       let items = zencoding#parseIntoTree(query, type).child
       for item in items
-        let expand .= zencoding#toString(item, type, 0, filters)
+        let expand .= zencoding#toString(item, type, 0, filters, 0, indent)
       endfor
       if zencoding#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
@@ -381,7 +386,7 @@ function! zencoding#expandAbbr(mode, abbr) range
         let items = zencoding#parseIntoTree(leader . "{".str."}", type).child
       endif
       for item in items
-        let expand .= zencoding#toString(item, type, 0, filters)
+        let expand .= zencoding#toString(item, type, 0, filters, 0, '')
       endfor
       if zencoding#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
@@ -421,7 +426,7 @@ function! zencoding#expandAbbr(mode, abbr) range
     endif
     let items = zencoding#parseIntoTree(str, rtype).child
     for item in items
-      let expand .= zencoding#toString(item, rtype, 0, filters)
+      let expand .= zencoding#toString(item, rtype, 0, filters, 0, indent)
     endfor
     if zencoding#useFilter(filters, 'e')
       let expand = substitute(expand, '&', '\&amp;', 'g')
@@ -620,6 +625,7 @@ function! zencoding#ExpandWord(abbr, type, orig)
   let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
+  let indent = zencoding#getIndentation(type)
 
   if len(type) == 0 | let type = 'html' | endif
   if str =~ mx
@@ -633,7 +639,7 @@ function! zencoding#ExpandWord(abbr, type, orig)
   let items = zencoding#parseIntoTree(str, a:type).child
   let expand = ''
   for item in items
-    let expand .= zencoding#toString(item, a:type, 0, filters)
+    let expand .= zencoding#toString(item, a:type, 0, filters, 0, indent)
   endfor
   if zencoding#useFilter(filters, 'e')
     let expand = substitute(expand, '&', '\&amp;', 'g')
