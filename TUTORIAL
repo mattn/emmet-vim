@@ -27,7 +27,7 @@ Tutorial of zencoding.vim
   test2
   test3
   ---------------------
-  Then do visual select(line wize) and type '<c-y>,'.
+  Then do visual select(line wise) and type '<c-y>,'.
   If you request 'Tag:', then type 'ul>li*'.
   ---------------------
   <ul>

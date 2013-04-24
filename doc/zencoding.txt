@@ -108,7 +108,7 @@ You should copy this section and create new buffer, paste and write as
   test2
   test3
 <
-  Then do visual select(line wize) and type |<C-Y>,|.
+  Then do visual select(line wise) and type |<C-Y>,|.
   If you request 'Tag:', then type 'ul>li*'.
 >
   <ul>
