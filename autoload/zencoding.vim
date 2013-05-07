@@ -573,6 +573,10 @@ function! zencoding#anchorizeURL(flag)
   if a:flag == 0
     let a = zencoding#lang#html#parseTag('<a>')
     let a.attr.href = url
+    " add attribute name 'href' to a.ttrs_order
+    " modify begin
+    call add(a.attrs_order,'href')
+    " modify end
     let a.value = '{' . title . '}'
     let expand = zencoding#toString(a, rtype, 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
