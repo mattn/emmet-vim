@@ -13,7 +13,7 @@ function! zencoding#lang#haml#toString(settings, current, type, inline, filters,
   let inline = a:inline
   let filters = a:filters
   let itemno = a:itemno
-  let indent = a:indent
+  let indent = zencoding#getIndentation(type)
   let dollar_expr = zencoding#getResource(type, 'dollar_expr', 1)
   let str = ""
 
