@@ -323,6 +323,9 @@ function! zencoding#lang#html#toString(settings, current, type, inline, filters,
   if len(current_name) > 0
   let str .= '<' . current_name
   for attr in zencoding#util#unique(current.attrs_order + keys(current.attr))
+    if !has_key(current.attr, attr)
+      continue
+    endif
     let val = current.attr[attr]
     if dollar_expr
       while val =~ '\$\([^#{]\|$\)'
