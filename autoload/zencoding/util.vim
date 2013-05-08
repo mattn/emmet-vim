@@ -146,10 +146,17 @@ endfunction
 "==============================================================================
 function! zencoding#util#getContentFromURL(url)
   let res = system(printf("%s %s", g:zencoding_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
-  let s1 = len(split(res, '?'))
-  let utf8 = iconv(res, 'utf-8', &encoding)
-  let s2 = len(split(utf8, '?'))
-  return (s2 == s1 || s2 >= s1 * 2) ? utf8 : res
+  let charset = matchstr(res, '<meta[^>]\+content=["''][^;"'']\+;\s\+charset=\zs[^;"'']\+\ze["'']>')
+  if len(charset) == 0
+    let charset = matchstr(res, '<meta\s\+charset=["'']\?\zs[^"'']\+\ze["'']\?[^>]\+>')
+  endif
+  if len(charset) == 0
+    let s1 = len(split(res, '?'))
+    let utf8 = iconv(res, 'utf-8', &encoding)
+    let s2 = len(split(utf8, '?'))
+    return (s2 == s1 || s2 >= s1 * 2) ? utf8 : res
+  endif
+  return iconv(res, charset, &encoding)
 endfunction
 
 function! zencoding#util#getTextFromHTML(buf)
