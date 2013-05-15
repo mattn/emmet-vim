@@ -1,10 +1,10 @@
-Tutorial of zencoding.vim
+Tutorial for zencoding.vim
 
                                                     mattn <mattn.jp@gmail.com>
 
-1. Expand Abbreviation
+1. Expand an Abbreviation
 
-  Type abbreviation as 'div>p#foo$*3>a' and type '<c-y>,'.
+  Type the abbreviation as 'div>p#foo$*3>a' and type '<c-y>,'.
   ---------------------
   <div>
       <p id="foo1">
@@ -19,7 +19,7 @@ Tutorial of zencoding.vim
   </div>
   ---------------------
 
-2. Wrap with Abbreviation
+2. Wrap with an Abbreviation
 
   Write as below.
   ---------------------
@@ -28,7 +28,7 @@ Tutorial of zencoding.vim
   test3
   ---------------------
   Then do visual select(line wise) and type '<c-y>,'.
-  If you request 'Tag:', then type 'ul>li*'.
+  Once you get to the 'Tag:' prompt, type 'ul>li*'.
   ---------------------
   <ul>
       <li>test1</li>
@@ -37,7 +37,7 @@ Tutorial of zencoding.vim
   </ul>
   ---------------------
 
-  If you type tag as 'blockquote', then you'll see as following.
+  If you type a tag, such as 'blockquote', then you'll see the following:
   ---------------------
   <blockquote>
       test1
@@ -46,25 +46,25 @@ Tutorial of zencoding.vim
   </blockquote>
   ---------------------
 
-3. Balance Tag Inward
+3. Balance a Tag Inward
 
   type '<c-y>d' in insert mode.
 
-4. Balance Tag Outward
+4. Balance a Tag Outward
 
   type '<c-y>D' in insert mode.
 
-5. Go to Next Edit Point
+5. Go to the Next Edit Point
 
   type '<c-y>n' in insert mode.
 
-6. Go to Previous Edit Point
+6. Go to the Previous Edit Point
 
   type '<c-y>N' in insert mode.
 
-7. Update <img> Size
+7. Update an <img>’s Size
 
-  Move cursor to img tag.
+  Move cursor to the img tag.
   ---------------------
   <img src="foo.png" />
   ---------------------
@@ -75,7 +75,7 @@ Tutorial of zencoding.vim
 
 8. Merge Lines
 
-  select the lines included '<li>'
+  select the lines, which include '<li>'
   ---------------------
   <ul>
   	<li class="list1"></li>
@@ -83,14 +83,14 @@ Tutorial of zencoding.vim
   	<li class="list3"></li>
   </ul>
   ---------------------
-  and type '<c-y>m'
+  and then type '<c-y>m'
   ---------------------
   <ul>
   	<li class="list1"></li><li class="list2"></li><li class="list3"></li>
   </ul>
   ---------------------
 
-9. Remove Tag
+9. Remove a Tag
 
   Move cursor in block
   ---------------------
@@ -112,7 +112,7 @@ Tutorial of zencoding.vim
 
 10. Split/Join Tag
 
-  Move cursor in block
+  Move the cursor inside block
   ---------------------
   <div class="foo">
   	cursor is here
@@ -123,7 +123,7 @@ Tutorial of zencoding.vim
   <div class="foo"/>
   ---------------------
 
-  And type '<c-y>j' in there again.
+  And then type '<c-y>j' in there again.
   ---------------------
   <div class="foo">
   </div>
@@ -131,7 +131,7 @@ Tutorial of zencoding.vim
 
 11. Toggle Comment
 
-  Move cursor to block
+  Move cursor inside the block
   ---------------------
   <div>
   	hello world
@@ -150,7 +150,7 @@ Tutorial of zencoding.vim
   </div>
   ---------------------
 
-12. Make anchor from URL
+12. Make an anchor from a URL
 
   Move cursor to URL
   ---------------------
@@ -161,9 +161,9 @@ Tutorial of zencoding.vim
   <a href="http://www.google.com/">Google</a>
   ---------------------
 
-13. Make quoted text from URL
+13. Make some quoted text from a URL
 
-  Move cursor to URL
+  Move cursor to the URL
   ---------------------
   http://github.com/
   ---------------------
@@ -176,24 +176,24 @@ Tutorial of zencoding.vim
   </blockquote>
   ---------------------
 
-14. Installing zencoding.vim for language you using.
+14. Installing zencoding.vim for the language you are using:
 
   # cd ~/.vim
   # unzip zencoding-vim.zip
 
-  or if you install pathogen.vim:
+  Or if you are using pathogen.vim:
 
   # cd ~/.vim/bundle # or make directory
   # unzip /path/to/zencoding-vim.zip
 
-  if you get sources from repository:
+  Or if you get the sources from the repository:
 
   # cd ~/.vim/bundle # or make directory
   # git clone http://github.com/mattn/zencoding-vim.git
 
-15. Enable zencoding.vim for language you using.
+15. Enable zencoding.vim for the language you using.
 
-  You can customize the behavior of language you using.
+  You can customize the behavior of the languages you are using.
 
   ---------------------
   # cat >> ~/.vimrc
