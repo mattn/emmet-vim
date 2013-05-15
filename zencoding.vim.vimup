@@ -13,10 +13,10 @@ detailed_description: |
 
   There is a movie using zencoding.vim
   ref: http://mattn.github.com/zencoding-vim
-  
+
   Source Repository.
   ref: http://github.com/mattn/zencoding-vim
-  
+
   Type abbreviation
      +-------------------------------------
      | html:5_
@@ -49,7 +49,7 @@ detailed_description: |
      |</div>
      | _
      +-------------------------------------
-  
+
   Tutorial:
 
     http://github.com/mattn/zencoding-vim/raw/master/TUTORIAL
@@ -59,10 +59,10 @@ detailed_description: |
     http://mattn.github.com/zencoding-vim
 
   Tips:
-  
+
   You can customize behavior of expanding with overriding config.
-  This configuration will be merged at loading plugin. 
-  
+  This configuration will be merged at loading plugin.
+
     let g:user_zen_settings = {
     \  'indentation' : '  ',
     \  'perl' : {
