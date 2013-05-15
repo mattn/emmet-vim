@@ -10,7 +10,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
 
   let settings = zencoding#getSettings()
   let indent = zencoding#getIndentation(type)
-  
+
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
 
   " emmet
@@ -45,7 +45,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
         endif
       endfor
     endif
-  
+
     let tag_name = token
     if tag_name =~ '.!$'
       let tag_name = tag_name[:-2]
@@ -56,14 +56,14 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
     " make default node
     let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': important }
     let current.name = tag_name
-  
+
     " aliases
     let aliases = zencoding#getResource(type, 'aliases', {})
     if has_key(aliases, tag_name)
       let current.name = aliases[tag_name]
     endif
     let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
-  
+
     " snippets
     let snippets = zencoding#getResource(type, 'snippets', {})
     if !empty(snippets) && has_key(snippets, tag_name)
@@ -83,7 +83,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
         let current.snippet .= "\n"
       endif
     endif
-  
+
     let current.pos = 0
     let lg = matchlist(token, '^\%(linear-gradient\|lg\)(\s*\(\w\+\)\s*,\s*\([^,]\+\)\s*,\s*\([^)]\+\)\s*)$')
     if len(lg)
