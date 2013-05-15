@@ -180,7 +180,7 @@ function! s:install_plugin_v()
 endfunction
 
 
-if exists('g:user_zen_mode') 
+if exists('g:user_zen_mode')
     let imode = matchstr(g:user_zen_mode, '[ai]')
     let nmode = matchstr(g:user_zen_mode, '[an]')
     let vmode = matchstr(g:user_zen_mode, '[av]')

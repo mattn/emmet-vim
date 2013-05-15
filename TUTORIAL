@@ -68,7 +68,7 @@ Tutorial of zencoding.vim
   ---------------------
   <img src="foo.png" />
   ---------------------
-  Type '<c-y>i' on img tag 
+  Type '<c-y>i' on img tag
   ---------------------
   <img src="foo.png" width="32" height="48" />
   ---------------------
@@ -101,7 +101,7 @@ Tutorial of zencoding.vim
   Type '<c-y>k' in insert mode.
   ---------------------
   <div class="foo">
-  	
+
   </div>
   ---------------------
 

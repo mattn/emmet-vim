@@ -31,7 +31,7 @@ or:
 ## Quick Tutorial
 
 Open or create New File:
-    
+
     vim index.html
 
 Type ("_" is the cursor position):
@@ -58,7 +58,7 @@ Then type "<c-y>," (Ctrl + y + ','), you should see:
 
 If you don't want enable zencoding in all mode,
 you can use set a option in `vimrc`:
-   
+
     let g:user_zen_mode='n'    "only enable normal mode functions.
     let g:user_zen_mode='inv'  "enable all functions, which is equal to
     let g:user_zen_mode='a'    "enable all function in all mode.
@@ -86,7 +86,7 @@ you can use set a option in `vimrc`:
 > <http://mattn.kaoriya.net/software/vim/20100222103327.htm>
 
 > <http://mattn.kaoriya.net/software/vim/20100306021632.htm>
-  
+
 ### Japanese blog posts about zencoding-vim:
 
 > <http://d.hatena.ne.jp/idesaku/20100424/1272092255>
