@@ -118,7 +118,7 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
       let current.name = ''
     endif
 
-    if tag_name =~ '^\(lorem\|ipsum\)\d*$'
+    if tag_name =~ '^\(lorem\|lipsum\)\d*$'
       let current.snippet = '${' . tag_name . '}'
       let current.name = ''
     endif
