@@ -325,10 +325,10 @@ function! zencoding#util#lorem(count)
     call add(ret, word)
     if (sentence > 5 && s:rand() < 10000) || i == c - 1
       if i == c - 1
-        let endc = "?!,..."[s:rand() % 6]
+        let endc = "?!..."[s:rand() % 5]
         call add(ret, endc)
       else
-        let endc = "?!..."[s:rand() % 5]
+        let endc = "?!,..."[s:rand() % 6]
         call add(ret, endc . ' ')
       endif
       if endc != ','
