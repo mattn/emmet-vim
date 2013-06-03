@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 24-Apr-2013.
+" Last Change: 03-Jun-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -443,6 +443,7 @@ function! zencoding#expandAbbr(mode, abbr) range
         let expand .= '${cursor}'
       endif
     endif
+    let expand = substitute(expand, '\${\%(lorem\|ipsum\)\(\d*\)}', '\=zencoding#util#lorem(submatch(1))', 'g')
     let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
     let expand = substitute(expand, '${charset}', s:zen_settings.charset, 'g')
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)

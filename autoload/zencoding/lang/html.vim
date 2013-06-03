@@ -118,6 +118,11 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
       let current.name = ''
     endif
 
+    if tag_name =~ '^\(lorem\|ipsum\)\d*$'
+      let current.snippet = '${' . tag_name . '}'
+      let current.name = ''
+    endif
+
     " default_attributes
     let default_attributes = zencoding#getResource(type, 'default_attributes', {})
     if !empty(default_attributes)
