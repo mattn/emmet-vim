@@ -147,7 +147,6 @@ endfunction
 function! zencoding#util#getContentFromURL(url)
   let res = system(printf("%s %s", g:zencoding_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
   let charset = matchstr(res, '<meta[^>]\+content=["''][^;"'']\+;\s*charset=\zs[^;"'']\+\ze["''][^>]*>')
-  let g:hoge = charset
   if len(charset) == 0
     let charset = matchstr(res, '<meta\s\+charset=["'']\?\zs[^"'']\+\ze["'']\?[^>]*>')
   endif
