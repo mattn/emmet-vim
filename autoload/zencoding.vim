@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 03-Jun-2013.
+" Last Change: 06-Jun-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -101,7 +101,7 @@ function! zencoding#parseIntoTree(abbr, type)
   return zencoding#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
-function! s:mergeConfig(lhs, rhs)
+function! zencoding#mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
     let a:lhs += a:rhs
     if len(a:lhs)
@@ -119,7 +119,7 @@ function! s:mergeConfig(lhs, rhs)
         let a:lhs[key] += a:rhs[key]
       elseif type(a:rhs[key]) == 4
         if has_key(a:lhs, key)
-          call s:mergeConfig(a:lhs[key], a:rhs[key])
+          call zencoding#mergeConfig(a:lhs[key], a:rhs[key])
         else
           let a:lhs[key] = a:rhs[key]
         endif
@@ -166,7 +166,6 @@ function! zencoding#toString(...)
   let dollar_expr = zencoding#getResource(type, 'dollar_expr', 1)
   let itemno = 0
   let str = ''
-  let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
   let rtype = zencoding#lang#exists(type) ? type : 'html'
   while itemno < current.multiplier
     if len(current.name)
@@ -189,9 +188,6 @@ function! zencoding#toString(...)
       endif
       if len(snippet) > 0
         let tmp = snippet
-        if use_pipe_for_cursor
-          let tmp = substitute(tmp, '|', '${cursor}', 'g')
-        endif
         let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
         let snippet_node = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 0, 'parent': {}, 'value': '{'.tmp.'}', 'pos': 0, 'important': current.important }
         let str = zencoding#lang#{rtype}#toString(s:zen_settings, snippet_node, type, inline, filters, group_itemno, indent)
@@ -244,7 +240,7 @@ function! zencoding#getResource(type, name, default)
     endif
     for ext in extends
       if has_key(s:zen_settings, ext) && has_key(s:zen_settings[ext], a:name)
-        call s:mergeConfig(ret, s:zen_settings[ext][a:name])
+        call zencoding#mergeConfig(ret, s:zen_settings[ext][a:name])
       endif
     endfor
   endif
@@ -252,7 +248,7 @@ function! zencoding#getResource(type, name, default)
   if has_key(s:zen_settings[a:type], a:name)
     let v = s:zen_settings[a:type][a:name]
     if type(ret) == 3 || type(ret) == 4
-      call s:mergeConfig(ret, s:zen_settings[a:type][a:name])
+      call zencoding#mergeConfig(ret, s:zen_settings[a:type][a:name])
     else
       let ret = s:zen_settings[a:type][a:name]
     endif
@@ -293,6 +289,90 @@ function! zencoding#getFileType(...)
   endif
   if len(type) == 0 | let type = 'html' | endif
   return type
+endfunction
+
+function! zencoding#getDollarExprs(expand)
+  let expand = a:expand
+  let dollar_list = []
+  let dollar_reg = '\%(\\\)\@<!\${\(\([^{}]\|\%(\\\)\@\<=[{}]\)\{}\)}'
+  while 1
+    let matcharr = matchlist(expand, dollar_reg)
+    if len(matcharr) > 0
+      let key = get(matcharr, 1)
+      if key !~ '^\d\+:'
+        let key = substitute(key, '\\{', '{', 'g')
+        let key = substitute(key, '\\}', '}', 'g')
+        let value = zencoding#getDollarValueByKey(key)
+        if type(value) == type('')
+          let expr = get(matcharr, 0)
+          call add(dollar_list, {'expr': expr, 'value': value})
+        endif
+      endif
+    else
+      break
+    endif
+    let expand = substitute(expand, dollar_reg, '', '')
+  endwhile
+  return dollar_list
+endfunction
+
+function! zencoding#getDollarValueByKey(key)
+  let ret = 0
+  let key = a:key
+  let ftsetting = get(s:zen_settings, zencoding#getFileType())
+  if type(ftsetting) == 4 && has_key(ftsetting, key)
+    let value = get(ftsetting, key)
+    if type(value) == 1 | let ret = value | endif
+  endif
+  if type(ret) != 1 && has_key(s:zen_settings, key)
+    let value = get(s:zen_settings, key)
+    if type(value) == 1 | return value | endif
+  endif
+  return ret
+endfunction
+
+function! zencoding#reExpandDollarExpr(expand, times)
+  let expand = a:expand
+  let dollar_exprs = zencoding#getDollarExprs(expand)
+  if len(dollar_exprs) > 0
+    if a:times < 9
+      for n in range(len(dollar_exprs))
+        let pair = get(dollar_exprs, n)
+        let pat = get(pair, 'expr')
+        let sub = get(pair, 'value')
+        let expand = substitute(expand, pat, sub, 'g')
+      endfor
+      return zencoding#reExpandDollarExpr(expand, a:times + 1)
+    endif
+  endif
+  return expand
+endfunction
+
+function! zencoding#expandDollarExpr(expand)
+  return zencoding#reExpandDollarExpr(a:expand, 0)
+endfunction
+
+function! zencoding#expandCursorExpr(expand, mode)
+  let expand = a:expand
+  let type = zencoding#getFileType()
+  let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
+  if use_pipe_for_cursor
+    let expand = substitute(expand, '|', '${cursor}', 'g')
+  endif
+  if expand !~ '\${cursor}'
+    if a:mode == 2
+      let expand = '${cursor}' . expand
+    else
+      let expand .= '${cursor}'
+    endif
+  endif
+  let expand = substitute(expand, '\${cursor}', '$cursor$', '')
+  let expand = substitute(expand, '\${cursor}', '', 'g')
+  return expand
+endfunction
+
+function! zencoding#unescapeDollarExpr(expand)
+  return substitute(a:expand, '\\\$', '$', 'g')
 endfunction
 
 function! zencoding#expandAbbr(mode, abbr) range
@@ -435,31 +515,23 @@ function! zencoding#expandAbbr(mode, abbr) range
     endif
     let expand = substitute(expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
   endif
+  let expand = zencoding#expandDollarExpr(expand)
+  let expand = zencoding#expandCursorExpr(expand, a:mode)
   if len(expand)
-    if expand !~ '\${cursor}'
-      if a:mode == 2 |
-        let expand = '${cursor}' . expand
-      else
-        let expand .= '${cursor}'
-      endif
-    endif
     let expand = substitute(expand, '\${\%(lorem\|lipsum\)\(\d*\)}', '\=zencoding#util#lorem(submatch(1))', 'g')
-    let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
-    let expand = substitute(expand, '${charset}', s:zen_settings.charset, 'g')
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:zen_settings.timezone, 'g')
     else
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
+    let expand = zencoding#unescapeDollarExpr(expand)
     if a:mode == 2 && visualmode() ==# 'v'
       if a:firstline == a:lastline
         let expand = substitute(expand, '\n\s*', '', 'g')
       else
         let expand = substitute(expand, '\n$', '', 'g')
       endif
-      let expand = substitute(expand, '\${cursor}', '$cursor$', '')
-      let expand = substitute(expand, '\${cursor}', '', 'g')
       silent! normal! gv
       let col = col("'<")
       silent! normal! c
@@ -473,8 +545,6 @@ function! zencoding#expandAbbr(mode, abbr) range
         call append(line('.'), lines[1:])
       endif
     else
-      let expand = substitute(expand, '\${cursor}', '$cursor$', '')
-      let expand = substitute(expand, '\${cursor}', '', 'g')
       if line[:-len(part)-1] =~ '^\s\+$'
         let indent = line[:-len(part)-1]
       else
@@ -648,8 +718,7 @@ function! zencoding#ExpandWord(abbr, type, orig)
     let expand = substitute(expand, '>', '\&gt;', 'g')
   endif
   if a:orig == 0
-    let expand = substitute(expand, '\${lang}', s:zen_settings.lang, 'g')
-    let expand = substitute(expand, '\${charset}', s:zen_settings.charset, 'g')
+    let expand = zencoding#expandDollarExpr(expand)
     let expand = substitute(expand, '\${cursor}', '', 'g')
   endif
   return expand
@@ -1484,7 +1553,7 @@ let s:zen_settings = {
 \}
 
 if exists('g:user_zen_settings')
-  call s:mergeConfig(s:zen_settings, g:user_zen_settings)
+  call zencoding#mergeConfig(s:zen_settings, g:user_zen_settings)
 endif
 
 let &cpo = s:save_cpo

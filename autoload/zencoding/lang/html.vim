@@ -119,7 +119,13 @@ function! zencoding#lang#html#parseIntoTree(abbr, type)
     endif
 
     if tag_name =~ '^\(lorem\|lipsum\)\d*$'
-      let current.snippet = '${' . tag_name . '}'
+      if parent.name == ''
+        let div = zencoding#lang#html#parseTag('<div/>')
+        let div.value = '{\${' . tag_name . '}}'
+        let current.snippet = zencoding#toString(div, type, 0, [])
+      else
+        let current.snippet = '${' . tag_name . '}'
+      endif
       let current.name = ''
     endif
 
@@ -602,9 +608,10 @@ function! zencoding#lang#html#balanceTag(flag) range
       endif
     endwhile
   endif
-  call setpos('.', curpos)
   if a:flag == -2 || a:flag == 2
     silent! exe "normal! gv"
+  else
+    call setpos('.', curpos)
   endif
 endfunction
 
