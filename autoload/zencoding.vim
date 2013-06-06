@@ -321,12 +321,21 @@ function! zencoding#getDollarValueByKey(key)
   let key = a:key
   let ftsetting = get(s:zen_settings, zencoding#getFileType())
   if type(ftsetting) == 4 && has_key(ftsetting, key)
-    let value = get(ftsetting, key)
-    if type(value) == 1 | let ret = value | endif
+    let V = get(ftsetting, key)
+    if type(V) == 1 | return V | endif
   endif
   if type(ret) != 1 && has_key(s:zen_settings, key)
-    let value = get(s:zen_settings, key)
-    if type(value) == 1 | return value | endif
+    let V = get(s:zen_settings, key)
+    if type(V) == 1 | return V | endif
+  endif
+  if has_key(s:zen_settings, 'custom_expands') && type(s:zen_settings['custom_expands']) == 4
+    for k in keys(s:zen_settings['custom_expands'])
+      if key =~ k
+        let V = get(s:zen_settings['custom_expands'], k)
+        if type(V) == 1 | return V | endif
+        if type(V) == 2 | return V(key) | endif
+      endif
+    endfor
   endif
   return ret
 endfunction
@@ -340,7 +349,7 @@ function! zencoding#reExpandDollarExpr(expand, times)
         let pair = get(dollar_exprs, n)
         let pat = get(pair, 'expr')
         let sub = get(pair, 'value')
-        let expand = substitute(expand, pat, sub, 'g')
+        let expand = substitute(expand, pat, sub, '')
       endfor
       return zencoding#reExpandDollarExpr(expand, a:times + 1)
     endif
@@ -518,7 +527,6 @@ function! zencoding#expandAbbr(mode, abbr) range
   let expand = zencoding#expandDollarExpr(expand)
   let expand = zencoding#expandCursorExpr(expand, a:mode)
   if len(expand)
-    let expand = substitute(expand, '\${\%(lorem\|lipsum\)\(\d*\)}', '\=zencoding#util#lorem(submatch(1))', 'g')
     if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:zen_settings.timezone, 'g')
     else
@@ -764,6 +772,9 @@ unlet! s:zen_settings
 let s:zen_settings = {
 \    'lang': "en",
 \    'charset': "UTF-8",
+\    'custom_expands' : {
+\      '^\%(lorem\|lipsum\)\(\d*\)$' : function('zencoding#lorem#en#expand'),
+\    },
 \    'css': {
 \        'snippets': {
 \            '@i': '@import url(|);',
