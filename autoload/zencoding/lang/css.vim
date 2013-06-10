@@ -10,6 +10,9 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
 
   let settings = zencoding#getSettings()
   let indent = zencoding#getIndentation(type)
+  let aliases = zencoding#getResource(type, 'aliases', {})
+  let snippets = zencoding#getResource(type, 'snippets', {})
+  let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
 
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
 
@@ -58,14 +61,11 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
     let current.name = tag_name
 
     " aliases
-    let aliases = zencoding#getResource(type, 'aliases', {})
     if has_key(aliases, tag_name)
       let current.name = aliases[tag_name]
     endif
-    let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
 
     " snippets
-    let snippets = zencoding#getResource(type, 'snippets', {})
     if !empty(snippets) && has_key(snippets, tag_name)
       let snippet = snippets[tag_name]
       if use_pipe_for_cursor
@@ -76,8 +76,8 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
       let current.snippet = join(lines, "\n")
       let current.name = ''
       let current.snippet = substitute(current.snippet, ';', value . ';', '')
-      if use_pipe_for_cursor && len(value) > 0 && stridx(value, '${cursor}') == -1
-        let current.snippet = substitute(current.snippet, '${cursor}', '', 'g') . '${cursor}'
+      if use_pipe_for_cursor && len(value) > 0
+        let current.snippet = substitute(current.snippet, '\${cursor}', '', 'g')
       endif
       if n < len(tokens) - 1
         let current.snippet .= "\n"
