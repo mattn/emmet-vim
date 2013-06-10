@@ -30,6 +30,7 @@ Tutorial               |zencoding-tutorial|
  12. Make anchor from URL           |zencoding-make-anchor-url|
  13. Make quoted text from URL      |zencoding-quoted-text-url|
  14. Code Pretty                    |zencoding-code-pretty|
+ 15. Lorem Ipsum                    |zencoding-lorem-ipsum|
 Customize             |zencoding-customize|
   1. Key Mappings                   |zencoding-customize-keymappings|
   2. Indent Size                    |zencoding-indent-size|
@@ -293,12 +294,36 @@ You should copy this section and create new buffer, paste and write as
 <
   Type |<C-Y>c|
 >
-  <p>Writing in C language</p>
-
   <span class="Type">int</span>&nbsp;main() {<br />
   &nbsp;&nbsp;puts(<span class="Constant">&quot;hello world&quot;</span>);<br />
   }<br />
 <
+15. Lorem Ipsum                                          *zencoding-lorem-ipsum*
+
+  To insert dummy text.
+>
+  lorem
+<
+  Type |<C-Y>,|
+>
+  <div>Adipisicing asperiores deleniti ipsum fuga deserunt perferendis
+  molestiae sunt excepturi aut quo nihil! Optio accusantium corporis molestiae
+  deserunt ab, veritatis commodi. Eius nobis ab deserunt magni iure quo
+  laboriosam laboriosam.</div>
+<
+  For japanese user, put like follow into your g:user_zen_settings:
+>
+  let g:user_zen_settings = {
+    ...
+
+    \  'custom_expands1' : {
+    \    '^\%(lorem\|lipsum\)\(\d*\)$' : function('zencoding#lorem#ja#expand'),
+    \  },
+
+    ...
+<
+  You will get japanese dummy text.
+>
 ==============================================================================
 CUSTOMIZE                                                  *zencoding-customize*
 
