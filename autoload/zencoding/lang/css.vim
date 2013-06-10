@@ -14,7 +14,7 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
 
   " emmet
-  let tokens = split(abbr, '+\ze[^)!]')
+  let tokens = split(abbr, '+\ze[^+)!]')
   for n in range(len(tokens))
     let token = tokens[n]
     let prop = matchlist(token, '^\(-\{0,1}[a-zA-Z]\+\|[a-zA-Z0-9]\++\{0,1}\|([a-zA-Z0-9]\++\{0,1})\)\(\%([0-9.-]\+[pe]\{0,1}-\{0,1}\|-auto\)*\)$')
