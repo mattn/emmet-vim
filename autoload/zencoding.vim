@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Jun-2013.
+" Last Change: 10-Jun-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1249,9 +1249,9 @@ let s:zen_settings = {
 \            'pgba:l': 'page-break-after:left;',
 \            'pgba:r': 'page-break-after:right;',
 \            'orp': 'orphans:|;',
-\            'wid': 'widows:|;'
+\            'wid': 'widows:|;',
 \        },
-\        'filters': 'fc'
+\        'filters': 'fc',
 \    },
 \    'sass': {
 \        'extends': 'css',
@@ -1326,7 +1326,7 @@ let s:zen_settings = {
 \                    ."\t<title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
-\                    ."</html>"
+\                    ."</html>",
 \        },
 \        'default_attributes': {
 \            'a': {'href': ''},
@@ -1410,7 +1410,7 @@ let s:zen_settings = {
 \            'menu:t': {'type': 'toolbar'},
 \            'video': {'src': ''},
 \            'audio': {'src': ''},
-\            'html:xml': [{'xmlns': 'http://www.w3.org/1999/xhtml'}, {'xml:lang': '${lang}'}]
+\            'html:xml': [{'xmlns': 'http://www.w3.org/1999/xhtml'}, {'xml:lang': '${lang}'}],
 \        },
 \        'aliases': {
 \            'link:*': 'link',
@@ -1453,7 +1453,7 @@ let s:zen_settings = {
 \            'kg': 'keygen',
 \            'out': 'output',
 \            'det': 'details',
-\            'cmd': 'command'
+\            'cmd': 'command',
 \        },
 \        'expandos': {
 \            'ol': 'ol>li',
@@ -1466,12 +1466,12 @@ let s:zen_settings = {
 \            'tr': 'tr>td',
 \            'select': 'select>option',
 \            'optgroup': 'optgroup>option',
-\            'optg': 'optgroup>option'
+\            'optg': 'optgroup>option',
 \        },
 \        'empty_elements': 'area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,keygen,command',
 \        'block_elements': 'address,applet,blockquote,button,center,dd,del,dir,div,dl,dt,fieldset,form,frameset,hr,iframe,ins,isindex,li,link,map,menu,noframes,noscript,object,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul,h1,h2,h3,h4,h5,h6',
 \        'inline_elements': 'a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',
-\        'empty_element_suffix': ' />'
+\        'empty_element_suffix': ' />',
 \    },
 \    'htmldjango': {
 \        'extends': 'html',
@@ -1511,10 +1511,10 @@ let s:zen_settings = {
 \            'attr': 'xsl:attribute',
 \            'co' : 'xsl:copy-of',
 \            'each' : 'xsl:for-each',
-\            'ap' : 'xsl:apply-templates'
+\            'ap' : 'xsl:apply-templates',
 \        },
 \        'expandos': {
-\            'choose': 'xsl:choose>xsl:when+xsl:otherwise'
+\            'choose': 'xsl:choose>xsl:when+xsl:otherwise',
 \        }
 \    },
 \    'xslt': {
@@ -1530,7 +1530,7 @@ let s:zen_settings = {
 \                    ."\t\t%meta{:charset => \"${charset}\"}\n"
 \                    ."\t\t%title\n"
 \                    ."\t%body\n"
-\                    ."\t\t${child}|\n"
+\                    ."\t\t${child}|\n",
 \        },
 \    },
 \    'slim': {
@@ -1543,7 +1543,7 @@ let s:zen_settings = {
 \                    ."\t\tmeta charset=\"${charset}\"\n"
 \                    ."\t\ttitle\n"
 \                    ."\tbody\n"
-\                    ."\t\t${child}|\n"
+\                    ."\t\t${child}|\n",
 \        },
 \    },
 \    'xhtml': {
