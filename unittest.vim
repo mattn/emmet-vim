@@ -636,6 +636,10 @@ finish
           'query': "(bg+)+c$$$$",
           'result': "background: #FFF url($$$$) 0 0 no-repeat;\ncolor: #000;",
         },
+        {
+          'query': "m0+bgi+bg++p0$$$$",
+          'result': "margin: 0px;\nbackground-image: url($$$$);\nbackground: #FFF url() 0 0 no-repeat;\npadding: 0px;",
+        },
       ],
     },
   ],
