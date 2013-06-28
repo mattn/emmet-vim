@@ -614,7 +614,7 @@ finish
         },
         {
           'query': "m10-5-0$$$$",
-          'result': "margin: 10px 5px 0px;",
+          'result': "margin: 10px 5px 0;",
         },
         {
           'query': "m-10--5$$$$",
@@ -638,7 +638,7 @@ finish
         },
         {
           'query': "m0+bgi+bg++p0$$$$",
-          'result': "margin: 0px;\nbackground-image: url($$$$);\nbackground: #FFF url() 0 0 no-repeat;\npadding: 0px;",
+          'result': "margin: 0;\nbackground-image: url($$$$);\nbackground: #FFF url() 0 0 no-repeat;\npadding: 0;",
         },
       ],
     },
@@ -862,7 +862,7 @@ finish
         },
         {
           'query': "m10-5-0$$$$",
-          'result': "margin:10px 5px 0px",
+          'result': "margin:10px 5px 0",
         },
         {
           'query': "m-10--5$$$$",

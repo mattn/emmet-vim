@@ -43,6 +43,8 @@ function! zencoding#lang#css#parseIntoTree(abbr, type)
           let value .= v . 'em'
         elseif v == 'auto'
           let value .= v
+        elseif v == '0'
+          let value .= '0'
         else
           let value .= v . 'px'
         endif
