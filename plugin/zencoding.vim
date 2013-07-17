@@ -125,7 +125,7 @@ endfunction
 function! s:install_plugin_n()
   for item in [
   \ {'mode': 'n', 'var': 'user_zen_expandabbr_key', 'key': ',', 'plug': 'ZenCodingExpandNormal', 'func': ':call zencoding#expandAbbr(3,"")<cr>'},
-  \ {'mode': 'n', 'var': 'user_zen_expandword_key', 'key': ',', 'plug': 'ZenCodingExpandWord', 'func': ':call zencoding#expandAbbr(1,"")<cr>'},
+  \ {'mode': 'n', 'var': 'user_zen_expandword_key', 'key': ';', 'plug': 'ZenCodingExpandWord', 'func': ':call zencoding#expandAbbr(1,"")<cr>'},
   \ {'mode': 'n', 'var': 'user_zen_balancetaginward_key', 'key': 'd', 'plug': 'ZenCodingBalanceTagInwardNormal', 'func': ':call zencoding#balanceTag(1)<cr>'},
   \ {'mode': 'n', 'var': 'user_zen_balancetagoutward_key', 'key': 'D', 'plug': 'ZenCodingBalanceTagOutwardNormal', 'func': ':call zencoding#balanceTag(-1)<cr>'},
   \ {'mode': 'n', 'var': 'user_zen_next_key', 'key': 'n', 'plug': 'ZenCodingNext', 'func': ':call zencoding#moveNextPrev(0)<cr>'},
