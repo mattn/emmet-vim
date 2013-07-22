@@ -260,9 +260,15 @@ endfunction
 function! zencoding#getFileType(...)
   let flg = get(a:000, 0, 0)
   let type = &ft
-  if zencoding#lang#exists(&ft)
-    let type = &ft
-  else
+  let found_type = ''
+  for partial_type in split(type, '\.')
+    if zencoding#lang#exists(partial_type)
+      let found_type = 'true'
+      let type = partial_type
+      break
+    endif
+  endfor
+  if found_type != 'true'
     let base = zencoding#getBaseType(type)
     if base != ""
       if flg
