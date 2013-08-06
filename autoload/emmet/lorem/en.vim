@@ -1,4 +1,4 @@
-function! zencoding#lorem#en#expand(command)
+function! emmet#lorem#en#expand(command)
   let wcount = matchstr(a:command, '^\%(lorem\|lipsum\)\(\d*\)}$', '\1', '')
   let wcount = wcount > 0 ? wcount : 30
   
@@ -39,19 +39,19 @@ function! zencoding#lorem#en#expand(command)
     if sentence > 0
       let arr += words
     endif
-    let r = zencoding#util#rand()
+    let r = emmet#util#rand()
     let word = arr[r % len(arr)]
     if sentence == 0
       let word = substitute(word, '^.', '\U&', '')
     endif
     let sentence += 1
     call add(ret, word)
-    if (sentence > 5 && zencoding#util#rand() < 10000) || i == wcount - 1
+    if (sentence > 5 && emmet#util#rand() < 10000) || i == wcount - 1
       if i == wcount - 1
-        let endc = "?!..."[zencoding#util#rand() % 5]
+        let endc = "?!..."[emmet#util#rand() % 5]
         call add(ret, endc)
       else
-        let endc = "?!,..."[zencoding#util#rand() % 6]
+        let endc = "?!,..."[emmet#util#rand() % 6]
         call add(ret, endc . ' ')
       endif
       if endc != ','

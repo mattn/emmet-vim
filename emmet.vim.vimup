@@ -1,21 +1,21 @@
-script_name: ZenCoding.vim
+script_name: Emmet.vim
 script_id: '2981'
 script_type: utility
-script_package: zencoding-vim.zip
+script_package: emmet-vim.zip
 script_version: '0.80'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
 detailed_description: |
 
-  This is vim script support expanding abbreviation like zen-coding.
-  ref: http://code.google.com/p/zen-coding/
+  This is vim script support expanding abbreviation like emmet.
+  ref: http://emmet.io/
 
-  There is a movie using zencoding.vim
-  ref: http://mattn.github.com/zencoding-vim
+  There is a movie using emmet.vim
+  ref: http://mattn.github.com/emmet-vim
 
   Source Repository.
-  ref: http://github.com/mattn/zencoding-vim
+  ref: http://github.com/mattn/emmet-vim
 
   Type abbreviation
      +-------------------------------------
@@ -52,18 +52,18 @@ detailed_description: |
 
   Tutorial:
 
-    http://github.com/mattn/zencoding-vim/raw/master/TUTORIAL
+    http://github.com/mattn/emmet-vim/raw/master/TUTORIAL
 
   How work this:
 
-    http://mattn.github.com/zencoding-vim
+    http://mattn.github.com/emmet-vim
 
   Tips:
 
   You can customize behavior of expanding with overriding config.
   This configuration will be merged at loading plugin.
 
-    let g:user_zen_settings = {
+    let g:user_emmet_settings = {
     \  'indentation' : '  ',
     \  'perl' : {
     \    'aliases' : {
@@ -76,28 +76,30 @@ detailed_description: |
     \  }
     \}
 
-    let g:user_zen_expandabbr_key = '<c-e>'
+    let g:user_emmet_expandabbr_key = '<c-e>'
 
-    let g:use_zen_complete_tag = 1
+    let g:use_emmet_complete_tag = 1
 
-  You can set language attribute in html using zen_settings['lang'].
+  You can set language attribute in html using emmet_settings['lang'].
 
 install_details: |
 
   # cd ~/.vim
-  # unzip zencoding-vim.zip
+  # unzip emmet-vim.zip
 
   or if you install pathogen.vim:
 
   # cd ~/.vim/bundle # or make directory
-  # unzip /path/to/zencoding-vim.zip
+  # unzip /path/to/emmet-vim.zip
 
   if you get sources from repository:
 
   # cd ~/.vim/bundle # or make directory
-  # git clone http://github.com/mattn/zencoding-vim.git
+  # git clone http://github.com/mattn/emmet-vim.git
 
 versions:
+- '0.81': |
+   Release of Emmet.vim: renamed from ZenCoding.vim.
 - '0.80': |
    This is an upgrade for ZenCoding.vim: add emmet features.
 - '0.74': |

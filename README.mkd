@@ -1,33 +1,33 @@
-# ZenCoding-vim
+# Emmet-vim
 
-[zencoding-vim](http://mattn.github.com/zencoding-vim) is a vim plug-in
+[emmet-vim](http://mattn.github.com/emmet-vim) is a vim plug-in
 which provides support for expanding abbreviations similar to
-[zen-coding](http://code.google.com/p/zen-coding/).
+[emmet](http://emmet.io/).
 
 ## Installation
 
 [Download zip file](http://www.vim.org/scripts/script.php?script_id=2981):
 
     cd ~/.vim
-    unzip zencoding-vim.zip
+    unzip emmet-vim.zip
 
 To install using pathogen.vim:
 
     cd ~/.vim/bundle
-    unzip /path/to/zencoding-vim.zip
+    unzip /path/to/emmet-vim.zip
 
 To checkout the source from repository:
 
     cd ~/.vim/bundle
-    git clone http://github.com/mattn/zencoding-vim.git
+    git clone http://github.com/mattn/emmet-vim.git
 
 or:
 
-    git clone http://github.com/mattn/zencoding-vim.git
-    cd zencoding-vim
-    cp plugin/zencoding.vim ~/.vim/plugin/
-    cp autoload/zencoding.vim ~/.vim/autoload/
-    cp -a autoload/zencoding ~/.vim/autoload/
+    git clone http://github.com/mattn/emmet-vim.git
+    cd emmet-vim
+    cp plugin/emmet.vim ~/.vim/plugin/
+    cp autoload/emmet.vim ~/.vim/autoload/
+    cp -a autoload/emmet ~/.vim/autoload/
 
 
 ## Quick Tutorial
@@ -53,17 +53,17 @@ Then type "\<c-y\>," (Ctrl + y + ','), you should see:
     </body>
     </html>
 
-[More Tutorials](https://raw.github.com/mattn/zencoding-vim/master/TUTORIAL)
+[More Tutorials](https://raw.github.com/mattn/emmet-vim/master/TUTORIAL)
 
 
 ## Enable in different mode
 
-If you don't want to enable zencoding in all modes,
+If you don't want to enable emmet in all modes,
 you can use set these options in `vimrc`:
 
-    let g:user_zen_mode='n'    "only enable normal mode functions.
-    let g:user_zen_mode='inv'  "enable all functions, which is equal to
-    let g:user_zen_mode='a'    "enable all function in all mode.
+    let g:user_emmet_mode='n'    "only enable normal mode functions.
+    let g:user_emmet_mode='inv'  "enable all functions, which is equal to
+    let g:user_emmet_mode='a'    "enable all function in all mode.
 
 ## Project Authors
 
@@ -71,17 +71,21 @@ you can use set these options in `vimrc`:
 
 ## Links
 
+### Emmet official site:
+
+* <http://emmet.io/>
+
 ### zen-coding official site:
 
 * <http://code.google.com/p/zen-coding/>
 
-### zencoding.vim:
+### emmet.vim:
 
-* <http://mattn.github.com/zencoding-vim>
+* <http://mattn.github.com/emmet-vim>
 
 ### development repository:
 
-* <https://github.com/mattn/zencoding-vim>
+* <https://github.com/mattn/emmet-vim>
 
 ### my blog posts about zencoding-vim:
 

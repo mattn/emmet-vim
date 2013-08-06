@@ -1,7 +1,7 @@
 let s:sfile = expand('<sfile>')
 
 function! s:reload(d)
-  exe "so" a:d."/plugin/zencoding.vim"
+  exe "so" a:d."/plugin/emmet.vim"
   for f in split(globpath(a:d, 'autoload/**/*.vim'), "\n")
     silent! exe "so" f
   endfor
@@ -117,7 +117,7 @@ function! s:test(...)
           call s:show_title(n+1, query)
         else
           call s:show_title(n+1, query)
-          unlet! res | let res = zencoding#ExpandWord(query, testgroup.type, 0)
+          unlet! res | let res = emmet#ExpandWord(query, testgroup.type, 0)
         endif
         if stridx(result, '$$$$') != -1
           if res ==# result
@@ -140,9 +140,9 @@ endfunction
 
 function! s:do_tests(...)
   try
-    if exists('g:user_zen_settings')
-      let s:old_user_zen_settings = g:user_zen_settings
-      let g:user_zen_settings = { 'indentation': "\t" }
+    if exists('g:user_emmet_settings')
+      let s:old_user_emmet_settings = g:user_emmet_settings
+      let g:user_emmet_settings = { 'indentation': "\t" }
     endif
     let oldmore = &more
     call s:reload(fnamemodify(s:sfile, ':h'))
@@ -153,13 +153,13 @@ function! s:do_tests(...)
     echohl ErrorMsg | echomsg v:exception | echohl None
   finally
     let &more=oldmore
-    if exists('g:user_zen_settings')
-      let g:user_zen_settings = s:old_user_zen_settings
+    if exists('g:user_emmet_settings')
+      let g:user_emmet_settings = s:old_user_emmet_settings
     endif
   endtry
 endfunction
 
-function! g:zencoding_unittest_complete(arglead, cmdline, cmdpos)
+function! g:emmet_unittest_complete(arglead, cmdline, cmdpos)
   let args = split(a:cmdline, '\s\+', 1)
   let testgroups = eval(join(filter(split(substitute(join(readfile(s:sfile), "\n"), '.*\nfinish\n', '', ''), '\n', 1), "v:val !~ '^\"'")))
   try
@@ -173,9 +173,9 @@ function! g:zencoding_unittest_complete(arglead, cmdline, cmdpos)
   return []
 endfunction
 
-command! -nargs=* -complete=customlist,g:zencoding_unittest_complete ZenCodingUnitTest call s:do_tests(<f-args>)
+command! -nargs=* -complete=customlist,g:emmet_unittest_complete EmmetUnitTest call s:do_tests(<f-args>)
 if s:sfile == expand('%:p')
-  ZenCodingUnitTest
+  EmmetUnitTest
 endif
 
 finish
@@ -255,8 +255,8 @@ finish
           'result': "<a href=\"http://www.google.com/\">Google</a>\n",
         },
         {
-          'query': "{ZenCoding}",
-          'result': "ZenCoding",
+          'query': "{Emmet}",
+          'result': "Emmet",
         },
         {
           'query': "a+b",
@@ -768,7 +768,7 @@ finish
         },
         {
           'query': "ap>wp",
-          'result': "<xsl:apply-templates select=\"\" mode=\"\">\n\t<xsl:with-param name=\"\" select=\"\"></xsl:with-param>\n</xsl:apply-templates>\n",
+          'result': "<xsl:apply-templates select=\"\" mode=\"\">\n    <xsl:with-param name=\"\" select=\"\"></xsl:with-param>\n</xsl:apply-templates>\n",
         },
       ],
     },
@@ -782,7 +782,7 @@ finish
       'tests': [
         {
           'query': "xsd:w3c",
-          'result': "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t<xsd:element name=\"\" type=\"\"/>\n</xsd:schema>",
+          'result': "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n    <xsd:element name=\"\" type=\"\"/>\n</xsd:schema>",
         },
       ],
     },

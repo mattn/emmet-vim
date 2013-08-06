@@ -1,20 +1,20 @@
 "=============================================================================
-" zencoding.vim
+" emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 10-Jun-2013.
+" Last Change: 06-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! zencoding#getExpandos(type, key)
-  let expandos = zencoding#getResource(a:type, 'expandos', {})
+function! emmet#getExpandos(type, key)
+  let expandos = emmet#getResource(a:type, 'expandos', {})
   if has_key(expandos, a:key)
     return expandos[a:key]
   endif
   return a:key
 endfunction
 
-function! zencoding#splitFilterArg(filters)
+function! emmet#splitFilterArg(filters)
   for f in a:filters
     if f =~ '^/'
       return f[1:]
@@ -23,7 +23,7 @@ function! zencoding#splitFilterArg(filters)
   return ''
 endfunction
 
-function! zencoding#useFilter(filters, filter)
+function! emmet#useFilter(filters, filter)
   for f in a:filters
     if a:filter == '/' && f =~ '^/'
       return 1
@@ -34,30 +34,30 @@ function! zencoding#useFilter(filters, filter)
   return 0
 endfunction
 
-function! zencoding#getIndentation(...)
+function! emmet#getIndentation(...)
   if a:0 > 0
     let type = a:1
   else
-    let type = zencoding#getFileType()
+    let type = emmet#getFileType()
   endif
-  if has_key(s:zen_settings, type) && has_key(s:zen_settings[type], 'indentation')
-    let indent = s:zen_settings[type].indentation
-  elseif has_key(s:zen_settings, 'indentation')
-    let indent = s:zen_settings.indentation
+  if has_key(s:emmet_settings, type) && has_key(s:emmet_settings[type], 'indentation')
+    let indent = s:emmet_settings[type].indentation
+  elseif has_key(s:emmet_settings, 'indentation')
+    let indent = s:emmet_settings.indentation
   else
     let indent = (&l:expandtab || &l:tabstop != &l:shiftwidth) ? repeat(' ', &l:shiftwidth) : "\t"
   endif
   return indent
 endfunction
 
-function! zencoding#getBaseType(type)
-  if !has_key(s:zen_settings, a:type)
+function! emmet#getBaseType(type)
+  if !has_key(s:emmet_settings, a:type)
     return ''
   endif
-  if !has_key(s:zen_settings[a:type], 'extends')
+  if !has_key(s:emmet_settings[a:type], 'extends')
     return a:type
   endif
-  let extends = s:zen_settings[a:type].extends
+  let extends = s:emmet_settings[a:type].extends
   if type(extends) == 1
     let tmp = split(extends, '\s*,\s*')
     let ext = tmp[0]
@@ -65,22 +65,22 @@ function! zencoding#getBaseType(type)
     let ext = extends[0]
   endif
   if a:type != ext
-    return zencoding#getBaseType(ext)
+    return emmet#getBaseType(ext)
   endif
   return ''
 endfunction
 
-function! zencoding#isExtends(type, extend)
+function! emmet#isExtends(type, extend)
   if a:type == a:extend
     return 1
   endif
-  if !has_key(s:zen_settings, a:type)
+  if !has_key(s:emmet_settings, a:type)
     return 0
   endif
-  if !has_key(s:zen_settings[a:type], 'extends')
+  if !has_key(s:emmet_settings[a:type], 'extends')
     return 0
   endif
-  let extends = s:zen_settings[a:type].extends
+  let extends = s:emmet_settings[a:type].extends
   if type(extends) == 1
     let tmp = split(extends, '\s*,\s*')
     unlet! extends
@@ -94,14 +94,14 @@ function! zencoding#isExtends(type, extend)
   return 0
 endfunction
 
-function! zencoding#parseIntoTree(abbr, type)
+function! emmet#parseIntoTree(abbr, type)
   let abbr = a:abbr
   let type = a:type
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#parseIntoTree(abbr, type)
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
-function! zencoding#mergeConfig(lhs, rhs)
+function! emmet#mergeConfig(lhs, rhs)
   if type(a:lhs) == 3 && type(a:rhs) == 3
     let a:lhs += a:rhs
     if len(a:lhs)
@@ -119,7 +119,7 @@ function! zencoding#mergeConfig(lhs, rhs)
         let a:lhs[key] += a:rhs[key]
       elseif type(a:rhs[key]) == 4
         if has_key(a:lhs, key)
-          call zencoding#mergeConfig(a:lhs[key], a:rhs[key])
+          call emmet#mergeConfig(a:lhs[key], a:rhs[key])
         else
           let a:lhs[key] = a:rhs[key]
         endif
@@ -130,7 +130,7 @@ function! zencoding#mergeConfig(lhs, rhs)
   endif
 endfunction
 
-function! zencoding#toString(...)
+function! emmet#toString(...)
   let current = a:1
   if a:0 > 1
     let type = a:2
@@ -163,16 +163,16 @@ function! zencoding#toString(...)
     let indent = ''
   endif
 
-  let dollar_expr = zencoding#getResource(type, 'dollar_expr', 1)
+  let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
   let itemno = 0
   let str = ''
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
+  let rtype = emmet#lang#exists(type) ? type : 'html'
   while itemno < current.multiplier
     if len(current.name)
       if group_itemno != 0
-        let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, group_itemno, indent)
+        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, group_itemno, indent)
       else
-        let inner = zencoding#lang#{rtype}#toString(s:zen_settings, current, type, inline, filters, itemno, indent)
+        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, itemno, indent)
       endif
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
@@ -181,16 +181,16 @@ function! zencoding#toString(...)
     else
       let snippet = current.snippet
       if len(current.snippet) == 0
-        let snippets = zencoding#getResource(type, 'snippets', {})
-        if !empty(snippets) && has_key(snippets, 'zensnippet')
-          let snippet = snippets['zensnippet']
+        let snippets = emmet#getResource(type, 'snippets', {})
+        if !empty(snippets) && has_key(snippets, 'emmet_snippet')
+          let snippet = snippets['emmet_snippet']
         endif
       endif
       if len(snippet) > 0
         let tmp = snippet
-        let tmp = substitute(tmp, '\${zenname}', current.name, 'g')
+        let tmp = substitute(tmp, '\${emmet_name}', current.name, 'g')
         let snippet_node = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 0, 'parent': {}, 'value': '{'.tmp.'}', 'pos': 0, 'important': current.important }
-        let str = zencoding#lang#{rtype}#toString(s:zen_settings, snippet_node, type, inline, filters, group_itemno, indent)
+        let str = emmet#lang#{rtype}#toString(s:emmet_settings, snippet_node, type, inline, filters, group_itemno, indent)
       else
         if len(current.name)
           let str .= current.name
@@ -198,7 +198,8 @@ function! zencoding#toString(...)
         if len(current.value)
           let text = current.value[1:-2]
           if dollar_expr
-            let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+            " TODO: regexp engine specified
+            let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
             let text = substitute(text, '\${nr}', "\n", 'g')
             let text = substitute(text, '\\\$', '$', 'g')
           endif
@@ -207,9 +208,9 @@ function! zencoding#toString(...)
       endif
       let inner = ''
       if len(current.child)
-        let render_type = zencoding#getFileType(1)
+        let render_type = emmet#getFileType(1)
         for n in current.child
-          let inner .= zencoding#toString(n, type, inline, filters, group_itemno, indent)
+          let inner .= emmet#toString(n, type, inline, filters, group_itemno, indent)
         endfor
       endif
       let spaces = matchstr(str, '\s*\ze\${child}')
@@ -221,49 +222,49 @@ function! zencoding#toString(...)
   return str
 endfunction
 
-function! zencoding#getSettings()
-  return s:zen_settings
+function! emmet#getSettings()
+  return s:emmet_settings
 endfunction
 
-function! zencoding#getResource(type, name, default)
-  if !has_key(s:zen_settings, a:type)
+function! emmet#getResource(type, name, default)
+  if !has_key(s:emmet_settings, a:type)
     return a:default
   endif
   let ret = a:default
 
-  if has_key(s:zen_settings[a:type], 'extends')
-    let extends = s:zen_settings[a:type].extends
+  if has_key(s:emmet_settings[a:type], 'extends')
+    let extends = s:emmet_settings[a:type].extends
     if type(extends) == 1
       let tmp = split(extends, '\s*,\s*')
       unlet! extends
       let extends = tmp
     endif
     for ext in extends
-      if has_key(s:zen_settings, ext) && has_key(s:zen_settings[ext], a:name)
-        call zencoding#mergeConfig(ret, s:zen_settings[ext][a:name])
+      if has_key(s:emmet_settings, ext) && has_key(s:emmet_settings[ext], a:name)
+        call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
       endif
     endfor
   endif
 
-  if has_key(s:zen_settings[a:type], a:name)
-    let v = s:zen_settings[a:type][a:name]
+  if has_key(s:emmet_settings[a:type], a:name)
+    let v = s:emmet_settings[a:type][a:name]
     if type(ret) == 3 || type(ret) == 4
-      call zencoding#mergeConfig(ret, s:zen_settings[a:type][a:name])
+      call emmet#mergeConfig(ret, s:emmet_settings[a:type][a:name])
     else
-      let ret = s:zen_settings[a:type][a:name]
+      let ret = s:emmet_settings[a:type][a:name]
     endif
   endif
 
   return ret
 endfunction
 
-function! zencoding#getFileType(...)
+function! emmet#getFileType(...)
   let flg = get(a:000, 0, 0)
   let type = &ft
-  if zencoding#lang#exists(&ft)
+  if emmet#lang#exists(&ft)
     let type = &ft
   else
-    let base = zencoding#getBaseType(type)
+    let base = emmet#getBaseType(type)
     if base != ""
       if flg
         let type = &ft
@@ -291,7 +292,7 @@ function! zencoding#getFileType(...)
   return type
 endfunction
 
-function! zencoding#getDollarExprs(expand)
+function! emmet#getDollarExprs(expand)
   let expand = a:expand
   let dollar_list = []
   let dollar_reg = '\%(\\\)\@<!\${\(\([^{}]\|\%(\\\)\@\<=[{}]\)\{}\)}'
@@ -302,7 +303,7 @@ function! zencoding#getDollarExprs(expand)
       if key !~ '^\d\+:'
         let key = substitute(key, '\\{', '{', 'g')
         let key = substitute(key, '\\}', '}', 'g')
-        let value = zencoding#getDollarValueByKey(key)
+        let value = emmet#getDollarValueByKey(key)
         if type(value) == type('')
           let expr = get(matcharr, 0)
           call add(dollar_list, {'expr': expr, 'value': value})
@@ -316,22 +317,22 @@ function! zencoding#getDollarExprs(expand)
   return dollar_list
 endfunction
 
-function! zencoding#getDollarValueByKey(key)
+function! emmet#getDollarValueByKey(key)
   let ret = 0
   let key = a:key
-  let ftsetting = get(s:zen_settings, zencoding#getFileType())
+  let ftsetting = get(s:emmet_settings, emmet#getFileType())
   if type(ftsetting) == 4 && has_key(ftsetting, key)
     let V = get(ftsetting, key)
     if type(V) == 1 | return V | endif
   endif
-  if type(ret) != 1 && has_key(s:zen_settings, key)
-    let V = get(s:zen_settings, key)
+  if type(ret) != 1 && has_key(s:emmet_settings, key)
+    let V = get(s:emmet_settings, key)
     if type(V) == 1 | return V | endif
   endif
-  if has_key(s:zen_settings, 'custom_expands') && type(s:zen_settings['custom_expands']) == 4
-    for k in keys(s:zen_settings['custom_expands'])
+  if has_key(s:emmet_settings, 'custom_expands') && type(s:emmet_settings['custom_expands']) == 4
+    for k in keys(s:emmet_settings['custom_expands'])
       if key =~ k
-        let V = get(s:zen_settings['custom_expands'], k)
+        let V = get(s:emmet_settings['custom_expands'], k)
         if type(V) == 1 | return V | endif
         if type(V) == 2 | return V(key) | endif
       endif
@@ -340,9 +341,9 @@ function! zencoding#getDollarValueByKey(key)
   return ret
 endfunction
 
-function! zencoding#reExpandDollarExpr(expand, times)
+function! emmet#reExpandDollarExpr(expand, times)
   let expand = a:expand
-  let dollar_exprs = zencoding#getDollarExprs(expand)
+  let dollar_exprs = emmet#getDollarExprs(expand)
   if len(dollar_exprs) > 0
     if a:times < 9
       for n in range(len(dollar_exprs))
@@ -351,20 +352,20 @@ function! zencoding#reExpandDollarExpr(expand, times)
         let sub = get(pair, 'value')
         let expand = substitute(expand, pat, sub, '')
       endfor
-      return zencoding#reExpandDollarExpr(expand, a:times + 1)
+      return emmet#reExpandDollarExpr(expand, a:times + 1)
     endif
   endif
   return expand
 endfunction
 
-function! zencoding#expandDollarExpr(expand)
-  return zencoding#reExpandDollarExpr(a:expand, 0)
+function! emmet#expandDollarExpr(expand)
+  return emmet#reExpandDollarExpr(a:expand, 0)
 endfunction
 
-function! zencoding#expandCursorExpr(expand, mode)
+function! emmet#expandCursorExpr(expand, mode)
   let expand = a:expand
-  let type = zencoding#getFileType()
-  let use_pipe_for_cursor = zencoding#getResource(type, 'use_pipe_for_cursor', 1)
+  let type = emmet#getFileType()
+  let use_pipe_for_cursor = emmet#getResource(type, 'use_pipe_for_cursor', 1)
   if use_pipe_for_cursor
     let expand = substitute(expand, '|', '${cursor}', 'g')
   endif
@@ -380,22 +381,22 @@ function! zencoding#expandCursorExpr(expand, mode)
   return expand
 endfunction
 
-function! zencoding#unescapeDollarExpr(expand)
+function! emmet#unescapeDollarExpr(expand)
   return substitute(a:expand, '\\\$', '$', 'g')
 endfunction
 
-function! zencoding#expandAbbr(mode, abbr) range
-  let type = zencoding#getFileType()
-  let rtype = zencoding#getFileType(1)
-  let indent = zencoding#getIndentation(type)
+function! emmet#expandAbbr(mode, abbr) range
+  let type = emmet#getFileType()
+  let rtype = emmet#getFileType(1)
+  let indent = emmet#getIndentation(type)
   let expand = ''
   let filters = ['html']
   let line = ''
   let part = ''
   let rest = ''
 
-  if has_key(s:zen_settings, type) && has_key(s:zen_settings[type], 'filters')
-    let filters = split(s:zen_settings[type].filters, '\s*,\s*')
+  if has_key(s:emmet_settings, type) && has_key(s:emmet_settings[type], 'filters')
+    let filters = split(s:emmet_settings[type].filters, '\s*,\s*')
   endif
 
   if a:mode == 2
@@ -413,16 +414,16 @@ function! zencoding#expandAbbr(mode, abbr) range
       if query !~ '}\s*$'
         let query .= '>{$#}'
       endif
-      if zencoding#useFilter(filters, '/')
-        let spl = zencoding#splitFilterArg(filters)
+      if emmet#useFilter(filters, '/')
+        let spl = emmet#splitFilterArg(filters)
         let fline = getline(a:firstline)
         let query = substitute(query, '>\{0,1}{\$#}\s*$', '{\\$column\\$}*' . len(split(fline, spl)), '')
       endif
-      let items = zencoding#parseIntoTree(query, type).child
+      let items = emmet#parseIntoTree(query, type).child
       for item in items
-        let expand .= zencoding#toString(item, type, 0, filters, 0, indent)
+        let expand .= emmet#toString(item, type, 0, filters, 0, indent)
       endfor
-      if zencoding#useFilter(filters, 'e')
+      if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
         let expand = substitute(expand, '<', '\&lt;', 'g')
         let expand = substitute(expand, '>', '\&gt;', 'g')
@@ -432,11 +433,11 @@ function! zencoding#expandAbbr(mode, abbr) range
       for n in range(a:firstline, a:lastline)
         let lline = getline(n)
         let lpart = substitute(lline, '^\s\+', '', '')
-        if zencoding#useFilter(filters, 't')
+        if emmet#useFilter(filters, 't')
           let lpart = substitute(lpart, '^[0-9.-]\+\s\+', '', '')
           let lpart = substitute(lpart, '\s\+$', '', '')
         endif
-        if zencoding#useFilter(filters, '/')
+        if emmet#useFilter(filters, '/')
           for column in split(lpart, spl)
             let expand = substitute(expand, '\$column\$', '\=column', '')
           endfor
@@ -465,19 +466,19 @@ function! zencoding#expandAbbr(mode, abbr) range
           endif
         endfor
         let leader .= (str =~ "\n" ? ">{\n" : "{") . str . "}"
-        let items = zencoding#parseIntoTree(leader, type).child
+        let items = emmet#parseIntoTree(leader, type).child
       else
         let save_regcont = @"
         let save_regtype = getregtype('"')
         silent! normal! gvygv
         let str = @"
         call setreg('"', save_regcont, save_regtype)
-        let items = zencoding#parseIntoTree(leader . "{".str."}", type).child
+        let items = emmet#parseIntoTree(leader . "{".str."}", type).child
       endif
       for item in items
-        let expand .= zencoding#toString(item, type, 0, filters, 0, '')
+        let expand .= emmet#toString(item, type, 0, filters, 0, '')
       endfor
-      if zencoding#useFilter(filters, 'e')
+      if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
         let expand = substitute(expand, '<', '\&lt;', 'g')
         let expand = substitute(expand, '>', '\&gt;', 'g')
@@ -492,7 +493,7 @@ function! zencoding#expandAbbr(mode, abbr) range
       call setline('.', spaces.a:abbr)
     endif
     normal! $
-    call zencoding#expandAbbr(0, "")
+    call emmet#expandAbbr(0, "")
     return
   else
     let line = getline('.')
@@ -503,8 +504,8 @@ function! zencoding#expandAbbr(mode, abbr) range
       let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
-      let ftype = zencoding#lang#exists(type) ? type : 'html'
-      let part = zencoding#lang#{ftype}#findTokens(part)
+      let ftype = emmet#lang#exists(type) ? type : 'html'
+      let part = emmet#lang#{ftype}#findTokens(part)
     endif
     let rest = getline('.')[len(line):]
     let str = part
@@ -513,27 +514,27 @@ function! zencoding#expandAbbr(mode, abbr) range
       let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
       let str = substitute(str, mx, '', '')
     endif
-    let items = zencoding#parseIntoTree(str, rtype).child
+    let items = emmet#parseIntoTree(str, rtype).child
     for item in items
-      let expand .= zencoding#toString(item, rtype, 0, filters, 0, indent)
+      let expand .= emmet#toString(item, rtype, 0, filters, 0, indent)
     endfor
-    if zencoding#useFilter(filters, 'e')
+    if emmet#useFilter(filters, 'e')
       let expand = substitute(expand, '&', '\&amp;', 'g')
       let expand = substitute(expand, '<', '\&lt;', 'g')
       let expand = substitute(expand, '>', '\&gt;', 'g')
     endif
     let expand = substitute(expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
   endif
-  let expand = zencoding#expandDollarExpr(expand)
-  let expand = zencoding#expandCursorExpr(expand, a:mode)
+  let expand = emmet#expandDollarExpr(expand)
+  let expand = emmet#expandCursorExpr(expand, a:mode)
   if len(expand)
-    if has_key(s:zen_settings, 'timezone') && len(s:zen_settings.timezone)
-      let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:zen_settings.timezone, 'g')
+    if has_key(s:emmet_settings, 'timezone') && len(s:emmet_settings.timezone)
+      let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S") . s:emmet_settings.timezone, 'g')
     else
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
-    let expand = zencoding#unescapeDollarExpr(expand)
+    let expand = emmet#unescapeDollarExpr(expand)
     if a:mode == 2 && visualmode() ==# 'v'
       if a:firstline == a:lastline
         let expand = substitute(expand, '\n\s*', '', 'g')
@@ -577,115 +578,115 @@ function! zencoding#expandAbbr(mode, abbr) range
     silent! exe "normal! v7h\"_s"
     let &selection = oldselection
   endif
-  if g:zencoding_debug > 1
+  if g:emmet_debug > 1
     call getchar()
   endif
 endfunction
 
-function! zencoding#moveNextPrev(flag)
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#moveNextPrev(a:flag)
+function! emmet#moveNextPrev(flag)
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#moveNextPrev(a:flag)
 endfunction
 
-function! zencoding#imageSize()
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#imageSize()
+function! emmet#imageSize()
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#imageSize()
 endfunction
 
-function! zencoding#encodeImage()
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#encodeImage()
+function! emmet#encodeImage()
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#encodeImage()
 endfunction
 
-function! zencoding#toggleComment()
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#toggleComment()
+function! emmet#toggleComment()
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#toggleComment()
 endfunction
 
-function! zencoding#balanceTag(flag) range
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#balanceTag(a:flag)
+function! emmet#balanceTag(flag) range
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#balanceTag(a:flag)
 endfunction
 
-function! zencoding#splitJoinTag()
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#splitJoinTag()
+function! emmet#splitJoinTag()
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#splitJoinTag()
 endfunction
 
-function! zencoding#mergeLines() range
+function! emmet#mergeLines() range
   let lines = join(map(getline(a:firstline, a:lastline), 'matchstr(v:val, "^\\s*\\zs.*\\ze\\s*$")'), '')
   let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   silent! exe "normal! gvc"
   call setline('.', indent . lines)
 endfunction
 
-function! zencoding#removeTag()
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
-  return zencoding#lang#{rtype}#removeTag()
+function! emmet#removeTag()
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#removeTag()
 endfunction
 
-function! zencoding#anchorizeURL(flag)
+function! emmet#anchorizeURL(flag)
   let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
   let pos1 = searchpos(mx, 'bcnW')
   let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
   let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
-  if !zencoding#util#cursorInRegion(block)
+  if !emmet#util#cursorInRegion(block)
     return
   endif
 
   let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
-  let content = zencoding#util#getContentFromURL(url)
+  let content = emmet#util#getContentFromURL(url)
   let content = substitute(content, '\r', '', 'g')
   let content = substitute(content, '[ \n]\+', ' ', 'g')
   let content = substitute(content, '<!--.\{-}-->', '', 'g')
   let title = matchstr(content, mx)
 
-  let type = zencoding#getFileType()
-  let rtype = zencoding#lang#exists(type) ? type : 'html'
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
   if a:flag == 0
-    let a = zencoding#lang#html#parseTag('<a>')
+    let a = emmet#lang#html#parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
-    let expand = zencoding#toString(a, rtype, 0, [])
+    let expand = emmet#toString(a, rtype, 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
   else
-    let body = zencoding#util#getTextFromHTML(content)
+    let body = emmet#util#getTextFromHTML(content)
     let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
 
-    let blockquote = zencoding#lang#html#parseTag('<blockquote class="quote">')
-    let a = zencoding#lang#html#parseTag('<a>')
+    let blockquote = emmet#lang#html#parseTag('<blockquote class="quote">')
+    let a = emmet#lang#html#parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
     call add(blockquote.child, a)
-    call add(blockquote.child, zencoding#lang#html#parseTag('<br/>'))
-    let p = zencoding#lang#html#parseTag('<p>')
+    call add(blockquote.child, emmet#lang#html#parseTag('<br/>'))
+    let p = emmet#lang#html#parseTag('<p>')
     let p.value = body
     call add(blockquote.child, p)
-    let cite = zencoding#lang#html#parseTag('<cite>')
+    let cite = emmet#lang#html#parseTag('<cite>')
     let cite.value = '{' . url . '}'
     call add(blockquote.child, cite)
-    let expand = zencoding#toString(blockquote, rtype, 0, [])
+    let expand = emmet#toString(blockquote, rtype, 0, [])
     let expand = substitute(expand, '\${cursor}', '', 'g')
   endif
   let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   let expand = substitute(expand, "\n", "\n" . indent, 'g')
-  call zencoding#util#setContent(block, expand)
+  call emmet#util#setContent(block, expand)
 endfunction
 
-function! zencoding#codePretty() range
+function! emmet#codePretty() range
   let type = input('FileType: ', &ft, 'filetype')
   if len(type) == 0
     return
   endif
-  let block = zencoding#util#getVisualBlock()
-  let content = zencoding#util#getContent(block)
+  let block = emmet#util#getVisualBlock()
+  let content = emmet#util#getContent(block)
   silent! 1new
   let &l:filetype = type
   call setline(1, split(content, "\n"))
@@ -697,50 +698,50 @@ function! zencoding#codePretty() range
   silent! bw!
   silent! bw!
   let content = matchstr(content, '<body[^>]*>[\s\n]*\zs.*\ze</body>')
-  call zencoding#util#setContent(block, content)
+  call emmet#util#setContent(block, content)
 endfunction
 
-function! zencoding#ExpandWord(abbr, type, orig)
+function! emmet#ExpandWord(abbr, type, orig)
   let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
-  let indent = zencoding#getIndentation(type)
+  let indent = emmet#getIndentation(type)
 
   if len(type) == 0 | let type = 'html' | endif
   if str =~ mx
     let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
     let str = substitute(str, mx, '', '')
-  elseif has_key(s:zen_settings[a:type], 'filters')
-    let filters = split(s:zen_settings[a:type].filters, '\s*,\s*')
+  elseif has_key(s:emmet_settings[a:type], 'filters')
+    let filters = split(s:emmet_settings[a:type].filters, '\s*,\s*')
   else
     let filters = ['html']
   endif
-  let items = zencoding#parseIntoTree(str, a:type).child
+  let items = emmet#parseIntoTree(str, a:type).child
   let expand = ''
   for item in items
-    let expand .= zencoding#toString(item, a:type, 0, filters, 0, indent)
+    let expand .= emmet#toString(item, a:type, 0, filters, 0, indent)
   endfor
-  if zencoding#useFilter(filters, 'e')
+  if emmet#useFilter(filters, 'e')
     let expand = substitute(expand, '&', '\&amp;', 'g')
     let expand = substitute(expand, '<', '\&lt;', 'g')
     let expand = substitute(expand, '>', '\&gt;', 'g')
   endif
   if a:orig == 0
-    let expand = zencoding#expandDollarExpr(expand)
+    let expand = emmet#expandDollarExpr(expand)
     let expand = substitute(expand, '\${cursor}', '', 'g')
   endif
   return expand
 endfunction
 
-function! zencoding#getSnippets(type)
+function! emmet#getSnippets(type)
   let type = a:type
-  if len(type) == 0 || !has_key(s:zen_settings, type)
+  if len(type) == 0 || !has_key(s:emmet_settings, type)
     let type = 'html'
   endif
-  return zencoding#getResource(type, 'snippets', {})
+  return emmet#getResource(type, 'snippets', {})
 endfunction
 
-function! zencoding#CompleteTag(findstart, base)
+function! emmet#CompleteTag(findstart, base)
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1
@@ -749,16 +750,16 @@ function! zencoding#CompleteTag(findstart, base)
     endwhile
     return start
   else
-    let type = zencoding#getFileType()
+    let type = emmet#getFileType()
     let res = []
 
-    let snippets = zencoding#getResource(type, 'snippets', {})
+    let snippets = emmet#getResource(type, 'snippets', {})
     for item in keys(snippets)
       if stridx(item, a:base) != -1
         call add(res, substitute(item, '\${cursor}\||', '', 'g'))
       endif
     endfor
-    let aliases = zencoding#getResource(type, 'aliases', {})
+    let aliases = emmet#getResource(type, 'aliases', {})
     for item in values(aliases)
       if stridx(item, a:base) != -1
         call add(res, substitute(item, '\${cursor}\||', '', 'g'))
@@ -768,12 +769,12 @@ function! zencoding#CompleteTag(findstart, base)
   endif
 endfunction
 
-unlet! s:zen_settings
-let s:zen_settings = {
+unlet! s:emmet_settings
+let s:emmet_settings = {
 \    'lang': "en",
 \    'charset': "UTF-8",
 \    'custom_expands' : {
-\      '^\%(lorem\|lipsum\)\(\d*\)$' : function('zencoding#lorem#en#expand'),
+\      '^\%(lorem\|lipsum\)\(\d*\)$' : function('emmet#lorem#en#expand'),
 \    },
 \    'css': {
 \        'snippets': {
@@ -1275,6 +1276,7 @@ let s:zen_settings = {
 \        'extends': 'css',
 \    },
 \    'html': {
+\        'indentation': "\t",
 \        'snippets': {
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
 \            'cc:ie': "<!--[if IE]>\n\t${child}|\n<![endif]-->",
@@ -1563,8 +1565,8 @@ let s:zen_settings = {
 \    }
 \}
 
-if exists('g:user_zen_settings')
-  call zencoding#mergeConfig(s:zen_settings, g:user_zen_settings)
+if exists('g:user_emmet_settings')
+  call emmet#mergeConfig(s:emmet_settings, g:user_emmet_settings)
 endif
 
 let &cpo = s:save_cpo

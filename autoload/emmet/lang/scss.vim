@@ -1,16 +1,16 @@
-function! zencoding#lang#scss#findTokens(str)
-  return zencoding#lang#html#findTokens(a:str)
+function! emmet#lang#scss#findTokens(str)
+  return emmet#lang#html#findTokens(a:str)
 endfunction
 
-function! zencoding#lang#scss#parseIntoTree(abbr, type)
+function! emmet#lang#scss#parseIntoTree(abbr, type)
   if a:abbr =~ '>'
-    return zencoding#lang#html#parseIntoTree(a:abbr, a:type)
+    return emmet#lang#html#parseIntoTree(a:abbr, a:type)
   else
-    return zencoding#lang#css#parseIntoTree(a:abbr, a:type)
+    return emmet#lang#css#parseIntoTree(a:abbr, a:type)
   endif
 endfunction
 
-function! zencoding#lang#scss#toString(settings, current, type, inline, filters, itemno, indent)
+function! emmet#lang#scss#toString(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
   let type = a:type
@@ -49,34 +49,34 @@ function! zencoding#lang#scss#toString(settings, current, type, inline, filters,
 
     let inner = ''
     for child in current.child
-      let inner .= zencoding#toString(child, type, inline, filters, itemno)
+      let inner .= emmet#toString(child, type, inline, filters, itemno)
     endfor
     let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
     let inner = substitute(inner, "\n" . escape(indent, '\') . "$", "", 'g')
     let str .= indent . inner . "\n}\n"
   else
-    return zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
+    return emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
   endif
   return str
 endfunction
 
-function! zencoding#lang#scss#imageSize()
-  call zencoding#lang#css#imageSize()
+function! emmet#lang#scss#imageSize()
+  call emmet#lang#css#imageSize()
 endfunction
 
-function! zencoding#lang#scss#encodeImage()
-  return zencoding#lang#css#encodeImage()
+function! emmet#lang#scss#encodeImage()
+  return emmet#lang#css#encodeImage()
 endfunction
 
-function! zencoding#lang#scss#parseTag(tag)
-  return zencoding#lang#css#parseTag(a:tag)
+function! emmet#lang#scss#parseTag(tag)
+  return emmet#lang#css#parseTag(a:tag)
 endfunction
 
-function! zencoding#lang#scss#toggleComment()
-  call zencoding#lang#css#toggleComment()
+function! emmet#lang#scss#toggleComment()
+  call emmet#lang#css#toggleComment()
 endfunction
 
-function! zencoding#lang#scss#balanceTag(flag) range
+function! emmet#lang#scss#balanceTag(flag) range
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
     call setpos('.', curpos)
@@ -96,8 +96,8 @@ function! zencoding#lang#scss#balanceTag(flag) range
       let pos2 = searchpairpos('{', '', '}')
     endif
     let block = [pos1, pos2]
-    if zencoding#util#regionIsValid(block)
-      call zencoding#util#selectRegion(block)
+    if emmet#util#regionIsValid(block)
+      call emmet#util#selectRegion(block)
       return
     endif
   endif
@@ -108,14 +108,14 @@ function! zencoding#lang#scss#balanceTag(flag) range
   endif
 endfunction
 
-function! zencoding#lang#scss#moveNextPrev(flag)
-  call zencoding#lang#css#moveNextPrev(a:flag)
+function! emmet#lang#scss#moveNextPrev(flag)
+  call emmet#lang#css#moveNextPrev(a:flag)
 endfunction
 
-function! zencoding#lang#scss#splitJoinTag()
-  call zencoding#lang#css#splitJoinTag()
+function! emmet#lang#scss#splitJoinTag()
+  call emmet#lang#css#splitJoinTag()
 endfunction
 
-function! zencoding#lang#scss#removeTag()
-  call zencoding#lang#ss#removeTag()
+function! emmet#lang#scss#removeTag()
+  call emmet#lang#ss#removeTag()
 endfunction

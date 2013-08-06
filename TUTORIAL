@@ -1,4 +1,4 @@
-Tutorial for zencoding.vim
+Tutorial for Emmet.vim
 
                                                     mattn <mattn.jp@gmail.com>
 
@@ -176,28 +176,28 @@ Tutorial for zencoding.vim
   </blockquote>
   ---------------------
 
-14. Installing zencoding.vim for the language you are using:
+14. Installing emmet.vim for the language you are using:
 
   # cd ~/.vim
-  # unzip zencoding-vim.zip
+  # unzip emmet-vim.zip
 
   Or if you are using pathogen.vim:
 
   # cd ~/.vim/bundle # or make directory
-  # unzip /path/to/zencoding-vim.zip
+  # unzip /path/to/emmet-vim.zip
 
   Or if you get the sources from the repository:
 
   # cd ~/.vim/bundle # or make directory
-  # git clone http://github.com/mattn/zencoding-vim.git
+  # git clone http://github.com/mattn/emmet-vim.git
 
-15. Enable zencoding.vim for the language you using.
+15. Enable emmet.vim for the language you using.
 
   You can customize the behavior of the languages you are using.
 
   ---------------------
   # cat >> ~/.vimrc
-  let g:user_zen_settings = {
+  let g:user_emmet_settings = {
   \  'php' : {
   \    'extends' : 'html',
   \    'filters' : 'c',

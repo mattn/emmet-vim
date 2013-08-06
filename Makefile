@@ -1,11 +1,11 @@
-all : zencoding-vim.zip
+all : emmet-vim.zip
 
 remove-zip:
 	-rm doc/tags
-	-rm zencoding-vim.zip
+	-rm emmet-vim.zip
 
-zencoding-vim.zip: remove-zip
-	zip -r zencoding-vim.zip autoload plugin doc
+emmet-vim.zip: remove-zip
+	zip -r emmet-vim.zip autoload plugin doc
 
-release: zencoding-vim.zip
-	vimup update-script zencoding.vim
+release: emmet-vim.zip
+	vimup update-script emmet.vim

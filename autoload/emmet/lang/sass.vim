@@ -1,16 +1,16 @@
-function! zencoding#lang#sass#findTokens(str)
-  return zencoding#lang#html#findTokens(a:str)
+function! emmet#lang#sass#findTokens(str)
+  return emmet#lang#html#findTokens(a:str)
 endfunction
 
-function! zencoding#lang#sass#parseIntoTree(abbr, type)
+function! emmet#lang#sass#parseIntoTree(abbr, type)
   if a:abbr =~ '>'
-    return zencoding#lang#html#parseIntoTree(a:abbr, a:type)
+    return emmet#lang#html#parseIntoTree(a:abbr, a:type)
   else
-    return zencoding#lang#css#parseIntoTree(a:abbr, a:type)
+    return emmet#lang#css#parseIntoTree(a:abbr, a:type)
   endif
 endfunction
 
-function! zencoding#lang#sass#toString(settings, current, type, inline, filters, itemno, indent)
+function! emmet#lang#sass#toString(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
   let type = a:type
@@ -50,33 +50,33 @@ function! zencoding#lang#sass#toString(settings, current, type, inline, filters,
 
     let inner = ''
     for child in current.child
-      let inner .= zencoding#toString(child, type, inline, filters, itemno)
+      let inner .= emmet#toString(child, type, inline, filters, itemno)
     endfor
     let inner = substitute(inner, "\n", "\n" . indent, 'g')
     let inner = substitute(inner, "\n" . indent . "$", "", 'g')
     let str .= indent . inner
   else
-    let text = zencoding#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
+    let text = emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
     let text = substitute(text, '\s*;\ze\(\${[^}]\+}\)\?\(\n\|$\)', '', 'g')
     return text
   endif
   return str
 endfunction
 
-function! zencoding#lang#sass#imageSize()
+function! emmet#lang#sass#imageSize()
 endfunction
 
-function! zencoding#lang#sass#encodeImage()
+function! emmet#lang#sass#encodeImage()
 endfunction
 
-function! zencoding#lang#sass#parseTag(tag)
+function! emmet#lang#sass#parseTag(tag)
 endfunction
 
-function! zencoding#lang#sass#toggleComment()
+function! emmet#lang#sass#toggleComment()
 endfunction
 
-function! zencoding#lang#sass#balanceTag(flag) range
-  let block = zencoding#util#getVisualBlock()
+function! emmet#lang#sass#balanceTag(flag) range
+  let block = emmet#util#getVisualBlock()
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
@@ -86,7 +86,7 @@ function! zencoding#lang#sass#balanceTag(flag) range
   let ml = len(matchstr(getline(n), '^\s*'))
 
   if a:flag > 0
-    if a:flag == 1 || !zencoding#util#regionIsValid(block)
+    if a:flag == 1 || !emmet#util#regionIsValid(block)
       let n = line('.')
     else
       while n > 0
@@ -140,7 +140,7 @@ function! zencoding#lang#sass#balanceTag(flag) range
   endif
 endfunction
 
-function! zencoding#lang#sass#moveNextPrev(flag)
+function! emmet#lang#sass#moveNextPrev(flag)
   let pos = search('""\|\(^\s*|\s*\zs\)', a:flag ? 'Wpb' : 'Wp')
   if pos == 2
     startinsert!
@@ -150,8 +150,8 @@ function! zencoding#lang#sass#moveNextPrev(flag)
   endif
 endfunction
 
-function! zencoding#lang#sass#splitJoinTag()
+function! emmet#lang#sass#splitJoinTag()
 endfunction
 
-function! zencoding#lang#sass#removeTag()
+function! emmet#lang#sass#removeTag()
 endfunction

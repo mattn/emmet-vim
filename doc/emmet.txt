@@ -1,48 +1,48 @@
-*zencoding.txt*	ZenCoding for Vim
+*emmet.txt*	Emmet for Vim
 
 	   -------------------------------------------------------
-	   ZenCoding: vim plugins for HTML and CSS hi-speed coding
+	     Emmet: vim plugins for HTML and CSS hi-speed coding
 	   -------------------------------------------------------
 
 Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 WebSite: http://mattn.kaoriya.net/
-Repository: http://github.com/mattn/zencoding-vim
-Site: http://mattn.github.com/zencoding-vim
+Repository: http://github.com/mattn/emmet-vim
+Site: http://mattn.github.com/emmet-vim
 License: BSD style license
 
 ==============================================================================
-CONTENTS                                                    *zencoding-contents*
+CONTENTS                                                        *emmet-contents*
 
-Introduction           |zencoding-introduction|
-Install                |zencoding-install|
-Tutorial               |zencoding-tutorial|
-  1. Expand Abbreviation            |zencoding-expandabbr|
-  2. Wrap with Abbreviation         |zencoding-wrap-with-abbreviation|
-  3. Balance Tag Inward             |zencoding-balance-tag-inward|
-  4. Balance Tag Outward            |zencoding-balance-tag-outward|
-  5. Go to Next Edit Point          |zencoding-goto-next-point| |<C-Y>n|
-  6. Go to Previous Edit Point      |zencoding-goto-previous-point|
-  7. Update <img> Size              |zencoding-update-image-size|
-  8. Merge Lines                    |zencoding-merge-lines|
-  9. Remove Tag                     |zencoding-remove-tag|
- 10. Split/Join Tag                 |zencoding-split-join-tag|
- 11. Toggle Comment                 |zencoding-toggle-comment|
- 12. Make anchor from URL           |zencoding-make-anchor-url|
- 13. Make quoted text from URL      |zencoding-quoted-text-url|
- 14. Code Pretty                    |zencoding-code-pretty|
- 15. Lorem Ipsum                    |zencoding-lorem-ipsum|
-Customize             |zencoding-customize|
-  1. Key Mappings                   |zencoding-customize-keymappings|
-  2. Indent Size                    |zencoding-indent-size|
-  3. Define Tag's Behavior          |zencoding-define-tags-behavior|
-  4. Complete Tag                   |zencoding-complete-tag|
-Links                 |zencoding-links|
-ToDo                  |zencoding-todo|
+Introduction           |emmet-introduction|
+Install                |emmet-install|
+Tutorial               |emmet-tutorial|
+  1. Expand Abbreviation            |emmet-expandabbr|
+  2. Wrap with Abbreviation         |emmet-wrap-with-abbreviation|
+  3. Balance Tag Inward             |emmet-balance-tag-inward|
+  4. Balance Tag Outward            |emmet-balance-tag-outward|
+  5. Go to Next Edit Point          |emmet-goto-next-point| |<C-Y>n|
+  6. Go to Previous Edit Point      |emmet-goto-previous-point|
+  7. Update <img> Size              |emmet-update-image-size|
+  8. Merge Lines                    |emmet-merge-lines|
+  9. Remove Tag                     |emmet-remove-tag|
+ 10. Split/Join Tag                 |emmet-split-join-tag|
+ 11. Toggle Comment                 |emmet-toggle-comment|
+ 12. Make anchor from URL           |emmet-make-anchor-url|
+ 13. Make quoted text from URL      |emmet-quoted-text-url|
+ 14. Code Pretty                    |emmet-code-pretty|
+ 15. Lorem Ipsum                    |emmet-lorem-ipsum|
+Customize             |emmet-customize|
+  1. Key Mappings                   |emmet-customize-keymappings|
+  2. Indent Size                    |emmet-indent-size|
+  3. Define Tag's Behavior          |emmet-define-tags-behavior|
+  4. Complete Tag                   |emmet-complete-tag|
+Links                 |emmet-links|
+ToDo                  |emmet-todo|
 
 ==============================================================================
-INTRODUCTION                                  *zencoding-introduction* *zencoding*
+INTRODUCTION                                          *emmet-introduction* *emmet*
 
-|ZenCoding| is an editor plugin for high-speed HTML, XML, XSL (or any other
+|Emmet| is an editor plugin for high-speed HTML, XML, XSL (or any other
 structured code format) coding and editing. The core of this plugin is a
 powerful abbreviation engine which allows you to expand expressions?similar to
 CSS selectors?into HTML code:
@@ -62,15 +62,15 @@ CSS selectors?into HTML code:
         </ul>
     </div>
 <
-Read more about current Zen Coding syntax
-  http://code.google.com/p/zen-coding/wiki/ZenHTMLSelectorsEn
+Read more about current Emmet syntax
+  http://docs.emmet.io/abbreviations/
 
 Abbreviation engine has a modular structure which allows you to expand
-abbreviations into different languages. Zen Coding currently supports CSS,
+abbreviations into different languages. Emmet currently supports CSS,
 HTML, XML/XSL and HAML, Slim languages via filters.
 
 ==============================================================================
-INSTALL                                                      *zencoding-install*
+INSTALL                                                          *emmet-install*
 
 Install the distributed files into Vim runtime directory which is usually
 ~/.vim/, or $HOME/vimfiles on Windows.
@@ -79,13 +79,13 @@ If you install pathogen that provided from Tim Pope, you should extract the
 file into 'bundle' directory.
 
 ==============================================================================
-TUTORIAL                                                    *zencoding-tutorial*
+TUTORIAL                                                        *emmet-tutorial*
 
 If you are seeing this file as :help, then you can't edit this file.
 You should copy this section and create new buffer, paste and write as
-'zencoding-tutor.txt'. Formally, open the file to start tutorial.
+'emmet-tutor.txt'. Formally, open the file to start tutorial.
 
-1. Expand Abbreviation                             *zencoding-expandabbr* *<C-Y>,*
+1. Expand Abbreviation                                 *emmet-expandabbr* *<C-Y>,*
 
   Type abbreviation as 'div>p#foo$*3>a' and type |<C-Y>,|.
 >
@@ -101,7 +101,7 @@ You should copy this section and create new buffer, paste and write as
       </p>
   </div>
 <
-2. Wrap with Abbreviation            *zencoding-wrap-with-abbreviation* *v_<C-Y>,*
+2. Wrap with Abbreviation                *emmet-wrap-with-abbreviation* *v_<C-Y>,*
 
   Write as below.
 >
@@ -126,7 +126,7 @@ You should copy this section and create new buffer, paste and write as
       test3
   </blockquote>
 <
-3. Balance Tag Inward                      *zencoding-balance-tag-inward* *<C-Y>d*
+3. Balance Tag Inward                          *emmet-balance-tag-inward* *<C-Y>d*
 
   To select inward of ul tag, type |<C-Y>d| in insert mode.
 >
@@ -139,7 +139,7 @@ You should copy this section and create new buffer, paste and write as
   If cursor is at '*', |<C-Y>d| select from begin of <ul> to end of </ul>.
   If cursor is at first of <li>, it select <li class="list1"></li>.
 
-4. Balance Tag Outward                    *zencoding-balance-tag-outward* *<C-Y>D*
+4. Balance Tag Outward                        *emmet-balance-tag-outward* *<C-Y>D*
 
   To select outward of ul tag,  insert mode, type <C-Y>D in insert mode.
 >
@@ -153,7 +153,7 @@ You should copy this section and create new buffer, paste and write as
   letter of </ul>.
   If cursor is at first of <li>, it select <li class="list1"></li>.
 
-5. Go to Next Edit Point                      *zencoding-goto-next-point* *<C-Y>n*
+5. Go to Next Edit Point                          *emmet-goto-next-point* *<C-Y>n*
 
   To jump next point that need to edit, type |<C-Y>n| in insert mode.
 >
@@ -164,7 +164,7 @@ You should copy this section and create new buffer, paste and write as
   specified id as 'foo'. And type again |<C-Y>n| move a cursor into inner of
   div specified id as 'bar'.
 
-6. Go to Previous Edit Point              *zencoding-goto-previous-point* *<C-Y>N*
+6. Go to Previous Edit Point                  *emmet-goto-previous-point* *<C-Y>N*
 
   To jump previous point that need to edit, type |<C-Y>N| in insert mode.
 >
@@ -174,7 +174,7 @@ You should copy this section and create new buffer, paste and write as
   If cursor is at '*', |<C-Y>N| move a cursor into div specified id as 'bar'.
   And type again |<C-Y>N| move a cursor into attribute value of 'foo'.
 
-7. Update <img> Size                        *zencoding-update-image-size* *<C-Y>i*
+7. Update <img> Size                            *emmet-update-image-size* *<C-Y>i*
 
   To expand or update size of image, type |<C-Y>i| on img tag
 >
@@ -188,7 +188,7 @@ You should copy this section and create new buffer, paste and write as
 >
   <img src="foo-48.png" width="32" height="48" />
 <
-8. Merge Lines                                           *zencoding-merge-lines*
+8. Merge Lines                                               *emmet-merge-lines*
 
   To join multi line text like following, type |J|.
 >
@@ -205,7 +205,7 @@ You should copy this section and create new buffer, paste and write as
       <li class="list1"></li><li class="list2"></li><li class="list3"></li>
   </ul>
 <
-9. Remove Tag                                      *zencoding-remove-tag* *<C-Y>k*
+9. Remove Tag                                          *emmet-remove-tag* *<C-Y>k*
 
   To remove tag in the block, type |<C-Y>k|.
 >
@@ -221,7 +221,7 @@ You should copy this section and create new buffer, paste and write as
 <
   And type |<C-Y>k| in there again, then div will be removed.
 
-10. Split/Join Tag                             *zencoding-split-join-tag* *<C-Y>j*
+10. Split/Join Tag                                 *emmet-split-join-tag* *<C-Y>j*
 
   To join block, type |<C-Y>j|.
 >
@@ -238,7 +238,7 @@ You should copy this section and create new buffer, paste and write as
   <div class="foo">
   </div>
 <
-11. Toggle Comment                             *zencoding-toggle-comment* *<C-Y>/*
+11. Toggle Comment                                 *emmet-toggle-comment* *<C-Y>/*
 
   Move cursor to block
 >
@@ -258,7 +258,7 @@ You should copy this section and create new buffer, paste and write as
       hello world
   </div>
 <
-12. Make anchor from URL                      *zencoding-make-anchor-url* *<C-Y>a*
+12. Make anchor from URL                          *emmet-make-anchor-url* *<C-Y>a*
 
   Move cursor to URL
 >
@@ -268,7 +268,7 @@ You should copy this section and create new buffer, paste and write as
 >
   <a href="http://www.google.com/">Google</a>
 <
-13. Make quoted text from URL                 *zencoding-quoted-text-url* *<C-Y>A*
+13. Make quoted text from URL                     *emmet-quoted-text-url* *<C-Y>A*
 
   Move cursor to URL
 >
@@ -282,7 +282,7 @@ You should copy this section and create new buffer, paste and write as
       <cite>http://github.com/</cite>
   </blockquote>
 <
-14. Code Pretty                                   *zencoding-code-pretty* *<C-Y>c*
+14. Code Pretty                                       *emmet-code-pretty* *<C-Y>c*
 
   Select code block, for example select following code from "int main()".
 >
@@ -298,7 +298,7 @@ You should copy this section and create new buffer, paste and write as
   &nbsp;&nbsp;puts(<span class="Constant">&quot;hello world&quot;</span>);<br />
   }<br />
 <
-15. Lorem Ipsum                                          *zencoding-lorem-ipsum*
+15. Lorem Ipsum                                              *emmet-lorem-ipsum*
 
   To insert dummy text.
 >
@@ -311,13 +311,13 @@ You should copy this section and create new buffer, paste and write as
   deserunt ab, veritatis commodi. Eius nobis ab deserunt magni iure quo
   laboriosam laboriosam.</div>
 <
-  For japanese user, put like follow into your g:user_zen_settings:
+  For japanese user, put like follow into your g:user_emmet_settings:
 >
-  let g:user_zen_settings = {
+  let g:user_emmet_settings = {
     ...
 
     \  'custom_expands1' : {
-    \    '^\%(lorem\|lipsum\)\(\d*\)$' : function('zencoding#lorem#ja#expand'),
+    \    '^\%(lorem\|lipsum\)\(\d*\)$' : function('emmet#lorem#ja#expand'),
     \  },
 
     ...
@@ -325,35 +325,35 @@ You should copy this section and create new buffer, paste and write as
   You will get japanese dummy text.
 >
 ==============================================================================
-CUSTOMIZE                                                  *zencoding-customize*
+CUSTOMIZE                                                      *emmet-customize*
 
-1. Key Mapping                                 *zencoding-customize-keymappings*
+1. Key Mapping                                     *emmet-customize-keymappings*
 
   To specify leading key for expanding or balance tag, or for all,
   Add this line in your vimrc: >
 >
-  let g:user_zen_leader_key = '<c-y>'
+  let g:user_emmet_leader_key = '<c-y>'
 <
   Or if you prefer to map for each actions, then you set each variables.
 
-    'user_zen_expandabbr_key'
-    'user_zen_expandword_key'
-    'user_zen_balancetaginward_key'
-    'user_zen_balancetagoutward_key'
-    'user_zen_next_key'
-    'user_zen_prev_key'
-    'user_zen_imagesize_key'
-    'user_zen_togglecomment_key'
-    'user_zen_splitjointag_key'
-    'user_zen_removetag_key'
-    'user_zen_anchorizeurl_key'
-    'user_zen_anchorizesummary_key'
+    'user_emmet_expandabbr_key'
+    'user_emmet_expandword_key'
+    'user_emmet_balancetaginward_key'
+    'user_emmet_balancetagoutward_key'
+    'user_emmet_next_key'
+    'user_emmet_prev_key'
+    'user_emmet_imagesize_key'
+    'user_emmet_togglecomment_key'
+    'user_emmet_splitjointag_key'
+    'user_emmet_removetag_key'
+    'user_emmet_anchorizeurl_key'
+    'user_emmet_anchorizesummary_key'
 
-2. Indent Size                                           *zencoding-indent-size*
+2. Indent Size                                               *emmet-indent-size*
 
   To change indent size of html, add this code in your vimrc.
 >
-  let g:user_zen_settings = {
+  let g:user_emmet_settings = {
   \  'html' : {
   \    'indentation' : ' '
   \  },
@@ -361,17 +361,17 @@ CUSTOMIZE                                                  *zencoding-customize*
 <
   If you prefer to change global indent size then add this.
 >
-  let g:user_zen_settings = {
+  let g:user_emmet_settings = {
   \  'indentation' : ' '
   \}
 <
-3. Define Tag's Behavior                        *zencoding-define-tags-behavior*
+3. Define Tag's Behavior                            *emmet-define-tags-behavior*
 
-  zencoding.vim can change behavior of expanding abbreviation for each
-  filetypes as |Dictionary|. For details, see official site of zencoding.
+  Emmet.vim can change behavior of expanding abbreviation for each
+  filetypes as |Dictionary|. For details, see official site of Emmet.
   for example, vimmer can add following.
 >
-  let g:user_zen_settings = {
+  let g:user_emmet_settings = {
   \  'lang' : 'ja',
   \  'html' : {
   \    'filters' : 'html',
@@ -412,23 +412,29 @@ CUSTOMIZE                                                  *zencoding-customize*
   \ },
   \}
 <
-4. Complete Tag                                         *zencoding-complete-tag*
+4. Complete Tag                                             *emmet-complete-tag*
 
   If you want to complete tags using |omnifunc| then add this.
 >
-  let g:use_zen_complete_tag = 1
+  let g:use_emmet_complete_tag = 1
 <
 
 5. Enable functions in different mode
 
-  If you want to use zencoding only in some modes, set an mode option:
+  If you want to use Emmet only in some modes, set an mode option:
 
-    let g:user_zen_mode='n'    "only enable normal mode functions, or
-    let g:user_zen_mode='inv'  "enable all functions, which is equal to
-    let g:user_zen_mode='a'    "enable all function in all mode.
+    let g:user_emmet_mode='n'    "only enable normal mode functions, or
+    let g:user_emmet_mode='inv'  "enable all functions, which is equal to
+    let g:user_emmet_mode='a'    "enable all function in all mode.
 
 ==============================================================================
-LINKS                                                          *zencoding-links*
+LINKS                                                              *emmet-links*
+
+Emmet official site:
+  http://emmet.io/
+
+zen-coding official site:
+  http://code.google.com/p/zen-coding/
 
 zen-coding official site:
   http://code.google.com/p/zen-coding/
@@ -453,11 +459,11 @@ tutorial translated in Chinese:
   http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html
 
 ==============================================================================
-TODO                                                            *zencoding-todo*
+TODO                                                                *emmet-todo*
   * wrapping inline selected.
   * more documents.
   * more contributor.
-  * more time to improve zencoding.vim.
+  * more time to improve emmet.vim.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:

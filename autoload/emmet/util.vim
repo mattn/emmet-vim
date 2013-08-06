@@ -11,7 +11,7 @@
 "   --------------------
 "   begin::end
 "   --------------------
-function! zencoding#util#deleteContent(region)
+function! emmet#util#deleteContent(region)
   let lines = getline(a:region[0][0], a:region[1][0])
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
@@ -36,7 +36,7 @@ endfunction
 "   bar
 "   baz:end
 "   --------------------
-function! zencoding#util#setContent(region, content)
+function! emmet#util#setContent(region, content)
   let newlines = split(a:content, '\n', 1)
   let oldlines = getline(a:region[0][0], a:region[1][0])
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
@@ -72,7 +72,7 @@ endfunction
 
 " select_region : select region
 "   this function make a selection of region
-function! zencoding#util#selectRegion(region)
+function! emmet#util#selectRegion(region)
   call setpos('.', [0, a:region[1][0], a:region[1][1], 0])
   normal! v
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
@@ -80,8 +80,8 @@ endfunction
 
 " point_in_region : check point is in the region
 "   this function return 0 or 1
-function! zencoding#util#pointInRegion(point, region)
-  if !zencoding#util#regionIsValid(a:region) | return 0 | endif
+function! emmet#util#pointInRegion(point, region)
+  if !emmet#util#regionIsValid(a:region) | return 0 | endif
   if a:region[0][0] > a:point[0] | return 0 | endif
   if a:region[1][0] < a:point[0] | return 0 | endif
   if a:region[0][0] == a:point[0] && a:region[0][1] > a:point[1] | return 0 | endif
@@ -91,29 +91,29 @@ endfunction
 
 " cursor_in_region : check cursor is in the region
 "   this function return 0 or 1
-function! zencoding#util#cursorInRegion(region)
-  if !zencoding#util#regionIsValid(a:region) | return 0 | endif
+function! emmet#util#cursorInRegion(region)
+  if !emmet#util#regionIsValid(a:region) | return 0 | endif
   let cur = getpos('.')[1:2]
-  return zencoding#util#pointInRegion(cur, a:region)
+  return emmet#util#pointInRegion(cur, a:region)
 endfunction
 
 " region_is_valid : check region is valid
 "   this function return 0 or 1
-function! zencoding#util#regionIsValid(region)
+function! emmet#util#regionIsValid(region)
   if a:region[0][0] == 0 || a:region[1][0] == 0 | return 0 | endif
   return 1
 endfunction
 
 " search_region : make region from pattern which is composing start/end
 "   this function return array of position
-function! zencoding#util#searchRegion(start, end)
+function! emmet#util#searchRegion(start, end)
   return [searchpairpos(a:start, '', a:end, 'bcnW'), searchpairpos(a:start, '\%#', a:end, 'nW')]
 endfunction
 
 " get_content : get content in region
 "   this function return string in region
-function! zencoding#util#getContent(region)
-  if !zencoding#util#regionIsValid(a:region)
+function! emmet#util#getContent(region)
+  if !emmet#util#regionIsValid(a:region)
     return ''
   endif
   let lines = getline(a:region[0][0], a:region[1][0])
@@ -128,24 +128,24 @@ endfunction
 
 " region_in_region : check region is in the region
 "   this function return 0 or 1
-function! zencoding#util#regionInRegion(outer, inner)
-  if !zencoding#util#regionIsValid(a:inner) || !zencoding#util#regionIsValid(a:outer)
+function! emmet#util#regionInRegion(outer, inner)
+  if !emmet#util#regionIsValid(a:inner) || !emmet#util#regionIsValid(a:outer)
     return 0
   endif
-  return zencoding#util#pointInRegion(a:inner[0], a:outer) && zencoding#util#pointInRegion(a:inner[1], a:outer)
+  return emmet#util#pointInRegion(a:inner[0], a:outer) && emmet#util#pointInRegion(a:inner[1], a:outer)
 endfunction
 
 " get_visualblock : get region of visual block
 "   this function return region of visual block
-function! zencoding#util#getVisualBlock()
+function! emmet#util#getVisualBlock()
   return [[line("'<"), col("'<")], [line("'>"), col("'>")]]
 endfunction
 
 "==============================================================================
 " html utils
 "==============================================================================
-function! zencoding#util#getContentFromURL(url)
-  let res = system(printf("%s %s", g:zencoding_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
+function! emmet#util#getContentFromURL(url)
+  let res = system(printf("%s %s", g:emmet_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
   let charset = matchstr(res, '<meta[^>]\+content=["''][^;"'']\+;\s*charset=\zs[^;"'']\+\ze["''][^>]*>')
   if len(charset) == 0
     let charset = matchstr(res, '<meta\s\+charset=["'']\?\zs[^"'']\+\ze["'']\?[^>]*>')
@@ -159,7 +159,7 @@ function! zencoding#util#getContentFromURL(url)
   return iconv(res, charset, &encoding)
 endfunction
 
-function! zencoding#util#getTextFromHTML(buf)
+function! emmet#util#getTextFromHTML(buf)
   let threshold_len = 100
   let threshold_per = 0.1
   let buf = a:buf
@@ -196,17 +196,17 @@ function! zencoding#util#getTextFromHTML(buf)
   return res
 endfunction
 
-function! zencoding#util#getImageSize(fn)
+function! emmet#util#getImageSize(fn)
   let fn = a:fn
 
-  if zencoding#util#isImageMagickInstalled()
-    return zencoding#util#imageSizeWithImageMagick(fn)
+  if emmet#util#isImageMagickInstalled()
+    return emmet#util#imageSizeWithImageMagick(fn)
   endif
 
   if filereadable(fn)
     let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
   else
-    let hex = substitute(system(g:zencoding_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
+    let hex = substitute(system(g:emmet_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
   endif
 
   let [width, height] = [-1, -1]
@@ -240,7 +240,7 @@ function! zencoding#util#getImageSize(fn)
   return [width, height]
 endfunction
 
-function! zencoding#util#imageSizeWithImageMagick(fn)
+function! emmet#util#imageSizeWithImageMagick(fn)
   let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
   let img_size = split(substitute(img_info, '\n', '', ''), 'x')
   let width = img_size[0]
@@ -248,14 +248,14 @@ function! zencoding#util#imageSizeWithImageMagick(fn)
   return [width, height]
 endfunction
 
-function! zencoding#util#isImageMagickInstalled()
-  if !get(s:, 'zencoding_use_identify', 1)
+function! emmet#util#isImageMagickInstalled()
+  if !get(s:, 'emmet_use_identify', 1)
     return 0
   endif
   return executable('identify')
 endfunction
 
-function! zencoding#util#unique(arr)
+function! emmet#util#unique(arr)
   let m = {}
   let r = []
   for i in a:arr
@@ -268,18 +268,18 @@ function! zencoding#util#unique(arr)
 endfunction
 
 let s:seed = localtime()
-function! zencoding#util#srand(seed)
+function! emmet#util#srand(seed)
   let s:seed = a:seed
 endfunction
 
-function! zencoding#util#rand()
+function! emmet#util#rand()
   let s:seed = s:seed * 214013 + 2531011
   return (s:seed < 0 ? s:seed - 0x80000000 : s:seed) / 0x10000 % 0x8000
 endfunction
 
-function! zencoding#util#cache(name, ...)
+function! emmet#util#cache(name, ...)
   let content = get(a:000, 0, "")
-  let dir = expand("~/.zencoding/cache")
+  let dir = expand("~/.emmet/cache")
   if !isdirectory(dir)
     call mkdir(dir, "p", 0700)
   endif

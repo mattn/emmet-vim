@@ -1,20 +1,20 @@
-function! zencoding#lang#slim#findTokens(str)
-  return zencoding#lang#html#findTokens(a:str)
+function! emmet#lang#slim#findTokens(str)
+  return emmet#lang#html#findTokens(a:str)
 endfunction
 
-function! zencoding#lang#slim#parseIntoTree(abbr, type)
-  return zencoding#lang#html#parseIntoTree(a:abbr, a:type)
+function! emmet#lang#slim#parseIntoTree(abbr, type)
+  return emmet#lang#html#parseIntoTree(a:abbr, a:type)
 endfunction
 
-function! zencoding#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
+function! emmet#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
   let settings = a:settings
   let current = a:current
   let type = a:type
   let inline = a:inline
   let filters = a:filters
   let itemno = a:itemno
-  let indent = zencoding#getIndentation(type)
-  let dollar_expr = zencoding#getResource(type, 'dollar_expr', 1)
+  let indent = emmet#getIndentation(type)
+  let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
   let str = ""
 
   let comment_indent = ''
@@ -25,7 +25,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
   endif
   if len(current.name) > 0
     let str .= current_name
-    for attr in zencoding#util#unique(current.attrs_order + keys(current.attr))
+    for attr in emmet#util#unique(current.attrs_order + keys(current.attr))
       if !has_key(current.attr, attr)
         continue
       endif
@@ -68,7 +68,7 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
       endfor
     elseif len(current.child) > 0
       for child in current.child
-        let inner .= zencoding#toString(child, type, inline, filters, itemno, indent)
+        let inner .= emmet#toString(child, type, inline, filters, itemno, indent)
       endfor
       let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
       let inner = substitute(inner, "\n" . escape(indent, '\') . "$", "", 'g')
@@ -88,9 +88,9 @@ function! zencoding#lang#slim#toString(settings, current, type, inline, filters,
   return str
 endfunction
 
-function! zencoding#lang#slim#imageSize()
+function! emmet#lang#slim#imageSize()
   let line = getline('.')
-  let current = zencoding#lang#slim#parseTag(line)
+  let current = emmet#lang#slim#parseTag(line)
   if empty(current) || !has_key(current.attr, 'src')
     return
   endif
@@ -101,22 +101,22 @@ function! zencoding#lang#slim#imageSize()
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
 
-  let [width, height] = zencoding#util#getImageSize(fn)
+  let [width, height] = emmet#util#getImageSize(fn)
   if width == -1 && height == -1
     return
   endif
   let current.attr.width = width
   let current.attr.height = height
   let current.attrs_order += ['width', 'height']
-  let slim = zencoding#toString(current, 'slim', 1)
+  let slim = emmet#toString(current, 'slim', 1)
   let slim = substitute(slim, '\${cursor}', '', '')
   call setline('.', substitute(matchstr(line, '^\s*') . slim, "\n", "", "g"))
 endfunction
 
-function! zencoding#lang#slim#encodeImage()
+function! emmet#lang#slim#encodeImage()
 endfunction
 
-function! zencoding#lang#slim#parseTag(tag)
+function! emmet#lang#slim#parseTag(tag)
   let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'attrs_order': [] }
   let mx = '\([a-zA-Z][a-zA-Z0-9]*\)\s\+\(.*\)'
   let match = matchstr(a:tag, mx)
@@ -138,7 +138,7 @@ function! zencoding#lang#slim#parseTag(tag)
   return current
 endfunction
 
-function! zencoding#lang#slim#toggleComment()
+function! emmet#lang#slim#toggleComment()
   let line = getline('.')
   let space = matchstr(line, '^\s*')
   if line =~ '^\s*/'
@@ -148,8 +148,8 @@ function! zencoding#lang#slim#toggleComment()
   endif
 endfunction
 
-function! zencoding#lang#slim#balanceTag(flag) range
-  let block = zencoding#util#getVisualBlock()
+function! emmet#lang#slim#balanceTag(flag) range
+  let block = emmet#util#getVisualBlock()
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
@@ -159,7 +159,7 @@ function! zencoding#lang#slim#balanceTag(flag) range
   let ml = len(matchstr(getline(n), '^\s*'))
 
   if a:flag > 0
-    if a:flag == 1 || !zencoding#util#regionIsValid(block)
+    if a:flag == 1 || !emmet#util#regionIsValid(block)
       let n = line('.')
     else
       while n > 0
@@ -213,7 +213,7 @@ function! zencoding#lang#slim#balanceTag(flag) range
   endif
 endfunction
 
-function! zencoding#lang#slim#moveNextPrev(flag)
+function! emmet#lang#slim#moveNextPrev(flag)
   let pos = search('""\|\(^\s*|\s*\zs\)', a:flag ? 'Wpb' : 'Wp')
   if pos == 2
     startinsert!
@@ -223,7 +223,7 @@ function! zencoding#lang#slim#moveNextPrev(flag)
   endif
 endfunction
 
-function! zencoding#lang#slim#splitJoinTag()
+function! emmet#lang#slim#splitJoinTag()
   let n = line('.')
   while n > 0
     if getline(n) =~ '^\s*\ze[a-z]'
@@ -249,7 +249,7 @@ function! zencoding#lang#slim#splitJoinTag()
   endwhile
 endfunction
 
-function! zencoding#lang#slim#removeTag()
+function! emmet#lang#slim#removeTag()
   let n = line('.')
   let ml = 0
   while n > 0
