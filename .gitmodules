@@ -1,4 +1,4 @@
 [submodule "docs"]
 	path = docs
-	url = git@github.com:mattn/zencoding-vim.git
+	url = git@github.com:mattn/emmet-vim.git
 	branch = gh-pages
