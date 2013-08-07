@@ -120,7 +120,10 @@ function! emmet#lang#haml#imageSize()
   if fn =~ '^\s*$'
     return
   elseif fn !~ '^\(/\|http\)'
-    let fn = simplify(expand('%:h') . '/' . fn)
+    let fn = resolve(expand(fn))
+    if !filereadable(fn)
+      let fn = simplify(expand('%:h') . '/' . fn)
+    endif
   endif
 
   let [width, height] = emmet#util#getImageSize(fn)
