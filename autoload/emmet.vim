@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Aug-2013.
+" Last Change: 08-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -199,7 +199,11 @@ function! emmet#toString(...)
           let text = current.value[1:-2]
           if dollar_expr
             " TODO: regexp engine specified
-            let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+            if exists('&regexpengine')
+              let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+            else
+              let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+            endif
             let text = substitute(text, '\${nr}', "\n", 'g')
             let text = substitute(text, '\\\$', '$', 'g')
           endif

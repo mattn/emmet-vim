@@ -333,7 +333,11 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     let text = current.value[1:-2]
     if dollar_expr
       " TODO: regexp engine specified
-      let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      if exists('&regexpengine')
+        let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      else
+        let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      endif
       let text = substitute(text, '\${nr}', "\n", 'g')
       let text = substitute(text, '\\\$', '$', 'g')
     endif
@@ -349,7 +353,11 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     if dollar_expr
       while val =~ '\$\([^#{]\|$\)'
         " TODO: regexp engine specified
-        let val = substitute(val, '\%#=1\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        if exists('&regexpengine')
+          let val = substitute(val, '\%#=1\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        else
+          let val = substitute(val, '\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        endif
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
     endif
@@ -369,7 +377,11 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     let text = current.value[1:-2]
     if dollar_expr
       " TODO: regexp engine specified
-      let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      if exists('&regexpengine')
+        let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      else
+        let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+      endif
       let text = substitute(text, '\${nr}', "\n", 'g')
       let text = substitute(text, '\\\$', '$', 'g')
       let str = substitute(str, '\("\zs$#\ze"\|\s\zs\$#"\|"\$#\ze\s\)', text, 'g')
