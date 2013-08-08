@@ -124,13 +124,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
     endif
     for k in keys(custom_expands)
       if tag_name =~ k
-        if parent.name == ''
-          let div = emmet#lang#html#parseTag('<div/>')
-          let div.value = '{\${' . tag_name . '}}'
-          let current.snippet = emmet#toString(div, type, 0, [])
-        else
-          let current.snippet = '${' . tag_name . '}'
-        endif
+        let current.snippet = '${' . tag_name . '}'
         let current.name = ''
         break
       endif
