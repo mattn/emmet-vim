@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 08-Aug-2013.
+" Last Change: 09-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -1280,7 +1280,6 @@ let s:emmet_settings = {
 \        'extends': 'css',
 \    },
 \    'html': {
-\        'indentation': "\t",
 \        'snippets': {
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
 \            'cc:ie': "<!--[if IE]>\n\t${child}|\n<![endif]-->",
