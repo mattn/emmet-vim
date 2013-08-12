@@ -242,15 +242,12 @@ endfunction
 
 function! emmet#util#imageSizeWithImageMagick(fn)
   let fn = a:fn
-  if filereadable(fn)
-    let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
-    let img_size = split(substitute(img_info, '\n', '', ''), 'x')
-    let width = img_size[0]
-    let height = img_size[1]
-    return [width, height]
-  else
-    echo 'The file "'.fn.'" does not exist or is not readable'
+  let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
+  let img_size = split(substitute(img_info, '\n', '', ''), 'x')
+  if len(img_size) != 2
     return [-1, -1]
+  endif
+  return img_size
 endfunction
 
 function! emmet#util#isImageMagickInstalled()
