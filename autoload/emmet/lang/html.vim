@@ -186,7 +186,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
         if item[0] == '['
           let atts = item[1:-2]
           while len(atts)
-            let amat = matchstr(atts, '\(\w\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)')
+            let amat = matchstr(atts, '\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)')
             if len(amat) == 0
               break
             endif
