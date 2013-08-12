@@ -142,8 +142,8 @@ function! s:do_tests(...)
   try
     if exists('g:user_emmet_settings')
       let s:old_user_emmet_settings = g:user_emmet_settings
-      let g:user_emmet_settings = { 'indentation': "\t" }
     endif
+    let g:user_emmet_settings = { 'indentation': "\t" }
     let oldmore = &more
     call s:reload(fnamemodify(s:sfile, ':h'))
     let &more = 0
@@ -153,7 +153,7 @@ function! s:do_tests(...)
     echohl ErrorMsg | echomsg v:exception | echohl None
   finally
     let &more=oldmore
-    if exists('g:user_emmet_settings')
+    if exists('s:old_user_emmet_settings')
       let g:user_emmet_settings = s:old_user_emmet_settings
     endif
   endtry
@@ -553,6 +553,15 @@ finish
         {
           'query': "foo+bar+baz[dankogai=\"\"]$$$$\\<c-y>,\\<esc>gg0\\<c-y>n\\<c-y>n\\<c-y>n\\<esc>Byw:%d _\\<cr>p$$$$",
           'result': "dankogai",
+        },
+      ],
+    },
+    {
+      'name': 'contains dash in attributes',
+      'tests': [
+        {
+          'query': "div[foo-bar=\"baz\"",
+          'result': "<div foo-bar=\"baz\"></div>",
         },
       ],
     },
