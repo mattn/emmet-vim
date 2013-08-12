@@ -169,7 +169,7 @@ function! emmet#toString(...)
   let rtype = emmet#lang#exists(type) ? type : 'html'
   while itemno < current.multiplier
     if len(current.name)
-      if group_itemno != 0
+      if current.multiplier == 1
         let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, group_itemno, indent)
       else
         let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, itemno, indent)
