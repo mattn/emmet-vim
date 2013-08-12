@@ -560,11 +560,22 @@ finish
       'name': 'contains dash in attributes',
       'tests': [
         {
-          'query': "div[foo-bar=\"baz\"",
-          'result': "<div foo-bar=\"baz\"></div>",
+          'query': "div[foo-bar=\"baz\"]",
+          'result': "<div foo-bar=\"baz\"></div>\n",
         },
       ],
     },
+    {
+      'name': 'multiple group',
+      'tests': [
+        {
+          'query': ".outer$*3>.inner$*2",
+          'result': "<div class=\"outer1\">\n\t<div class=\"inner1\"></div>\n\t<div class=\"inner2\"></div>\n</div>\n<div class=\"outer2\">\n\t<div class=\"inner1\"></div>\n\t<div class=\"inner2\"></div>\n</div>\n<div class=\"outer3\">\n\t<div class=\"inner1\"></div>\n\t<div class=\"inner2\"></div>\n</div>\n",
+        },
+      ],
+    },
+
+     
   ],
 },
 {
@@ -777,7 +788,7 @@ finish
         },
         {
           'query': "ap>wp",
-          'result': "<xsl:apply-templates select=\"\" mode=\"\">\n    <xsl:with-param name=\"\" select=\"\"></xsl:with-param>\n</xsl:apply-templates>\n",
+          'result': "<xsl:apply-templates select=\"\" mode=\"\">\n\t<xsl:with-param name=\"\" select=\"\"></xsl:with-param>\n</xsl:apply-templates>\n",
         },
       ],
     },
@@ -791,7 +802,7 @@ finish
       'tests': [
         {
           'query': "xsd:w3c",
-          'result': "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n    <xsd:element name=\"\" type=\"\"/>\n</xsd:schema>",
+          'result': "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t<xsd:element name=\"\" type=\"\"/>\n</xsd:schema>",
         },
       ],
     },
