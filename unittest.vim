@@ -904,6 +904,10 @@ finish
           'query': "(bg+)+c$$$$",
           'result': "background: #FFF url($$$$) 0 0 no-repeat\ncolor: #000",
         },
+        {
+          'query': ".first>.second>.third$$$$",
+          'result': "div.first\n\tdiv.second\n\t\tdiv.third\n\t\t\t$$$$",
+        },
       ],
     },
   ],
