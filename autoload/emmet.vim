@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 09-Aug-2013.
+" Last Change: 13-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -245,7 +245,12 @@ function! emmet#getResource(type, name, default)
     endif
     for ext in extends
       if has_key(s:emmet_settings, ext) && has_key(s:emmet_settings[ext], a:name)
-        call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
+        let V = s:emmet_settings[ext][a:name]
+        if type(ret) == 3 || type(ret) == 4
+          call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
+        else
+          let ret = s:emmet_settings[ext][a:name]
+        endif
       endif
     endfor
   endif
@@ -399,8 +404,9 @@ function! emmet#expandAbbr(mode, abbr) range
   let part = ''
   let rest = ''
 
-  if has_key(s:emmet_settings, type) && has_key(s:emmet_settings[type], 'filters')
-    let filters = split(s:emmet_settings[type].filters, '\s*,\s*')
+  let filterstr = emmet#getResource(type, 'filters', '')
+  if len(filterstr) > 0
+    let filters = split(filterstr, '\s*,\s*')
   endif
 
   if a:mode == 2
