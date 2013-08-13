@@ -217,8 +217,7 @@ function! emmet#toString(...)
           let inner .= emmet#toString(n, type, inline, filters, group_itemno, indent)
         endfor
       endif
-      let spaces = matchstr(str, '\s*\ze\${child}')
-      let inner = substitute(inner, "\n", "\n" . spaces, 'g')
+      let inner = substitute(inner, "\n", "\n" . indent, 'g')
       let str = substitute(str, '\${child}', inner, '')
     endif
     let itemno = itemno + 1
