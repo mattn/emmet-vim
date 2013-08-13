@@ -349,6 +349,27 @@ CUSTOMIZE                                                      *emmet-customize*
     'user_emmet_anchorizeurl_key'
     'user_emmet_anchorizesummary_key'
 
+  Or if you want to use <plug> mappings
+
+    EmmetExpandAbbr
+    EmmetExpandWord
+    EmmetBalanceTagInward
+    EmmetBalanceTagOutward
+    EmmetMoveNext
+    EmmetMovePrev
+    EmmetImageSize
+    EmmetToggleComment
+    EmmetSplitJoinTag
+    EmmetRemoveTag
+    EmmetAnchorizeURL
+    EmmetAnchorizeSummary
+    EmmetMergeLines
+    EmmetCodePretty
+
+  So you can make the mapping affected only for a filetype you want.
+>
+  autocmd FileType css imap <tab> <plug>(EmmetExpandAbbr)
+<
 2. Indent Size                                               *emmet-indent-size*
 
   To change indent size of html, add this code in your vimrc.
