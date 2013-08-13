@@ -274,10 +274,14 @@ endfunction
 
 function! emmet#getFileType(...)
   let flg = get(a:000, 0, 0)
-  let type = &ft
-  if emmet#lang#exists(&ft)
-    let type = &ft
-  else
+  let type = ''
+  for part in split(&ft, '\.')
+    if emmet#lang#exists(part)
+      let type = part
+      break
+    endif
+  endfor
+  if type == ''
     let base = emmet#getBaseType(type)
     if base != ""
       if flg
