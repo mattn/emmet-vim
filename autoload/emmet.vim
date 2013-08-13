@@ -230,6 +230,11 @@ function! emmet#getSettings()
   return s:emmet_settings
 endfunction
 
+function! emmet#getFilters(type)
+  let filterstr = emmet#getResource(a:type, 'filters', '')
+  return split(filterstr, '\s*,\s*')
+endfunction
+
 function! emmet#getResource(type, name, default)
   if !has_key(s:emmet_settings, a:type)
     return a:default
@@ -399,14 +404,13 @@ function! emmet#expandAbbr(mode, abbr) range
   let rtype = emmet#getFileType(1)
   let indent = emmet#getIndentation(type)
   let expand = ''
-  let filters = ['html']
   let line = ''
   let part = ''
   let rest = ''
 
-  let filterstr = emmet#getResource(type, 'filters', '')
-  if len(filterstr) > 0
-    let filters = split(filterstr, '\s*,\s*')
+  let filters = emmet#getFilters(type)
+  if len(filters) == 0
+    let filters = ['html']
   endif
 
   if a:mode == 2
@@ -721,10 +725,11 @@ function! emmet#ExpandWord(abbr, type, orig)
   if str =~ mx
     let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
     let str = substitute(str, mx, '', '')
-  elseif has_key(s:emmet_settings[a:type], 'filters')
-    let filters = split(s:emmet_settings[a:type].filters, '\s*,\s*')
   else
-    let filters = ['html']
+    let filters = emmet#getFilters(a:type)
+    if len(filters) == 0
+      let filters = ['html']
+    endif
   endif
   let items = emmet#parseIntoTree(str, a:type).child
   let expand = ''
