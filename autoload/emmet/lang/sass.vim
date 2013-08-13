@@ -50,10 +50,9 @@ function! emmet#lang#sass#toString(settings, current, type, inline, filters, ite
 
     let inner = ''
     for child in current.child
-      let inner .= emmet#toString(child, type, inline, filters, itemno)
+      let inner .= emmet#toString(child, type, inline, filters, itemno, indent)
     endfor
     let inner = substitute(inner, "\n", "\n" . indent, 'g')
-    let inner = substitute(inner, "\n" . indent . "$", "", 'g')
     let str .= indent . inner
   else
     let text = emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
