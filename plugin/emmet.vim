@@ -125,7 +125,7 @@ endfunction
 function! s:install_plugin_n()
   for item in [
   \ {'mode': 'n', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandNormal', 'func': ':call emmet#expandAbbr(3,"")<cr>'},
-  \ {'mode': 'n', 'var': 'user_emmet_expandword_key', 'key': ',', 'plug': 'EmmetExpandWord', 'func': ':call emmet#expandAbbr(1,"")<cr>'},
+  \ {'mode': 'n', 'var': 'user_emmet_expandword_key', 'key': ';', 'plug': 'EmmetExpandWord', 'func': ':call emmet#expandAbbr(1,"")<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_balancetaginward_key', 'key': 'd', 'plug': 'EmmetBalanceTagInwardNormal', 'func': ':call emmet#balanceTag(1)<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_balancetagoutward_key', 'key': 'D', 'plug': 'EmmetBalanceTagOutwardNormal', 'func': ':call emmet#balanceTag(-1)<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_next_key', 'key': 'n', 'plug': 'EmmetNext', 'func': ':call emmet#moveNextPrev(0)<cr>'},
