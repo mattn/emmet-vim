@@ -660,6 +660,10 @@ finish
           'query': "m0+bgi+bg++p0$$$$",
           'result': "margin: 0;\nbackground-image: url($$$$);\nbackground: #FFF url() 0 0 no-repeat;\npadding: 0;",
         },
+        {
+          'query': "borle$$$$",
+          'result': "border-left: $$$$;",
+        },
       ],
     },
   ],

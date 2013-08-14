@@ -107,15 +107,18 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
 
     " snippets
     let snippets = emmet#getResource(type, 'snippets', {})
-    if !empty(snippets) && has_key(snippets, tag_name)
-      let snippet = snippets[tag_name]
-      if use_pipe_for_cursor
-        let snippet = substitute(snippet, '|', '${cursor}', 'g')
+    if !empty(snippets)
+      let snippet_name = tag_name
+      if has_key(snippets, snippet_name)
+        let snippet = snippets[snippet_name]
+        if use_pipe_for_cursor
+          let snippet = substitute(snippet, '|', '${cursor}', 'g')
+        endif
+        let lines = split(snippet, "\n")
+        call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
+        let current.snippet = join(lines, "\n")
+        let current.name = ''
       endif
-      let lines = split(snippet, "\n")
-      call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
-      let current.snippet = join(lines, "\n")
-      let current.name = ''
     endif
 
     let custom_expands = emmet#getResource(type, 'custom_expands', {})

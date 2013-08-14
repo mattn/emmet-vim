@@ -68,21 +68,31 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
     endif
 
     " snippets
-    if !empty(snippets) && has_key(snippets, tag_name)
-      let snippet = snippets[tag_name]
-      if use_pipe_for_cursor
-        let snippet = substitute(snippet, '|', '${cursor}', 'g')
+    if !empty(snippets)
+      let snippet_name = tag_name
+      if !has_key(snippets, snippet_name)
+        let pat = '^' . join(split(tag_name, '\zs'), '\(\|[^-]\+-\)')
+        let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
+        if len(vv) > 0
+          let snippet_name = vv[0]
+        endif
       endif
-      let lines = split(snippet, "\n")
-      call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
-      let current.snippet = join(lines, "\n")
-      let current.name = ''
-      let current.snippet = substitute(current.snippet, ';', value . ';', '')
-      if use_pipe_for_cursor && len(value) > 0
-        let current.snippet = substitute(current.snippet, '\${cursor}', '', 'g')
-      endif
-      if n < len(tokens) - 1
-        let current.snippet .= "\n"
+      if has_key(snippets, snippet_name)
+        let snippet = snippets[snippet_name]
+        if use_pipe_for_cursor
+          let snippet = substitute(snippet, '|', '${cursor}', 'g')
+        endif
+        let lines = split(snippet, "\n")
+        call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
+        let current.snippet = join(lines, "\n")
+        let current.name = ''
+        let current.snippet = substitute(current.snippet, ';', value . ';', '')
+        if use_pipe_for_cursor && len(value) > 0
+          let current.snippet = substitute(current.snippet, '\${cursor}', '', 'g')
+        endif
+        if n < len(tokens) - 1
+          let current.snippet .= "\n"
+        endif
       endif
     endif
 
