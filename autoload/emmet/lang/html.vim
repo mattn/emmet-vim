@@ -9,8 +9,8 @@ let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
 \         .'\)*'
 \       .'\)'
 \       .'\%(\({\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}\)\)\{0,1}'
-\         .'\%(\*\([0-9]\+\)\)\{0,1}'
-\     .'\(\%()\%(\*[0-9]\+\)\{0,1}\)*\)'
+\         .'\%(\(@-\{0,1}[0-9]\+\)\{0,1}\*\([0-9]\+\)\)\{0,1}'
+\     .'\(\%()\%(\(@-\{0,1}[0-9]\+\)\{0,1}\*[0-9]\+\)\{0,1}\)*\)'
 
 function! emmet#lang#html#findTokens(str)
   let str = a:str
@@ -58,7 +58,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
   endif
   let abbr = rabbr
 
-  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
+  let root = emmet#newNode()
   let parent = root
   let last = root
   let pos = []
@@ -71,8 +71,9 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
     let tag_name = substitute(match, s:mx, '\3', 'ig')
     let attributes = substitute(match, s:mx, '\4', 'ig')
     let value = substitute(match, s:mx, '\5', 'ig')
-    let multiplier = 0 + substitute(match, s:mx, '\6', 'ig')
-    let block_end = substitute(match, s:mx, '\7', 'ig')
+    let basevalue = substitute(match, s:mx, '\6', 'ig')
+    let multiplier = 0 + substitute(match, s:mx, '\7', 'ig')
+    let block_end = substitute(match, s:mx, '\8', 'ig')
     let important = 0
     if len(str) == 0
       break
@@ -89,10 +90,11 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
       let attributes = tag_name . attributes
       let tag_name = 'div'
     endif
+    let basevalue = 0 + basevalue[1:]
     if multiplier <= 0 | let multiplier = 1 | endif
 
     " make default node
-    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
+    let current = emmet#newNode()
     let current.name = tag_name
 
     let current.important = important
@@ -216,6 +218,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
     else
       let current.value = value
     endif
+    let current.basevalue = basevalue
     let current.multiplier = multiplier
 
     " parse step inside/outside
@@ -292,6 +295,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
       echomsg "operator=".operator
       echomsg "attributes=".attributes
       echomsg "value=".value
+      echomsg "basevalue=".basevalue
       echomsg "multiplier=".multiplier
       echomsg "block_end=".block_end
       echomsg "abbr=".abbr
@@ -488,7 +492,7 @@ function! emmet#lang#html#encodeImage()
 endfunction
 
 function! emmet#lang#html#parseTag(tag)
-  let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'attrs_order': [] }
+  let current = emmet#newNode()
   let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')

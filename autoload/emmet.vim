@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 13-Aug-2013.
+" Last Change: 19-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -130,6 +130,21 @@ function! emmet#mergeConfig(lhs, rhs)
   endif
 endfunction
 
+function! emmet#newNode()
+  return { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'basevalue': 0, 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
+endfunction
+
+function! s:itemno(itemno, current)
+  let current = a:current
+  if current.basevalue == 0
+    return a:itemno
+  elseif current.basevalue > 0
+    return current.basevalue - 1 + a:itemno
+  elseif current.basevalue < 0
+    return current.multiplier - current.basevalue - 2 - a:itemno
+  endif
+endfunction
+
 function! emmet#toString(...)
   let current = a:1
   if a:0 > 1
@@ -170,9 +185,9 @@ function! emmet#toString(...)
   while itemno < current.multiplier
     if len(current.name)
       if current.multiplier == 1
-        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, group_itemno, indent)
+        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, s:itemno(group_itemno, current), indent)
       else
-        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, itemno, indent)
+        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, s:itemno(itemno, current), indent)
       endif
       if current.multiplier > 1
         let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
@@ -189,8 +204,10 @@ function! emmet#toString(...)
       if len(snippet) > 0
         let tmp = snippet
         let tmp = substitute(tmp, '\${emmet_name}', current.name, 'g')
-        let snippet_node = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 0, 'parent': {}, 'value': '{'.tmp.'}', 'pos': 0, 'important': current.important }
-        let str = emmet#lang#{rtype}#toString(s:emmet_settings, snippet_node, type, inline, filters, group_itemno, indent)
+        let snippet_node = emmet#newNode()
+        let snippet_node.value = '{'.tmp.'}'
+        let snippet_node.important = current.important
+        let str = emmet#lang#{rtype}#toString(s:emmet_settings, snippet_node, type, inline, filters, s:itemno(group_itemno, current), indent)
       else
         if len(current.name)
           let str .= current.name
@@ -214,7 +231,7 @@ function! emmet#toString(...)
       if len(current.child)
         let render_type = emmet#getFileType(1)
         for n in current.child
-          let inner .= emmet#toString(n, type, inline, filters, group_itemno, indent)
+          let inner .= emmet#toString(n, type, inline, filters, s:itemno(group_itemno, n), indent)
         endfor
       endif
       let inner = substitute(inner, "\n", "\n" . indent, 'g')

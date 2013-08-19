@@ -14,7 +14,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
   let snippets = emmet#getResource(type, 'snippets', {})
   let use_pipe_for_cursor = emmet#getResource(type, 'use_pipe_for_cursor', 1)
 
-  let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
+  let root = emmet#newNode()
 
   " emmet
   let tokens = split(abbr, '+\ze[^+)!]')
@@ -59,7 +59,8 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
       let important = 0
     endif
     " make default node
-    let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': important }
+    let current = emmet#newNode()
+    let current.important = important
     let current.name = tag_name
 
     " aliases
