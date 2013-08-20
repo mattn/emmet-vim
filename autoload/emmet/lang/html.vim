@@ -9,8 +9,8 @@ let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
 \         .'\)*'
 \       .'\)'
 \       .'\%(\({\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}\)\)\{0,1}'
-\         .'\%(\(@-\{0,1}[0-9]\+\)\{0,1}\*\([0-9]\+\)\)\{0,1}'
-\     .'\(\%()\%(\(@-\{0,1}[0-9]\+\)\{0,1}\*[0-9]\+\)\{0,1}\)*\)'
+\         .'\%(\(@-\{0,1}[0-9]*\)\{0,1}\*\([0-9]\+\)\)\{0,1}'
+\     .'\(\%()\%(\(@-\{0,1}[0-9]*\)\{0,1}\*[0-9]\+\)\{0,1}\)*\)'
 
 function! emmet#lang#html#findTokens(str)
   let str = a:str
@@ -90,7 +90,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
       let attributes = tag_name . attributes
       let tag_name = 'div'
     endif
-    let basevalue = 0 + basevalue[1:]
+    let basedirect = basevalue[1] == '-' ? -1 : 1
+    let basevalue = 0 + abs(basevalue[1:])
     if multiplier <= 0 | let multiplier = 1 | endif
 
     " make default node
@@ -218,6 +219,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
     else
       let current.value = value
     endif
+    let current.basedirect = basedirect
     let current.basevalue = basevalue
     let current.multiplier = multiplier
 

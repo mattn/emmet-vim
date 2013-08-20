@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 19-Aug-2013.
+" Last Change: 20-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -131,17 +131,23 @@ function! emmet#mergeConfig(lhs, rhs)
 endfunction
 
 function! emmet#newNode()
-  return { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'basevalue': 0, 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
+  return { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'basevalue': 0, 'basedirect': 1, 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'] }
 endfunction
 
 function! s:itemno(itemno, current)
   let current = a:current
-  if current.basevalue == 0
-    return a:itemno
-  elseif current.basevalue > 0
-    return current.basevalue - 1 + a:itemno
-  elseif current.basevalue < 0
-    return current.multiplier - current.basevalue - 2 - a:itemno
+  if current.basedirect > 0
+    if current.basevalue == 0
+      return a:itemno
+    else
+      return current.basevalue - 1 + a:itemno
+    endif
+  else
+    if current.basevalue == 0
+      return current.multiplier - 1 - a:itemno
+    else
+      return current.multiplier + current.basevalue - 2 - a:itemno
+    endif
   endif
 endfunction
 
