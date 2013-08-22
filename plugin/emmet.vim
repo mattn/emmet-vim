@@ -1,7 +1,7 @@
 "=============================================================================
 " File: emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 13-Aug-2013.
+" Last Change: 22-Aug-2013.
 " Version: 0.82
 " WebPage: http://github.com/mattn/emmet-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -73,6 +73,10 @@ let g:loaded_emmet_vim = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+if !exists('g:emmet_html5')
+  let g:emmet_html5 = 1
+endif
 
 if !exists('g:emmet_debug')
   let g:emmet_debug = 0
