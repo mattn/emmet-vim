@@ -206,6 +206,23 @@ function! emmet#util#getImageSize(fn)
   if filereadable(fn)
     let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
   else
+    if fn !~ '^\w\+://'
+      let path = fnamemodify(expand('%'), ':p:gs?\\?/?')
+      if has('win32') || has('win64') | 
+        let path = tolower(path)
+      endif
+      for k in keys(g:emmet_docroot)
+        let root = fnamemodify(k, ':p:gs?\\?/?')
+        if has('win32') || has('win64') | 
+          let root = tolower(root)
+        endif
+        if stridx(path, root) == 0
+          let v = g:emmet_docroot[k]
+          let fn = (len(v) == 0 ? k : v) . fn
+          break
+        endif
+      endfor
+    endif
     let hex = substitute(system(g:emmet_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
   endif
 

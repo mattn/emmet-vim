@@ -78,6 +78,10 @@ if !exists('g:emmet_html5')
   let g:emmet_html5 = 1
 endif
 
+if !exists('g:emmet_docroot')
+  let g:emmet_docroot = {}
+endif
+
 if !exists('g:emmet_debug')
   let g:emmet_debug = 0
 endif
