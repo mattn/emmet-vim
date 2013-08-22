@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 20-Aug-2013.
+" Last Change: 22-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -614,7 +614,9 @@ function! emmet#expandAbbr(mode, abbr) range
   if search('\$cursor\$', 'e')
     let oldselection = &selection
     let &selection = 'inclusive'
-    silent! foldopen
+    if foldclosed(line('.')) != -1
+      silent! foldopen
+    endif
     silent! exe "normal! v7h\"_s"
     let &selection = oldselection
   endif
