@@ -91,11 +91,19 @@ function! s:test(...)
       for n in range(len(tests))
         if len(index) > 0 && n != index | continue | endif
         let query = tests[n].query
+        let options = has_key(tests[n], 'options') ? tests[n].options : {}
         let result = tests[n].result
         if has_key(tests[n], 'skip') && tests[n].skip != 0
           call s:show_skip(n+1, query)
           continue
         endif
+        let oldoptions = {}
+        for opt in keys(options)
+          if has_key(g:, opt)
+            let oldoptions[opt] = get(g:, opt)
+          endif
+          let g:[opt] = options[opt]
+        endfor
         if stridx(query, '$$$$') != -1
           silent! 1new
           silent! exe "setlocal ft=".testgroup.type
@@ -119,6 +127,13 @@ function! s:test(...)
           call s:show_title(n+1, query)
           unlet! res | let res = emmet#ExpandWord(query, testgroup.type, 0)
         endif
+        for opt in keys(options)
+          if has_key(oldoptions, opt)
+            let g:[opt] = oldoptions[opt]
+          else
+            call remove(g:, opt)
+          endif
+        endfor
         if stridx(result, '$$$$') != -1
           if res ==# result
             call s:show_ok()
@@ -404,7 +419,7 @@ finish
         },
         {
           'query': "link:css",
-          'result': "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" media=\"all\" />\n",
+          'result': "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" media=\"all\">\n",
         },
         {
           'query': "a[title=\"Hello', world\" rel]",
@@ -460,7 +475,7 @@ finish
         },
         {
           'query': "(div>(label+input))+div",
-          'result': "<div>\n\t<label for=\"\"></label>\n\t<input type=\"\" />\n</div>\n<div></div>\n",
+          'result': "<div>\n\t<label for=\"\"></label>\n\t<input type=\"\">\n</div>\n<div></div>\n",
         },
         {
           'query': "test1\ntest2\ntest3$$$$\\<esc>ggVG\\<c-y>,ul>li>span*>a\\<cr>$$$$",
@@ -468,7 +483,7 @@ finish
         },
         {
           'query': "test1\ntest2\ntest3$$$$\\<esc>ggVG\\<c-y>,input[type=input value=$#]*\\<cr>$$$$",
-          'result': "<input type=\"input\" value=\"test1\" />\n<input type=\"input\" value=\"test2\" />\n<input type=\"input\" value=\"test3\" />",
+          'result': "<input type=\"input\" value=\"test1\">\n<input type=\"input\" value=\"test2\">\n<input type=\"input\" value=\"test3\">",
         },
         {
           'query': "div#id-$*5>div#id2-$",
@@ -535,15 +550,15 @@ finish
       'tests': [
         {
           'query': "img[src=http://mattn.kaoriya.net/images/logo.png]$$$$\\<c-y>,\\<c-y>i$$$$",
-          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\" />",
+          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\">",
         },
         {
           'query': "img[src=/logo.png]$$$$\\<c-y>,\\<c-y>i$$$$",
-          'result': "<img src=\"/logo.png\" alt=\"\" />",
+          'result': "<img src=\"/logo.png\" alt=\"\">",
         },
         {
           'query': "img[src=http://mattn.kaoriya.net/images/logo.png width=foo height=bar]$$$$\\<c-y>,\\<c-y>i$$$$",
-          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\" />",
+          'result': "<img src=\"http://mattn.kaoriya.net/images/logo.png\" alt=\"\" width=\"96\" height=\"96\">",
         },
       ],
     },
