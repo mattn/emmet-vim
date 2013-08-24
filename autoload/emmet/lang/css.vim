@@ -72,10 +72,21 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
     if !empty(snippets)
       let snippet_name = tag_name
       if !has_key(snippets, snippet_name)
-        let pat = '^' . join(split(tag_name, '\zs'), '\(\|[^-]\+-\)')
+        let pat = '^' . join(split(tag_name, '\zs'), '\(\|[^:-]\+-\)')
         let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
         if len(vv) > 0
           let snippet_name = vv[0]
+        else
+          let pat = '^' . join(split(tag_name, '\zs'), '\(\|[^:-]\+-*\)')
+          let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
+          let minl = -1
+          for vk in vv
+            let vvs = snippets[vk]
+            if minl == -1 || len(vvs) < minl
+              let snippet_name = vk
+              let minl = len(vvs)
+            endif
+          endfor
         endif
       endif
       if has_key(snippets, snippet_name)
