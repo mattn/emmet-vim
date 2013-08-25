@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Aug-2013.
+" Last Change: 25-Aug-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -442,7 +442,7 @@ function! emmet#expandAbbr(mode, abbr) range
   if a:mode == 2
     let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
     if len(leader) == 0
-      return
+      return ''
     endif
     let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
@@ -534,11 +534,11 @@ function! emmet#expandAbbr(mode, abbr) range
     endif
     normal! $
     call emmet#expandAbbr(0, "")
-    return
+    return ''
   else
     let line = getline('.')
     if col('.') < len(line)
-      let line = matchstr(line, '^\(.*\%'.col('.').'c.\)')
+      let line = matchstr(line, '^\(.*\%'.col('.').'c\)')
     endif
     if a:mode == 1
       let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
@@ -618,11 +618,15 @@ function! emmet#expandAbbr(mode, abbr) range
       silent! foldopen
     endif
     silent! exe "normal! v7h\"_s"
+    if col('.') == col('$') - 1
+      call feedkeys('', 'n')
+    endif
     let &selection = oldselection
   endif
   if g:emmet_debug > 1
     call getchar()
   endif
+  return ''
 endfunction
 
 function! emmet#moveNextPrev(flag)
@@ -634,7 +638,8 @@ endfunction
 function! emmet#imageSize()
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#imageSize()
+  call emmet#lang#{rtype}#imageSize()
+  return ''
 endfunction
 
 function! emmet#encodeImage()
@@ -646,7 +651,8 @@ endfunction
 function! emmet#toggleComment()
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#toggleComment()
+  call emmet#lang#{rtype}#toggleComment()
+  return ''
 endfunction
 
 function! emmet#balanceTag(flag) range
@@ -671,7 +677,8 @@ endfunction
 function! emmet#removeTag()
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#removeTag()
+  call emmet#lang#{rtype}#removeTag()
+  return ''
 endfunction
 
 function! emmet#anchorizeURL(flag)
@@ -680,7 +687,7 @@ function! emmet#anchorizeURL(flag)
   let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
   let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
   if !emmet#util#cursorInRegion(block)
-    return
+    return ''
   endif
 
   let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
@@ -720,6 +727,7 @@ function! emmet#anchorizeURL(flag)
   let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   let expand = substitute(expand, "\n", "\n" . indent, 'g')
   call emmet#util#setContent(block, expand)
+  return ''
 endfunction
 
 function! emmet#codePretty() range

@@ -141,9 +141,9 @@ function! emmet#lang#css#toString(settings, current, type, inline, filters, item
   let current = a:current
   let value = current.value[1:-2]
   if emmet#useFilter(a:filters, 'fc')
-    let value = substitute(value, '\([^:]\+\):\([^;]*;\)', '\1: \2', 'g')
+    let value = substitute(value, '\([^:]\+\):\([^;]*\)', '\1: \2', 'g')
   else
-    let value = substitute(value, '\([^:]\+\):\([^;]*;\)', '\1:\2', 'g')
+    let value = substitute(value, '\([^:]\+\):\([^;]*\)', '\1:\2', 'g')
   endif
   if current.important
     let value = substitute(value, ';', ' !important;', '')
