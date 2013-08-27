@@ -559,10 +559,14 @@ function! emmet#lang#html#toggleComment()
       endif
     else
       call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos2 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
-      call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos2 = searchpos('>', 'neW')
-      let block = [pos1, pos2]
+      let pos3 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
+      if pos3 == [0, 0]
+        let block = [pos1, pos2]
+      else
+        call setpos('.', [0, pos3[0], pos3[1], 0])
+        let pos2 = searchpos('>', 'neW')
+        let block = [pos1, pos2]
+      endif
     endif
     if !emmet#util#regionIsValid(block)
       silent! call setpos('.', orgpos)
