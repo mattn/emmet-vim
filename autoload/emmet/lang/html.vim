@@ -544,7 +544,7 @@ function! emmet#lang#html#toggleComment()
     let tag_name = matchstr(content, '^<\zs/\{0,1}[^ \r\n>]\+')
     if tag_name[0] == '/'
       call setpos('.', [0, pos1[0], pos1[1], 0])
-      let pos2 = searchpairpos('<'. tag_name[1:] . '>', '', '</' . tag_name[1:] . '>', 'bnW')
+      let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^>]*>', '', '</' . tag_name[1:] . '>', 'bnW')
       let pos1 = searchpos('>', 'cneW')
       let block = [pos2, pos1]
     elseif tag_name =~ '/$'
@@ -559,7 +559,7 @@ function! emmet#lang#html#toggleComment()
       endif
     else
       call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos3 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
+      let pos3 = searchpairpos('<'. tag_name . '\>[^>]*>', '', '</' . tag_name . '>', 'nW')
       if pos3 == [0, 0]
         let block = [pos1, pos2]
       else
