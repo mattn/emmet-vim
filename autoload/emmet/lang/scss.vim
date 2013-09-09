@@ -81,7 +81,7 @@ function! emmet#lang#scss#balanceTag(flag) range
     let curpos = [0, line("'<"), col("'<"), 0]
     call setpos('.', curpos)
   else
-    let curpos = getpos('.')
+    let curpos = emmet#util#getcurpos()
   endif
   if a:flag < 0
     let ret = searchpair('}', '', '.\zs{')
@@ -89,7 +89,7 @@ function! emmet#lang#scss#balanceTag(flag) range
     let ret = searchpair('{', '', '}', 'bW')
   endif
   if ret > 0
-    let pos1 = getpos('.')[1:2]
+    let pos1 = emmet#util#getcurpos()[1:2]
     if a:flag < 0
       let pos2 = searchpairpos('{', '', '}')
     else

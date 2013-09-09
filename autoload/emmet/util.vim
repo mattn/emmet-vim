@@ -93,7 +93,7 @@ endfunction
 "   this function return 0 or 1
 function! emmet#util#cursorInRegion(region)
   if !emmet#util#regionIsValid(a:region) | return 0 | endif
-  let cur = getpos('.')[1:2]
+  let cur = emmet#util#getcurpos()[1:2]
   return emmet#util#pointInRegion(cur, a:region)
 endfunction
 
@@ -107,7 +107,12 @@ endfunction
 " search_region : make region from pattern which is composing start/end
 "   this function return array of position
 function! emmet#util#searchRegion(start, end)
-  return [searchpairpos(a:start, '', a:end, 'bcnW'), searchpairpos(a:start, '\%#', a:end, 'nW')]
+  let b = searchpairpos(a:start, '', a:end, 'bcnW')
+  if b == [0, 0]
+    return [searchpairpos(a:start, '', a:end, 'bnW'), searchpairpos(a:start, '\%#', a:end, 'ncW')]
+  else
+    return [b, searchpairpos(a:start, '', a:end. '', 'nW')]
+  endif
 endfunction
 
 " get_content : get content in region
@@ -310,4 +315,12 @@ function! emmet#util#cache(name, ...)
 	return join(readfile(file), "\n")
   endif
   call writefile(split(content, "\n"), file)
+endfunction
+
+function! emmet#util#getcurpos()
+  let pos = getpos('.')
+  if mode(0) == 'i' && pos[2] > 0
+    let pos[2] -=1
+  endif
+  return pos
 endfunction

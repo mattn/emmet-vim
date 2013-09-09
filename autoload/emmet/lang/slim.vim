@@ -156,7 +156,7 @@ function! emmet#lang#slim#balanceTag(flag) range
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
-    let curpos = getpos('.')
+    let curpos = emmet#util#getcurpos()
   endif
   let n = curpos[1]
   let ml = len(matchstr(getline(n), '^\s*'))

@@ -516,8 +516,8 @@ function! emmet#lang#html#parseTag(tag)
 endfunction
 
 function! emmet#lang#html#toggleComment()
-  let orgpos = getpos('.')
-  let curpos = getpos('.')
+  let orgpos = emmet#util#getcurpos()
+  let curpos = emmet#util#getcurpos()
   let mx = '<\%#[^>]*>'
   while 1
     let block = emmet#util#searchRegion('<!--', '-->')
@@ -535,7 +535,7 @@ function! emmet#lang#html#toggleComment()
       if pos1[0] == 0 && pos1[1] == 0
         return
       endif
-      let curpos = getpos('.')
+      let curpos = emmet#util#getcurpos()
       continue
     endif
     let pos1 = block[0]
@@ -586,7 +586,7 @@ function! emmet#lang#html#balanceTag(flag) range
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
-    let curpos = getpos('.')
+    let curpos = emmet#util#getcurpos()
   endif
   let settings = emmet#getSettings()
 
@@ -658,7 +658,7 @@ function! emmet#lang#html#moveNextPrev(flag)
 endfunction
 
 function! emmet#lang#html#splitJoinTag()
-  let curpos = getpos('.')
+  let curpos = emmet#util#getcurpos()
   while 1
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
@@ -698,7 +698,7 @@ function! emmet#lang#html#splitJoinTag()
 endfunction
 
 function! emmet#lang#html#removeTag()
-  let curpos = getpos('.')
+  let curpos = emmet#util#getcurpos()
   while 1
     let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')

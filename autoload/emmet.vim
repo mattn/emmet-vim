@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Aug-2013.
+" Last Change: 09-Sep-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -636,9 +636,11 @@ function! emmet#moveNextPrev(flag)
 endfunction
 
 function! emmet#imageSize()
+  let orgpos = emmet#util#getcurpos()
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
   call emmet#lang#{rtype}#imageSize()
+  silent! call setpos('.', orgpos)
   return ''
 endfunction
 

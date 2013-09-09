@@ -194,7 +194,7 @@ function! emmet#lang#css#balanceTag(flag) range
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
   else
-    let curpos = getpos('.')
+    let curpos = emmet#util#getcurpos()
   endif
   let block = emmet#util#getVisualBlock()
   if !emmet#util#regionIsValid(block)
