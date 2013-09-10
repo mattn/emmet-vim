@@ -1,7 +1,7 @@
 "=============================================================================
 " File: emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Aug-2013.
+" Last Change: 10-Sep-2013.
 " Version: 0.82
 " WebPage: http://github.com/mattn/emmet-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -90,7 +90,7 @@ if !exists('g:emmet_curl_command')
   let g:emmet_curl_command = 'curl -s -L -A Mozilla/5.0'
 endif
 
-if exists('g:use_emmet_complete_tag') && g:use_emmet_complete_tag
+if exists('g:user_emmet_complete_tag') && g:user_emmet_complete_tag
   setlocal omnifunc=emmet#CompleteTag
 endif
 
@@ -156,7 +156,9 @@ endif
 
 delfunction s:install_plugin
 
-command! -nargs=1 Emmet call emmet#expandAbbr(4, <q-args>)
+if get(g:, 'user_emmet_command', 1)
+  command! -nargs=1 Emmet call emmet#expandAbbr(4, <q-args>)
+endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
