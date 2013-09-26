@@ -1,6 +1,4 @@
 function! emmet#lang#sass#findTokens(str)
-  "let g:hoge = substitute(a:str, '^.*[;{@]\s*', '', '')
-  "return substitute(a:str, '^.*[;{@]\s*', '', '')
   return a:str
 endfunction
 
