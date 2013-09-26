@@ -109,7 +109,7 @@ endfunction
 function! emmet#util#searchRegion(start, end)
   let b = searchpairpos(a:start, '', a:end, 'bcnW')
   if b == [0, 0]
-    return [searchpairpos(a:start, '', a:end, 'bnW'), searchpairpos(a:start, '\%#', a:end, 'ncW')]
+    return [searchpairpos(a:start, '', a:end, 'bnW'), searchpairpos(a:start, '\%#', a:end, 'nW')]
   else
     return [b, searchpairpos(a:start, '', a:end. '', 'nW')]
   endif

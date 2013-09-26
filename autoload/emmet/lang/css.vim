@@ -1,5 +1,5 @@
 function! emmet#lang#css#findTokens(str)
-  return substitute(a:str, '^.*[;{]\s*', '', '')
+  return substitute(substitute(a:str, '^.*[;{]\s*', '', ''), '}\s*$', '', '')
 endfunction
 
 function! emmet#lang#css#parseIntoTree(abbr, type)
@@ -19,7 +19,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
   " emmet
   let tokens = split(abbr, '+\ze[^+)!]')
   let block = emmet#util#searchRegion("{", "}")
-  if block[0] == [0,0] && block[1] == [0,0]
+  if type == 'css' && block[0] == [0,0] && block[1] == [0,0]
     let current = emmet#newNode()
     let current.snippet = abbr . " {\n\t${cursor}\n}"
     let current.name = ''

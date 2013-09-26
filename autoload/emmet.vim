@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 09-Sep-2013.
+" Last Change: 26-Sep-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -546,8 +546,13 @@ function! emmet#expandAbbr(mode, abbr) range
       let part = matchstr(line, '\(\S.*\)$')
       let ftype = emmet#lang#exists(type) ? type : 'html'
       let part = emmet#lang#{ftype}#findTokens(part)
+      let line = line[0: stridx(line, part) + len(part) - 1]
     endif
-    let rest = getline('.')[len(line):]
+    if col('.') == col('$')
+      let rest = ''
+    else
+      let rest = getline('.')[len(line):]
+    endif
     let str = part
     let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
     if str =~ mx
@@ -618,7 +623,7 @@ function! emmet#expandAbbr(mode, abbr) range
       silent! foldopen
     endif
     silent! exe "normal! v7h\"_s"
-    if col('.') == col('$') - 1
+    if col('.') == col('$')
       call feedkeys('', 'n')
     endif
     let &selection = oldselection

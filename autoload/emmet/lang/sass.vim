@@ -1,5 +1,7 @@
 function! emmet#lang#sass#findTokens(str)
-  return emmet#lang#html#findTokens(a:str)
+  "let g:hoge = substitute(a:str, '^.*[;{@]\s*', '', '')
+  "return substitute(a:str, '^.*[;{@]\s*', '', '')
+  return a:str
 endfunction
 
 function! emmet#lang#sass#parseIntoTree(abbr, type)
