@@ -4,6 +4,8 @@
 which provides support for expanding abbreviations similar to
 [emmet](http://emmet.io/).
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mattn/emmet-vim/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 ## Installation
 
 [Download zip file](http://www.vim.org/scripts/script.php?script_id=2981):
