@@ -419,7 +419,7 @@ finish
         },
         {
           'query': "link:css",
-          'result': "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" media=\"all\">\n",
+          'result': "<link rel=\"stylesheet\" href=\"style.css\" media=\"all\">\n",
         },
         {
           'query': "a[title=\"Hello', world\" rel]",
@@ -589,8 +589,6 @@ finish
         },
       ],
     },
-
-     
   ],
 },
 {
