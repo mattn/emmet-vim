@@ -598,16 +598,12 @@ finish
       'name': 'expand abbreviation',
       'tests': [
         {
-          'query': "@i",
-          'result': "@import url();",
+          'query': "{fs:n$$$$}",
+          'result': "{font-style: normal;}",
         },
         {
-          'query': "fs:n",
-          'result': "font-style: normal;",
-        },
-        {
-          'query': "fl:l|fc",
-          'result': "float: left;",
+          'query': "{fl:l|fc$$$$}",
+          'result': "{float: left;}",
         },
         {
           'query': "{bg+$$$$}",
