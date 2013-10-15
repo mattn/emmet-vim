@@ -101,6 +101,13 @@ function! emmet#parseIntoTree(abbr, type)
   return emmet#lang#{rtype}#parseIntoTree(abbr, type)
 endfunction
 
+function! emmet#expandAbbrIntelligent(feedkey)
+  if !emmet#isExpandable()
+    return a:feedkey
+  endif 
+  return "\<plug>(EmmetExpandAbbr)"
+endfunction
+
 function! emmet#isExpandable()
   let line = getline('.')
   if col('.') < len(line)
