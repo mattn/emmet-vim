@@ -424,10 +424,6 @@ endfunction
 function! emmet#expandCursorExpr(expand, mode)
   let expand = a:expand
   let type = emmet#getFileType()
-  let use_pipe_for_cursor = emmet#getResource(type, 'use_pipe_for_cursor', 1)
-  if use_pipe_for_cursor
-    let expand = substitute(expand, '|', '${cursor}', 'g')
-  endif
   if expand !~ '\${cursor}'
     if a:mode == 2
       let expand = '${cursor}' . expand
@@ -793,6 +789,7 @@ function! emmet#ExpandWord(abbr, type, orig)
       let filters = ['html']
     endif
   endif
+  let str = substitute(str, '|', '${cursor}', 'g')
   let items = emmet#parseIntoTree(str, a:type).child
   let expand = ''
   for item in items
