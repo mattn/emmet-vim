@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 01-Oct-2013.
+" Last Change: 15-Oct-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -99,6 +99,18 @@ function! emmet#parseIntoTree(abbr, type)
   let type = a:type
   let rtype = emmet#lang#exists(type) ? type : 'html'
   return emmet#lang#{rtype}#parseIntoTree(abbr, type)
+endfunction
+
+function! emmet#isExpandable()
+  let line = getline('.')
+  if col('.') < len(line)
+    let line = matchstr(line, '^\(.*\%'.col('.').'c\)')
+  endif
+  let part = matchstr(line, '\(\S.*\)$')
+  let type = emmet#getFileType()
+  let ftype = emmet#lang#exists(type) ? type : 'html'
+  let part = emmet#lang#{ftype}#findTokens(part)
+  return len(part) > 0
 endfunction
 
 function! emmet#mergeConfig(lhs, rhs)
