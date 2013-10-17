@@ -1,5 +1,5 @@
 function! emmet#lorem#en#expand(command)
-  let wcount = matchstr(a:command, '^\%(lorem\|lipsum\)\(\d*\)}$', '\1', '')
+  let wcount = matchstr(a:command, '\(\d*\)$')
   let wcount = wcount > 0 ? wcount : 30
   
   let common = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipisicing', 'elit']
