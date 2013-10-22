@@ -589,6 +589,15 @@ finish
         },
       ],
     },
+    {
+      'name': 'group itemno',
+      'tests': [
+        {
+          'query': "dl>(dt{$}+dd)*3",
+          'result': "<dl>\n\t<dt>1</dt>\n\t<dd></dd>\n\t<dt>2</dt>\n\t<dd></dd>\n\t<dt>3</dt>\n\t<dd></dd>\n</dl>\n",
+        },
+      ],
+    },
   ],
 },
 {
