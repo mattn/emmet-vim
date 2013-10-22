@@ -213,6 +213,10 @@ function! emmet#lang#slim#balanceTag(flag) range
   endif
 endfunction
 
+function! emmet#lang#slim#moveNextPrevItem(flag)
+  return emmet#lang#slim#moveNextPrev(a:flag)
+endfunction
+
 function! emmet#lang#slim#moveNextPrev(flag)
   let pos = search('""\|\(^\s*|\s*\zs\)', a:flag ? 'Wpb' : 'Wp')
   if pos == 2

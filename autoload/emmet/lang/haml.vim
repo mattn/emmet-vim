@@ -235,6 +235,10 @@ function! emmet#lang#haml#balanceTag(flag) range
   endif
 endfunction
 
+function! emmet#lang#haml#moveNextPrevItem(flag)
+  return emmet#lang#haml#moveNextPrev(a:flag)
+endfunction
+
 function! emmet#lang#haml#moveNextPrev(flag)
   let pos = search('""', a:flag ? 'Wb' : 'W')
   if pos != 0

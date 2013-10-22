@@ -644,6 +644,15 @@ function! emmet#lang#html#balanceTag(flag) range
   endif
 endfunction
 
+function! emmet#lang#html#moveNextPrevItem(flag)
+  silent! exe "normal \<esc>"
+  let mx = '\%([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''">\]]*\)\{0,1}\)'
+  let pos = searchpos('\s'.mx.'\zs', '')
+  if pos != [0,0]
+    call feedkeys('v?\s\zs'.mx."\<cr>", '')
+  endif
+endfunction
+
 function! emmet#lang#html#moveNextPrev(flag)
   let pos = search('\%(</\w\+\)\@<!\zs><\/\|\(""\)\|^\(\s*\)$', a:flag ? 'Wpb' : 'Wp')
   if pos == 3

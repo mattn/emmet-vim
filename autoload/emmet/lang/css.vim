@@ -160,6 +160,11 @@ function! emmet#lang#css#toString(settings, current, type, inline, filters, item
 endfunction
 
 function! emmet#lang#css#imageSize()
+  "let img_region = emmet#util#searchRegion('url(', ')')
+  "if !emmet#util#regionIsValid(img_region) || !emmet#util#cursorInRegion(img_region)
+  "  return
+  "endif
+  "let content = emmet#util#getContent(img_region)
 endfunction
 
 function! emmet#lang#css#encodeImage()
@@ -239,6 +244,10 @@ function! emmet#lang#css#balanceTag(flag) range
   else
     call setpos('.', curpos)
   endif
+endfunction
+
+function! emmet#lang#css#moveNextPrevItem(flag)
+  return emmet#lang#css#moveNextPrev(a:flag)
 endfunction
 
 function! emmet#lang#css#moveNextPrev(flag)

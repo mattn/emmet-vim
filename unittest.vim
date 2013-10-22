@@ -125,7 +125,7 @@ function! s:test(...)
           call s:show_title(n+1, query)
         else
           call s:show_title(n+1, query)
-          unlet! res | let res = emmet#ExpandWord(query, testgroup.type, 0)
+          unlet! res | let res = emmet#expandWord(query, testgroup.type, 0)
         endif
         for opt in keys(options)
           if has_key(oldoptions, opt)

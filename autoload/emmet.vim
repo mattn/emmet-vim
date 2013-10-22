@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 15-Oct-2013.
+" Last Change: 22-Oct-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -649,6 +649,12 @@ function! emmet#expandAbbr(mode, abbr) range
   return ''
 endfunction
 
+function! emmet#moveNextPrevItem(flag)
+  let type = emmet#getFileType()
+  let rtype = emmet#lang#exists(type) ? type : 'html'
+  return emmet#lang#{rtype}#moveNextPrevItem(a:flag)
+endfunction
+
 function! emmet#moveNextPrev(flag)
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
@@ -773,7 +779,7 @@ function! emmet#codePretty() range
   call emmet#util#setContent(block, content)
 endfunction
 
-function! emmet#ExpandWord(abbr, type, orig)
+function! emmet#expandWord(abbr, type, orig)
   let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
@@ -815,7 +821,7 @@ function! emmet#getSnippets(type)
   return emmet#getResource(type, 'snippets', {})
 endfunction
 
-function! emmet#CompleteTag(findstart, base)
+function! emmet#completeTag(findstart, base)
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1

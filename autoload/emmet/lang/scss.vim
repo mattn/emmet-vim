@@ -108,6 +108,10 @@ function! emmet#lang#scss#balanceTag(flag) range
   endif
 endfunction
 
+function! emmet#lang#scss#moveNextPrevItem(flag)
+  return emmet#lang#scss#moveNextPrev(a:flag)
+endfunction
+
 function! emmet#lang#scss#moveNextPrev(flag)
   call emmet#lang#css#moveNextPrev(a:flag)
 endfunction
