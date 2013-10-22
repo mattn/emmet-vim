@@ -282,7 +282,10 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
           let cl = last.child
           let cls = []
           for c in range(n[1:])
-            let cls += cl
+            for cc in cl
+              let cc.basevalue = c + 1
+            endfor
+            let cls += deepcopy(cl)
           endfor
           let last.child = cls
         endif
