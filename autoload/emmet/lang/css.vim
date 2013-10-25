@@ -160,11 +160,33 @@ function! emmet#lang#css#toString(settings, current, type, inline, filters, item
 endfunction
 
 function! emmet#lang#css#imageSize()
-  "let img_region = emmet#util#searchRegion('url(', ')')
-  "if !emmet#util#regionIsValid(img_region) || !emmet#util#cursorInRegion(img_region)
-  "  return
-  "endif
-  "let content = emmet#util#getContent(img_region)
+  let img_region = emmet#util#searchRegion('{', '}')
+  if !emmet#util#regionIsValid(img_region) || !emmet#util#cursorInRegion(img_region)
+    return
+  endif
+  let content = emmet#util#getContent(img_region)
+  let fn = matchstr(content, '\<url([''"]\zs[^''"]\+\ze[''"]')
+  if fn =~ '^\s*$'
+    return
+  elseif fn !~ '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
+  let [width, height] = emmet#util#getImageSize(fn)
+  if width == -1 && height == -1
+    return
+  endif
+  let indent = emmet#getIndentation('css')
+  if content =~ '.*\<width\s*:[^;]*;.*'
+    let content = substitute(content, '\<width\s*:[^;]*;', 'width: ' . width . 'px;', '')
+  else
+    let content = substitute(content, '}', indent . 'width: ' . width . "px;\n}", '')
+  endif
+  if content =~ '.*\<height\s*:[^;]*;.*'
+    let content = substitute(content, '\<height\s*:[^;]*;', 'height: ' . height . 'px;', '')
+  else
+    let content = substitute(content, '}', indent . 'height: ' . height . "px;\n}", '')
+  endif
+  call emmet#util#setContent(img_region, content)
 endfunction
 
 function! emmet#lang#css#encodeImage()
