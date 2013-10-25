@@ -238,6 +238,10 @@ finish
           'result': "<div id=\"main\">\n\t<div id=\"sub\"></div>\n</div>\n",
         },
         {
+          'query': "doc:5",
+          'result': "<!DOCTYPE html>\n\n"
+          },
+        {
           'query': "html:xt>div#header>div#logo+ul#nav>li.item-$*5>a",
           'result': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n<head>\n\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n\t<title></title>\n</head>\n<body>\n\t<div id=\"header\">\n\t\t<div id=\"logo\"></div>\n\t\t<ul id=\"nav\">\n\t\t\t<li class=\"item-1\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-2\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-3\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-4\"><a href=\"\"></a></li>\n\t\t\t<li class=\"item-5\"><a href=\"\"></a></li>\n\t\t</ul>\n\t</div>\n\t\n</body>\n</html>",
         },
