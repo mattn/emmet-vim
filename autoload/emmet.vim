@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Oct-2013.
+" Last Change: 29-Oct-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -258,6 +258,8 @@ function! emmet#toString(...)
         for n in current.child
           let inner .= emmet#toString(n, type, inline, filters, s:itemno(group_itemno, n), indent)
         endfor
+      else
+        let inner = current.value[1:-2]
       endif
       let inner = substitute(inner, "\n", "\n" . indent, 'g')
       let str = substitute(str, '\${child}', inner, '')
@@ -1357,6 +1359,7 @@ let s:emmet_settings = {
 \    },
 \    'html': {
 \        'snippets': {
+\            'c': "<!-- |${child} -->",
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
 \            'cc:ie': "<!--[if IE]>\n\t${child}|\n<![endif]-->",
 \            'cc:noie': "<!--[if !IE]><!-->\n\t${child}|\n<!--<![endif]-->",
