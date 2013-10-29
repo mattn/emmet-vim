@@ -82,7 +82,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
       let attributes = tag_name . attributes
       let tag_name = 'div'
     endif
-    if tag_name =~ '.!$'
+    if tag_name =~ '[^!]!$'
       let tag_name = tag_name[:-2]
       let important = 1
     endif
