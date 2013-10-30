@@ -165,7 +165,8 @@ function! emmet#lang#css#imageSize()
     return
   endif
   let content = emmet#util#getContent(img_region)
-  let fn = matchstr(content, '\<url([''"]\zs[^''"]\+\ze[''"]')
+  let fn = matchstr(content, '\<url(\zs[^)]\+\ze)')
+  let fn = substitute(fn, '[''" \t]', '', 'g')
   if fn =~ '^\s*$'
     return
   elseif fn !~ '^\(/\|http\)'
