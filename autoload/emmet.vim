@@ -323,17 +323,17 @@ function! emmet#getFileType(...)
       let type = part
       break
     endif
-  endfor
-  if type == ''
-    let base = emmet#getBaseType(type)
-    if base != ""
+    let base = emmet#getBaseType(part)
+    if base != ''
       if flg
         let type = &ft
       else
         let type = base
       endif
+      unlet base
+      break
     endif
-  endif
+  endfor
   if type == 'html'
     let type = synIDattr(synID(line("."), col("."), 1), "name")
     if type =~ '^css\w'
