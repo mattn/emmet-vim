@@ -1,7 +1,7 @@
 "=============================================================================
 " File: emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Oct-2013.
+" Last Change: 01-Nov-2013.
 " Version: 0.82
 " WebPage: http://github.com/mattn/emmet-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -98,7 +98,8 @@ if !exists('g:user_emmet_leader_key')
   let g:user_emmet_leader_key = '<c-y>'
 endif
 
-function! s:install_plugin(mode)
+function! s:install_plugin(mode, buffer)
+  let buffer = a:buffer ? '<buffer>' : ''
   for item in [
   \ {'mode': 'i', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': '<c-r>=emmet#expandAbbr(0,"")<cr><right>'},
   \ {'mode': 'n', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': ':call emmet#expandAbbr(3,"")<cr>'},
@@ -135,7 +136,7 @@ function! s:install_plugin(mode)
       continue
     endif
     if !hasmapto('<plug>(' . item.plug . ')', item.mode)
-      exe item.mode . 'noremap <plug>(' . item.plug . ') ' . item.func
+      exe item.mode . 'noremap '. buffer .' <plug>(' . item.plug . ') ' . item.func
     endif
     if exists('g:' . item.var)
       let key = eval('g:' . item.var)
@@ -143,15 +144,15 @@ function! s:install_plugin(mode)
       let key = g:user_emmet_leader_key . item.key
     endif
     if len(maparg(key, item.mode)) == 0
-      exe item.mode . 'map <unique> ' . key . ' <plug>(' . item.plug . ')'
+      exe item.mode . 'map ' . buffer . ' <unique> ' . key . ' <plug>(' . item.plug . ')'
     endif
   endfor
 endfunction
 
-command! -nargs=0 EmmetInstall call <SID>install_plugin(get(g:, 'user_emmet_mode', 'a'))
+command! -nargs=0 EmmetInstall call <SID>install_plugin(get(g:, 'user_emmet_mode', 'a'), 1)
 
 if get(g:, 'user_emmet_install_global', 1)
-  EmmetInstall
+  call s:install_plugin(get(g:, 'user_emmet_mode', 'a'), 0)
 endif
 
 if get(g:, 'user_emmet_install_command', 1)
