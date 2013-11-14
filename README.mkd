@@ -16,7 +16,7 @@ which provides support for expanding abbreviations similar to
 To install using pathogen.vim:
 
     cd ~/.vim/bundle
-    unzip /path/to/emmet-vim.zip
+    git clone https://github.com/mattn/emmet-vim.git
     
 To install using [Vundle|https://github.com/gmarik/vundle]:
     #add this line to your .vimrc file
@@ -25,11 +25,11 @@ To install using [Vundle|https://github.com/gmarik/vundle]:
 To checkout the source from repository:
 
     cd ~/.vim/bundle
-    git clone http://github.com/mattn/emmet-vim.git
+    git clone https://github.com/mattn/emmet-vim.git
 
 or:
 
-    git clone http://github.com/mattn/emmet-vim.git
+    git clone https://github.com/mattn/emmet-vim.git
     cd emmet-vim
     cp plugin/emmet.vim ~/.vim/plugin/
     cp autoload/emmet.vim ~/.vim/autoload/
