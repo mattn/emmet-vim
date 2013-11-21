@@ -1,7 +1,7 @@
 "=============================================================================
 " File: emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 01-Nov-2013.
+" Last Change: 21-Nov-2013.
 " Version: 0.82
 " WebPage: http://github.com/mattn/emmet-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -101,10 +101,10 @@ endif
 function! s:install_plugin(mode, buffer)
   let buffer = a:buffer ? '<buffer>' : ''
   for item in [
-  \ {'mode': 'i', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': '<c-r>=emmet#expandAbbr(0,"")<cr><right>'},
+  \ {'mode': 'i', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': '<c-e><c-r>=emmet#expandAbbr(0,"")<cr><right>'},
   \ {'mode': 'n', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': ':call emmet#expandAbbr(3,"")<cr>'},
   \ {'mode': 'v', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': ':call emmet#expandAbbr(2,"")<cr>'},
-  \ {'mode': 'i', 'var': 'user_emmet_expandword_key', 'key': ';', 'plug': 'EmmetExpandWord', 'func': '<c-r>=emmet#expandAbbr(1,"")<cr>'},
+  \ {'mode': 'i', 'var': 'user_emmet_expandword_key', 'key': ';', 'plug': 'EmmetExpandWord', 'func': '<c-e><c-r>=emmet#expandAbbr(1,"")<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_expandword_key', 'key': ';', 'plug': 'EmmetExpandWord', 'func': ':call emmet#expandAbbr(1,"")<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_balancetaginward_key', 'key': 'd', 'plug': 'EmmetBalanceTagInward', 'func': '<esc>:call emmet#balanceTag(1)<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_balancetaginward_key', 'key': 'd', 'plug': 'EmmetBalanceTagInward', 'func': ':call emmet#balanceTag(1)<cr>'},
