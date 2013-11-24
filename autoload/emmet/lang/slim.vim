@@ -29,14 +29,18 @@ function! emmet#lang#slim#toString(settings, current, type, inline, filters, ite
       if !has_key(current.attr, attr)
         continue
       endif
-      let val = current.attr[attr]
-      if dollar_expr
-        while val =~ '\$\([^#{]\|$\)'
-          let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-        endwhile
+      let Val = current.attr[attr]
+      if type(Val) == 2 && Val == function('emmet#types#true')
+        let str .= ' ' . attr . '=true'
+      else
+        if dollar_expr
+          while Val =~ '\$\([^#{]\|$\)'
+            let Val = substitute(Val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+          endwhile
+        endif
+        let attr = substitute(attr, '\$$', itemno+1, '')
+        let str .= ' ' . attr . '="' . Val . '"'
       endif
-      let attr = substitute(attr, '\$$', itemno+1, '')
-      let str .= ' ' . attr . '="' . val . '"'
     endfor
 
     let inner = ''

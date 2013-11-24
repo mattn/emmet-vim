@@ -30,22 +30,26 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
       if !has_key(current.attr, attr)
         continue
       endif
-      let val = current.attr[attr]
-      if dollar_expr
-        while val =~ '\$\([^#{]\|$\)'
-          let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-        endwhile
-        let attr = substitute(attr, '\$$', itemno+1, '')
-      endif
-      let valtmp = substitute(val, '\${cursor}', '', '')
-      if attr == 'id' && len(valtmp) > 0
-        let str .= '#' . val
-      elseif attr == 'class' && len(valtmp) > 0
-        let str .= '.' . substitute(val, ' ', '.', 'g')
-      else
-        if len(tmp) > 0 | let tmp .= ',' | endif
-        let val = substitute(val, '\${cursor}', '', '')
-        let tmp .= ' :' . attr . ' => "' . val . '"'
+      let Val = current.attr[attr]
+      if type(Val) == 2 && Val == function('emmet#types#true')
+        let tmp .= ' :' . attr . ' => true'
+	  else
+        if dollar_expr
+          while Val =~ '\$\([^#{]\|$\)'
+            let Val = substitute(Val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+          endwhile
+          let attr = substitute(attr, '\$$', itemno+1, '')
+        endif
+        let valtmp = substitute(Val, '\${cursor}', '', '')
+        if attr == 'id' && len(valtmp) > 0
+          let str .= '#' . Val
+        elseif attr == 'class' && len(valtmp) > 0
+          let str .= '.' . substitute(Val, ' ', '.', 'g')
+        else
+          if len(tmp) > 0 | let tmp .= ',' | endif
+          let Val = substitute(Val, '\${cursor}', '', '')
+          let tmp .= ' :' . attr . ' => "' . Val . '"'
+        endif
       endif
     endfor
     if len(tmp)
