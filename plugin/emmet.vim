@@ -1,7 +1,7 @@
 "=============================================================================
 " File: emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Nov-2013.
+" Last Change: 26-Nov-2013.
 " Version: 0.83
 " WebPage: http://github.com/mattn/emmet-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -101,7 +101,7 @@ endif
 function! s:install_plugin(mode, buffer)
   let buffer = a:buffer ? '<buffer>' : ''
   for item in [
-  \ {'mode': 'i', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': '<c-r>=emmet#expandAbbr(0,"")<cr><right>'},
+  \ {'mode': 'i', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': '<c-r>=emmet#expandAbbr(0,"")<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': ':call emmet#expandAbbr(3,"")<cr>'},
   \ {'mode': 'v', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'EmmetExpandAbbr', 'func': ':call emmet#expandAbbr(2,"")<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_expandword_key', 'key': ';', 'plug': 'EmmetExpandWord', 'func': '<c-r>=emmet#expandAbbr(1,"")<cr>'},
