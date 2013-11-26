@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 29-Oct-2013.
+" Last Change: 26-Nov-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -254,7 +254,6 @@ function! emmet#toString(...)
       endif
       let inner = ''
       if len(current.child)
-        let render_type = emmet#getFileType(1)
         for n in current.child
           let inner .= emmet#toString(n, type, inline, filters, s:itemno(group_itemno, n), indent)
         endfor
@@ -279,6 +278,9 @@ function! emmet#getFilters(type)
 endfunction
 
 function! emmet#getResource(type, name, default)
+  if exists('b:emmet_' . a:name)
+    return get(b:, 'emmet_' . a:name)
+  endif
   if !has_key(s:emmet_settings, a:type)
     return a:default
   endif
@@ -478,7 +480,7 @@ function! emmet#expandAbbr(mode, abbr) range
       endif
       let items = emmet#parseIntoTree(query, type).child
       for item in items
-        let expand .= emmet#toString(item, type, 0, filters, 0, indent)
+        let expand .= emmet#toString(item, rtype, 0, filters, 0, indent)
       endfor
       if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
@@ -533,7 +535,7 @@ function! emmet#expandAbbr(mode, abbr) range
         let items = emmet#parseIntoTree(leader . "{".str."}", type).child
       endif
       for item in items
-        let expand .= emmet#toString(item, type, 0, filters, 0, '')
+        let expand .= emmet#toString(item, rtype, 0, filters, 0, '')
       endfor
       if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
