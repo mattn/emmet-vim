@@ -452,7 +452,7 @@ function! emmet#expandAbbr(mode, abbr) range
   let line = ''
   let part = ''
   let rest = ''
-  let ret = pumvisible() ? "" : "<right>"
+  let ret = pumvisible() ? "" : "\<right>"
 
   let filters = emmet#getFilters(type)
   if len(filters) == 0
@@ -672,7 +672,7 @@ function! emmet#imageSize()
   let rtype = emmet#lang#exists(type) ? type : 'html'
   call emmet#lang#{rtype}#imageSize()
   silent! call setpos('.', orgpos)
-  return pumvisible() ? "" : "<right>"
+  return pumvisible() ? "" : "\<right>"
 endfunction
 
 function! emmet#encodeImage()
@@ -720,7 +720,7 @@ function! emmet#anchorizeURL(flag)
   let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
   let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
   if !emmet#util#cursorInRegion(block)
-    return pumvisible() ? "" : "<right>"
+    return pumvisible() ? "" : "\<right>"
   endif
 
   let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
@@ -760,7 +760,7 @@ function! emmet#anchorizeURL(flag)
   let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   let expand = substitute(expand, "\n", "\n" . indent, 'g')
   call emmet#util#setContent(block, expand)
-  return pumvisible() ? "" : "<right>"
+  return pumvisible() ? "" : "\<right>"
 endfunction
 
 function! emmet#codePretty() range
