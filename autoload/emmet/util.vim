@@ -325,6 +325,6 @@ function! emmet#util#getcurpos()
   return pos
 endfunction
 
-function! emmet#closePopup()
+function! emmet#util#closePopup()
   return pumvisible() ? "\<c-e>" : ""
 endfunction
