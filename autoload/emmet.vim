@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 26-Nov-2013.
+" Last Change: 28-Nov-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -452,7 +452,6 @@ function! emmet#expandAbbr(mode, abbr) range
   let line = ''
   let part = ''
   let rest = ''
-  let ret = pumvisible() ? "" : "\<right>"
 
   let filters = emmet#getFilters(type)
   if len(filters) == 0
@@ -462,7 +461,7 @@ function! emmet#expandAbbr(mode, abbr) range
   if a:mode == 2
     let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
     if len(leader) == 0
-      return ret
+      return ''
     endif
     let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
@@ -554,7 +553,7 @@ function! emmet#expandAbbr(mode, abbr) range
     endif
     normal! $
     call emmet#expandAbbr(0, "")
-    return ret
+    return ''
   else
     let line = getline('.')
     if col('.') < len(line)
@@ -651,7 +650,7 @@ function! emmet#expandAbbr(mode, abbr) range
   if g:emmet_debug > 1
     call getchar()
   endif
-  return ret
+  return ''
 endfunction
 
 function! emmet#moveNextPrevItem(flag)
@@ -672,7 +671,7 @@ function! emmet#imageSize()
   let rtype = emmet#lang#exists(type) ? type : 'html'
   call emmet#lang#{rtype}#imageSize()
   silent! call setpos('.', orgpos)
-  return pumvisible() ? "" : "\<right>"
+  return ''
 endfunction
 
 function! emmet#encodeImage()
@@ -685,7 +684,7 @@ function! emmet#toggleComment()
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
   call emmet#lang#{rtype}#toggleComment()
-  return pumvisible() ? "" : "<right>"
+  return ''
 endfunction
 
 function! emmet#balanceTag(flag) range
@@ -711,7 +710,7 @@ function! emmet#removeTag()
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
   call emmet#lang#{rtype}#removeTag()
-  return pumvisible() ? "" : "<right>"
+  return ''
 endfunction
 
 function! emmet#anchorizeURL(flag)
@@ -720,7 +719,7 @@ function! emmet#anchorizeURL(flag)
   let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
   let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
   if !emmet#util#cursorInRegion(block)
-    return pumvisible() ? "" : "\<right>"
+    return ''
   endif
 
   let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
@@ -760,7 +759,7 @@ function! emmet#anchorizeURL(flag)
   let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   let expand = substitute(expand, "\n", "\n" . indent, 'g')
   call emmet#util#setContent(block, expand)
-  return pumvisible() ? "" : "\<right>"
+  return ''
 endfunction
 
 function! emmet#codePretty() range
