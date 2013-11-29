@@ -86,6 +86,13 @@ autocmd FileType html,css EmmetInstall
 
 [Yasuhiro Matsumoto](http://mattn.kaoriya.net/)
 
+## Donating
+
+[![Support via Gittip][gittip-badge]][gittip]
+
+[gittip-badge]: https://rawgithub.com/twolfson/gittip-badge/master/dist/gittip.png
+[gittip]: https://www.gittip.com/mattn/
+
 ## Links
 
 ### Emmet official site:
