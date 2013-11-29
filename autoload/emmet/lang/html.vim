@@ -325,6 +325,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
   let itemno = a:itemno
   let indent = a:indent
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
+  let q = emmet#getResource(type, 'quote_char', '"')
 
   if emmet#useFilter(filters, 'haml')
     return emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
@@ -367,7 +368,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
       if g:emmet_html5
         let str .= ' ' . attr
       else
-        let str .= ' ' . attr . '="' . attr . '"'
+        let str .= ' ' . attr . '=' . q . attr . q
       endif
       if emmet#useFilter(filters, 'c')
         if attr == 'id' | let comment .= '#' . Val | endif
@@ -385,7 +386,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
         endwhile
         let attr = substitute(attr, '\$$', itemno+1, '')
       endif
-      let str .= ' ' . attr . '="' . Val . '"'
+      let str .= ' ' . attr . '=' . q . Val . q
       if emmet#useFilter(filters, 'c')
         if attr == 'id' | let comment .= '#' . Val | endif
         if attr == 'class' | let comment .= '.' . Val | endif
