@@ -1,6 +1,6 @@
 let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
 \     .'\((*\)\{-}\s*'
-\       .'\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|{\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\)'
+\       .'\([@#.]\{-}[a-zA-Z_\!][a-zA-Z0-9:_\!\-$]*\|{\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\)'
 \       .'\('
 \         .'\%('
 \           .'\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)'
@@ -385,6 +385,30 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
           endif
         endwhile
         let attr = substitute(attr, '\$$', itemno+1, '')
+      endif
+      if attr == 'class' && emmet#useFilter(filters, 'bem')
+        let vals = split(Val, '\s\+')
+        let Val = ''
+        let lead = ''
+        for _val in vals
+          if len(Val) > 0
+            let Val .= ' '
+          endif
+          if _val =~ '^\a_'
+            let lead = _val[0]
+            let Val .= lead . ' ' .  _val
+          elseif _val =~ '^_'
+            if len(lead) == 0
+              let pattr = current.parent.attr
+              if has_key(pattr, 'class')
+                let lead = pattr['class']
+              endif
+            endif
+            let Val .= lead . ' ' . lead . _val
+          else
+            let Val .= _val
+          endif
+        endfor
       endif
       let str .= ' ' . attr . '=' . q . Val . q
       if emmet#useFilter(filters, 'c')
