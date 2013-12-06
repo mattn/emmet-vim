@@ -339,7 +339,8 @@ function! emmet#getFileType(...)
     endif
   endfor
   if type == 'html'
-    let type = synIDattr(synID(line("."), col("."), 1), "name")
+    let pos = emmet#util#getcurpos()
+    let type = synIDattr(synID(pos[1], pos[2], 1), "name")
     if type =~ '^css\w'
       let type = 'css'
     endif
