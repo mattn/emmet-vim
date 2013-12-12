@@ -121,5 +121,5 @@ function! emmet#lang#scss#splitJoinTag()
 endfunction
 
 function! emmet#lang#scss#removeTag()
-  call emmet#lang#ss#removeTag()
+  call emmet#lang#css#removeTag()
 endfunction
