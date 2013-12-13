@@ -288,7 +288,11 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
           let cls = []
           for c in range(n[1:])
             for cc in cl
-              let cc.basevalue = c + 1
+              if cc.multiplier > 1
+                let cc.basedirect = c + 1
+              else
+                let cc.basevalue = c + 1
+              endif
             endfor
             let cls += deepcopy(cl)
           endfor

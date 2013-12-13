@@ -596,6 +596,10 @@ finish
           'query': "dl>(dt{$}+dd)*3",
           'result': "<dl>\n\t<dt>1</dt>\n\t<dd></dd>\n\t<dt>2</dt>\n\t<dd></dd>\n\t<dt>3</dt>\n\t<dd></dd>\n</dl>\n",
         },
+        {
+          'query': "(div[attr=$]*3)*3",
+          'result': "<div attr=\"1\"></div>\n<div attr=\"2\"></div>\n<div attr=\"3\"></div>\n<div attr=\"1\"></div>\n<div attr=\"2\"></div>\n<div attr=\"3\"></div>\n<div attr=\"1\"></div>\n<div attr=\"2\"></div>\n<div attr=\"3\"></div>\n",
+        },
       ],
     },
   ],
