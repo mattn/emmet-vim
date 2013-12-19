@@ -18,8 +18,9 @@ To install using pathogen.vim:
     cd ~/.vim/bundle
     git clone https://github.com/mattn/emmet-vim.git
     
-To install using [Vundle|https://github.com/gmarik/vundle]:
-    #add this line to your .vimrc file
+To install using [Vundle](https://github.com/gmarik/vundle):
+
+    # add this line to your .vimrc file
     Bundle "mattn/emmet-vim"
 
 To checkout the source from repository:
