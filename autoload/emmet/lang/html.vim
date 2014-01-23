@@ -421,9 +421,6 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
       endif
     endif
   endfor
-  if len(comment) > 0
-    let str = "<!-- " . comment . " -->\n" . str
-  endif
   if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
     let str .= settings.html.empty_element_suffix
   else
