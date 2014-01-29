@@ -26,13 +26,13 @@ detailed_description: |
      +-------------------------------------
      | <!DOCTYPE HTML>
      | <html lang="en">
-     | <head>
-     |     <title></title>
-     |     <meta charset="UTF-8">
-     | </head>
-     | <body>
-     |      _
-     | </body>
+     |     <head>
+     |         <title></title>
+     |         <meta charset="UTF-8">
+     |     </head>
+     |     <body>
+     |          _
+     |     </body>
      | </html>
      +-------------------------------------
   Type following
