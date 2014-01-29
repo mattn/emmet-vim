@@ -52,13 +52,13 @@ Then type "\<c-y\>," (Ctrl + y + ','), you should see:
 ```html
 <!DOCTYPE HTML>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title></title>
-</head>
-<body>
-	_
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+    </head>
+    <body>
+        _
+    </body>
 </html>
 ```
 
