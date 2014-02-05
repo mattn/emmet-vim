@@ -150,18 +150,38 @@ endfunction
 " html utils
 "==============================================================================
 function! emmet#util#getContentFromURL(url)
-  let res = system(printf("%s %s", g:emmet_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
-  let charset = matchstr(res, '<meta[^>]\+content=["''][^;"'']\+;\s*charset=\zs[^;"'']\+\ze["''][^>]*>')
+  let res = system(printf("%s -i %s", g:emmet_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
+  while res =~ '^HTTP/1.\d 3' || res =~ '^HTTP/1\.\d 200 Connection established' || res =~ '^HTTP/1\.\d 100 Continue'
+    let pos = stridx(res, "\r\n\r\n")
+    if pos != -1
+      let res = strpart(res, pos+4)
+    else
+      let pos = stridx(res, "\n\n")
+      let res = strpart(res, pos+2)
+    endif
+  endwhile
+  let pos = stridx(res, "\r\n\r\n")
+  if pos != -1
+    let content = strpart(res, pos+4)
+  else
+    let pos = stridx(res, "\n\n")
+    let content = strpart(res, pos+2)
+  endif
+  let header = res[:pos-1]
+  let charset = matchstr(content, '<meta[^>]\+content=["''][^;"'']\+;\s*charset=\zs[^;"'']\+\ze["''][^>]*>')
   if len(charset) == 0
-    let charset = matchstr(res, '<meta\s\+charset=["'']\?\zs[^"'']\+\ze["'']\?[^>]*>')
+    let charset = matchstr(content, '<meta\s\+charset=["'']\?\zs[^"'']\+\ze["'']\?[^>]*>')
   endif
   if len(charset) == 0
-    let s1 = len(split(res, '?'))
-    let utf8 = iconv(res, 'utf-8', &encoding)
+    let charset = matchstr(header, '\nContent-Type:.* charset=[''"]\?\zs[^''";\n]\+\ze')
+  endif
+  if len(charset) == 0
+    let s1 = len(split(content, '?'))
+    let utf8 = iconv(content, 'utf-8', &encoding)
     let s2 = len(split(utf8, '?'))
-    return (s2 == s1 || s2 >= s1 * 2) ? utf8 : res
+    return (s2 == s1 || s2 >= s1 * 2) ? utf8 : content
   endif
-  return iconv(res, charset, &encoding)
+  return iconv(content, charset, &encoding)
 endfunction
 
 function! emmet#util#getTextFromHTML(buf)
