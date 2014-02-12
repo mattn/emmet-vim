@@ -517,10 +517,17 @@ function! emmet#expandAbbr(mode, abbr) range
       let str = ''
       if visualmode() ==# 'V'
         let line = getline(a:firstline)
+        let lspaces = matchstr(line, '^\s*', '', '')
         let part = substitute(line, '^\s*', '', '')
         for n in range(a:firstline, a:lastline)
           if len(leader) > 0
-            let str .= getline(n) . "\n"
+            let line = getline(a:firstline)
+            let spaces = matchstr(line, '^\s*', '', '')
+            if len(spaces) >= len(lspaces)
+              let str .= indent . getline(n)[len(lspaces):] . "\n"
+            else
+              let str .= getline(n) . "\n"
+            endif
           else
             let lpart = substitute(getline(n), '^\s*', '', '')
             let str .= lpart . "\n"

@@ -514,8 +514,8 @@ finish
           'result': "<span class=\"item1\">item 1</span>\n<span class=\"item2\">item 2</span>\n",
         },
         {
-          'query': "    <div class=\"footer_nav\">\n        <a href=\"#\">nav link</a>\n    </div>$$$$\\<esc>ggVG\\<c-y>,div\\<cr>$$$$",
-          'result': "    <div>\n        <div class=\"footer_nav\">\n            <a href=\"#\">nav link</a>\n        </div>\n    </div>",
+          'query': "\t<div class=\"footer_nav\">\n\t\t<a href=\"#\">nav link</a>\n\t</div>$$$$\\<esc>ggVG\\<c-y>,div\\<cr>$$$$",
+          'result': "\t<div>\n\t\t<div class=\"footer_nav\">\n\t\t\t<a href=\"#\">nav link</a>\n\t\t</div>\n\t</div>",
         },
       ],
     },
