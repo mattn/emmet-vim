@@ -52,7 +52,7 @@ function! emmet#lang#sass#toString(settings, current, type, inline, filters, ite
     for child in current.child
       let tmp = emmet#toString(child, type, inline, filters, itemno, indent)
       let tmp = substitute(tmp, "\n", "\n" . escape(indent, '\'), 'g')
-      let tmp = substitute(tmp, "\n" . escape(indent, '\') . '$', '\n', 'g')
+      let tmp = substitute(tmp, "\n" . escape(indent, '\') . '$', '${cursor}\n', 'g')
       let inner .= tmp
     endfor
     if len(inner) > 0

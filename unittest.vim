@@ -932,7 +932,7 @@ finish
         },
         {
           'query': ".first>.second>.third$$$$",
-          'result': "div.first\n\tdiv.second\n\t\tdiv.third\n\t\t\t$$$$",
+          'result': "div.first\n\tdiv.second\n\t\tdiv.third$$$$",
         },
       ],
     },
