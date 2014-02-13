@@ -191,27 +191,34 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
         endif
         if item[0] == '['
           let atts = item[1:-2]
-          while len(atts)
-            let amat = matchstr(atts, '\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)')
-            if len(amat) == 0
-              break
+          if matchstr(atts, '^\s*\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)') == ''
+            let keys = keys(current.attr)
+            if len(keys) > 0
+              let current.attr[keys[0]] = atts
             endif
-            let key = split(amat, '=')[0]
-            let Val = amat[len(key)+1:]
-            if key =~ '\.$' && Val == ''
-              let key = key[:-2]
+          else
+            while len(atts)
+              let amat = matchstr(atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)')
+              if len(amat) == 0
+                break
+              endif
+              let key = split(amat, '=')[0]
+              let Val = amat[len(key)+1:]
+              if key =~ '\.$' && Val == ''
+                let key = key[:-2]
+                unlet Val
+                let Val = function('emmet#types#true')
+              elseif Val =~ '^["'']'
+                let Val = Val[1:-2]
+              endif
+              let current.attr[key] = Val
+              if index(current.attrs_order, key) == -1
+                let current.attrs_order += [key]
+              endif
+              let atts = atts[stridx(atts, amat) + len(amat):]
               unlet Val
-              let Val = function('emmet#types#true')
-            elseif Val =~ '^["'']'
-              let Val = Val[1:-2]
-            endif
-            let current.attr[key] = Val
-            if index(current.attrs_order, key) == -1
-              let current.attrs_order += [key]
-            endif
-            let atts = atts[stridx(atts, amat) + len(amat):]
-            unlet Val
-          endwhile
+            endwhile
+          endif
         endif
         let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
       endwhile

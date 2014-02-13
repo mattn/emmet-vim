@@ -1,3 +1,4 @@
+" {{{
 let s:sfile = expand('<sfile>')
 
 function! s:reload(d)
@@ -192,10 +193,11 @@ command! -nargs=* -complete=customlist,g:emmet_unittest_complete EmmetUnitTest c
 if s:sfile == expand('%:p')
   EmmetUnitTest
 endif
+" }}}
 
 finish
 [
-{
+{ 'test-html': "{{{",
   'type': "html",
   'categories': [
     {
@@ -581,6 +583,15 @@ finish
       ],
     },
     {
+      'name': 'default attributes',
+      'tests': [
+        {
+          'query': "p.title>a[/hoge/]",
+          'result': "<p class=\"title\"><a href=\"/hoge/\"></a></p>\n",
+        },
+      ],
+    },
+    {
       'name': 'multiple group',
       'tests': [
         {
@@ -603,8 +614,8 @@ finish
       ],
     },
   ],
-},
-{
+  'dummy': "}}}"},
+{ 'test-css': '{{{',
   'type': 'css',
   'categories': [
     {
@@ -689,8 +700,8 @@ finish
       ],
     },
   ],
-},
-{
+  'dummy': "}}}"},
+{ 'test-haml': '{{{',
   'type': 'haml',
   'categories': [
     {
@@ -745,8 +756,8 @@ finish
       ],
     },
   ],
-},
-{
+  'dummy': "}}}"},
+{ 'test-slim': "{{{",
   'type': 'slim',
   'categories': [
     {
@@ -801,8 +812,8 @@ finish
       ],
     },
   ],
-},
-{
+  'dummy': "}}}"},
+{ 'test-xsl': "{{{",
   'type': 'xsl',
   'categories': [
     {
@@ -819,8 +830,8 @@ finish
       ],
     },
   ],
-},
-{
+  'dummy': "}}}"},
+{ 'test-xsd': "{{{",
   'type': 'xsd',
   'categories': [
     {
@@ -833,8 +844,8 @@ finish
       ],
     },
   ],
-},
-{
+  'dummy': "}}}"},
+{ 'test-mustache': "{{{",
   'type': 'mustache',
   'categories': [
     {
@@ -851,8 +862,8 @@ finish
       ],
     },
   ],
-},
-{
+  'dummy': "}}}"},
+{ 'test-sass': "{{{",
   'type': 'sass',
   'categories': [
     {
@@ -937,6 +948,6 @@ finish
       ],
     },
   ],
-},
+  'dummy': "}}}"},
 ]
-" vim:set et:
+" vim:set et fdm=marker:
