@@ -427,6 +427,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
         if attr == 'class' | let comment .= '.' . Val | endif
       endif
     endif
+    unlet Val
   endfor
   if len(comment) > 0
     let str = "<!-- " . comment . " -->\n" . str
