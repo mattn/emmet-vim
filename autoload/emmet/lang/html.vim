@@ -194,9 +194,12 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
           if matchstr(atts, '^\s*\zs[0-9a-zA-Z-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') == ''
 			if has_key(default_attributes, current.name)
               let keys = keys(default_attributes[current.name])
-              if len(keys) > 0
-                let current.attr[keys[0]] = atts
-              endif
+            endif
+            if len(keys) == 0
+              let keys = keys(default_attributes[current.name . ':src'])
+            endif
+            if len(keys) > 0
+              let current.attr[keys[0]] = atts
             endif
           else
             while len(atts)
