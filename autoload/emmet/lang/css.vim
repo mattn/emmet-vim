@@ -116,7 +116,13 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
       endif
   
       let current.pos = 0
-      let lg = matchlist(token, '^\%(linear-gradient\|lg\)(\s*\(\w\+\)\s*,\s*\([^,]\+\)\s*,\s*\([^)]\+\)\s*)$')
+      let lg = matchlist(token, '^\%(linear-gradient\|lg\)(\s*\(\S\+\)\s*,\s*\([^,]\+\)\s*,\s*\([^)]\+\)\s*)$')
+      if len(lg) == 0
+        let lg = matchlist(token, '^\%(linear-gradient\|lg\)(\s*\(\S\+\)\s*,\s*\([^,]\+\)\s*)$')
+        if len(lg)
+          let [lg[1], lg[2], lg[3]] = ['linear', lg[1], lg[2]]
+        endif
+      endif
       if len(lg)
         let current.name = ''
         let current.snippet = printf("background-image:-webkit-gradient(%s, 0 0, 0 100%, from(%s), to(%s));\n", lg[1], lg[2], lg[3])
