@@ -589,6 +589,10 @@ finish
           'query': "p.title>a[/hoge/]",
           'result': "<p class=\"title\"><a href=\"/hoge/\"></a></p>\n",
         },
+        {
+          'query': "script[jquery.js]",
+          'result': "<script src=\"jquery.js\"></script>\n",
+        },
       ],
     },
     {
