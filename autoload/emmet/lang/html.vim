@@ -191,7 +191,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
         endif
         if item[0] == '['
           let atts = item[1:-2]
-          if matchstr(atts, '^\s*\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)') == ''
+          if matchstr(atts, '^\s*\zs[0-9a-zA-Z-:]\+\(="[^"]*"\|=''[^'']*''\|=\w\)') == ''
             let keys = keys(current.attr)
             if len(keys) > 0
               let current.attr[keys[0]] = atts
