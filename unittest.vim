@@ -309,11 +309,11 @@ finish
         },
         {
           'query': "a[a=b][b=c=d][e]{foo}*2",
-          'result': "<a href=\"\" a=\"b\" b=\"c=d\" e=\"\">foo</a>\n<a href=\"\" a=\"b\" b=\"c=d\" e=\"\">foo</a>\n",
+          'result': "<a href=\"e\" a=\"b\" b=\"c=d\">foo</a>\n<a href=\"e\" a=\"b\" b=\"c=d\">foo</a>\n",
         },
         {
           'query': "a[a=b][b=c=d][e]*2{foo}",
-          'result': "<a href=\"\" a=\"b\" b=\"c=d\" e=\"\"></a>\n<a href=\"\" a=\"b\" b=\"c=d\" e=\"\"></a>\nfoo",
+          'result': "<a href=\"e\" a=\"b\" b=\"c=d\"></a>\n<a href=\"e\" a=\"b\" b=\"c=d\"></a>\nfoo",
         },
         {
           'query': "a*2{foo}a",

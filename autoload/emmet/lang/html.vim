@@ -191,14 +191,16 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
         endif
         if item[0] == '['
           let atts = item[1:-2]
-          if matchstr(atts, '^\s*\zs[0-9a-zA-Z-:]\+\(="[^"]*"\|=''[^'']*''\|=\w\)') == ''
-            let keys = keys(current.attr)
-            if len(keys) > 0
-              let current.attr[keys[0]] = atts
+          if matchstr(atts, '^\s*\zs[0-9a-zA-Z-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') == ''
+			if has_key(default_attributes, current.name)
+              let keys = keys(default_attributes[current.name])
+              if len(keys) > 0
+                let current.attr[keys[0]] = atts
+              endif
             endif
           else
             while len(atts)
-              let amat = matchstr(atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''"\]]*\)\{0,1}\)')
+              let amat = matchstr(atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\|[^ ''"\]]*\)\{0,1}\)')
               if len(amat) == 0
                 break
               endif
