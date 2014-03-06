@@ -351,20 +351,20 @@ CUSTOMIZE                                                      *emmet-customize*
 
   Or if you want to use <plug> mappings
 
-    EmmetExpandAbbr
-    EmmetExpandWord
-    EmmetBalanceTagInward
-    EmmetBalanceTagOutward
-    EmmetMoveNext
-    EmmetMovePrev
-    EmmetImageSize
-    EmmetToggleComment
-    EmmetSplitJoinTag
-    EmmetRemoveTag
-    EmmetAnchorizeURL
-    EmmetAnchorizeSummary
-    EmmetMergeLines
-    EmmetCodePretty
+    emmet-expand-abbr
+    emmet-expand-word
+    emmet-balance-tag-inward
+    emmet-balance-tag-outward
+    emmet-move-next
+    emmet-move-prev
+    emmet-image-size
+    emmet-toggle-comment
+    emmet-split-join-tag
+    emmet-remove-tag
+    emmet-anchorize-url
+    emmet-anchorize-summary
+    emmet-merge-lines
+    emmet-code-pretty
 
   So you can make the mapping affected only for a filetype you want.
 >
