@@ -643,16 +643,15 @@ function! emmet#expandAbbr(mode, abbr) range
       endif
     endif
   endif
-  if search('\$cursor\$', 'e')
+  if search('\ze\$cursor\$', 'e')
     let oldselection = &selection
     let &selection = 'inclusive'
     if foldclosed(line('.')) != -1
       silent! foldopen
     endif
-    silent! exe "normal! v7h\"_s"
-    if col('.') == col('$')
-      call feedkeys('', 'n')
-    endif
+    let pos = emmet#util#getcurpos()
+    silent! s/\$cursor\$//
+    silent! call setpos('.', pos)
     let &selection = oldselection
   endif
   if g:emmet_debug > 1
