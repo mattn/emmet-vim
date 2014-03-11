@@ -633,17 +633,20 @@ function! emmet#expandAbbr(mode, abbr) range
       endif
       let expand = substitute(expand, '\n\s*$', '', 'g')
       let expand = line[:-len(part)-1] . substitute(expand, "\n", "\n" . indent, 'g') . rest
-      let lines = split(expand, '\n')
+      let lines = split(expand, "\n", 1)
       if a:mode == 2
         silent! exe "normal! gvc"
       endif
-      call setline(line('.'), lines[0])
+      call setline('.', lines[0])
       if len(lines) > 1
-        call append(line('.'), lines[1:])
+        call append('.', lines[1:])
       endif
     endif
   endif
-  if search('\ze\$cursor\$', 'e')
+  if g:emmet_debug > 1
+    call getchar()
+  endif
+  if search('\ze\$cursor\$')
     let oldselection = &selection
     let &selection = 'inclusive'
     if foldclosed(line('.')) != -1
@@ -653,10 +656,9 @@ function! emmet#expandAbbr(mode, abbr) range
     silent! s/\$cursor\$//
     silent! call setpos('.', pos)
     let &selection = oldselection
-    redraw
-  endif
-  if g:emmet_debug > 1
-    call getchar()
+    if col('.') < col('$')
+      return "\<right>"
+    endif
   endif
   return ''
 endfunction

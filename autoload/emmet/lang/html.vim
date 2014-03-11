@@ -196,7 +196,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
           let atts = item[1:-2]
           if matchstr(atts, '^\s*\zs[0-9a-zA-Z-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') == ''
 			if has_key(default_attributes, current.name)
-              let keys = keys(default_attributes[current.name])
+              let dfa = default_attributes[current.name]
+              let keys = type(dfa) == 3 ? keys(dfa[0]) : keys(dfa)
             endif
             if len(keys) == 0
               let keys = keys(default_attributes[current.name . ':src'])
