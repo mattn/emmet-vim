@@ -222,7 +222,7 @@ function! emmet#toString(...)
       let str .= inner
     else
       let snippet = current.snippet
-      if len(current.snippet) == 0
+      if len(snippet) == 0
         let snippets = emmet#getResource(type, 'snippets', {})
         if !empty(snippets) && has_key(snippets, 'emmet_snippet')
           let snippet = snippets['emmet_snippet']
@@ -653,6 +653,7 @@ function! emmet#expandAbbr(mode, abbr) range
     silent! s/\$cursor\$//
     silent! call setpos('.', pos)
     let &selection = oldselection
+    redraw
   endif
   if g:emmet_debug > 1
     call getchar()
@@ -1396,12 +1397,12 @@ let s:emmet_settings = {
 \    'html': {
 \        'snippets': {
 \            '!': "html:5",
-\            '!!!': "<!doctype html>",
-\            '!!!4t':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">",
-\            '!!!4s':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">",
-\            '!!!xt':  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
-\            '!!!xs':  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">",
-\            '!!!xxs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">",
+\            '!!!': "<!doctype html>\n",
+\            '!!!4t':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n",
+\            '!!!4s':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n",
+\            '!!!xt':  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n",
+\            '!!!xs':  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
+\            '!!!xxs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
 \            'c': "<!-- |${child} -->",
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
 \            'cc:ie': "<!--[if IE]>\n\t${child}|\n<![endif]-->",

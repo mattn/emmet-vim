@@ -860,7 +860,7 @@ finish
       'tests': [
         {
           'query': "xsd:w3c",
-          'result': "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t<xsd:element name=\"\" type=\"\"/>\n</xsd:schema>",
+          'result': "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t<xsd:element name=\"\" type=\"\"/>\n</xsd:schema>\n",
         },
       ],
     },
