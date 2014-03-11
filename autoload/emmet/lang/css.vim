@@ -143,6 +143,26 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
         call add(root.child, deepcopy(current))
         let current.snippet = snippet
         call add(root.child, current)
+      elseif token =~ '^c#\([0-9a-fA-F]\{3}\|[0-9a-fA-F]\{6}\)\(\.[0-9]\+\)\?'
+        let cs = split(token, '\.')
+        let current.name = ''
+        if len(cs[0]) == 5
+          let rgb = matchlist(cs[0], 'c#\(.\)\(.\)\(.\)')
+          let r = eval('0x'.rgb[1].rgb[1])
+          let g = eval('0x'.rgb[2].rgb[2])
+          let b = eval('0x'.rgb[3].rgb[3])
+        elseif len(cs[0]) == 7
+          let rgb = matchlist(cs[0], 'c#\(..\)\(..\)\(..\)')
+          let r = eval('0x'.rgb[1])
+          let g = eval('0x'.rgb[2])
+          let b = eval('0x'.rgb[3])
+        endif
+        if len(cs) == 1
+          let current.snippet = printf('color:rgb(%d, %d, %d);', r, g, b)
+        else
+          let current.snippet = printf('color:rgb(%d, %d, %d, %s);', r, g, b, string(str2float('0.'.cs[1])))
+        endif
+        call add(root.child, current)
       else
         call add(root.child, current)
       endif
