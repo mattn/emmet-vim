@@ -701,6 +701,14 @@ finish
           'query': "{borle$$$$}",
           'result': "{border-left: $$$$;}",
         },
+        {
+          'query': "{c#dba$$$$}",
+          'result': "{color: rgb(221, 187, 170);}",
+        },
+        {
+          'query': "{c#dba.7$$$$}",
+          'result': "{color: rgb(221, 187, 170, 0.7);}",
+        },
       ],
     },
   ],
