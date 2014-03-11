@@ -660,6 +660,34 @@ function! emmet#expandAbbr(mode, abbr) range
   return ''
 endfunction
 
+function! emmet#updateTag()
+  let type = emmet#getFileType()
+  let region = emmet#util#searchRegion('<\S', '>')
+  if !emmet#util#regionIsValid(region) || !emmet#util#cursorInRegion(region)
+    return ''
+  endif
+  let content = emmet#util#getContent(region)
+  if content !~ '^<[^><]\+>$'
+      echo string(content)
+    return ''
+  endif
+  let current = emmet#lang#html#parseTag(content)
+  if empty(current)
+    return ''
+  endif
+
+  let str = substitute(input('Enter Abbreviation: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
+  let item = emmet#parseIntoTree(str, type).child[0]
+  for k in keys(item.attr)
+    let current.attr[k] = item.attr[k]
+  endfor
+  let html = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
+  let html = substitute(html, '\${cursor}', '', '')
+  let html = matchstr(html,  '^<[^><]\+>')
+  call emmet#util#setContent(region, html)
+  return ''
+endfunction
+
 function! emmet#moveNextPrevItem(flag)
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'

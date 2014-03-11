@@ -106,6 +106,8 @@ function! s:install_plugin(mode, buffer)
   \ {'mode': 'v', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'emmmet-expand-abbr', 'func': ':call emmet#expandAbbr(2,"")<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_expandword_key', 'key': ';', 'plug': 'emmet-expand-word', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#expandAbbr(1,"")<cr><right>'},
   \ {'mode': 'n', 'var': 'user_emmet_expandword_key', 'key': ';', 'plug': 'emmet-expand-word', 'func': ':call emmet#expandAbbr(1,"")<cr>'},
+  \ {'mode': 'i', 'var': 'user_emmet_update_tag', 'key': 'u', 'plug': 'emmmet-update-tag', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#updateTag()<cr>'},
+  \ {'mode': 'n', 'var': 'user_emmet_update_tag', 'key': 'u', 'plug': 'emmmet-update-tag', 'func': ':call emmet#updateTag()<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_balancetaginward_key', 'key': 'd', 'plug': 'emmet-balance-tag-inward', 'func': '<esc>:call emmet#balanceTag(1)<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_balancetaginward_key', 'key': 'd', 'plug': 'emmet-balance-tag-inward', 'func': ':call emmet#balanceTag(1)<cr>'},
   \ {'mode': 'v', 'var': 'user_emmet_balancetaginward_key', 'key': 'd', 'plug': 'emmet-balance-tag-inward', 'func': ':call emmet#balanceTag(2)<cr>'},
