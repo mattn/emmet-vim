@@ -667,8 +667,8 @@ function! emmet#updateTag()
     return ''
   endif
   let content = emmet#util#getContent(region)
+  let content = matchstr(content,  '^<[^><]\+>')
   if content !~ '^<[^><]\+>$'
-      echo string(content)
     return ''
   endif
   let current = emmet#lang#html#parseTag(content)
@@ -1395,6 +1395,7 @@ let s:emmet_settings = {
 \    },
 \    'html': {
 \        'snippets': {
+\            '!': "html:5",
 \            '!!!': "<!doctype html>",
 \            '!!!4t':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">",
 \            '!!!4s':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">",
