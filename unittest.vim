@@ -617,6 +617,15 @@ finish
         },
       ],
     },
+    {
+      'name': 'update tag',
+      'tests': [
+        {
+          'query': "<h$$$$\\<c-y>u.global\\<cr>$$$$3></h3>",
+          'result': "<h3 class=\"global\"></h3>",
+        },
+      ],
+    },
   ],
   'dummy': "}}}"},
 { 'test-css': '{{{',
