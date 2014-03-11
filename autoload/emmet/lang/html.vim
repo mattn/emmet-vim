@@ -113,7 +113,10 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
     if !empty(snippets)
       let snippet_name = tag_name
       if has_key(snippets, snippet_name)
-        let snippet = snippets[snippet_name]
+        let snippet = snippet_name
+        while has_key(snippets, snippet)
+          let snippet = snippets[snippet]
+        endwhile
         if use_pipe_for_cursor
           let snippet = substitute(snippet, '|', '${cursor}', 'g')
         endif
