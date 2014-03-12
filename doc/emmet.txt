@@ -368,7 +368,7 @@ CUSTOMIZE                                                      *emmet-customize*
 
   So you can make the mapping affected only for a filetype you want.
 >
-  autocmd FileType css imap <tab> <plug>(EmmetExpandAbbr)
+  autocmd FileType css imap <tab> <plug>(emmet-expand-abbr)
 <
 2. Indent Size                                               *emmet-indent-size*
 
