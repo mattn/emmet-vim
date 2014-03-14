@@ -346,6 +346,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
   let indent = a:indent
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
   let q = emmet#getResource(type, 'quote_char', '"')
+  let ct = emmet#getResource(type, 'comment_type', 'both')
 
   if emmet#useFilter(filters, 'haml')
     return emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
@@ -438,7 +439,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     endif
     unlet Val
   endfor
-  if len(comment) > 0
+  if len(comment) > 0 && ct == 'both'
     let str = "<!-- " . comment . " -->\n" . str
   endif
   if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
@@ -490,7 +491,11 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     let str .= "</" . current_name . ">"
   endif
   if len(comment) > 0
-    let str .= "\n<!-- /" . comment . " -->"
+    if ct == "lastonly"
+      let str .= "<!-- " . comment . " -->"
+    else
+      let str .= "\n<!-- /" . comment . " -->"
+    endif
   endif
   if len(current_name) > 0 && current.multiplier > 0 || stridx(','.settings.html.block_elements.',', ','.current_name.',') != -1
     let str .= "\n"
