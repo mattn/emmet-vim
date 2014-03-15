@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Dec-2013.
+" Last Change: 15-Mar-2014.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -574,7 +574,7 @@ function! emmet#expandAbbr(mode, abbr) range
       let part = matchstr(line, '\(\S.*\)$')
       let ftype = emmet#lang#exists(type) ? type : 'html'
       let part = emmet#lang#{ftype}#findTokens(part)
-      let line = line[0: stridx(line, part) + len(part) - 1]
+      let line = line[0: strridx(line, part) + len(part) - 1]
     endif
     if col('.') == col('$')
       let rest = ''
