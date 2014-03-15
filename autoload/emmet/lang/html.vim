@@ -34,7 +34,11 @@ function! emmet#lang#html#findTokens(str)
     endif
     let pos = stridx(str, token, pos) + len(token)
   endwhile
-  return a:str[last_pos :-1]
+  let str = a:str[last_pos :-1]
+  if str =~ '^\w\+="[^"]*$'
+    return ''
+  endif
+  return str
 endfunction
 
 function! emmet#lang#html#parseIntoTree(abbr, type)
