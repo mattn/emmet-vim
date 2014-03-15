@@ -519,6 +519,10 @@ finish
           'query': "\t<div class=\"footer_nav\">\n\t\t<a href=\"#\">nav link</a>\n\t</div>$$$$\\<esc>ggVG\\<c-y>,div\\<cr>$$$$",
           'result': "\t<div>\n\t\t<div class=\"footer_nav\">\n\t\t\t<a href=\"#\">nav link</a>\n\t\t</div>\n\t</div>",
         },
+        {
+          'query': "<small>a$$$$</small>",
+          'result': "<small><a href=\"\"></a></small>",
+        },
       ],
     },
     {
