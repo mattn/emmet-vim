@@ -107,7 +107,7 @@ function! emmet#expandAbbrIntelligent(feedkey)
   if !emmet#isExpandable()
     return a:feedkey
   endif 
-  return "\<plug>(EmmetExpandAbbr)"
+  return "\<plug>(emmet-expand-abbr)"
 endfunction
 
 function! emmet#isExpandable()
