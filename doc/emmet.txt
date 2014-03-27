@@ -448,6 +448,23 @@ CUSTOMIZE                                                      *emmet-customize*
     let g:user_emmet_mode='inv'  "enable all functions, which is equal to
     let g:user_emmet_mode='a'    "enable all function in all mode.
 
+6. Adding custom snippets
+
+If you have installed the |webapi|(https://github.com/mattn/webapi-vim) for
+ |emmet| you can also add your own snippets using a custom "snippets.json" file.
+
+Once you have installed the |webapi| add this line to your 'vimrc':
+>
+  let g:user_emmet_settings = webapi#json#decode(
+  \  join(readfile(expand('~/.snippets_custom.json')), "\n"))
+<
+You can change the path to your snippets_custom.json according to your
+preferences.
+
+See http://docs.emmet.io/customization/snippets/
+
+You can find instructions about creating your customized snippets.json file.
+
 ==============================================================================
 LINKS                                                              *emmet-links*
 
