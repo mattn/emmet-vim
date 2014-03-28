@@ -533,19 +533,20 @@ function! emmet#expandAbbr(mode, abbr) range
             let str .= lpart . "\n"
           endif
         endfor
-        if stridx(leader, '{$#}') != -1
-          let items = emmet#parseIntoTree(leader, type).child
-        else
-          let leader .= (str =~ "\n" ? ">{\n" : "{") . str . "}"
-          let items = emmet#parseIntoTree(leader, type).child
+        if stridx(leader, '{$#}') == -1
+          let leader .= '{$#}'
         endif
+        let items = emmet#parseIntoTree(leader, type).child
       else
         let save_regcont = @"
         let save_regtype = getregtype('"')
         silent! normal! gvygv
         let str = @"
         call setreg('"', save_regcont, save_regtype)
-        let items = emmet#parseIntoTree(leader . "{".str."}", type).child
+        if stridx(leader, '{$#}') == -1
+          let leader .= '{$#}'
+        endif
+        let items = emmet#parseIntoTree(leader, type).child
       endif
       for item in items
         let expand .= emmet#toString(item, rtype, 0, filters, 0, '')
