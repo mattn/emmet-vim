@@ -533,8 +533,12 @@ function! emmet#expandAbbr(mode, abbr) range
             let str .= lpart . "\n"
           endif
         endfor
-        let leader .= (str =~ "\n" ? ">{\n" : "{") . str . "}"
-        let items = emmet#parseIntoTree(leader, type).child
+        if stridx(leader, '{$#}') != -1
+          let items = emmet#parseIntoTree(leader, type).child
+        else
+          let leader .= (str =~ "\n" ? ">{\n" : "{") . str . "}"
+          let items = emmet#parseIntoTree(leader, type).child
+        endif
       else
         let save_regcont = @"
         let save_regtype = getregtype('"')
@@ -550,6 +554,9 @@ function! emmet#expandAbbr(mode, abbr) range
         let expand = substitute(expand, '&', '\&amp;', 'g')
         let expand = substitute(expand, '<', '\&lt;', 'g')
         let expand = substitute(expand, '>', '\&gt;', 'g')
+      endif
+      if stridx(leader, '{$#}') != -1
+        let expand = substitute(expand, '\$#', '\="\n" . str', 'g')
       endif
     endif
   elseif a:mode == 4
