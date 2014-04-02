@@ -21,7 +21,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
   let block = emmet#util#searchRegion("{", "}")
   if type == 'css' && block[0] == [0,0] && block[1] == [0,0]
     let current = emmet#newNode()
-    let current.snippet = abbr . " {\n\t${cursor}\n}"
+    let current.snippet = abbr . " {\n" . indent . "${cursor}\n}"
     let current.name = ''
     call add(root.child, deepcopy(current))
   else
