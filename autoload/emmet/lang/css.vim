@@ -86,6 +86,10 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
           else
             let pat = '^' . join(split(tag_name, '\zs'), '\%(\|[^:-]\+-*\)')
             let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
+			if len(vv) == 0
+              let pat = '^' . join(split(tag_name, '\zs'), '[^:]\{-}')
+              let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
+            endif
             let minl = -1
             for vk in vv
               let vvs = snippets[vk]
