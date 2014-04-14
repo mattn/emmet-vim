@@ -665,7 +665,8 @@ function! emmet#lang#html#balanceTag(flag) range
   let settings = emmet#getSettings()
 
   if a:flag > 0
-    let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+    let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*'
+    let last = curpos[1:2]
     while 1
       let pos1 = searchpos(mx, 'bW')
       let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
@@ -673,16 +674,20 @@ function! emmet#lang#html#balanceTag(flag) range
       if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
         let pos2 = searchpos('>', 'nW')
       else
-        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '>\zs', 'nW')
+        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
       endif
       let block = [pos1, pos2]
       if pos1[0] == 0 && pos1[1] == 0
         break
       endif
-      if emmet#util#pointInRegion(curpos[1:2], block) && emmet#util#regionIsValid(block)
+      if emmet#util#pointInRegion(last, block) && emmet#util#regionIsValid(block)
         call emmet#util#selectRegion(block)
         return
       endif
+      if pos1 == last
+        break
+      endif
+      let last = pos1
     endwhile
   else
     let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
@@ -702,7 +707,7 @@ function! emmet#lang#html#balanceTag(flag) range
       if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
         let pos2 = searchpos('>', 'nW')
       else
-        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '>\zs', 'nW')
+        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
       endif
       let block = [pos1, pos2]
       if pos1[0] == 0 && pos1[1] == 0
