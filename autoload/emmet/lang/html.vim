@@ -788,10 +788,10 @@ endfunction
 function! emmet#lang#html#removeTag()
   let curpos = emmet#util#getcurpos()
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9:_\-]*\).*$', '\1', '')
+    let tag_name = matchstr(content, '^<\zs/\{0,1}[a-zA-Z0-9:_\-]*')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if content[-2:] == '/>' && emmet#util#cursorInRegion(block)
       call emmet#util#setContent(block, '')
@@ -807,7 +807,7 @@ function! emmet#lang#html#removeTag()
       endif
       let block = [pos1, pos2]
       let content = emmet#util#getContent(block)
-      if emmet#util#pointInRegion(curpos[1:2], block) && content[1:] !~ '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+      if emmet#util#pointInRegion(curpos[1:2], block) && content[1:] !~ '^<' . tag_name . '[^a-zA-Z0-9]'
         call emmet#util#setContent(block, '')
         call setpos('.', [0, block[0][0], block[0][1], 0])
         return
