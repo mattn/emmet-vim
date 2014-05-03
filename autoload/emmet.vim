@@ -1165,7 +1165,7 @@ let s:emmet_settings = {
 \            'bgz:a': 'background-size:auto;',
 \            'bgz:ct': 'background-size:contain;',
 \            'bgz:cv': 'background-size:cover;',
-\            'c': 'color:#000;',
+\            'c': 'color:|;',
 \            'tbl': 'table-layout:|;',
 \            'tbl:a': 'table-layout:auto;',
 \            'tbl:f': 'table-layout:fixed;',
