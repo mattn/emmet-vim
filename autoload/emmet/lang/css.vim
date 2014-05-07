@@ -150,12 +150,13 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
       elseif token =~ '^c#\([0-9a-fA-F]\{3}\|[0-9a-fA-F]\{6}\)\(\.[0-9]\+\)\?'
         let cs = split(token, '\.')
         let current.name = ''
+        let [r,g,b] = [0,0,0]
         if len(cs[0]) == 5
           let rgb = matchlist(cs[0], 'c#\(.\)\(.\)\(.\)')
           let r = eval('0x'.rgb[1].rgb[1])
           let g = eval('0x'.rgb[2].rgb[2])
           let b = eval('0x'.rgb[3].rgb[3])
-        elseif len(cs[0]) == 7
+        elseif len(cs[0]) == 8
           let rgb = matchlist(cs[0], 'c#\(..\)\(..\)\(..\)')
           let r = eval('0x'.rgb[1])
           let g = eval('0x'.rgb[2])
