@@ -168,6 +168,10 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
           let current.snippet = printf('color:rgb(%d, %d, %d, %s);', r, g, b, string(str2float('0.'.cs[1])))
         endif
         call add(root.child, current)
+      elseif token =~ '^c#'
+        let current.name = ''
+        let current.snippet = 'color:\${cursor};'
+        call add(root.child, current)
       else
         call add(root.child, current)
       endif
