@@ -158,7 +158,7 @@ You should copy this section and create new buffer, paste and write as
   To jump next point that need to edit, type |<C-Y>n| in insert mode.
 >
   * <div id="foo" class="">foo</div>
-    <div id="bar" class="bar"></li>
+    <div id="bar" class="bar"></div>
 <
   If cursor is at '*', |<C-Y>n| move a cursor into attribute value of div
   specified id as 'foo'. And type again |<C-Y>n| move a cursor into inner of
@@ -169,7 +169,7 @@ You should copy this section and create new buffer, paste and write as
   To jump previous point that need to edit, type |<C-Y>N| in insert mode.
 >
   <div id="foo" class="">foo</div>
-  <div id="bar" class="bar"></li> *
+  <div id="bar" class="bar"></div> *
 <
   If cursor is at '*', |<C-Y>N| move a cursor into div specified id as 'bar'.
   And type again |<C-Y>N| move a cursor into attribute value of 'foo'.
