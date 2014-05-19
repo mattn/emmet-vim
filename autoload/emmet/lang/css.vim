@@ -19,7 +19,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
   " emmet
   let tokens = split(abbr, '+\ze[^+)!]')
   let block = emmet#util#searchRegion("{", "}")
-  if type == 'css' && block[0] == [0,0] && block[1] == [0,0]
+  if emmet#getBaseType(type) == 'css' && block[0] == [0,0] && block[1] == [0,0]
     let current = emmet#newNode()
     let current.snippet = abbr . " {\n" . indent . "${cursor}\n}"
     let current.name = ''
