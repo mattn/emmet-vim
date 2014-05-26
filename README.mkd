@@ -47,7 +47,7 @@ Type ("\_" is the cursor position):
 
     html:5_
 
-Then type "\<c-y\>," (Ctrl + y + ','), you should see:
+Then type "\<c-y\>," ('Ctrl + y', then ','), you should see:
 
 ```html
 <!DOCTYPE HTML>
