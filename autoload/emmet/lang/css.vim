@@ -19,7 +19,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
   " emmet
   let tokens = split(abbr, '+\ze[^+)!]')
   let block = emmet#util#searchRegion("{", "}")
-  if emmet#getBaseType(type) == 'css' && block[0] == [0,0] && block[1] == [0,0]
+  if abbr !~ '^@' && emmet#getBaseType(type) == 'css' && block[0] == [0,0] && block[1] == [0,0]
     let current = emmet#newNode()
     let current.snippet = abbr . " {\n" . indent . "${cursor}\n}"
     let current.name = ''
@@ -57,7 +57,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
           endif
         endfor
       endif
-  
+
       let tag_name = token
       if tag_name =~ '.!$'
         let tag_name = tag_name[:-2]
@@ -69,12 +69,12 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
       let current = emmet#newNode()
       let current.important = important
       let current.name = tag_name
-  
+
       " aliases
       if has_key(aliases, tag_name)
         let current.name = aliases[tag_name]
       endif
-  
+
       " snippets
       if !empty(snippets)
         let snippet_name = tag_name
@@ -86,7 +86,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
           else
             let pat = '^' . join(split(tag_name, '\zs'), '\%(\|[^:-]\+-*\)')
             let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
-			if len(vv) == 0
+            if len(vv) == 0
               let pat = '^' . join(split(tag_name, '\zs'), '[^:]\{-}')
               let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
             endif
@@ -118,7 +118,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
           endif
         endif
       endif
-  
+
       let current.pos = 0
       let lg = matchlist(token, '^\%(linear-gradient\|lg\)(\s*\(\S\+\)\s*,\s*\([^,]\+\)\s*,\s*\([^)]\+\)\s*)$')
       if len(lg) == 0
