@@ -1,5 +1,5 @@
 function! emmet#lang#sass#findTokens(str)
-  return a:str
+  return emmet#lang#css#findTokens(a:str)
 endfunction
 
 function! emmet#lang#sass#parseIntoTree(abbr, type)
