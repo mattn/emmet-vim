@@ -199,15 +199,16 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
         if item[0] == '['
           let atts = item[1:-2]
           if matchstr(atts, '^\s*\zs[0-9a-zA-Z-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') == ''
+            let ks = []
 			if has_key(default_attributes, current.name)
               let dfa = default_attributes[current.name]
-              let keys = type(dfa) == 3 ? keys(dfa[0]) : keys(dfa)
+              let ks = type(dfa) == 3 ? keys(dfa[0]) : keys(dfa)
             endif
-            if len(keys) == 0
-              let keys = keys(default_attributes[current.name . ':src'])
+            if len(ks) == 0 && has_key(default_attributes, current.name . ':src')
+              let ks = keys(default_attributes[current.name . ':src'])
             endif
-            if len(keys) > 0
-              let current.attr[keys[0]] = atts
+            if len(ks) > 0
+              let current.attr[ks[0]] = atts
             endif
           else
             while len(atts)
