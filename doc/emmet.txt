@@ -334,7 +334,10 @@ CUSTOMIZE                                                      *emmet-customize*
 >
   let g:user_emmet_leader_key = '<c-y>'
 <
-  Or if you prefer to map for each actions, then you set each variables.
+  Note that a trailing ',' must be entered, so the resultant keymap is
+  '<c-y>,'.
+  
+  If you prefer to map for each actions, then you set each variables.
 
     'user_emmet_expandabbr_key'
     'user_emmet_expandword_key'
