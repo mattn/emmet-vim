@@ -47,7 +47,7 @@ Type ("\_" is the cursor position):
 
     html:5_
 
-Then type "\<c-y\>," ('Ctrl + y', then ','), you should see:
+Then type `<c-y>,` (<kbd>Ctrl</kbd><kbd>y</kbd><kbd>,</kbd>), and you should see:
 
 ```html
 <!DOCTYPE HTML>
@@ -84,10 +84,14 @@ autocmd FileType html,css EmmetInstall
 ```
 
 ## Redefine trigger key
+To remap the default `<C-Y>` leader:
 
 ```vim
 let g:user_emmet_leader_key='<C-Z>'
 ```
+
+Note that the trailing `,` still needs to be entered, so the new keymap would be `<C-Z>,`.
+
 ## Adding custom snippets
 If you have installed the [web-api](https://github.com/mattn/webapi-vim) for **emmet-vim** you can also add your own snippets using a custom **snippets.json** file.
 
