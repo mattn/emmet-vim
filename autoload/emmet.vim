@@ -1671,7 +1671,7 @@ let s:emmet_settings = {
 \                    ."\t%body\n"
 \                    ."\t\t${child}|\n",
 \        },
-\        'parenthesis': '{}',
+\        'parentheses': '{}',
 \    },
 \    'slim': {
 \        'indentation': '  ',

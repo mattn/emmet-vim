@@ -15,7 +15,7 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
   let itemno = a:itemno
   let indent = emmet#getIndentation(type)
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
-  let parenthesis = emmet#getResource('haml', 'parenthesis', '()')
+  let parentheses = emmet#getResource('haml', 'parentheses', '()')
   let str = ""
 
   let comment_indent = ''
@@ -54,7 +54,7 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
       endif
     endfor
     if len(tmp)
-      let str .= parenthesis[0] . tmp . ' '. parenthesis[1]
+      let str .= parentheses[0] . tmp . ' '. parentheses[1]
     endif
     if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1 && len(current.value) == 0
       let str .= "/"
