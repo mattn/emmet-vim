@@ -147,7 +147,7 @@ function! s:install_plugin(mode, buffer)
       let key = g:user_emmet_leader_key . item.key
     endif
     if len(maparg(key, item.mode)) == 0
-      exe item.mode . 'map ' . buffer . ' <unique> ' . key . ' <plug>(' . item.plug . ')'
+      exe item.mode . 'map ' . buffer . ' <unique> ' . key . ' <c-g>u<plug>(' . item.plug . ')'
     endif
   endfor
 endfunction
