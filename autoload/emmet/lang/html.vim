@@ -214,7 +214,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
             if len(ks) > 0
               let current.attr[ks[0]] = atts
             else
-              let current.attr[atts] = function('emmet#types#true')
+              let current.attr[atts] = ""
             endif
           else
             while len(atts)
