@@ -213,6 +213,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
             endif
             if len(ks) > 0
               let current.attr[ks[0]] = atts
+            else
+              let current.attr[atts] = function('emmet#types#true')
             endif
           else
             while len(atts)
