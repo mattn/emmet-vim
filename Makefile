@@ -1,11 +1,11 @@
-all : emmet-vim.zip
+all: emmet-vim.zip
 
-remove-zip:
+clean:
 	-rm doc/tags
 	-rm emmet-vim.zip
 
-emmet-vim.zip: remove-zip
-	zip -r emmet-vim.zip autoload plugin doc
+emmet-vim.zip: autoload plugin doc
+	zip -r $@ $^
 
-release: emmet-vim.zip
+release: clean all
 	vimup update-script emmet.vim
