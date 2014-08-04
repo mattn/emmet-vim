@@ -15,6 +15,7 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
   let itemno = a:itemno
   let indent = emmet#getIndentation(type)
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
+  let attribute_style = emmet#getResource('haml', 'attribute_style', 'hash')
   let str = ""
 
   let comment_indent = ''
@@ -32,8 +33,12 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
       endif
       let Val = current.attr[attr]
       if type(Val) == 2 && Val == function('emmet#types#true')
-        let tmp .= ' :' . attr . ' => true'
-	  else
+        if attribute_style == 'hash'
+          let tmp .= ' :' . attr . ' => true'
+        elseif attribute_style == 'html'
+          let tmp .= attr . '=true'
+        end
+      else
         if dollar_expr
           while Val =~ '\$\([^#{]\|$\)'
             let Val = substitute(Val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
@@ -46,14 +51,28 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
         elseif attr == 'class' && len(valtmp) > 0
           let str .= '.' . substitute(Val, ' ', '.', 'g')
         else
-          if len(tmp) > 0 | let tmp .= ',' | endif
+          if len(tmp) > 0 
+            if attribute_style == 'hash'
+              let tmp .= ',' 
+            elseif attribute_style == 'html'
+              let tmp .= ' ' 
+            endif
+          endif
           let Val = substitute(Val, '\${cursor}', '', '')
-          let tmp .= ' :' . attr . ' => "' . Val . '"'
+          if attribute_style == 'hash'
+            let tmp .= ' :' . attr . ' => "' . Val . '"'
+          elseif attribute_style == 'html'
+            let tmp .= attr . '="' . Val . '"'
+          end
         endif
       endif
     endfor
     if len(tmp)
-      let str .= '{' . tmp . ' }'
+      if attribute_style == 'hash'
+        let str .= '{' . tmp . ' }'
+      elseif attribute_style == 'html'
+        let str .= '(' . tmp . ')'
+      end
     endif
     if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1 && len(current.value) == 0
       let str .= "/"

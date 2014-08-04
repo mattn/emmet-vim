@@ -1671,6 +1671,7 @@ let s:emmet_settings = {
 \                    ."\t%body\n"
 \                    ."\t\t${child}|\n",
 \        },
+\        'attribute_style': 'hash',
 \    },
 \    'slim': {
 \        'indentation': '  ',
