@@ -3,11 +3,7 @@ function! emmet#lang#sass#findTokens(str)
 endfunction
 
 function! emmet#lang#sass#parseIntoTree(abbr, type)
-  if a:abbr =~ '>'
     return emmet#lang#html#parseIntoTree(a:abbr, a:type)
-  else
-    return emmet#lang#css#parseIntoTree(a:abbr, a:type)
-  endif
 endfunction
 
 function! emmet#lang#sass#toString(settings, current, type, inline, filters, itemno, indent)
