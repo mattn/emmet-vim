@@ -926,7 +926,7 @@ let s:emmet_settings = {
 \            'l:a': 'left:auto;',
 \            'z': 'z-index:|;',
 \            'z:a': 'z-index:auto;',
-\            'fl': 'float:|;',
+\            'fl': 'float:left;',
 \            'fl:n': 'float:none;',
 \            'fl:l': 'float:left;',
 \            'fl:r': 'float:right;',
