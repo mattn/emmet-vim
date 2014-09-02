@@ -420,6 +420,10 @@ finish
           'result': "<div>\n\t<!-- #page -->\n\t<div id=\"page\">\n\t\t<!-- .title -->\n\t\t<p class=\"title\"></p>\n\t\t<!-- /.title -->\n\t\t<p></p>\n\t</div>\n\t<!-- /#page -->\n</div>\n",
         },
         {
+          'query': "kbd*2|s",
+          'result': "<kbd></kbd><kbd></kbd>",
+        },
+        {
           'query': "link:css",
           'result': "<link rel=\"stylesheet\" href=\"style.css\" media=\"all\">\n",
         },
