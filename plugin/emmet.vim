@@ -2,7 +2,7 @@
 " File: emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 28-Nov-2013.
-" Version: 0.84
+" Version: 0.85
 " WebPage: http://github.com/mattn/emmet-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
 " SeeAlso: http://emmet.io/
