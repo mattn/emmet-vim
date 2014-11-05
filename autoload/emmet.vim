@@ -782,7 +782,9 @@ function! emmet#anchorizeURL(flag)
 
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
-  if a:flag == 0
+  if &ft == 'markdown'
+    let expand = printf("[%s](%s)", substitute(title, '[\[\]]', '\\&', 'g'), url)
+  elseif a:flag == 0
     let a = emmet#lang#html#parseTag('<a>')
     let a.attr.href = url
     let a.value = '{' . title . '}'
