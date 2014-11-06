@@ -8,7 +8,6 @@ function! emmet#lang#css#parseIntoTree(abbr, type)
   let prefix = 0
   let value = ''
 
-  let settings = emmet#getSettings()
   let indent = emmet#getIndentation(type)
   let aliases = emmet#getResource(type, 'aliases', {})
   let snippets = emmet#getResource(type, 'snippets', {})

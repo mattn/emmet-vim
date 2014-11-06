@@ -283,7 +283,6 @@ function! emmet#util#getImageSize(fn)
 endfunction
 
 function! emmet#util#imageSizeWithImageMagick(fn)
-  let fn = a:fn
   let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
   let img_size = split(substitute(img_info, '\n', '', ''), 'x')
   if len(img_size) != 2

@@ -123,29 +123,30 @@ function! emmet#isExpandable()
 endfunction
 
 function! emmet#mergeConfig(lhs, rhs)
-  if type(a:lhs) == 3 && type(a:rhs) == 3
-    let a:lhs += a:rhs
-    if len(a:lhs)
-      call remove(a:lhs, 0, len(a:lhs)-1)
+  let [lhs, rhs] = [a:lhs, a:rhs]
+  if type(lhs) == 3 && type(rhs) == 3
+    let lhs += rhs
+    if len(lhs)
+      call remove(lhs, 0, len(lhs)-1)
     endif
-    for rhi in a:rhs
-      call add(a:lhs, a:rhs[rhi])
+    for rhi in rhs
+      call add(lhs, rhs[rhi])
     endfor
-  elseif type(a:lhs) == 4 && type(a:rhs) == 4
-    for key in keys(a:rhs)
-      if type(a:rhs[key]) == 3
-        if !has_key(a:lhs, key)
-          let a:lhs[key] = []
+  elseif type(lhs) == 4 && type(rhs) == 4
+    for key in keys(rhs)
+      if type(rhs[key]) == 3
+        if !has_key(lhs, key)
+          let lhs[key] = []
         endif
-        let a:lhs[key] += a:rhs[key]
-      elseif type(a:rhs[key]) == 4
-        if has_key(a:lhs, key)
-          call emmet#mergeConfig(a:lhs[key], a:rhs[key])
+        let lhs[key] += rhs[key]
+      elseif type(rhs[key]) == 4
+        if has_key(lhs, key)
+          call emmet#mergeConfig(lhs[key], rhs[key])
         else
-          let a:lhs[key] = a:rhs[key]
+          let lhs[key] = rhs[key]
         endif
       else
-        let a:lhs[key] = a:rhs[key]
+        let lhs[key] = rhs[key]
       endif
     endfor
   endif
@@ -297,7 +298,6 @@ function! emmet#getResource(type, name, default)
     endif
     for ext in extends
       if has_key(s:emmet_settings, ext) && has_key(s:emmet_settings[ext], a:name)
-        let V = s:emmet_settings[ext][a:name]
         if type(ret) == 3 || type(ret) == 4
           call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
         else
@@ -308,7 +308,6 @@ function! emmet#getResource(type, name, default)
   endif
 
   if has_key(s:emmet_settings[a:type], a:name)
-    let v = s:emmet_settings[a:type][a:name]
     if type(ret) == 3 || type(ret) == 4
       call emmet#mergeConfig(ret, s:emmet_settings[a:type][a:name])
     else
@@ -430,7 +429,6 @@ endfunction
 
 function! emmet#expandCursorExpr(expand, mode)
   let expand = a:expand
-  let type = emmet#getFileType()
   if expand !~ '\${cursor}'
     if a:mode == 2
       let expand = '${cursor}' . expand
@@ -479,6 +477,8 @@ function! emmet#expandAbbr(mode, abbr) range
         let spl = emmet#splitFilterArg(filters)
         let fline = getline(a:firstline)
         let query = substitute(query, '>\{0,1}{\$#}\s*$', '{\\$column\\$}*' . len(split(fline, spl)), '')
+      else
+        let spl = ''
       endif
       let items = emmet#parseIntoTree(query, type).child
       for item in items

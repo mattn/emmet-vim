@@ -7,7 +7,6 @@ function! emmet#lang#slim#parseIntoTree(abbr, type)
 endfunction
 
 function! emmet#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
-  let settings = a:settings
   let current = a:current
   let type = a:type
   let inline = a:inline
@@ -17,8 +16,6 @@ function! emmet#lang#slim#toString(settings, current, type, inline, filters, ite
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
   let str = ""
 
-  let comment_indent = ''
-  let comment = ''
   let current_name = current.name
   if dollar_expr
     let current_name = substitute(current.name, '\$$', itemno+1, '')
@@ -124,8 +121,8 @@ function! emmet#lang#slim#parseTag(tag)
   let current = emmet#newNode()
   let mx = '\([a-zA-Z][a-zA-Z0-9]*\)\s\+\(.*\)'
   let match = matchstr(a:tag, mx)
-  let current.name = substitute(match, mx, '\1', 'i')
-  let attrs = substitute(match, mx, '\2', 'i')
+  let current.name = substitute(match, mx, '\1', '')
+  let attrs = substitute(match, mx, '\2', '')
   let mx = '\([a-zA-Z0-9]\+\)=\%(\([^"'' \t]\+\)\|"\([^"]\{-}\)"\|''\([^'']\{-}\)''\)'
   while len(attrs) > 0
     let match = matchstr(attrs, mx)

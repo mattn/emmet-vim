@@ -402,7 +402,8 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     return text
   endif
   if len(current_name) > 0
-  let str .= '<' . current_name
+    let str .= '<' . current_name
+  endif
   for attr in emmet#util#unique(current.attrs_order + keys(current.attr))
     if !has_key(current.attr, attr)
       continue
