@@ -138,15 +138,13 @@ function! s:install_plugin(mode, buffer)
     if a:mode != 'a' && stridx(a:mode, item.mode) == -1
       continue
     endif
-    if !hasmapto('<plug>(' . item.plug . ')', item.mode)
-      exe item.mode . 'noremap '. buffer .' <plug>(' . item.plug . ') ' . item.func
-    endif
+    exe item.mode . 'noremap '. buffer .' <plug>(' . item.plug . ') ' . item.func
     if exists('g:' . item.var)
       let key = eval('g:' . item.var)
     else
       let key = g:user_emmet_leader_key . item.key
     endif
-    if len(maparg(key, item.mode)) == 0
+    if !hasmapto('<plug>(' . item.plug . ')', item.mode)
       exe item.mode . 'map ' . buffer . ' <unique> ' . key . ' <plug>(' . item.plug . ')'
     endif
   endfor
