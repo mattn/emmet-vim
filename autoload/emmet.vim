@@ -390,8 +390,8 @@ function! emmet#getDollarValueByKey(key)
     let V = get(ftsetting, key)
     if type(V) == 1 | return V | endif
   endif
-  if type(ret) != 1 && has_key(s:emmet_settings, key)
-    let V = get(s:emmet_settings, key)
+  if type(ret) != 1 && has_key(s:emmet_settings.variables, key)
+    let V = get(s:emmet_settings.variables, key)
     if type(V) == 1 | return V | endif
   endif
   if has_key(s:emmet_settings, 'custom_expands') && type(s:emmet_settings['custom_expands']) == 4
@@ -910,8 +910,13 @@ endfunction
 
 unlet! s:emmet_settings
 let s:emmet_settings = {
-\    'lang': "en",
-\    'charset': "UTF-8",
+\    'variables': {
+\      'lang': "en",
+\      'locale': "en-US",
+\      'charset': "UTF-8",
+\      'indentation': "\t",
+\      'newline': "\n",
+\    },
 \    'custom_expands' : {
 \      '^\%(lorem\|lipsum\)\(\d*\)$' : function('emmet#lorem#en#expand'),
 \    },
