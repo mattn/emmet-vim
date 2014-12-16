@@ -1,7 +1,7 @@
 "=============================================================================
 " File: emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 28-Nov-2013.
+" Last Change: 17-Dec-2014.
 " Version: 0.85
 " WebPage: http://github.com/mattn/emmet-vim
 " Description: vim plugins for HTML and CSS hi-speed coding.
@@ -66,13 +66,13 @@
 " GetLatestVimScripts: 2981 1 :AutoInstall: emmet.vim
 " script type: plugin
 
-if &cp || v:version < 702 || (exists('g:loaded_emmet_vim') && g:loaded_emmet_vim)
+if &compatible || v:version < 702 || (exists('g:loaded_emmet_vim') && g:loaded_emmet_vim)
   finish
 endif
 let g:loaded_emmet_vim = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 if !exists('g:emmet_html5')
   let g:emmet_html5 = 1
@@ -135,7 +135,7 @@ function! s:install_plugin(mode, buffer)
   \]
 
   for item in items
-    if a:mode != 'a' && stridx(a:mode, item.mode) == -1
+    if a:mode !=# 'a' && stridx(a:mode, item.mode) == -1
       continue
     endif
     exe item.mode . 'noremap '. buffer .' <plug>(' . item.plug . ') ' . item.func
@@ -160,7 +160,7 @@ if get(g:, 'user_emmet_install_command', 1)
   command! -nargs=1 Emmet call emmet#expandAbbr(4, <q-args>)
 endif
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 " vim:set et:
