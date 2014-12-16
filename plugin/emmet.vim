@@ -144,7 +144,7 @@ function! s:install_plugin(mode, buffer)
     else
       let key = g:user_emmet_leader_key . item.key
     endif
-    if !hasmapto('<plug>(' . item.plug . ')', item.mode)
+    if !hasmapto('<plug>(' . item.plug . ')', item.mode) && !len(maparg(key, item.mode))
       exe item.mode . 'map ' . buffer . ' <unique> ' . key . ' <plug>(' . item.plug . ')'
     endif
   endfor
