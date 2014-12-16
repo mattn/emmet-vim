@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 15-Mar-2014.
+" Last Change: 17-Dec-2014.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -438,7 +438,7 @@ function! emmet#expandCursorExpr(expand, mode)
   endif
   let expand = substitute(expand, '\${cursor}', '$cursor$', '')
   let expand = substitute(expand, '\${cursor}', '', 'g')
-  let expand = substitute(expand, '\${\d\+:\([^}]\+\)}', '$select$\1$select$', '')
+  let expand = substitute(expand, '\${\d\+:\([^}]\+\)}', '$select$\1$select$', 'g')
   let expand = substitute(expand, '\${cursor}', '', 'g')
   return expand
 endfunction
@@ -672,11 +672,11 @@ function! emmet#expandAbbr(mode, abbr) range
       let pos[2] += 1
       silent! s/\$select\$//
       let next = searchpos('.\ze\$select\$', 'nW')
-      silent! s/\$\(cursor\|select\)\$//g
+      silent! %s/\$\(cursor\|select\)\$//g
       call emmet#util#selectRegion([pos[1:2], next])
       return "\<esc>gv"
     else
-      silent! s/\$\(cursor\|select\)\$//g
+      silent! %s/\$\(cursor\|select\)\$//g
       silent! call setpos('.', pos)
       if col('.') < col('$')
         return "\<right>"
@@ -936,6 +936,7 @@ let s:emmet_settings = {
 \            '@i': '@import url(|);',
 \            '@m': "@media print {\n\t|\n}",
 \            '@f': "@font-face {\n\tfont-family:|;\n\tsrc:url(|);\n}",
+\            '@f+': "@font-face {\n\tfont-family: '${1:FontName}';\n\tsrc: url('${2:FileName}.eot');\n\tsrc: url('${2:FileName}.eot?#iefix') format('embedded-opentype'),\n\t\t url('${2:FileName}.woff') format('woff'),\n\t\t url('${2:FileName}.ttf') format('truetype'),\n\t\t url('${2:FileName}.svg#${1:FontName}') format('svg');\n\tfont-style: ${3:normal};\n\tfont-weight: ${4:normal};\n}",
 \            '!': '!important',
 \            'pos': 'position:|;',
 \            'pos:s': 'position:static;',
