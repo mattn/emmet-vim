@@ -438,6 +438,8 @@ function! emmet#expandCursorExpr(expand, mode)
   endif
   let expand = substitute(expand, '\${cursor}', '$cursor$', '')
   let expand = substitute(expand, '\${cursor}', '', 'g')
+  let expand = substitute(expand, '\${\d\+:\([^}]\+\)}', '$select$\1$select$', '')
+  let expand = substitute(expand, '\${cursor}', '', 'g')
   return expand
 endfunction
 
@@ -659,19 +661,28 @@ function! emmet#expandAbbr(mode, abbr) range
   if g:emmet_debug > 1
     call getchar()
   endif
-  if search('\ze\$cursor\$')
+  if search('\ze\$\(cursor\|select\)\$')
     let oldselection = &selection
     let &selection = 'inclusive'
     if foldclosed(line('.')) != -1
       silent! foldopen
     endif
     let pos = emmet#util#getcurpos()
-    silent! s/\$cursor\$//
-    silent! call setpos('.', pos)
-    let &selection = oldselection
-    if col('.') < col('$')
-      return "\<right>"
+    if getline('.')[col('.')-1:] =~ '^\$select'
+      let pos[2] += 1
+      silent! s/\$select\$//
+      let next = searchpos('.\ze\$select\$', 'nW')
+      silent! s/\$\(cursor\|select\)\$//g
+      call emmet#util#selectRegion([pos[1:2], next])
+      return "\<esc>gv"
+    else
+      silent! s/\$\(cursor\|select\)\$//g
+      silent! call setpos('.', pos)
+      if col('.') < col('$')
+        return "\<right>"
+      endif
     endif
+    let &selection = oldselection
   endif
   return ''
 endfunction
@@ -1150,7 +1161,7 @@ let s:emmet_settings = {
 \            'bg+': 'background:#FFF url(|) 0 0 no-repeat;',
 \            'bg:n': 'background:none;',
 \            'bg:ie': 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=''|x.png'');',
-\            'bgc': 'background-color:#FFF;',
+\            'bgc': 'background-color:${1:#FFF};',
 \            'bgi': 'background-image:url(|);',
 \            'bgi:n': 'background-image:none;',
 \            'bgr': 'background-repeat:|;',
