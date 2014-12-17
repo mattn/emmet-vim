@@ -44,6 +44,8 @@ function! emmet#getIndentation(...) abort
   endif
   if has_key(s:emmet_settings, type) && has_key(s:emmet_settings[type], 'indentation')
     let indent = s:emmet_settings[type].indentation
+  elseif has_key(s:emmet_settings.variables, 'indentation')
+    let indent = s:emmet_settings.variables.indentation
   elseif has_key(s:emmet_settings, 'indentation')
     let indent = s:emmet_settings.indentation
   else
@@ -436,9 +438,10 @@ function! emmet#expandCursorExpr(expand, mode) abort
       let expand .= '${cursor}'
     endif
   endif
+  let expand = substitute(expand, '\${\d\+:\?\([^}]\+\)}', '$select$$cursor$\1$select$', 'g')
+  let expand = substitute(expand, '\${\d\+}', '$select$$cursor$$select$', 'g')
   let expand = substitute(expand, '\${cursor}', '$cursor$', '')
   let expand = substitute(expand, '\${cursor}', '', 'g')
-  let expand = substitute(expand, '\${\d\+:\?\([^}]\+\)}', '$select$\1$select$', 'g')
   let expand = substitute(expand, '\${cursor}', '', 'g')
   return expand
 endfunction
@@ -668,17 +671,14 @@ function! emmet#expandAbbr(mode, abbr) range abort
       silent! foldopen
     endif
     let pos = emmet#util#getcurpos()
-    if getline('.')[col('.')-1:] =~# '^\$select'
+    let use_selection = emmet#getResource(type, 'use_selection', 0)
+    if use_selection && getline('.')[col('.')-1:] =~# '^\$select'
       let pos[2] += 1
       silent! s/\$select\$//
-      if emmet#getResource(type, 'use_selection', 0)
-        let next = searchpos('.\ze\$select\$', 'nW')
-        silent! %s/\$\(cursor\|select\)\$//g
-        call emmet#util#selectRegion([pos[1:2], next])
-        return "\<esc>gv"
-      endif
+      let next = searchpos('.\ze\$select\$', 'nW')
       silent! %s/\$\(cursor\|select\)\$//g
-      silent! call setpos('.', pos)
+      call emmet#util#selectRegion([pos[1:2], next])
+      return "\<esc>gv"
     else
       silent! %s/\$\(cursor\|select\)\$//g
       silent! call setpos('.', pos)
@@ -883,7 +883,6 @@ function! emmet#expandWord(abbr, type, orig) abort
   if a:orig ==# 0
     let expand = emmet#expandDollarExpr(expand)
     let expand = substitute(expand, '\${cursor}', '', 'g')
-    let expand = substitute(expand, '\${\d\+\(:[^}]\+\|\)}', '\1', 'g')
   endif
   return expand
 endfunction

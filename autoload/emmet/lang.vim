@@ -1,5 +1,5 @@
 let s:exists = {}
-function! emmet#lang#exists(type)
+function! emmet#lang#exists(type) abort
   if len(a:type) == 0
     return 0
   elseif has_key(s:exists, a:type)

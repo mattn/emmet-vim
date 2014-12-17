@@ -1,6 +1,6 @@
 scriptencoding utf-8
 
-function! emmet#lorem#ja#expand(command)
+function! emmet#lorem#ja#expand(command) abort
   let wcount = matchstr(a:command, '^\%(lorem\|lipsum\)\(\d*\)}$', '\1', '')
   let wcount = wcount > 0 ? wcount : 30
 

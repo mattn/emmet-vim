@@ -1,12 +1,12 @@
-function! emmet#lang#slim#findTokens(str)
+function! emmet#lang#slim#findTokens(str) abort
   return emmet#lang#html#findTokens(a:str)
 endfunction
 
-function! emmet#lang#slim#parseIntoTree(abbr, type)
+function! emmet#lang#slim#parseIntoTree(abbr, type) abort
   return emmet#lang#html#parseIntoTree(a:abbr, a:type)
 endfunction
 
-function! emmet#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
+function! emmet#lang#slim#toString(settings, current, type, inline, filters, itemno, indent) abort
   let current = a:current
   let type = a:type
   let inline = a:inline
@@ -14,7 +14,7 @@ function! emmet#lang#slim#toString(settings, current, type, inline, filters, ite
   let itemno = a:itemno
   let indent = emmet#getIndentation(type)
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
-  let str = ""
+  let str = ''
 
   let current_name = current.name
   if dollar_expr
@@ -31,7 +31,7 @@ function! emmet#lang#slim#toString(settings, current, type, inline, filters, ite
         let str .= ' ' . attr . '=true'
       else
         if dollar_expr
-          while Val =~ '\$\([^#{]\|$\)'
+          while Val =~# '\$\([^#{]\|$\)'
             let Val = substitute(Val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
           endwhile
         endif
@@ -51,7 +51,7 @@ function! emmet#lang#slim#toString(settings, current, type, inline, filters, ite
         let str = substitute(str, '\$#', text, 'g')
       endif
       for line in split(text, "\n")
-        let str .= indent . "| " . line . "\n"
+        let str .= indent . '| ' . line . "\n"
       endfor
     elseif len(current.child) == 0
       let str .= '${cursor}'
@@ -65,14 +65,14 @@ function! emmet#lang#slim#toString(settings, current, type, inline, filters, ite
         let text = substitute(text, '\\\$', '$', 'g')
       endif
       for line in split(text, "\n")
-        let str .= indent . "| " . line . "\n"
+        let str .= indent . '| ' . line . "\n"
       endfor
     elseif len(current.child) > 0
       for child in current.child
         let inner .= emmet#toString(child, type, inline, filters, itemno, indent)
       endfor
       let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
-      let inner = substitute(inner, "\n" . escape(indent, '\') . "$", "", 'g')
+      let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
       let str .= "\n" . indent . inner
     endif
   else
@@ -83,22 +83,22 @@ function! emmet#lang#slim#toString(settings, current, type, inline, filters, ite
       let str = substitute(str, '\\\$', '$', 'g')
     endif
   endif
-  if str !~ "\n$"
+  if str !~# "\n$"
     let str .= "\n"
   endif
   return str
 endfunction
 
-function! emmet#lang#slim#imageSize()
+function! emmet#lang#slim#imageSize() abort
   let line = getline('.')
   let current = emmet#lang#slim#parseTag(line)
   if empty(current) || !has_key(current.attr, 'src')
     return
   endif
   let fn = current.attr.src
-  if fn =~ '^\s*$'
+  if fn =~# '^\s*$'
     return
-  elseif fn !~ '^\(/\|http\)'
+  elseif fn !~# '^\(/\|http\)'
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
 
@@ -111,13 +111,13 @@ function! emmet#lang#slim#imageSize()
   let current.attrs_order += ['width', 'height']
   let slim = emmet#toString(current, 'slim', 1)
   let slim = substitute(slim, '\${cursor}', '', '')
-  call setline('.', substitute(matchstr(line, '^\s*') . slim, "\n", "", "g"))
+  call setline('.', substitute(matchstr(line, '^\s*') . slim, "\n", '', 'g'))
 endfunction
 
-function! emmet#lang#slim#encodeImage()
+function! emmet#lang#slim#encodeImage() abort
 endfunction
 
-function! emmet#lang#slim#parseTag(tag)
+function! emmet#lang#slim#parseTag(tag) abort
   let current = emmet#newNode()
   let mx = '\([a-zA-Z][a-zA-Z0-9]*\)\s\+\(.*\)'
   let match = matchstr(a:tag, mx)
@@ -139,17 +139,17 @@ function! emmet#lang#slim#parseTag(tag)
   return current
 endfunction
 
-function! emmet#lang#slim#toggleComment()
+function! emmet#lang#slim#toggleComment() abort
   let line = getline('.')
   let space = matchstr(line, '^\s*')
-  if line =~ '^\s*/'
+  if line =~# '^\s*/'
     call setline('.', space . line[len(space)+1:])
-  elseif line =~ '^\s*[a-z]'
+  elseif line =~# '^\s*[a-z]'
     call setline('.', space . '/' . line[len(space):])
   endif
 endfunction
 
-function! emmet#lang#slim#balanceTag(flag) range
+function! emmet#lang#slim#balanceTag(flag) range abort
   let block = emmet#util#getVisualBlock()
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
@@ -214,11 +214,11 @@ function! emmet#lang#slim#balanceTag(flag) range
   endif
 endfunction
 
-function! emmet#lang#slim#moveNextPrevItem(flag)
+function! emmet#lang#slim#moveNextPrevItem(flag) abort
   return emmet#lang#slim#moveNextPrev(a:flag)
 endfunction
 
-function! emmet#lang#slim#moveNextPrev(flag)
+function! emmet#lang#slim#moveNextPrev(flag) abort
   let pos = search('""\|\(^\s*|\s*\zs\)', a:flag ? 'Wpb' : 'Wp')
   if pos == 2
     startinsert!
@@ -228,18 +228,18 @@ function! emmet#lang#slim#moveNextPrev(flag)
   endif
 endfunction
 
-function! emmet#lang#slim#splitJoinTag()
+function! emmet#lang#slim#splitJoinTag() abort
   let n = line('.')
   while n > 0
-    if getline(n) =~ '^\s*\ze[a-z]'
+    if getline(n) =~# '^\s*\ze[a-z]'
       let sn = n
       let n += 1
-      if getline(n) =~ '^\s*|'
+      if getline(n) =~# '^\s*|'
         while n <= line('$')
-          if getline(n) !~ '^\s*|'
+          if getline(n) !~# '^\s*|'
             break
           endif
-          exe n "delete"
+          exe n 'delete'
         endwhile
         call setpos('.', [0, sn, 1, 0])
       else
@@ -254,11 +254,11 @@ function! emmet#lang#slim#splitJoinTag()
   endwhile
 endfunction
 
-function! emmet#lang#slim#removeTag()
+function! emmet#lang#slim#removeTag() abort
   let n = line('.')
   let ml = 0
   while n > 0
-    if getline(n) =~ '^\s*\ze[a-z]'
+    if getline(n) =~# '^\s*\ze[a-z]'
       let ml = len(matchstr(getline(n), '^\s*[a-z]'))
       break
     endif
@@ -274,8 +274,8 @@ function! emmet#lang#slim#removeTag()
     let n += 1
   endwhile
   if sn == n
-    exe "delete"
+    exe 'delete'
   else
-    exe sn "," (n-1) "delete"
+    exe sn ',' (n-1) 'delete'
   endif
 endfunction

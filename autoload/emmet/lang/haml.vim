@@ -1,12 +1,12 @@
-function! emmet#lang#haml#findTokens(str)
+function! emmet#lang#haml#findTokens(str) abort
   return emmet#lang#html#findTokens(a:str)
 endfunction
 
-function! emmet#lang#haml#parseIntoTree(abbr, type)
+function! emmet#lang#haml#parseIntoTree(abbr, type) abort
   return emmet#lang#html#parseIntoTree(a:abbr, a:type)
 endfunction
 
-function! emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
+function! emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent) abort
   let settings = a:settings
   let current = a:current
   let type = a:type
@@ -16,7 +16,7 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
   let indent = emmet#getIndentation(type)
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
   let attribute_style = emmet#getResource('haml', 'attribute_style', 'hash')
-  let str = ""
+  let str = ''
 
   let current_name = current.name
   if dollar_expr
@@ -31,49 +31,49 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
       endif
       let Val = current.attr[attr]
       if type(Val) == 2 && Val == function('emmet#types#true')
-        if attribute_style == 'hash'
+        if attribute_style ==# 'hash'
           let tmp .= ' :' . attr . ' => true'
-        elseif attribute_style == 'html'
+        elseif attribute_style ==# 'html'
           let tmp .= attr . '=true'
         end
       else
         if dollar_expr
-          while Val =~ '\$\([^#{]\|$\)'
+          while Val =~# '\$\([^#{]\|$\)'
             let Val = substitute(Val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
           endwhile
           let attr = substitute(attr, '\$$', itemno+1, '')
         endif
         let valtmp = substitute(Val, '\${cursor}', '', '')
-        if attr == 'id' && len(valtmp) > 0
+        if attr ==# 'id' && len(valtmp) > 0
           let str .= '#' . Val
-        elseif attr == 'class' && len(valtmp) > 0
+        elseif attr ==# 'class' && len(valtmp) > 0
           let str .= '.' . substitute(Val, ' ', '.', 'g')
         else
           if len(tmp) > 0 
-            if attribute_style == 'hash'
+            if attribute_style ==# 'hash'
               let tmp .= ',' 
-            elseif attribute_style == 'html'
+            elseif attribute_style ==# 'html'
               let tmp .= ' ' 
             endif
           endif
           let Val = substitute(Val, '\${cursor}', '', '')
-          if attribute_style == 'hash'
+          if attribute_style ==# 'hash'
             let tmp .= ' :' . attr . ' => "' . Val . '"'
-          elseif attribute_style == 'html'
+          elseif attribute_style ==# 'html'
             let tmp .= attr . '="' . Val . '"'
           end
         endif
       endif
     endfor
     if len(tmp)
-      if attribute_style == 'hash'
+      if attribute_style ==# 'hash'
         let str .= '{' . tmp . ' }'
-      elseif attribute_style == 'html'
+      elseif attribute_style ==# 'html'
         let str .= '(' . tmp . ')'
       end
     endif
     if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1 && len(current.value) == 0
-      let str .= "/"
+      let str .= '/'
     endif
 
     let inner = ''
@@ -87,10 +87,10 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
       endif
       let lines = split(text, "\n")
       if len(lines) == 1
-        let str .= " " . text
+        let str .= ' ' . text
       else
         for line in lines
-          let str .= "\n" . indent . line . " |"
+          let str .= "\n" . indent . line . ' |'
         endfor
       endif
     elseif len(current.child) == 0
@@ -105,10 +105,10 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
       endif
       let lines = split(text, "\n")
       if len(lines) == 1
-        let str .= " " . text
+        let str .= ' ' . text
       else
         for line in lines
-          let str .= "\n" . indent . line . " |"
+          let str .= "\n" . indent . line . ' |'
         endfor
       endif
     elseif len(current.child) > 0
@@ -116,7 +116,7 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
         let inner .= emmet#toString(child, type, inline, filters, itemno, indent)
       endfor
       let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
-      let inner = substitute(inner, "\n" . escape(indent, '\') . "$", "", 'g')
+      let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
       let str .= "\n" . indent . inner
     endif
   else
@@ -131,16 +131,16 @@ function! emmet#lang#haml#toString(settings, current, type, inline, filters, ite
   return str
 endfunction
 
-function! emmet#lang#haml#imageSize()
+function! emmet#lang#haml#imageSize() abort
   let line = getline('.')
   let current = emmet#lang#haml#parseTag(line)
   if empty(current) || !has_key(current.attr, 'src')
     return
   endif
   let fn = current.attr.src
-  if fn =~ '^\s*$'
+  if fn =~# '^\s*$'
     return
-  elseif fn !~ '^\(/\|http\)'
+  elseif fn !~# '^\(/\|http\)'
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
 
@@ -153,13 +153,13 @@ function! emmet#lang#haml#imageSize()
   let current.attrs_order += ['width', 'height']
   let haml = emmet#toString(current, 'haml', 1)
   let haml = substitute(haml, '\${cursor}', '', '')
-  call setline('.', substitute(matchstr(line, '^\s*') . haml, "\n", "", "g"))
+  call setline('.', substitute(matchstr(line, '^\s*') . haml, "\n", '', 'g'))
 endfunction
 
-function! emmet#lang#haml#encodeImage()
+function! emmet#lang#haml#encodeImage() abort
 endfunction
 
-function! emmet#lang#haml#parseTag(tag)
+function! emmet#lang#haml#parseTag(tag) abort
   let current = emmet#newNode()
   let mx = '%\([a-zA-Z][a-zA-Z0-9]*\)\s*\%({\(.*\)}\)'
   let match = matchstr(a:tag, mx)
@@ -168,7 +168,7 @@ function! emmet#lang#haml#parseTag(tag)
   let mx = '\([a-zA-Z0-9]\+\)\s*=>\s*\%(\([^"'' \t]\+\)\|"\([^"]\{-}\)"\|''\([^'']\{-}\)''\)'
   while len(attrs) > 0
     let match = matchstr(attrs, mx)
-    if len(match) == 0
+    if len(match) ==# 0
       break
     endif
     let attr_match = matchlist(match, mx)
@@ -181,17 +181,17 @@ function! emmet#lang#haml#parseTag(tag)
   return current
 endfunction
 
-function! emmet#lang#haml#toggleComment()
+function! emmet#lang#haml#toggleComment() abort
   let line = getline('.')
   let space = matchstr(line, '^\s*')
-  if line =~ '^\s*-#'
+  if line =~# '^\s*-#'
     call setline('.', space . matchstr(line[len(space)+2:], '^\s*\zs.*'))
-  elseif line =~ '^\s*%[a-z]'
+  elseif line =~# '^\s*%[a-z]'
     call setline('.', space . '-# ' . line[len(space):])
   endif
 endfunction
 
-function! emmet#lang#haml#balanceTag(flag) range
+function! emmet#lang#haml#balanceTag(flag) range abort
   let block = emmet#util#getVisualBlock()
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
@@ -256,11 +256,11 @@ function! emmet#lang#haml#balanceTag(flag) range
   endif
 endfunction
 
-function! emmet#lang#haml#moveNextPrevItem(flag)
+function! emmet#lang#haml#moveNextPrevItem(flag) abort
   return emmet#lang#haml#moveNextPrev(a:flag)
 endfunction
 
-function! emmet#lang#haml#moveNextPrev(flag)
+function! emmet#lang#haml#moveNextPrev(flag) abort
   let pos = search('""', a:flag ? 'Wb' : 'W')
   if pos != 0
     silent! normal! l
@@ -268,11 +268,11 @@ function! emmet#lang#haml#moveNextPrev(flag)
   endif
 endfunction
 
-function! emmet#lang#haml#splitJoinTag()
+function! emmet#lang#haml#splitJoinTag() abort
   let n = line('.')
   let sml = len(matchstr(getline(n), '^\s*%[a-z]'))
   while n > 0
-    if getline(n) =~ '^\s*\ze%[a-z]'
+    if getline(n) =~# '^\s*\ze%[a-z]'
       if len(matchstr(getline(n), '^\s*%[a-z]')) < sml
         break
       endif
@@ -287,7 +287,7 @@ function! emmet#lang#haml#splitJoinTag()
           if l <= ml
             break
           endif
-          exe n "delete"
+          exe n 'delete'
         endwhile
         call setpos('.', [0, sn, 1, 0])
       else
@@ -308,11 +308,11 @@ function! emmet#lang#haml#splitJoinTag()
   endwhile
 endfunction
 
-function! emmet#lang#haml#removeTag()
+function! emmet#lang#haml#removeTag() abort
   let n = line('.')
   let ml = 0
   while n > 0
-    if getline(n) =~ '^\s*\ze[a-z]'
+    if getline(n) =~# '^\s*\ze[a-z]'
       let ml = len(matchstr(getline(n), '^\s*%[a-z]'))
       break
     endif
@@ -328,8 +328,8 @@ function! emmet#lang#haml#removeTag()
     let n += 1
   endwhile
   if sn == n
-    exe "delete"
+    exe 'delete'
   else
-    exe sn "," (n-1) "delete"
+    exe sn ',' (n-1) 'delete'
   endif
 endfunction

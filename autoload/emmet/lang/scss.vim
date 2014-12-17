@@ -1,16 +1,16 @@
-function! emmet#lang#scss#findTokens(str)
+function! emmet#lang#scss#findTokens(str) abort
   return emmet#lang#css#findTokens(a:str)
 endfunction
 
-function! emmet#lang#scss#parseIntoTree(abbr, type)
-  if a:abbr =~ '>'
+function! emmet#lang#scss#parseIntoTree(abbr, type) abort
+  if a:abbr =~# '>'
     return emmet#lang#html#parseIntoTree(a:abbr, a:type)
   else
     return emmet#lang#css#parseIntoTree(a:abbr, a:type)
   endif
 endfunction
 
-function! emmet#lang#scss#toString(settings, current, type, inline, filters, itemno, indent)
+function! emmet#lang#scss#toString(settings, current, type, inline, filters, itemno, indent) abort
   let settings = a:settings
   let current = a:current
   let type = a:type
@@ -18,7 +18,7 @@ function! emmet#lang#scss#toString(settings, current, type, inline, filters, ite
   let filters = a:filters
   let itemno = a:itemno
   let indent = a:indent
-  let str = ""
+  let str = ''
 
   let current_name = substitute(current.name, '\$$', itemno+1, '')
   if len(current.name) > 0
@@ -26,13 +26,13 @@ function! emmet#lang#scss#toString(settings, current, type, inline, filters, ite
     let tmp = ''
     for attr in keys(current.attr)
       let val = current.attr[attr]
-      while val =~ '\$\([^#{]\|$\)'
+      while val =~# '\$\([^#{]\|$\)'
         let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
       endwhile
       let attr = substitute(attr, '\$$', itemno+1, '')
-      if attr == 'id'
+      if attr ==# 'id'
         let str .= '#' . val
-      elseif attr == 'class'
+      elseif attr ==# 'class'
         let str .= '.' . val
       else
         let tmp .= attr . ': ' . val . ';'
@@ -52,7 +52,7 @@ function! emmet#lang#scss#toString(settings, current, type, inline, filters, ite
       let inner .= emmet#toString(child, type, inline, filters, itemno)
     endfor
     let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
-    let inner = substitute(inner, "\n" . escape(indent, '\') . "$", "", 'g')
+    let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
     let str .= indent . inner . "\n}\n"
   else
     return emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
@@ -60,23 +60,23 @@ function! emmet#lang#scss#toString(settings, current, type, inline, filters, ite
   return str
 endfunction
 
-function! emmet#lang#scss#imageSize()
+function! emmet#lang#scss#imageSize() abort
   call emmet#lang#css#imageSize()
 endfunction
 
-function! emmet#lang#scss#encodeImage()
+function! emmet#lang#scss#encodeImage() abort
   return emmet#lang#css#encodeImage()
 endfunction
 
-function! emmet#lang#scss#parseTag(tag)
+function! emmet#lang#scss#parseTag(tag) abort
   return emmet#lang#css#parseTag(a:tag)
 endfunction
 
-function! emmet#lang#scss#toggleComment()
+function! emmet#lang#scss#toggleComment() abort
   call emmet#lang#css#toggleComment()
 endfunction
 
-function! emmet#lang#scss#balanceTag(flag) range
+function! emmet#lang#scss#balanceTag(flag) range abort
   if a:flag == -2 || a:flag == 2
     let curpos = [0, line("'<"), col("'<"), 0]
     call setpos('.', curpos)
@@ -102,24 +102,24 @@ function! emmet#lang#scss#balanceTag(flag) range
     endif
   endif
   if a:flag == -2 || a:flag == 2
-    silent! exe "normal! gv"
+    silent! exe 'normal! gv'
   else
     call setpos('.', curpos)
   endif
 endfunction
 
-function! emmet#lang#scss#moveNextPrevItem(flag)
+function! emmet#lang#scss#moveNextPrevItem(flag) abort
   return emmet#lang#scss#moveNextPrev(a:flag)
 endfunction
 
-function! emmet#lang#scss#moveNextPrev(flag)
+function! emmet#lang#scss#moveNextPrev(flag) abort
   call emmet#lang#css#moveNextPrev(a:flag)
 endfunction
 
-function! emmet#lang#scss#splitJoinTag()
+function! emmet#lang#scss#splitJoinTag() abort
   call emmet#lang#css#splitJoinTag()
 endfunction
 
-function! emmet#lang#scss#removeTag()
+function! emmet#lang#scss#removeTag() abort
   call emmet#lang#css#removeTag()
 endfunction
