@@ -671,10 +671,14 @@ function! emmet#expandAbbr(mode, abbr) range abort
     if getline('.')[col('.')-1:] =~# '^\$select'
       let pos[2] += 1
       silent! s/\$select\$//
-      let next = searchpos('.\ze\$select\$', 'nW')
+      if emmet#getResource(type, 'use_selection', 0)
+        let next = searchpos('.\ze\$select\$', 'nW')
+        silent! %s/\$\(cursor\|select\)\$//g
+        call emmet#util#selectRegion([pos[1:2], next])
+        return "\<esc>gv"
+      endif
       silent! %s/\$\(cursor\|select\)\$//g
-      call emmet#util#selectRegion([pos[1:2], next])
-      return "\<esc>gv"
+      silent! call setpos('.', pos)
     else
       silent! %s/\$\(cursor\|select\)\$//g
       silent! call setpos('.', pos)
@@ -928,6 +932,7 @@ let s:emmet_settings = {
 \      'charset': "UTF-8",
 \      'indentation': "\t",
 \      'newline': "\n",
+\      'use_selection': 0,
 \    },
 \    'custom_expands' : {
 \      '^\%(lorem\|lipsum\)\(\d*\)$' : function('emmet#lorem#en#expand'),
