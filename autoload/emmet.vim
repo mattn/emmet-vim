@@ -44,10 +44,10 @@ function! emmet#getIndentation(...) abort
   endif
   if has_key(s:emmet_settings, type) && has_key(s:emmet_settings[type], 'indentation')
     let indent = s:emmet_settings[type].indentation
-  elseif has_key(s:emmet_settings.variables, 'indentation')
-    let indent = s:emmet_settings.variables.indentation
   elseif has_key(s:emmet_settings, 'indentation')
     let indent = s:emmet_settings.indentation
+  elseif has_key(s:emmet_settings.variables, 'indentation')
+    let indent = s:emmet_settings.variables.indentation
   else
     let indent = (&l:expandtab || &l:tabstop !=# &l:shiftwidth) ? repeat(' ', &l:shiftwidth) : "\t"
   endif
