@@ -1,4 +1,9 @@
 function! emmet#lang#css#findTokens(str) abort
+  let tmp = substitute(substitute(a:str, '^.*[;{]\s*', '', ''), '}\s*$', '', '')
+  if tmp =~ '/' && tmp =~ '^[a-zA-Z0-9/_.]\+$'
+    " maybe path or something
+    return ''
+  endif
   return substitute(substitute(a:str, '^.*[;{]\s*', '', ''), '}\s*$', '', '')
 endfunction
 
@@ -20,7 +25,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
   let block = emmet#util#searchRegion('{', '}')
   if abbr !~# '^@' && emmet#getBaseType(type) ==# 'css' && type !=# 'sass' && block[0] ==# [0,0] && block[1] ==# [0,0]
     let current = emmet#newNode()
-    let current.snippet = abbr . " {\n" . indent . "${cursor}\n}"
+    let current.snippet = substitute(abbr, '\s\+$', '', '') . " {\n" . indent . "${cursor}\n}"
     let current.name = ''
     call add(root.child, deepcopy(current))
   else
@@ -186,13 +191,16 @@ endfunction
 function! emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent) abort
   let current = a:current
   let value = current.value[1:-2]
-  if emmet#useFilter(a:filters, 'fc')
-    let value = substitute(value, '\([^:]\+\):\([^;]*\)', '\1: \2', 'g')
-  else
-    let value = substitute(value, '\([^:]\+\):\([^;]*\)', '\1:\2', 'g')
-  endif
-  if current.important
-    let value = substitute(value, ';', ' !important;', '')
+  let tmp = substitute(value, '\${cursor}', '', 'g')
+  if tmp !~ '.*{[ \t\r\n]*}$'
+    if emmet#useFilter(a:filters, 'fc')
+      let value = substitute(value, '\([^:]\+\):\([^;]*\)', '\1: \2', 'g')
+    else
+      let value = substitute(value, '\([^:]\+\):\([^;]*\)', '\1:\2', 'g')
+    endif
+    if current.important
+      let value = substitute(value, ';', ' !important;', '')
+    endif
   endif
   return value
 endfunction
