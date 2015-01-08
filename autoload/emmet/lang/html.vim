@@ -510,7 +510,11 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
         let str .= inner
       endfor
     else
-      let str .= '${cursor}'
+      if settings.html.indent_blockelement && len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+        let str .= "\n" . indent . '${cursor}' . "\n"
+      else
+        let str .= '${cursor}'
+      endif
     endif
     if dr
       let str .= "\n"
