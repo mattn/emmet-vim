@@ -929,7 +929,6 @@ let s:emmet_settings = {
 \      'lang': "en",
 \      'locale': "en-US",
 \      'charset': "UTF-8",
-\      'indentation': "\t",
 \      'newline': "\n",
 \      'use_selection': 0,
 \    },
