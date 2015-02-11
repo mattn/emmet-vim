@@ -396,7 +396,9 @@ CUSTOMIZE                                                      *emmet-customize*
   for example, vimmer can add following.
 >
   let g:user_emmet_settings = {
-  \  'lang' : 'ja',
+  \  'variables' : {
+  \    'lang' : 'ja',
+  \  },
   \  'html' : {
   \    'filters' : 'html',
   \    'indentation' : ' '
