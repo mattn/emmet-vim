@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 17-Dec-2014.
+" Last Change: 21-Feb-2015.
 
 let s:save_cpo = &cpoptions
 set cpoptions&vim
@@ -1814,6 +1814,10 @@ let s:emmet_settings = {
 \        'expandos': {
 \            'choose': 'xsl:choose>xsl:when+xsl:otherwise',
 \        }
+\    },
+\    'jsx': {
+\        'extends': 'html',
+\        'attribute_name': {'class': 'className'},
 \    },
 \    'xslt': {
 \        'extends': 'xsl',
