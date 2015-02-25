@@ -150,7 +150,7 @@ function! s:install_plugin(mode, buffer)
   endfor
 endfunction
 
-command! -nargs=0 EmmetInstall call <SID>install_plugin(get(g:, 'user_emmet_mode', 'a'), 1)
+command! -nargs=0 -bar EmmetInstall call <SID>install_plugin(get(g:, 'user_emmet_mode', 'a'), 1)
 
 if get(g:, 'user_emmet_install_global', 1)
   call s:install_plugin(get(g:, 'user_emmet_mode', 'a'), 0)
