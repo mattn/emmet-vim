@@ -622,9 +622,9 @@ function! emmet#expandAbbr(mode, abbr) range abort
     let expand = emmet#unescapeDollarExpr(expand)
     if a:mode ==# 2 && visualmode() ==# 'v'
       if a:firstline ==# a:lastline
-        let expand = substitute(expand, '\n\s*', '', 'g')
+        let expand = substitute(expand, '[\r\n]\s*', '', 'g')
       else
-        let expand = substitute(expand, '\n$', '', 'g')
+        let expand = substitute(expand, '[\n]$', '', 'g')
       endif
       silent! normal! gv
       let col = col('''<')
@@ -644,14 +644,14 @@ function! emmet#expandAbbr(mode, abbr) range abort
       else
         let indent = ''
       endif
-      let expand = substitute(expand, '\n\s*$', '', 'g')
+      let expand = substitute(expand, '[\r\n]\s*$', '', 'g')
       if emmet#useFilter(filters, 's')
-        let epart = substitute(expand, "\n\s\*", '', 'g')
+        let epart = substitute(expand, '[\r\n]\s\*', '', 'g')
       else
-        let epart = substitute(expand, "\n", "\n" . indent, 'g')
+        let epart = substitute(expand, '[\r\n]', "\n" . indent, 'g')
       endif
       let expand = line[:-len(part)-1] . epart . rest
-      let lines = split(expand, "\n", 1)
+      let lines = split(expand, '[\r\n]', 1)
       if a:mode ==# 2
         silent! exe 'normal! gvc'
       endif
