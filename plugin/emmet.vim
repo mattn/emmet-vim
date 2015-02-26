@@ -90,10 +90,6 @@ if !exists('g:emmet_curl_command')
   let g:emmet_curl_command = 'curl -s -L -A Mozilla/5.0'
 endif
 
-if exists('g:user_emmet_complete_tag') && g:user_emmet_complete_tag
-  setlocal omnifunc=emmet#completeTag
-endif
-
 if !exists('g:user_emmet_leader_key')
   let g:user_emmet_leader_key = '<c-y>'
 endif
@@ -148,6 +144,14 @@ function! s:install_plugin(mode, buffer)
       exe item.mode . 'map ' . buffer . ' <unique> ' . key . ' <plug>(' . item.plug . ')'
     endif
   endfor
+
+  if exists('g:user_emmet_complete_tag') && g:user_emmet_complete_tag
+    if get(g:, 'user_emmet_install_global', 1)
+      set omnifunc=emmet#completeTag
+    else
+      setlocal omnifunc=emmet#completeTag
+    endif
+  endif
 endfunction
 
 command! -nargs=0 -bar EmmetInstall call <SID>install_plugin(get(g:, 'user_emmet_mode', 'a'), 1)
