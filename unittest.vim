@@ -734,6 +734,30 @@ finish
           'query': "{dn$$$$}",
           'result': "{display: none;}",
         },
+        {
+          'query': "{p10%$$$$}",
+          'result': "{padding: 10%;}",
+        },
+        {
+          'query': "{p10p$$$$}",
+          'result': "{padding: 10%;}",
+        },
+        {
+          'query': "{p10e$$$$}",
+          'result': "{padding: 10em;}",
+        },
+        {
+          'query': "{p10em$$$$}",
+          'result': "{padding: 10em;}",
+        },
+        {
+          'query': "{p10re$$$$}",
+          'result': "{padding: 10rem;}",
+        },
+        {
+          'query': "{p10rem$$$$}",
+          'result': "{padding: 10rem;}",
+        },
       ],
     },
   ],
