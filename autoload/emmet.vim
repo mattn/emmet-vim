@@ -650,7 +650,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
       endif
       let expand = substitute(expand, '[\r\n]\s*$', '', 'g')
       if emmet#useFilter(filters, 's')
-        let epart = substitute(expand, '[\r\n]\s\*', '', 'g')
+        let epart = substitute(expand, '[\r\n]\s*', '', 'g')
       else
         let epart = substitute(expand, '[\r\n]', "\n" . indent, 'g')
       endif
