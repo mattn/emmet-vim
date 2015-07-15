@@ -72,9 +72,6 @@ function! emmet#lang#jade#toString(settings, current, type, inline, filters, ite
         let str .= '(' . tmp . ')'
       end
     endif
-    if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1 && len(current.value) == 0
-      let str .= '/'
-    endif
 
     let inner = ''
     if len(current.value) > 0
