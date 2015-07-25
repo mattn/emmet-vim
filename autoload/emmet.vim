@@ -237,7 +237,11 @@ function! emmet#toString(...) abort
         let snippet_node = emmet#newNode()
         let snippet_node.value = '{'.tmp.'}'
         let snippet_node.important = current.important
-        let str = emmet#lang#{rtype}#toString(s:emmet_settings, snippet_node, type, inline, filters, s:itemno(group_itemno, current), indent)
+        let snippet_node.multiplier = current.multiplier
+        let str .= emmet#lang#{rtype}#toString(s:emmet_settings, snippet_node, type, inline, filters, s:itemno(group_itemno, current), indent)
+        if current.multiplier > 1
+          let str .= "\n"
+        endif
       else
         if len(current.name)
           let str .= current.name
@@ -646,7 +650,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
       endif
       let expand = substitute(expand, '[\r\n]\s*$', '', 'g')
       if emmet#useFilter(filters, 's')
-        let epart = substitute(expand, '[\r\n]\s\*', '', 'g')
+        let epart = substitute(expand, '[\r\n]\s*', '', 'g')
       else
         let epart = substitute(expand, '[\r\n]', "\n" . indent, 'g')
       endif

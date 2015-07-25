@@ -906,7 +906,7 @@ inside generated tree and elements' attributes.
 <
   Other examples:
 >
-  .wrapper   ->   <div class="wraper"></div>
+  .wrapper   ->   <div class="wrapper"></div>
   #popup     ->   <div id="popup"></div>
 <
   When you expand abbreviation, Emmet tries to grab parent context,

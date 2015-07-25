@@ -31,7 +31,7 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
   else
     for n in range(len(tokens))
       let token = tokens[n]
-      let prop = matchlist(token, '^\(-\{0,1}[a-zA-Z]\+\|[a-zA-Z0-9]\++\{0,1}\|([a-zA-Z0-9]\++\{0,1})\)\(\%([0-9.-]\+[pe]\{0,1}-\{0,1}\|-auto\)*\)$')
+      let prop = matchlist(token, '^\(-\{0,1}[a-zA-Z]\+\|[a-zA-Z0-9]\++\{0,1}\|([a-zA-Z0-9]\++\{0,1})\)\(\%([0-9.-]\+\%(p\|e\|em\|re\|rem\|%\)\{0,1}-\{0,1}\|-auto\)*\)$')
       if len(prop)
         let token = substitute(prop[1], '^(\(.*\))', '\1', '')
         if token =~# '^-'
@@ -48,8 +48,16 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
             let value .= substitute(v, '[^0-9.]*$', '', '')
           elseif v =~# 'p$'
             let value .= substitute(v, 'p$', '%', '')
+          elseif v =~# '%$'
+            let value .= v
           elseif v =~# 'e$'
             let value .= substitute(v, 'e$', 'em', '')
+          elseif v =~# 'em$'
+            let value .= v
+          elseif v =~# 're$'
+            let value .= substitute(v, 're$', 'rem', '')
+          elseif v =~# 'rem$'
+            let value .= v
           elseif v =~# '\.'
             let value .= v . 'em'
           elseif v ==# 'auto'
