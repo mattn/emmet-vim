@@ -487,7 +487,9 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
       endif
       let text = substitute(text, '\${nr}', "\n", 'g')
       let text = substitute(text, '\\\$', '$', 'g')
-      let str = substitute(str, '\("\zs$#\ze"\|\s\zs\$#"\|"\$#\ze\s\)', text, 'g')
+      if text != ''
+        let str = substitute(str, '\("\zs$#\ze"\|\s\zs\$#"\|"\$#\ze\s\)', text, 'g')
+      endif
     endif
     let str .= text
     let nc = len(current.child)

@@ -475,7 +475,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
     endif
     if leader =~# '\*'
       let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '')
-      if query !~# '}\s*$'
+      if query !~# '}\s*$' && query !~# '\$#'
         let query .= '>{$#}'
       endif
       if emmet#useFilter(filters, '/')
