@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 21-Feb-2015.
+" Last Change: 26-Jul-2015.
 
 let s:save_cpo = &cpoptions
 set cpoptions&vim
