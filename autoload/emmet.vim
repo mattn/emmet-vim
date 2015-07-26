@@ -290,38 +290,44 @@ function! emmet#getResource(type, name, default) abort
   if exists('b:emmet_' . a:name)
     return get(b:, 'emmet_' . a:name)
   endif
-  if !has_key(s:emmet_settings, a:type)
-    return a:default
-  endif
-  let ret = a:default
 
-  if has_key(s:emmet_settings[a:type], 'extends')
-    let extends = s:emmet_settings[a:type].extends
-    if type(extends) ==# 1
-      let tmp = split(extends, '\s*,\s*')
-      unlet! extends
-      let extends = tmp
+  for type in split(a:type, '\.')
+    if !has_key(s:emmet_settings, type)
+      continue
     endif
-    for ext in extends
-      if has_key(s:emmet_settings, ext) && has_key(s:emmet_settings[ext], a:name)
-        if type(ret) ==# 3 || type(ret) ==# 4
-          call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
-        else
-          let ret = s:emmet_settings[ext][a:name]
-        endif
+    let ret = a:default
+
+    if has_key(s:emmet_settings[type], 'extends')
+      let extends = s:emmet_settings[type].extends
+      if type(extends) ==# 1
+        let tmp = split(extends, '\s*,\s*')
+        unlet! extends
+        let extends = tmp
       endif
-    endfor
-  endif
-
-  if has_key(s:emmet_settings[a:type], a:name)
-    if type(ret) ==# 3 || type(ret) ==# 4
-      call emmet#mergeConfig(ret, s:emmet_settings[a:type][a:name])
-    else
-      let ret = s:emmet_settings[a:type][a:name]
+      for ext in extends
+        if has_key(s:emmet_settings, ext) && has_key(s:emmet_settings[ext], a:name)
+          if type(ret) ==# 3 || type(ret) ==# 4
+            call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
+          else
+            let ret = s:emmet_settings[ext][a:name]
+          endif
+        endif
+      endfor
     endif
-  endif
 
-  return ret
+    if has_key(s:emmet_settings[type], a:name)
+      if type(ret) ==# 3 || type(ret) ==# 4
+        call emmet#mergeConfig(ret, s:emmet_settings[type][a:name])
+      else
+        let ret = s:emmet_settings[type][a:name]
+      endif
+    endif
+    if !empty(ret)
+      return ret
+    endif
+  endfor
+
+  return a:default
 endfunction
 
 function! emmet#getFileType(...) abort
