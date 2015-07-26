@@ -2,7 +2,7 @@ script_name: Emmet.vim
 script_id: '2981'
 script_type: utility
 script_package: emmet-vim.zip
-script_version: '0.85'
+script_version: '0.86'
 required_vim_version: '7.0'
 summary: vim plugins for HTML and CSS hi-speed coding.
 
@@ -98,6 +98,8 @@ install_details: |
   # git clone http://github.com/mattn/emmet-vim.git
 
 versions:
+- '0.86': |
+   This is an upgrade for Emmet.vim: lot of bug fixes.
 - '0.85': |
    This is an upgrade for Emmet.vim: lot of bug fixes.
 - '0.84': |
