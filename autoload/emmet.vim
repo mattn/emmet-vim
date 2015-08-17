@@ -108,7 +108,7 @@ endfunction
 function! emmet#expandAbbrIntelligent(feedkey) abort
   if !emmet#isExpandable()
     return a:feedkey
-  endif 
+  endif
   return "\<plug>(emmet-expand-abbr)"
 endfunction
 
@@ -682,20 +682,26 @@ function! emmet#expandAbbr(mode, abbr) range abort
     endif
     let pos = emmet#util#getcurpos()
     let use_selection = emmet#getResource(type, 'use_selection', 0)
-    if use_selection && getline('.')[col('.')-1:] =~# '^\$select'
-      let pos[2] += 1
-      silent! s/\$select\$//
-      let next = searchpos('.\ze\$select\$', 'nW')
-      silent! %s/\$\(cursor\|select\)\$//g
-      call emmet#util#selectRegion([pos[1:2], next])
-      return "\<esc>gv"
-    else
-      silent! %s/\$\(cursor\|select\)\$//g
-      silent! call setpos('.', pos)
-      if col('.') < col('$')
-        return "\<right>"
+    try
+      let l:gdefault = &gdefault
+      let &gdefault = 0
+      if use_selection && getline('.')[col('.')-1:] =~# '^\$select'
+        let pos[2] += 1
+        silent! s/\$select\$//
+        let next = searchpos('.\ze\$select\$', 'nW')
+        silent! %s/\$\(cursor\|select\)\$//g
+        call emmet#util#selectRegion([pos[1:2], next])
+        return "\<esc>gv"
+      else
+        silent! %s/\$\(cursor\|select\)\$//g
+        silent! call setpos('.', pos)
+        if col('.') < col('$')
+          return "\<right>"
+        endif
       endif
-    endif
+    finally
+      let &gdefault = l:gdefault
+    endtry
     let &selection = oldselection
   endif
   return ''
