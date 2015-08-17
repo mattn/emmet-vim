@@ -1787,6 +1787,55 @@ let s:emmet_settings = {
 \    'html.django_template': {
 \        'extends': 'html',
 \    },
+\    'jade': {
+\        'indentation': '  ',
+\        'extends': 'html',
+\        'snippets': {
+\            '!!!': "doctype html\n",
+\            '!!!4t': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"\n",
+\            '!!!4s': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"\n",
+\            '!!!xt': "doctype transitional\n",
+\            '!!!xs': "doctype strict\n",
+\            '!!!xxs': "doctype 1.1\n",
+\            'c': "\/\/ |${child}",
+\            'html:4t': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"\n"
+\                    ."html(lang=\"${lang}\")\n"
+\                    ."\thead\n"
+\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
+\                    ."\t\ttitle\n"
+\                    ."\tbody\n\t\t${child}|",
+\            'html:4s': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"\n"
+\                    ."html(lang=\"${lang}\")\n"
+\                    ."\thead\n"
+\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
+\                    ."\t\ttitle\n"
+\                    ."\tbody\n\t\t${child}|",
+\            'html:xt': "doctype transitional\n"
+\                    ."html(xmlns=\"http://www.w3.org/1999/xhtml\", xml:lang=\"${lang}\")\n"
+\                    ."\thead\n"
+\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
+\                    ."\t\ttitle\n"
+\                    ."\tbody\n\t\t${child}|",
+\            'html:xs': "doctype strict\n"
+\                    ."html(xmlns=\"http://www.w3.org/1999/xhtml\", xml:lang=\"${lang}\")\n"
+\                    ."\thead\n"
+\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
+\                    ."\t\ttitle\n"
+\                    ."\tbody\n\t\t${child}|",
+\            'html:xxs': "doctype 1.1\n"
+\                    ."html(xmlns=\"http://www.w3.org/1999/xhtml\", xml:lang=\"${lang}\")\n"
+\                    ."\thead\n"
+\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
+\                    ."\t\ttitle\n"
+\                    ."\tbody\n\t\t${child}|",
+\            'html:5': "doctype html\n"
+\                    ."html(lang=\"${lang}\")\n"
+\                    ."\thead\n"
+\                    ."\t\tmeta(charset=\"${charset}\")\n"
+\                    ."\t\ttitle\n"
+\                    ."\tbody\n\t\t${child}|",
+\        },
+\    },
 \    'xsl': {
 \        'extends': 'html',
 \        'default_attributes': {
