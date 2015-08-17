@@ -292,7 +292,7 @@ function! emmet#util#imageSizeWithImageMagick(fn) abort
 endfunction
 
 function! emmet#util#isImageMagickInstalled() abort
-  if !get(s:, 'emmet_use_identify', 1)
+  if !get(g:, 'emmet_use_identify', 1)
     return 0
   endif
   return executable('identify')
