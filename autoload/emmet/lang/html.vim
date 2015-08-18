@@ -623,10 +623,10 @@ function! emmet#lang#html#parseTag(tag) abort
 endfunction
 
 function! emmet#lang#html#toggleComment() abort
-  let orgpos = emmet#util#getcurpos()
-  let curpos = emmet#util#getcurpos()
+  let orgpos = getpos('.')
+  let curpos = getpos('.')
   let mx = '<\%#[^>]*>'
-  while 1
+  while getchar(0) == 0
     let block = emmet#util#searchRegion('<!--', '-->')
     if emmet#util#regionIsValid(block)
       let block[1][1] += 2
@@ -642,7 +642,7 @@ function! emmet#lang#html#toggleComment() abort
       if pos1[0] == 0 && pos1[1] == 0
         return
       endif
-      let curpos = emmet#util#getcurpos()
+      let curpos = getpos('.')
       continue
     endif
     let pos1 = block[0]
