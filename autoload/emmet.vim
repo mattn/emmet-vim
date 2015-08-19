@@ -290,6 +290,10 @@ function! emmet#getResource(type, name, default) abort
   if exists('b:emmet_' . a:name)
     return get(b:, 'emmet_' . a:name)
   endif
+  let global = {}
+  if has_key(s:emmet_settings, '*') && has_key(s:emmet_settings['*'], a:name)
+    let global = extend(global, s:emmet_settings['*'][a:name])
+  endif
 
   for type in split(a:type, '\.')
     if !has_key(s:emmet_settings, type)
@@ -323,11 +327,18 @@ function! emmet#getResource(type, name, default) abort
       endif
     endif
     if !empty(ret)
+      if type(ret) ==# 3 || type(ret) ==# 4
+        let ret = extend(global, ret)
+      endif
       return ret
     endif
   endfor
 
-  return a:default
+  let ret = a:default
+  if type(ret) ==# 3 || type(ret) ==# 4
+    let ret = extend(global, ret)
+  endif
+  return ret
 endfunction
 
 function! emmet#getFileType(...) abort
@@ -1928,7 +1939,7 @@ let s:emmet_settings = {
 \                    ."\t<xsd:element name=\"\" type=\"\"/>\n"
 \                    ."</xsd:schema>\n"
 \        }
-\    }
+\    },
 \}
 
 if exists('g:user_emmet_settings')
