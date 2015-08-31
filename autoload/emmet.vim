@@ -507,8 +507,12 @@ function! emmet#expandAbbr(mode, abbr) range abort
         let spl = ''
       endif
       let items = emmet#parseIntoTree(query, type).child
+      let itemno = 0
       for item in items
-        let expand .= emmet#toString(item, rtype, 0, filters, 0, indent)
+        let inner = emmet#toString(item, rtype, 0, filters, 0, indent)
+        let inner = substitute(inner, '\$#', '$line'.(itemno*(a:lastline - a:firstline + 1)/len(items)+1).'$', 'g')
+        let expand .= inner
+        let itemno = itemno + 1
       endfor
       if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
