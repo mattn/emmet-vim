@@ -626,7 +626,7 @@ function! emmet#lang#html#toggleComment() abort
   let orgpos = getpos('.')
   let curpos = getpos('.')
   let mx = '<\%#[^>]*>'
-  while getchar(0) == 0
+  while 1
     let block = emmet#util#searchRegion('<!--', '-->')
     if emmet#util#regionIsValid(block)
       let block[1][1] += 2
