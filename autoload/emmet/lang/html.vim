@@ -442,17 +442,17 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
           if len(Val) > 0
             let Val .= ' '
           endif
-          if _val =~# '^\a_'
-            let lead = _val[0]
-            let Val .= lead . ' ' .  _val
-          elseif _val =~# '^_'
+          if _val =~# '^_'
+            let lead = vals[0]
+            let Val .= lead . _val
+          elseif _val =~# '^-'
             if len(lead) == 0
               let pattr = current.parent.attr
               if has_key(pattr, 'class')
-                let lead = pattr['class']
+                let lead = split(pattr['class'], '\s\+')[0]
               endif
             endif
-            let Val .= lead . ' ' . lead . _val
+            let Val .= lead . _val
           else
             let Val .= _val
           endif
