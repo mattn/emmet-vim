@@ -689,7 +689,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
   if g:emmet_debug > 1
     call getchar()
   endif
-  if search('\ze\$\(cursor\|select\)\$')
+  if search('\ze\$\(cursor\|select\)\$', 'c')
     let oldselection = &selection
     let &selection = 'inclusive'
     if foldclosed(line('.')) !=# -1
