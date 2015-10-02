@@ -322,8 +322,9 @@ function! emmet#getResource(type, name, default) abort
     if has_key(s:emmet_settings[type], a:name)
       if type(ret) ==# 3 || type(ret) ==# 4
         call emmet#mergeConfig(ret, s:emmet_settings[type][a:name])
+        return extend(global, ret)
       else
-        let ret = s:emmet_settings[type][a:name]
+        return s:emmet_settings[type][a:name]
       endif
     endif
     if !empty(ret)
