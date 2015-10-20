@@ -140,7 +140,15 @@ function! emmet#mergeConfig(lhs, rhs) abort
         if !has_key(lhs, key)
           let lhs[key] = []
         endif
-        let lhs[key] += rhs[key]
+        if type(lhs[key]) == 3
+          let lhs[key] += rhs[key]
+        elseif type(lhs[key]) == 4
+          let vals = map(keys(lhs[key]), '{v:val : lhs[key][v:val]}')
+          for V in rhs[key]
+            let vals += [V]
+          endfor
+          let lhs[key] = vals
+        endif
       elseif type(rhs[key]) ==# 4
         if has_key(lhs, key)
           call emmet#mergeConfig(lhs[key], rhs[key])
