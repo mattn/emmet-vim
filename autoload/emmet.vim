@@ -126,37 +126,52 @@ endfunction
 
 function! emmet#mergeConfig(lhs, rhs) abort
   let [lhs, rhs] = [a:lhs, a:rhs]
-  if type(lhs) ==# 3 && type(rhs) ==# 3
-    let lhs += rhs
-    if len(lhs)
-      call remove(lhs, 0, len(lhs)-1)
+  if type(lhs) ==# 3
+    if type(rhs) ==# 3
+      let lhs += rhs
+      if len(lhs)
+        call remove(lhs, 0, len(lhs)-1)
+      endif
+      for rhi in rhs
+        call add(lhs, rhs[rhi])
+      endfor
+    elseif type(rhs) ==# 4
+      let lhs += map(keys(rhs), '{v:val : rhs[v:val]}')
     endif
-    for rhi in rhs
-      call add(lhs, rhs[rhi])
-    endfor
-  elseif type(lhs) ==# 4 && type(rhs) ==# 4
-    for key in keys(rhs)
-      if type(rhs[key]) ==# 3
-        if !has_key(lhs, key)
-          let lhs[key] = []
+  elseif type(lhs) ==# 4
+    if type(rhs) ==# 3
+      for V in rhs
+        if type(V) != 4
+          continue
         endif
-        if type(lhs[key]) == 3
-          let lhs[key] += rhs[key]
-        elseif type(lhs[key]) == 4
-          for k in keys(rhs[key])
-            let lhs[key][k] = rhs[key][k]
-          endfor
-        endif
-      elseif type(rhs[key]) ==# 4
-        if has_key(lhs, key)
-          call emmet#mergeConfig(lhs[key], rhs[key])
+        for VV in keys(V)
+          let lhs[VV] = V[VV]
+        endfor
+      endfor
+    elseif type(rhs) ==# 4
+      for key in keys(rhs)
+        if type(rhs[key]) ==# 3
+          if !has_key(lhs, key)
+            let lhs[key] = []
+          endif
+          if type(lhs[key]) == 3
+            let lhs[key] += rhs[key]
+          elseif type(lhs[key]) == 4
+            for k in keys(rhs[key])
+              let lhs[key][k] = rhs[key][k]
+            endfor
+          endif
+        elseif type(rhs[key]) ==# 4
+          if has_key(lhs, key)
+            call emmet#mergeConfig(lhs[key], rhs[key])
+          else
+            let lhs[key] = rhs[key]
+          endif
         else
           let lhs[key] = rhs[key]
         endif
-      else
-        let lhs[key] = rhs[key]
-      endif
-    endfor
+      endfor
+    endif
   endif
 endfunction
 
