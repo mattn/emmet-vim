@@ -143,11 +143,9 @@ function! emmet#mergeConfig(lhs, rhs) abort
         if type(lhs[key]) == 3
           let lhs[key] += rhs[key]
         elseif type(lhs[key]) == 4
-          let vals = map(keys(lhs[key]), '{v:val : lhs[key][v:val]}')
-          for V in rhs[key]
-            let vals += [V]
+          for k in keys(rhs[key])
+            let lhs[key][k] = rhs[key][k]
           endfor
-          let lhs[key] = vals
         endif
       elseif type(rhs[key]) ==# 4
         if has_key(lhs, key)
@@ -1663,17 +1661,17 @@ let s:emmet_settings = {
 \                    ."</html>",
 \        },
 \        'default_attributes': {
-\            'a': {'href': ''},
-\            'a:link': {'href': 'http://|'},
-\            'a:mail': {'href': 'mailto:|'},
-\            'abbr': {'title': ''},
-\            'acronym': {'title': ''},
-\            'base': {'href': ''},
-\            'bdo': {'dir': ''},
-\            'bdo:r': {'dir': 'rtl'},
-\            'bdo:l': {'dir': 'ltr'},
-\            'del': {'datetime': '${datetime}'},
-\            'ins': {'datetime': '${datetime}'},
+\            'a': [{'href': ''}],
+\            'a:link': [{'href': 'http://|'}],
+\            'a:mail': [{'href': 'mailto:|'}],
+\            'abbr': [{'title': ''}],
+\            'acronym': [{'title': ''}],
+\            'base': [{'href': ''}],
+\            'bdo': [{'dir': ''}],
+\            'bdo:r': [{'dir': 'rtl'}],
+\            'bdo:l': [{'dir': 'ltr'}],
+\            'del': [{'datetime': '${datetime}'}],
+\            'ins': [{'datetime': '${datetime}'}],
 \            'link:css': [{'rel': 'stylesheet'}, g:emmet_html5 ? {} : {'type': 'text/css'}, {'href': '|style.css'}, {'media': 'all'}],
 \            'link:print': [{'rel': 'stylesheet'}, g:emmet_html5 ? {} : {'type': 'text/css'}, {'href': '|print.css'}, {'media': 'print'}],
 \            'link:import': [{'rel': 'import'}, {'href': '|.html'}],
@@ -1686,9 +1684,9 @@ let s:emmet_settings = {
 \            'meta:vp': [{'name': 'viewport'}, {'content': 'width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0'}],
 \            'meta:win': [{'http-equiv': 'Content-Type'}, {'content': 'text/html;charset=Win-1251'}],
 \            'meta:compat': [{'http-equiv': 'X-UA-Compatible'}, {'content': 'IE=7'}],
-\            'style': g:emmet_html5 ? {} : {'type': 'text/css'},
-\            'script': g:emmet_html5 ? {} : {'type': 'text/javascript'},
-\            'script:src': g:emmet_html5 ? {'src': ''} : [{'type': 'text/javascript'}, {'src': ''}],
+\            'style': g:emmet_html5 ? [] : [{'type': 'text/css'}],
+\            'script': g:emmet_html5 ? [] : [{'type': 'text/javascript'}],
+\            'script:src': g:emmet_html5 ? [{'src': ''}] : [{'type': 'text/javascript'}, {'src': ''}],
 \            'img': [{'src': ''}, {'alt': ''}],
 \            'iframe': [{'src': ''}, {'frameborder': '0'}],
 \            'embed': [{'src': ''}, {'type': ''}],
@@ -1701,12 +1699,12 @@ let s:emmet_settings = {
 \            'area:r': [{'shape': 'rect'}, {'coords': ''}, {'href': ''}, {'alt': ''}],
 \            'area:p': [{'shape': 'poly'}, {'coords': ''}, {'href': ''}, {'alt': ''}],
 \            'link': [{'rel': 'stylesheet'}, {'href': ''}],
-\            'form': {'action': ''},
-\            'form:get': {'action': '', 'method': 'get'},
-\            'form:post': {'action': '', 'method': 'post'},
-\            'form:upload': {'action': '', 'method': 'post', 'enctype': 'multipart/form-data'},
-\            'label': {'for': ''},
-\            'input': {'type': ''},
+\            'form': [{'action': ''}],
+\            'form:get': [{'action': ''}, {'method': 'get'}],
+\            'form:post': [{'action': ''}, {'method': 'post'}],
+\            'form:upload': [{'action': ''}, {'method': 'post'}, {'enctype': 'multipart/form-data'}],
+\            'label': [{'for': ''}],
+\            'input': [{'type': ''}],
 \            'input:hidden': [{'type': 'hidden'}, {'name': ''}],
 \            'input:h': [{'type': 'hidden'}, {'name': ''}],
 \            'input:text': [{'type': 'text'}, {'name': ''}, {'id': ''}],
@@ -1739,14 +1737,14 @@ let s:emmet_settings = {
 \            'input:button': [{'type': 'button'}, {'value': ''}],
 \            'input:b': [{'type': 'button'}, {'value': ''}],
 \            'select': [{'name': ''}, {'id': ''}],
-\            'option': {'value': ''},
+\            'option': [{'value': ''}],
 \            'textarea': [{'name': ''}, {'id': ''}, {'cols': '30'}, {'rows': '10'}],
-\            'menu:context': {'type': 'context'},
-\            'menu:c': {'type': 'context'},
-\            'menu:toolbar': {'type': 'toolbar'},
-\            'menu:t': {'type': 'toolbar'},
-\            'video': {'src': ''},
-\            'audio': {'src': ''},
+\            'menu:context': [{'type': 'context'}],
+\            'menu:c': [{'type': 'context'}],
+\            'menu:toolbar': [{'type': 'toolbar'}],
+\            'menu:t': [{'type': 'toolbar'}],
+\            'video': [{'src': ''}],
+\            'audio': [{'src': ''}],
 \            'html:xml': [{'xmlns': 'http://www.w3.org/1999/xhtml'}, {'xml:lang': '${lang}'}],
 \        },
 \        'aliases': {
