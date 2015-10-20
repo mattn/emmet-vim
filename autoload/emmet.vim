@@ -144,8 +144,8 @@ function! emmet#mergeConfig(lhs, rhs) abort
         if type(V) != 4
           continue
         endif
-        for VV in keys(V)
-          let lhs[VV] = V[VV]
+        for k in keys(V)
+          let lhs[k] = V[k]
         endfor
       endfor
     elseif type(rhs) ==# 4
@@ -1700,8 +1700,8 @@ let s:emmet_settings = {
 \            'meta:win': [{'http-equiv': 'Content-Type'}, {'content': 'text/html;charset=Win-1251'}],
 \            'meta:compat': [{'http-equiv': 'X-UA-Compatible'}, {'content': 'IE=7'}],
 \            'style': g:emmet_html5 ? [] : [{'type': 'text/css'}],
-\            'script': g:emmet_html5 ? [] : [{'type': 'text/javascript'}],
-\            'script:src': g:emmet_html5 ? [{'src': ''}] : [{'type': 'text/javascript'}, {'src': ''}],
+\            'script': [{'src': ''}] + (g:emmet_html5 ? [] : [{'type': 'text/javascript'}]),
+\            'script:src': [{'src': ''}] + (g:emmet_html5 ? [] : [{'type': 'text/javascript'}, {'src': ''}]),
 \            'img': [{'src': ''}, {'alt': ''}],
 \            'iframe': [{'src': ''}, {'frameborder': '0'}],
 \            'embed': [{'src': ''}, {'type': ''}],
