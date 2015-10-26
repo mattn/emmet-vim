@@ -1,6 +1,6 @@
 let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
 \     .'\((*\)\{-}\s*'
-\       .'\([@#.]\{-}[a-zA-Z_\!][a-zA-Z0-9:_\!\-$]*\|{\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\|\[[^\]]\+\]\)'
+\       .'\([@#.]\{-}[a-zA-Z_\!][a-zA-Z0-9:_\!\-$]*\|{\%([^%$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\|\[[^\]]\+\]\)'
 \       .'\('
 \         .'\%('
 \           .'\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)'
@@ -17,6 +17,13 @@ function! emmet#lang#html#findTokens(str) abort
   let [pos, last_pos] = [0, 0]
   while 1
     let tag = matchstr(str, '<[a-zA-Z].\{-}>', pos)
+    if len(tag) == 0
+      break
+    endif
+    let pos = stridx(str, tag, pos) + len(tag)
+  endwhile
+  while 1
+    let tag = matchstr(str, '{%[^%]\{-}%}', pos)
     if len(tag) == 0
       break
     endif
