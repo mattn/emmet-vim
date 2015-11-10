@@ -315,7 +315,6 @@ function! emmet#getResource(type, name, default) abort
   if has_key(s:emmet_settings, '*') && has_key(s:emmet_settings['*'], a:name)
     let global = extend(global, s:emmet_settings['*'][a:name])
   endif
-  echo a:type
 
   if has_key(s:emmet_settings, a:type)
     let types = [a:type]
