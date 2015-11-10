@@ -377,7 +377,7 @@ function! emmet#getFileType(...) abort
   if has_key(s:emmet_settings, &filetype)
     let types = [&filetype]
   else
-    let types = split(a:type, '\.')
+    let types = split(&filetype, '\.')
   endif
   for part in types
     if emmet#lang#exists(part)
