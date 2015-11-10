@@ -146,7 +146,19 @@ You should copy this section and create new buffer, paste and write as
       </p>
   </div>
 <
-2. Wrap with abbreviation            *emmet-wrap-with-abbreviation* *v_<C-y>,*
+2. Expand abbreviation                            *emmet-expand-word* *<C-y>;*
+
+  When you want to expand word except html tokens like below, use this.
+>
+  <html
+  >foo
+<
+  This will be expanded like:
+>
+  <html
+  ><foo></foo>
+
+3. Wrap with abbreviation            *emmet-wrap-with-abbreviation* *v_<C-y>,*
 
   Write as below.
 >
@@ -181,7 +193,7 @@ You should copy this section and create new buffer, paste and write as
 <
   See also: |emmet-filter-t|, |emmet-$#|
 
-3. Balance tag inward                      *emmet-balance-tag-inward* *<C-y>d*
+4. Balance tag inward                      *emmet-balance-tag-inward* *<C-y>d*
 
   To select inward of '<ul>' tag, type '<C-y>d' in insert mode.
 >
@@ -194,7 +206,7 @@ You should copy this section and create new buffer, paste and write as
   If cursor is at '*', '<C-y>d' select from begin of '<ul>' to end of '</ul>'.
   If cursor is at first of '<li>', it select '<li class="list1"></li>'.
 
-4. Balance tag outward                    *emmet-balance-tag-outward* *<C-y>D*
+5. Balance tag outward                    *emmet-balance-tag-outward* *<C-y>D*
 
   To select outward of '<ul>' tag type '<C-y>D' in insert mode.
 >
@@ -208,7 +220,7 @@ You should copy this section and create new buffer, paste and write as
   to previous letter of '</ul>'.
   If cursor is at first of '<li>', it select '<li class="list1"></li>'.
 
-5. Go to next edit point                      *emmet-goto-next-point* *<C-y>n*
+6. Go to next edit point                      *emmet-goto-next-point* *<C-y>n*
 
   To jump next point that need to edit, type '<C-y>n' in insert mode.
 >
@@ -220,7 +232,7 @@ You should copy this section and create new buffer, paste and write as
   And type again '<C-y>n' to move a cursor
   into inner of '<div>' specified id as 'bar'.
 
-6. Go to previous edit point              *emmet-goto-previous-point* *<C-y>N*
+7. Go to previous edit point              *emmet-goto-previous-point* *<C-y>N*
 
   To jump previous point that need to edit, type '<C-y>N' in insert mode.
 >
@@ -232,7 +244,7 @@ You should copy this section and create new buffer, paste and write as
   And type again '<C-y>N' to move a cursor
   into attribute value of 'foo'.
 
-7. Add and update <img> size                *emmet-update-image-size* *<C-y>i*
+8. Add and update <img> size                *emmet-update-image-size* *<C-y>i*
 
   To add or update 'width' and 'height' attributes of image,
   type '<C-y>i' on '<img>' tag
@@ -250,7 +262,7 @@ You should copy this section and create new buffer, paste and write as
   Image size retrieved using 'identify' (ImageMagick.org) (if available)
   or |xxd|.
 
-8. Merge lines                                    *emmet-merge-lines* *<C-y>m*
+9. Merge lines                                    *emmet-merge-lines* *<C-y>m*
 
   To join multi line text like following, type |J|.
 >
@@ -267,7 +279,7 @@ You should copy this section and create new buffer, paste and write as
       <li class="list1"></li><li class="list2"></li><li class="list3"></li>
   </ul>
 <
-9. Remove tag                                      *emmet-remove-tag* *<C-y>k*
+10. Remove tag                                      *emmet-remove-tag* *<C-y>k*
 
   To remove tag in the block, type '<C-y>k'.
 >
@@ -283,7 +295,7 @@ You should copy this section and create new buffer, paste and write as
 <
   And type '<C-y>k' in there again, then '<div>' will be removed.
 
-10. Split/join tag                             *emmet-split-join-tag* *<C-y>j*
+11. Split/join tag                             *emmet-split-join-tag* *<C-y>j*
 
   To join block, type '<C-y>j'.
 >
@@ -300,7 +312,7 @@ You should copy this section and create new buffer, paste and write as
   <div class="foo">
   </div>
 <
-11. Toggle comment                             *emmet-toggle-comment* *<C-y>/*
+12. Toggle comment                             *emmet-toggle-comment* *<C-y>/*
 
   Move cursor to block
 >
@@ -320,7 +332,7 @@ You should copy this section and create new buffer, paste and write as
       hello world
   </div>
 <
-12. Make anchor from URL                      *emmet-make-anchor-url* *<C-y>a*
+13. Make anchor from URL                      *emmet-make-anchor-url* *<C-y>a*
 
   Move cursor to URL
 >
@@ -332,7 +344,7 @@ You should copy this section and create new buffer, paste and write as
 <
   Text retrieved using command, specified by |g:emmet_curl_command|.
 
-13. Make quoted text from URL                 *emmet-quoted-text-url* *<C-y>A*
+14. Make quoted text from URL                 *emmet-quoted-text-url* *<C-y>A*
 
   Move cursor to URL
 >
@@ -348,7 +360,7 @@ You should copy this section and create new buffer, paste and write as
 <
   Text retrieved using command, specified by |g:emmet_curl_command|.
 
-14. Code pretty                                   *emmet-code-pretty* *<C-y>c*
+15. Code pretty                                   *emmet-code-pretty* *<C-y>c*
 
   Select code block, for example select following code from 'int main()'.
 >
@@ -366,7 +378,7 @@ You should copy this section and create new buffer, paste and write as
 <
   To convert text into html used command |:TOhtml|.
 
-15. Lorem ipsum                                            *emmet-lorem-ipsum*
+16. Lorem ipsum                                            *emmet-lorem-ipsum*
 
   To insert dummy text (30 words by default).
 >
