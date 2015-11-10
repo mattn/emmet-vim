@@ -315,8 +315,15 @@ function! emmet#getResource(type, name, default) abort
   if has_key(s:emmet_settings, '*') && has_key(s:emmet_settings['*'], a:name)
     let global = extend(global, s:emmet_settings['*'][a:name])
   endif
+  echo a:type
 
-  for type in split(a:type, '\.')
+  if has_key(s:emmet_settings, a:type)
+    let types = [a:type]
+  else
+    let types = split(a:type, '\.')
+  endif
+
+  for type in types
     if !has_key(s:emmet_settings, type)
       continue
     endif
@@ -366,7 +373,13 @@ endfunction
 function! emmet#getFileType(...) abort
   let flg = get(a:000, 0, 0)
   let type = ''
-  for part in split(&filetype, '\.')
+
+  if has_key(s:emmet_settings, &filetype)
+    let types = [&filetype]
+  else
+    let types = split(a:type, '\.')
+  endif
+  for part in types
     if emmet#lang#exists(part)
       let type = part
       break
