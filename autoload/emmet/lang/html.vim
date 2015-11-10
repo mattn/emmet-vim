@@ -135,6 +135,10 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         if use_pipe_for_cursor
           let snippet = substitute(snippet, '|', '${cursor}', 'g')
         endif
+        " just redirect to expanding
+        if snippet !~ '^\s*<'
+           return emmet#lang#html#parseIntoTree(snippet, a:type)
+        endif
         let lines = split(snippet, "\n", 1)
         call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
         let current.snippet = join(lines, "\n")
