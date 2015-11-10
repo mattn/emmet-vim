@@ -137,7 +137,6 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         endif
         " just redirect to expanding
         if snippet !~ '^\s*[{\[<]'
-        let part = emmet#lang#html#findTokens(part)
            return emmet#lang#html#parseIntoTree(snippet, a:type)
         endif
         let lines = split(snippet, "\n", 1)
