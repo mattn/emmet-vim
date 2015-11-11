@@ -290,6 +290,7 @@ function! emmet#toString(...) abort
       else
         let inner = current.value[1:-2]
       endif
+      let inner = substitute(inner, '\${child}', '', '')
       let inner = substitute(inner, "\n", "\n" . indent, 'g')
       let str = substitute(str, '\${child}', inner, '')
     endif
@@ -1626,8 +1627,7 @@ let s:emmet_settings = {
 \        'extends': 'css',
 \    },
 \    'html': {
-\        'snippets': {
-\            '!': "html:5",
+\        'abbreviations': {
 \            '!!!': "<!DOCTYPE html>\n",
 \            '!!!4t':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n",
 \            '!!!4s':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n",
@@ -1638,54 +1638,17 @@ let s:emmet_settings = {
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
 \            'cc:ie': "<!--[if IE]>\n\t${child}|\n<![endif]-->",
 \            'cc:noie': "<!--[if !IE]><!-->\n\t${child}|\n<!--<![endif]-->",
-\            'html:4t': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
-\                    ."<html lang=\"${lang}\">\n"
-\                    ."<head>\n"
-\                    ."\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\">\n"
-\                    ."\t<title></title>\n"
-\                    ."</head>\n"
-\                    ."<body>\n\t${child}|\n</body>\n"
-\                    ."</html>",
-\            'html:4s': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"
-\                    ."<html lang=\"${lang}\">\n"
-\                    ."<head>\n"
-\                    ."\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\">\n"
-\                    ."\t<title></title>\n"
-\                    ."</head>\n"
-\                    ."<body>\n\t${child}|\n</body>\n"
-\                    ."</html>",
-\            'html:xt': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
-\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
-\                    ."<head>\n"
-\                    ."\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
-\                    ."\t<title></title>\n"
-\                    ."</head>\n"
-\                    ."<body>\n\t${child}|\n</body>\n"
-\                    ."</html>",
-\            'html:xs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
-\                    ."<head>\n"
-\                    ."\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
-\                    ."\t<title></title>\n"
-\                    ."</head>\n"
-\                    ."<body>\n\t${child}|\n</body>\n"
-\                    ."</html>",
-\            'html:xxs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n"
-\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
-\                    ."<head>\n"
-\                    ."\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
-\                    ."\t<title></title>\n"
-\                    ."</head>\n"
-\                    ."<body>\n\t${child}|\n</body>\n"
-\                    ."</html>",
-\            'html:5': "<!DOCTYPE html>\n"
-\                    ."<html lang=\"${lang}\">\n"
-\                    ."<head>\n"
-\                    ."\t<meta charset=\"${charset}\">\n"
-\                    ."\t<title></title>\n"
-\                    ."</head>\n"
-\                    ."<body>\n\t${child}|\n</body>\n"
-\                    ."</html>",
+\        },
+\        'snippets': {
+\            '!': "html:5",
+\            'doc': "html>(head>meta[charset=${charset}]+title{${1:Document}})+body>${child}",
+\            'doc4': "html>(head>meta[http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\"]+title{${1:Document}})+body>${child}",
+\            'html:4t':  "!!!4t+doc4[lang=${lang}]",
+\            'html:4s':  "!!!4s+doc4[lang=${lang}]",
+\            'html:xt':  "!!!xt+doc4[xmlns=http://www.w3.org/1999/xhtml xml:lang=${lang}]",
+\            'html:xs':  "!!!xs+doc4[xmlns=http://www.w3.org/1999/xhtml xml:lang=${lang}]",
+\            'html:xxs': "!!!xxs+doc4[xmlns=http://www.w3.org/1999/xhtml xml:lang=${lang}]",
+\            'html:5':   "!!!+doc[lang=${lang}]",
 \        },
 \        'default_attributes': {
 \            'a': [{'href': ''}],
@@ -1845,51 +1808,6 @@ let s:emmet_settings = {
 \    'jade': {
 \        'indentation': '  ',
 \        'extends': 'html',
-\        'snippets': {
-\            '!!!': "doctype html\n",
-\            '!!!4t': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"\n",
-\            '!!!4s': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"\n",
-\            '!!!xt': "doctype transitional\n",
-\            '!!!xs': "doctype strict\n",
-\            '!!!xxs': "doctype 1.1\n",
-\            'c': "\/\/ |${child}",
-\            'html:4t': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"\n"
-\                    ."html(lang=\"${lang}\")\n"
-\                    ."\thead\n"
-\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
-\                    ."\t\ttitle\n"
-\                    ."\tbody\n\t\t${child}|",
-\            'html:4s': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"\n"
-\                    ."html(lang=\"${lang}\")\n"
-\                    ."\thead\n"
-\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
-\                    ."\t\ttitle\n"
-\                    ."\tbody\n\t\t${child}|",
-\            'html:xt': "doctype transitional\n"
-\                    ."html(xmlns=\"http://www.w3.org/1999/xhtml\", xml:lang=\"${lang}\")\n"
-\                    ."\thead\n"
-\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
-\                    ."\t\ttitle\n"
-\                    ."\tbody\n\t\t${child}|",
-\            'html:xs': "doctype strict\n"
-\                    ."html(xmlns=\"http://www.w3.org/1999/xhtml\", xml:lang=\"${lang}\")\n"
-\                    ."\thead\n"
-\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
-\                    ."\t\ttitle\n"
-\                    ."\tbody\n\t\t${child}|",
-\            'html:xxs': "doctype 1.1\n"
-\                    ."html(xmlns=\"http://www.w3.org/1999/xhtml\", xml:lang=\"${lang}\")\n"
-\                    ."\thead\n"
-\                    ."\t\tmeta(http-equiv=\"Content-Type\", content=\"text/html;charset=${charset}\")\n"
-\                    ."\t\ttitle\n"
-\                    ."\tbody\n\t\t${child}|",
-\            'html:5': "doctype html\n"
-\                    ."html(lang=\"${lang}\")\n"
-\                    ."\thead\n"
-\                    ."\t\tmeta(charset=\"${charset}\")\n"
-\                    ."\t\ttitle\n"
-\                    ."\tbody\n\t\t${child}|",
-\        },
 \    },
 \    'xsl': {
 \        'extends': 'html',
@@ -1908,6 +1826,47 @@ let s:emmet_settings = {
 \            'co': {'select': ''},
 \            'each': {'select': ''},
 \            'ap': [{'select': ''}, {'mode': ''}]
+\        },
+\        "abbreviations": {
+\            'tm|tmatch': "<xsl:template match=\"\" mode=\"\">",
+\            'tn|tname': "<xsl:template name=\"\">",
+\            'call': "<xsl:call-template name=\"\"/>",
+\            'ap': "<xsl:apply-templates select=\"\" mode=\"\"/>",
+\            'api': "<xsl:apply-imports/>",
+\            'imp': "<xsl:import href=\"\"/>",
+\            'inc': "<xsl:include href=\"\"/>",
+\            'ch': "<xsl:choose>",
+\            'wh|xsl:when': "<xsl:when test=\"\">",
+\            'ot': "<xsl:otherwise>",
+\            'if': "<xsl:if test=\"\">",
+\            'par': "<xsl:param name=\"\">",
+\            'pare': "<xsl:param name=\"\" select=\"\"/>",
+\            'var': "<xsl:variable name=\"\">",
+\            'vare': "<xsl:variable name=\"\" select=\"\"/>",
+\            'wp': "<xsl:with-param name=\"\" select=\"\"/>",
+\            'key': "<xsl:key name=\"\" match=\"\" use=\"\"/>",
+\            'elem': "<xsl:element name=\"\">",
+\            'attr': "<xsl:attribute name=\"\">",
+\            'attrs': "<xsl:attribute-set name=\"\">",
+\            'cp': "<xsl:copy select=\"\"/>",
+\            'co': "<xsl:copy-of select=\"\"/>",
+\            'val': "<xsl:value-of select=\"\"/>",
+\            'for|each': "<xsl:for-each select=\"\">",
+\            'tex': "<xsl:text></xsl:text>",
+\            'com': "<xsl:comment>",
+\            'msg': "<xsl:message terminate=\"no\">",
+\            'fall': "<xsl:fallback>",
+\            'num': "<xsl:number value=\"\"/>",
+\            'nam': "<namespace-alias stylesheet-prefix=\"\" result-prefix=\"\"/>",
+\            'pres': "<xsl:preserve-space elements=\"\"/>",
+\            'strip': "<xsl:strip-space elements=\"\"/>",
+\            'proc': "<xsl:processing-instruction name=\"\">",
+\            'sort': "<xsl:sort select=\"\" order=\"\"/>",
+\            'choose+': "xsl:choose>xsl:when+xsl:otherwise",
+\            'xsl': "!!!+xsl:stylesheet[version=1.0 xmlns:xsl=http://www.w3.org/1999/XSL/Transform]>{\n|}"
+\        },
+\        "snippets": {
+\            "!!!": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 \        },
 \        'aliases': {
 \            'tmatch': 'xsl:template',
@@ -1939,28 +1898,15 @@ let s:emmet_settings = {
 \    'haml': {
 \        'indentation': '  ',
 \        'extends': 'html',
-\        'snippets': {
-\            'html:5': "!!! 5\n"
-\                    ."%html{:lang => \"${lang}\"}\n"
-\                    ."\t%head\n"
-\                    ."\t\t%meta{:charset => \"${charset}\"}\n"
-\                    ."\t\t%title\n"
-\                    ."\t%body\n"
-\                    ."\t\t${child}|\n",
+\        'abbreviations': {
+\            '!!!': "!!! 5",
 \        },
 \        'attribute_style': 'hash',
 \    },
 \    'slim': {
 \        'indentation': '  ',
 \        'extends': 'html',
-\        'snippets': {
-\            'html:5': "doctype 5\n"
-\                    ."html lang=\"${lang}\"\n"
-\                    ."\thead\n"
-\                    ."\t\tmeta charset=\"${charset}\"\n"
-\                    ."\t\ttitle\n"
-\                    ."\tbody\n"
-\                    ."\t\t${child}|\n",
+\        'abbreviations': {
 \        },
 \    },
 \    'xhtml': {

@@ -1,6 +1,6 @@
 let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
 \     .'\((*\)\{-}\s*'
-\       .'\([@#.]\{-}[a-zA-Z_\!][a-zA-Z0-9:_\!\-$]*\|{\%([^%$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\|\[[^\]]\+\]\)'
+\       .'\([@#.]\{-}[a-zA-Z_\!][a-zA-Z0-9:_\!\-$]*\|\${[^}]\+}\|{\%([^%$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\|\[[^\]]\+\]\)'
 \       .'\('
 \         .'\%('
 \           .'\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)'
@@ -123,26 +123,51 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
 
     let use_pipe_for_cursor = emmet#getResource(type, 'use_pipe_for_cursor', 1)
 
-    " snippets
-    let snippets = emmet#getResource(type, 'snippets', {})
-    if !empty(snippets)
-      let snippet_name = tag_name
-      if has_key(snippets, snippet_name)
-        let snippet = snippet_name
-        while has_key(snippets, snippet)
-          let snippet = snippets[snippet]
+    let abbreviations = emmet#getResource(type, 'abbreviations', {})
+    if !empty(abbreviations)
+      let abbreviation_name = tag_name
+      if has_key(abbreviations, abbreviation_name)
+        let abbreviation = abbreviation_name
+        while has_key(abbreviations, abbreviation)
+          let abbreviation = abbreviations[abbreviation]
         endwhile
         if use_pipe_for_cursor
-          let snippet = substitute(snippet, '|', '${cursor}', 'g')
+          let abbreviation = substitute(abbreviation, '|', '${cursor}', 'g')
         endif
-        " just redirect to expanding
-        if type == 'html' && snippet !~ '^\s*[{\[<]'
-           return emmet#lang#html#parseIntoTree(snippet, a:type)
-        endif
-        let lines = split(snippet, "\n", 1)
+        let lines = split(abbreviation, "\n", 1)
         call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
         let current.snippet = join(lines, "\n")
         let current.name = ''
+      endif
+    endif
+
+    " snippets
+    let snippets = emmet#getResource(type, 'snippets', {})
+    if empty(current.snippet)
+      let snippets = emmet#getResource(type, 'snippets', {})
+      if !empty(snippets)
+        let snippet_name = tag_name
+        if has_key(snippets, snippet_name)
+          let snippet = snippet_name
+          while has_key(snippets, snippet)
+            let snippet = snippets[snippet]
+          endwhile
+          if use_pipe_for_cursor
+            let snippet = substitute(snippet, '|', '${cursor}', 'g')
+          endif
+          if emmet#isExtends(type, 'html') && snippet !~ '^\s*[{\[<]'
+             let current = emmet#lang#html#parseIntoTree(snippet, a:type)
+             if current.name == '' && current.value == '' && current.snippet == '' && len(current.child) > 0
+               let parent.child += current.child[:-2]
+               let current = current.child[-1]
+             endif
+          else
+            let lines = split(snippet, "\n", 1)
+            call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
+            let current.snippet = join(lines, "\n")
+            let current.name = ''
+          endif
+        endif
       endif
     endif
 
@@ -218,7 +243,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
           let atts = item[1:-2]
           if matchstr(atts, '^\s*\zs[0-9a-zA-Z-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') ==# ''
             let ks = []
-			if has_key(default_attributes, current.name)
+            if has_key(default_attributes, current.name)
               let dfa = default_attributes[current.name]
               let ks = type(dfa) == 3 ? keys(dfa[0]) : keys(dfa)
             endif
@@ -262,6 +287,9 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     if tag_name =~# '^{.*}$'
       let current.name = ''
       let current.value = tag_name
+    elseif tag_name =~# '^\$\?{.*}$'
+      let current.name = ''
+      let current.value = '{' . tag_name . '}'
     else
       let current.value = value
     endif
