@@ -60,6 +60,13 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
 
   let settings = emmet#getSettings()
   let indent = emmet#getIndentation(type)
+  let pmap = {
+  \  'html': 'body',
+  \  'table': 'tr',
+  \  'tr': 'td',
+  \  'ul': 'li',
+  \  'ol': 'li',
+  \}
 
   " try 'foo' to (foo-x)
   let rabbr = emmet#getExpandos(type, abbr)
@@ -91,7 +98,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     endif
     if tag_name =~# '^#'
       let attributes = tag_name . attributes
-      let tag_name = 'div'
+      let tag_name = ''
     endif
     if tag_name =~# '[^!]!$'
       let tag_name = tag_name[:-2]
@@ -99,11 +106,19 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     endif
     if tag_name =~# '^\.'
       let attributes = tag_name . attributes
-      let tag_name = 'div'
+      let tag_name = ''
     endif
     if tag_name =~# '^\[.*\]$'
       let attributes = tag_name . attributes
-      let tag_name = 'div'
+      let tag_name = ''
+    endif
+    if empty(tag_name)
+      let pname = len(parent.child) > 0 ? parent.child[0].name : ''
+      if !empty(pname) && has_key(pmap, pname)
+        let tag_name = pmap[pname]
+      else
+        let tag_name = 'div'
+      endif
     endif
     let basedirect = basevalue[1] ==# '-' ? -1 : 1
     let basevalue = 0 + abs(basevalue[1:])
