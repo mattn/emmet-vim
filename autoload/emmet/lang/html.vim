@@ -61,11 +61,21 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
   let settings = emmet#getSettings()
   let indent = emmet#getIndentation(type)
   let pmap = {
-  \  'html': 'body',
-  \  'table': 'tr',
-  \  'tr': 'td',
-  \  'ul': 'li',
-  \  'ol': 'li',
+  \'p': 'span',
+  \'ul': 'li',
+  \'ol': 'li',
+  \'table': 'tr',
+  \'tr': 'td',
+  \'tbody': 'tr',
+  \'thead': 'tr',
+  \'tfoot': 'tr',
+  \'colgroup': 'col',
+  \'select': 'option',
+  \'optgroup': 'option',
+  \'audio': 'source',
+  \'video': 'source',
+  \'object': 'param',
+  \'map': 'area'
   \}
 
   " try 'foo' to (foo-x)
