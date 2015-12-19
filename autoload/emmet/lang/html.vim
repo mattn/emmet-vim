@@ -77,6 +77,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
   \'object': 'param',
   \'map': 'area'
   \}
+  
+  let inlineLevel = split('a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',',')
 
   " try 'foo' to (foo-x)
   let rabbr = emmet#getExpandos(type, abbr)
@@ -126,6 +128,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
       let pname = len(parent.child) > 0 ? parent.child[0].name : ''
       if !empty(pname) && has_key(pmap, pname)
         let tag_name = pmap[pname]
+      elseif !empty(pname) && index(inlineLevel, pname) > -1
+        let tag_name = 'span'
       else
         let tag_name = 'div'
       endif
