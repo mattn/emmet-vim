@@ -77,7 +77,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
   \'object': 'param',
   \'map': 'area'
   \}
-  
+
   let inlineLevel = split('a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',',')
 
   " try 'foo' to (foo-x)
@@ -827,7 +827,7 @@ function! emmet#lang#html#splitJoinTag() abort
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if content[-2:] ==# '/>' && emmet#util#cursorInRegion(block)
-      let content = content[:-3] . '></' . tag_name . '>'
+      let content = substitute(content[:-3], '\s*$', '', '')  . '></' . tag_name . '>'
       call emmet#util#setContent(block, content)
       call setpos('.', [0, block[0][0], block[0][1], 0])
       return
@@ -842,7 +842,7 @@ function! emmet#lang#html#splitJoinTag() abort
       let block = [pos1, pos2]
       let content = emmet#util#getContent(block)
       if emmet#util#pointInRegion(curpos[1:2], block) && content[1:] !~# '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
-        let content = matchstr(content, mx)[:-2] . '/>'
+        let content = matchstr(content, mx)[:-2] . ' />'
         call emmet#util#setContent(block, content)
         call setpos('.', [0, block[0][0], block[0][1], 0])
         return
