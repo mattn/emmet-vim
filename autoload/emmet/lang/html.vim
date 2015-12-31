@@ -501,7 +501,11 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
       if has_key(an, attr)
         let attr = an[attr]
       endif
-      let str .= ' ' . attr . '=' . q . Val . q
+      if empty(matchstr(Val, '^{.*}$'))
+        let str .= ' ' . attr . '=' . q . Val . q
+      else
+        let str .= ' ' . attr . '=' . Val
+      endif
       if emmet#useFilter(filters, 'c')
         if attr ==# 'id' | let comment .= '#' . Val | endif
         if attr ==# 'class' | let comment .= '.' . Val | endif
