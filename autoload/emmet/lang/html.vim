@@ -501,10 +501,10 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
       if has_key(an, attr)
         let attr = an[attr]
       endif
-      if empty(matchstr(Val, '^{.*}$'))
-        let str .= ' ' . attr . '=' . q . Val . q
-      else
+      if type == 'jsx' && Val =~ '^{.*}$'
         let str .= ' ' . attr . '=' . Val
+      else
+        let str .= ' ' . attr . '=' . q . Val . q
       endif
       if emmet#useFilter(filters, 'c')
         if attr ==# 'id' | let comment .= '#' . Val | endif
