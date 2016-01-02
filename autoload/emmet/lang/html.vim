@@ -501,7 +501,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
       if has_key(an, attr)
         let attr = an[attr]
       endif
-      if type == 'jsx' && Val =~ '^{.*}$'
+      if emmet#isExtends(type, 'jsx') && Val =~ '^{.*}$'
         let str .= ' ' . attr . '=' . Val
       else
         let str .= ' ' . attr . '=' . q . Val . q
