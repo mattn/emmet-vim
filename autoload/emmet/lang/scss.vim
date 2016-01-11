@@ -53,7 +53,7 @@ function! emmet#lang#scss#toString(settings, current, type, inline, filters, ite
     endfor
     let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
     let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
-    let str .= indent . inner . "\n}\n"
+    let str .= indent . inner . "${cursor}\n}\n"
   else
     return emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
   endif
