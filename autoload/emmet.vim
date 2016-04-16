@@ -49,7 +49,7 @@ function! emmet#getIndentation(...) abort
   elseif has_key(s:emmet_settings.variables, 'indentation')
     let indent = s:emmet_settings.variables.indentation
   else
-    let indent = (&l:expandtab || &l:tabstop !=# &l:shiftwidth) ? repeat(' ', &l:shiftwidth) : "\t"
+    let indent = (&l:expandtab || &l:tabstop !=# shiftwidth()) ? repeat(' ', shiftwidth()) : "\t"
   endif
   return indent
 endfunction
