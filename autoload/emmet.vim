@@ -854,12 +854,20 @@ function! emmet#anchorizeURL(flag) abort
     return ''
   endif
 
-  let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
-  let content = emmet#util#getContentFromURL(url)
-  let content = substitute(content, '\r', '', 'g')
-  let content = substitute(content, '[ \n]\+', ' ', 'g')
-  let content = substitute(content, '<!--.\{-}-->', '', 'g')
-  let title = matchstr(content, mx)
+  if !exists("g:emmet#anchorizeURLDoNotQuery")
+    let g:emmet#anchorizeURLDoNotQuery = 0
+  endif
+  if g:emmet#anchorizeURLDoNotQuery
+    let content = ''
+    let title = ''
+  else
+    let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
+    let content = emmet#util#getContentFromURL(url)
+    let content = substitute(content, '\r', '', 'g')
+    let content = substitute(content, '[ \n]\+', ' ', 'g')
+    let content = substitute(content, '<!--.\{-}-->', '', 'g')
+    let title = matchstr(content, mx)
+  endif
 
   let type = emmet#getFileType()
   let rtype = emmet#lang#exists(type) ? type : 'html'
@@ -893,6 +901,19 @@ function! emmet#anchorizeURL(flag) abort
   let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   let expand = substitute(expand, "\n", "\n" . indent, 'g')
   call emmet#util#setContent(block, expand)
+  " position the cursor so that user can start typing immediately
+  if g:emmet#anchorizeURLDoNotQuery
+    if &filetype ==# 'markdown'
+      execute "normal! l"
+      startinsert
+    elseif a:flag ==# 0
+      execute "normal! f>l"
+      startinsert
+    else
+      execute "normal! /<p>\<CR>:noh\<CR>3ldt<"
+      startinsert
+    endif
+  endif
   return ''
 endfunction
 
