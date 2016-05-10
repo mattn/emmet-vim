@@ -542,8 +542,7 @@ finish
         },
         {
           'query': "form>fieldset>legend+(label>input[type=\"checkbox\"])*3",
-          'result': "<form action=\"\">\t<fieldset>\t\t<legend></legend>\t\t<label for=\"\"><input type=\"checkbox\"></label>\t\t<label for=\"\"><input type=\"checkbox\"></label>\t\t<label for=\"\"><input type=\"checkbox\"></label>\t</fieldset></form>",
-          'ignore': 1,
+          'result': "<form action=\"\">\n\t<fieldset>\n\t\t<legend></legend>\n\t\t<label for=\"\"><input type=\"checkbox\"></label>\n\t\t<label for=\"\"><input type=\"checkbox\"></label>\n\t\t<label for=\"\"><input type=\"checkbox\"></label>\n\t</fieldset>\n</form>\n",
         },
       ],
     },

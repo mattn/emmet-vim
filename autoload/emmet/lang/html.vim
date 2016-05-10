@@ -332,6 +332,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
       if operator =~# '>'
         let last.pos += 1
       endif
+      let last.block = 1
       for n in range(len(block_start))
         let pos += [last.pos]
       endfor
@@ -353,10 +354,15 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             let last = parent
             let last.pos += 1
           endif
-        elseif n =~ '^*[0-9]\+$'
-          let last.child[-1].multiplier = 0 + n[1:]
         elseif len(n)
-          let cl = last.child
+          let start = 0
+          for nc in range(len(last.child))
+            if has_key(last.child[nc], 'block')
+              let start = nc
+              break
+            endif
+          endfor
+          let cl = last.child[nc:]
           let cls = []
           for c in range(n[1:])
             for cc in cl
@@ -368,7 +374,11 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             endfor
             let cls += deepcopy(cl)
           endfor
-          let last.child = cls
+          if nc > 0
+            let last.child = last.child[:nc-1] + cls
+          else
+            let last.child = cls
+          endif
         endif
       endfor
     endif
