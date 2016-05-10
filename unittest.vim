@@ -91,6 +91,7 @@ function! s:test(...)
       let start = reltime()
       for n in range(len(tests))
         if len(index) > 0 && n != index | continue | endif
+        if has_key(tests[n], 'ignore') && tests[n].ignore | continue | endif
         let query = tests[n].query
         let options = has_key(tests[n], 'options') ? tests[n].options : {}
         let result = tests[n].result
@@ -539,6 +540,11 @@ finish
           'query': "form.search-form._wide>input.-query-string+input:s.-btn_large|bem",
           'result': "<form class=\"search-form search-form_wide\" action=\"\">\n\t<input class=\"search-form-query-string\" type=\"\">\n\t<input class=\"search-form-btn_large\" type=\"submit\" value=\"\">\n</form>\n",
         },
+        {
+          'query': "form>fieldset>legend+(label>input[type=\"checkbox\"])*3",
+          'result': "<form action=\"\">\t<fieldset>\t\t<legend></legend>\t\t<label for=\"\"><input type=\"checkbox\"></label>\t\t<label for=\"\"><input type=\"checkbox\"></label>\t\t<label for=\"\"><input type=\"checkbox\"></label>\t</fieldset></form>",
+          'ignore': 1,
+        },
       ],
     },
     {
@@ -546,7 +552,7 @@ finish
       'tests': [
         {
           'query': "<div>\n\t<span>$$$$\\<c-y>j$$$$</span>\n</div>",
-          'result': "<div>\n\t<span/>\n</div>",
+          'result': "<div>\n\t<span />\n</div>",
         },
         {
           'query': "<div>\n\t<span$$$$\\<c-y>j$$$$/>\n</div>",
