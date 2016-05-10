@@ -353,6 +353,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             let last = parent
             let last.pos += 1
           endif
+        elseif n =~ '^*[0-9]\+$'
+          let last.child[-1].multiplier = 0 + n[1:]
         elseif len(n)
           let cl = last.child
           let cls = []
