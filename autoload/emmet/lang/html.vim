@@ -58,7 +58,6 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
   endif
   if len(type) == 0 | let type = 'html' | endif
 
-  let settings = emmet#getSettings()
   let indent = emmet#getIndentation(type)
   let pmap = {
   \'p': 'span',
@@ -79,6 +78,11 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
   \}
 
   let inlineLevel = split('a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',',')
+
+  let custom_expands = emmet#getResource(type, 'custom_expands', {})
+  if empty(custom_expands) && has_key(settings, 'custom_expands')
+    let custom_expands = settings['custom_expands']
+  endif
 
   " try 'foo' to (foo-x)
   let rabbr = emmet#getExpandos(type, abbr)
@@ -104,6 +108,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     let basevalue = substitute(match, s:mx, '\6', 'ig')
     let multiplier = 0 + substitute(match, s:mx, '\7', 'ig')
     let block_end = substitute(match, s:mx, '\8', 'ig')
+    let custom = ''
     let important = 0
     if len(str) == 0
       break
@@ -124,6 +129,15 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
       let attributes = tag_name . attributes
       let tag_name = ''
     endif
+
+    for k in keys(custom_expands)
+      if tag_name =~ k
+        let custom = tag_name
+        let tag_name = ''
+        break
+      endif
+    endfor
+
     if empty(tag_name)
       let pname = len(parent.child) > 0 ? parent.child[0].name : ''
       if !empty(pname) && has_key(pmap, pname)
@@ -134,14 +148,15 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         let tag_name = 'div'
       endif
     endif
+
     let basedirect = basevalue[1] ==# '-' ? -1 : 1
     let basevalue = 0 + abs(basevalue[1:])
     if multiplier <= 0 | let multiplier = 1 | endif
 
     " make default node
     let current = emmet#newNode()
-    let current.name = tag_name
 
+    let current.name = tag_name
     let current.important = important
 
     " aliases
@@ -175,14 +190,16 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
       endif
     endif
 
-    let custom_expands = emmet#getResource(type, 'custom_expands', {})
-    if empty(custom_expands) && has_key(settings, 'custom_expands')
-      let custom_expands = settings['custom_expands']
-    endif
     for k in keys(custom_expands)
       if tag_name =~# k
-        let current.snippet = '${' . tag_name . '}'
+        let current.snippet = '${' . custom . '}'
         let current.name = ''
+        break
+      elseif custom =~# k
+        let cc = emmet#newNode()
+        let cc.snippet = '${' . custom . '}'
+        let cc.name = ''
+        call add(current.child, cc)
         break
       endif
     endfor
@@ -357,7 +374,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         elseif len(n)
           let start = 0
           for nc in range(len(last.child))
-            if has_key(last.child[nc], 'block')
+            if last.child[nc].block
               let start = nc
               break
             endif
