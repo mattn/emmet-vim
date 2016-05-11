@@ -1892,6 +1892,9 @@ let s:emmet_settings = {
 \                    ."\tbody\n\t\t${child}|",
 \        },
 \    },
+\    'pug': {
+\        'extends': 'jade',
+\    },
 \    'xsl': {
 \        'extends': 'html',
 \        'default_attributes': {
