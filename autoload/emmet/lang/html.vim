@@ -144,8 +144,10 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         let tag_name = pmap[pname]
       elseif !empty(pname) && index(inlineLevel, pname) > -1
         let tag_name = 'span'
-      else
+      elseif len(parent.child) == 0
         let tag_name = 'div'
+      else
+        let tag_name = custom
       endif
     endif
 
@@ -192,7 +194,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
 
     for k in keys(custom_expands)
       if tag_name =~# k
-        let current.snippet = '${' . custom . '}'
+        let current.snippet = '${' . (empty(custom) ? tag_name : custom) . '}'
         let current.name = ''
         break
       elseif custom =~# k
