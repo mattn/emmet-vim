@@ -382,7 +382,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
               break
             endif
           endfor
-          let cl = last.child[nc:]
+          let cl = last.child[start:]
           let cls = []
           for c in range(n[1:])
             for cc in cl
@@ -394,8 +394,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             endfor
             let cls += deepcopy(cl)
           endfor
-          if nc > 0
-            let last.child = last.child[:nc-1] + cls
+          if start > 0
+            let last.child = last.child[:start-1] + cls
           else
             let last.child = cls
           endif
