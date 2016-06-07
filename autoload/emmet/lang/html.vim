@@ -514,9 +514,23 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
           if len(Val) > 0
             let Val .= ' '
           endif
-          if _val =~# '^_'
-            let lead = vals[0]
-            let Val .= lead . _val
+          if _val =~# '_'
+            if _val =~# '^_'
+              if has_key(current.parent.attr, 'class')
+                let lead = current.parent.attr["class"]
+                if _val =~# '^__'
+                  let Val .= lead . _val
+                else
+                  let Val .= lead . ' ' . lead . _val
+                endif
+              else
+                let b = split(vals[0], '_')[0]
+                let Val .= lead . _val
+              endif
+            else
+              let lead = split(vals[0], '_')[0]
+              let Val .= lead . ' ' . _val
+            endif
           elseif _val =~# '^-'
             if len(lead) == 0
               let pattr = current.parent.attr
