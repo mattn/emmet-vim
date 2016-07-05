@@ -514,31 +514,33 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
           if len(Val) > 0
             let Val .= ' '
           endif
-          if _val =~# '_'
-            if _val =~# '^_'
-              if has_key(current.parent.attr, 'class')
-                let lead = current.parent.attr["class"]
-                if _val =~# '^__'
-                  let Val .= lead . _val
-                else
-                  let Val .= lead . ' ' . lead . _val
-                endif
-              else
-                let b = split(vals[0], '_')[0]
+          if _val =~# '^_'
+            if has_key(current.parent.attr, 'class')
+              let lead = current.parent.attr["class"]
+              if _val =~# '^__'
                 let Val .= lead . _val
+              else
+                let Val .= lead . ' ' . lead . _val
               endif
             else
               let lead = split(vals[0], '_')[0]
-              let Val .= lead . ' ' . _val
+              let Val .= lead . _val
             endif
           elseif _val =~# '^-'
-            if len(lead) == 0
-              let pattr = current.parent.attr
-              if has_key(pattr, 'class')
-                let lead = split(pattr['class'], '\s\+')[0]
+            for l in split(_val, '_')
+              if len(Val) > 0
+                let Val .= ' '
               endif
-            endif
-            let Val .= lead . _val
+              let l = substitute(l, '^-', '__', '')
+              if len(lead) == 0
+                let pattr = current.parent.attr
+                if has_key(pattr, 'class')
+                  let lead = split(pattr['class'], '\s\+')[0]
+                endif
+              endif
+              let Val .= lead . l
+              let lead .= l . '_'
+            endfor
           else
             let Val .= _val
           endif

@@ -538,7 +538,7 @@ finish
         },
         {
           'query': "form.search-form._wide>input.-query-string+input:s.-btn_large|bem",
-          'result': "<form class=\"search-form search-form_wide\" action=\"\">\n\t<input class=\"search-form-query-string\" type=\"\">\n\t<input class=\"search-form-btn_large\" type=\"submit\" value=\"\">\n</form>\n",
+          'result': "<form class=\"search-form search-form_wide\" action=\"\">\n\t<input class=\"search-form__query-string\" type=\"\">\n\t<input class=\"search-form__btn search-form__btn_large\" type=\"submit\" value=\"\">\n</form>\n",
         },
         {
           'query': "form>fieldset>legend+(label>input[type=\"checkbox\"])*3",
