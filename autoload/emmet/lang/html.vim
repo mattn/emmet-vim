@@ -199,10 +199,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         let current.name = ''
         break
       elseif custom =~# k
-        let cc = emmet#newNode()
-        let cc.snippet = '${' . custom . '}'
-        let cc.name = ''
-        call add(current.child, cc)
+        let current.snippet = '${' . custom . '}'
+        let current.name = ''
         break
       endif
     endfor
