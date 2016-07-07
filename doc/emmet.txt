@@ -172,7 +172,7 @@ You should copy this section and create new buffer, paste and write as
 <
   This will be expanded like:
 >
-  <div class=".global">foo</div>
+  <div class="global">foo</div>
 <
 4. Wrap with abbreviation            *emmet-wrap-with-abbreviation* *v_<C-y>,*
 
