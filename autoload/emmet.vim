@@ -1935,7 +1935,7 @@ let s:emmet_settings = {
 \    },
 \    'jsx': {
 \        'extends': 'html',
-\        'attribute_name': {'class': 'className'},
+\        'attribute_name': {'class': 'className', 'for': 'htmlFor'},
 \    },
 \    'xslt': {
 \        'extends': 'xsl',
