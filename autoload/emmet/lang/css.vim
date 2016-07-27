@@ -161,6 +161,10 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
         call add(root.child, deepcopy(current))
         let current.snippet = '-moz-' . snippet . "\n"
         call add(root.child, deepcopy(current))
+        let current.snippet = '-o-' . snippet . "\n"
+        call add(root.child, deepcopy(current))
+        let current.snippet = '-ms-' . snippet . "\n"
+        call add(root.child, deepcopy(current))
         let current.snippet = snippet
         call add(root.child, current)
       elseif token =~# '^c#\([0-9a-fA-F]\{3}\|[0-9a-fA-F]\{6}\)\(\.[0-9]\+\)\?'
