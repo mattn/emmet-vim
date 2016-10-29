@@ -9,3 +9,18 @@ function! emmet#lang#exists(type) abort
   return s:exists[a:type]
 endfunction
 
+function! emmet#lang#type(type) abort
+  let type = a:type
+  let base = type
+  let settings = emmet#getSettings()
+  while base != ''
+    if emmet#lang#exists(base)
+      return base
+    endif
+    if !has_key(settings[base], 'extends')
+      break
+    endif
+    let base = settings[base].extends
+  endwhile
+  return 'html'
+endfunction

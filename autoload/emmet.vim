@@ -102,8 +102,7 @@ endfunction
 function! emmet#parseIntoTree(abbr, type) abort
   let abbr = a:abbr
   let type = a:type
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#parseIntoTree(abbr, type)
+  return emmet#lang#{emmet#lang#type(type)}#parseIntoTree(abbr, type)
 endfunction
 
 function! emmet#expandAbbrIntelligent(feedkey) abort
@@ -233,7 +232,7 @@ function! emmet#toString(...) abort
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
   let itemno = 0
   let str = ''
-  let rtype = emmet#lang#exists(type) ? type : 'html'
+  let rtype = emmet#lang#type(type)
   while itemno < current.multiplier
     if len(current.name)
       if current.multiplier ==# 1
@@ -508,7 +507,7 @@ endfunction
 
 function! emmet#expandAbbr(mode, abbr) range abort
   let type = emmet#getFileType()
-  let rtype = emmet#getFileType(1)
+  let rtype = emmet#lang#type(emmet#getFileType(1))
   let indent = emmet#getIndentation(type)
   let expand = ''
   let line = ''
@@ -787,48 +786,41 @@ endfunction
 
 function! emmet#moveNextPrevItem(flag) abort
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#moveNextPrevItem(a:flag)
+  return emmet#lang#{emmet#lang#type(type)}#moveNextPrevItem(a:flag)
 endfunction
 
 function! emmet#moveNextPrev(flag) abort
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#moveNextPrev(a:flag)
+  return emmet#lang#{emmet#lang#type(type)}#moveNextPrev(a:flag)
 endfunction
 
 function! emmet#imageSize() abort
   let orgpos = emmet#util#getcurpos()
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  call emmet#lang#{rtype}#imageSize()
+  call emmet#lang#{emmet#lang#type(type)}#imageSize()
   silent! call setpos('.', orgpos)
   return ''
 endfunction
 
 function! emmet#encodeImage() abort
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#encodeImage()
+  return emmet#lang#{emmet#lang#type(type)}#encodeImage()
 endfunction
 
 function! emmet#toggleComment() abort
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  call emmet#lang#{rtype}#toggleComment()
+  call emmet#lang#{emmet#lang#type(type)}#toggleComment()
   return ''
 endfunction
 
 function! emmet#balanceTag(flag) range abort
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#balanceTag(a:flag)
+  return emmet#lang#{emmet#lang#type(type)}#balanceTag(a:flag)
 endfunction
 
 function! emmet#splitJoinTag() abort
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  return emmet#lang#{rtype}#splitJoinTag()
+  return emmet#lang#{emmet#lang#type(type)}#splitJoinTag()
 endfunction
 
 function! emmet#mergeLines() range abort
@@ -840,8 +832,7 @@ endfunction
 
 function! emmet#removeTag() abort
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
-  call emmet#lang#{rtype}#removeTag()
+  call emmet#lang#{emmet#lang#type(type)}#removeTag()
   return ''
 endfunction
 
@@ -862,7 +853,7 @@ function! emmet#anchorizeURL(flag) abort
   let title = matchstr(content, mx)
 
   let type = emmet#getFileType()
-  let rtype = emmet#lang#exists(type) ? type : 'html'
+  let rtype = emmet#lang#type(type)
   if &filetype ==# 'markdown'
     let expand = printf('[%s](%s)', substitute(title, '[\[\]]', '\\&', 'g'), url)
   elseif a:flag ==# 0
