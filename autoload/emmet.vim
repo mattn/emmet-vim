@@ -1936,6 +1936,7 @@ let s:emmet_settings = {
 \    'jsx': {
 \        'extends': 'html',
 \        'attribute_name': {'class': 'className', 'for': 'htmlFor'},
+\        'empty_element_suffix': ' />',
 \    },
 \    'xslt': {
 \        'extends': 'xsl',
