@@ -177,7 +177,7 @@ function! emmet#mergeConfig(lhs, rhs) abort
 endfunction
 
 function! emmet#newNode() abort
-  return { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'basevalue': 0, 'basedirect': 1, 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'], 'block': 0 }
+  return { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'basevalue': 0, 'basedirect': 1, 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0, 'attrs_order': ['id', 'class'], 'block': 0, 'empty': 0 }
 endfunction
 
 function! s:itemno(itemno, current) abort

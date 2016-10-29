@@ -401,6 +401,10 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
       endfor
     endif
     let abbr = abbr[stridx(abbr, match) + len(match):]
+    if abbr == '/'
+		let g:hoge = 1
+      let current.empty = 1
+    endif
 
     if g:emmet_debug > 1
       echomsg 'str='.str
@@ -562,7 +566,9 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
   if len(comment) > 0 && ct ==# 'both'
     let str = '<!-- ' . comment . " -->\n" . str
   endif
-  if stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
+  if current.empty
+    let str .= ' />'
+  elseif stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
     let str .= settings.html.empty_element_suffix
   else
     let str .= '>'
