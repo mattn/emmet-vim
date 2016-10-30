@@ -14,13 +14,15 @@ function! emmet#lang#type(type) abort
   let base = type
   let settings = emmet#getSettings()
   while base != ''
-    if emmet#lang#exists(base)
-      return base
-    endif
-    if !has_key(settings[base], 'extends')
-      break
-    endif
-    let base = settings[base].extends
+    for b in split(base, '\.')
+      if emmet#lang#exists(b)
+        return b
+      endif
+      if has_key(settings, b) && has_key(settings[b], 'extends')
+        let base = settings[b].extends
+        break
+      endif
+    endfor
   endwhile
   return 'html'
 endfunction
