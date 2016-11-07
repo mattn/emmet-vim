@@ -374,7 +374,7 @@ function! emmet#getFileType(...) abort
   let type = ''
 
   if has_key(s:emmet_settings, &filetype)
-    let types = [&filetype]
+    return &filetype
   else
     let types = split(&filetype, '\.')
   endif
@@ -543,7 +543,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
       let items = emmet#parseIntoTree(query, type).child
       let itemno = 0
       for item in items
-        let inner = emmet#toString(item, rtype, 0, filters, 0, indent)
+        let inner = emmet#toString(item, type, 0, filters, 0, indent)
         let inner = substitute(inner, '\$#', '$line'.(itemno*(a:lastline - a:firstline + 1)/len(items)+1).'$', 'g')
         let expand .= inner
         let itemno = itemno + 1
@@ -613,7 +613,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
         let items = emmet#parseIntoTree(leader, type).child
       endif
       for item in items
-        let expand .= emmet#toString(item, rtype, 0, filters, 0, '')
+        let expand .= emmet#toString(item, type, 0, filters, 0, '')
       endfor
       if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
@@ -658,9 +658,9 @@ function! emmet#expandAbbr(mode, abbr) range abort
       let filters = split(matchstr(str, s:filtermx)[1:], '\s*,\s*')
       let str = substitute(str, s:filtermx, '', '')
     endif
-    let items = emmet#parseIntoTree(str, rtype).child
+    let items = emmet#parseIntoTree(str, type).child
     for item in items
-      let expand .= emmet#toString(item, rtype, 0, filters, 0, indent)
+      let expand .= emmet#toString(item, type, 0, filters, 0, indent)
     endfor
     if emmet#useFilter(filters, 'e')
       let expand = substitute(expand, '&', '\&amp;', 'g')
