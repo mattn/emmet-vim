@@ -697,7 +697,7 @@ finish
         },
         {
           'query': "{-bdrs20$$$$}",
-          'result': "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\nborder-radius: 20px;}",
+          'result': "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\n-o-border-radius: 20px;\n-ms-border-radius: 20px;\nborder-radius: 20px;}",
         },
         {
           'query': "{lg(top,#fff,#000)$$$$}",
@@ -985,7 +985,7 @@ finish
         },
         {
           'query': "{-bdrs20$$$$}",
-          'result': "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\nborder-radius: 20px;}",
+          'result': "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\n-o-border-radius: 20px;\n-ms-border-radius: 20px;\nborder-radius: 20px;}",
         },
         {
           'query': "{lg(top,#fff,#000)$$$$}",
