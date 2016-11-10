@@ -21,6 +21,8 @@ function! emmet#lang#type(type) abort
       if has_key(settings, b) && has_key(settings[b], 'extends')
         let base = settings[b].extends
         break
+      else
+        let base = ''
       endif
     endfor
   endwhile
