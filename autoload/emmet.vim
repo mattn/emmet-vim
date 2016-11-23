@@ -374,26 +374,26 @@ function! emmet#getFileType(...) abort
   let type = ''
 
   if has_key(s:emmet_settings, &filetype)
-    return &filetype
+    let type = &filetype
   else
     let types = split(&filetype, '\.')
-  endif
-  for part in types
-    if emmet#lang#exists(part)
-      let type = part
-      break
-    endif
-    let base = emmet#getBaseType(part)
-    if base !=# ''
-      if flg
-        let type = &filetype
-      else
-        let type = base
+    for part in types
+      if emmet#lang#exists(part)
+        let type = part
+        break
       endif
-      unlet base
-      break
-    endif
-  endfor
+      let base = emmet#getBaseType(part)
+      if base !=# ''
+        if flg
+          let type = &filetype
+        else
+          let type = base
+        endif
+        unlet base
+        break
+      endif
+    endfor
+  endif
   if type ==# 'html'
     let pos = emmet#util#getcurpos()
     let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
