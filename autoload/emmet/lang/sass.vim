@@ -3,7 +3,7 @@ function! emmet#lang#sass#findTokens(str) abort
 endfunction
 
 function! emmet#lang#sass#parseIntoTree(abbr, type) abort
-    return emmet#lang#html#parseIntoTree(a:abbr, a:type)
+    return emmet#lang#css#parseIntoTree(a:abbr, a:type)
 endfunction
 
 function! emmet#lang#sass#toString(settings, current, type, inline, filters, itemno, indent) abort
