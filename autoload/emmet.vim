@@ -1828,6 +1828,10 @@ let s:emmet_settings = {
 \        'empty_element_suffix': g:emmet_html5 ? '>' : ' />',
 \        'indent_blockelement': 0,
 \    },
+\    'elm': {
+\        'indentation': '    ',
+\        'extends': 'html',
+\    },
 \    'htmldjango': {
 \        'extends': 'html',
 \    },
