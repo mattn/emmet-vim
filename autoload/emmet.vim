@@ -1884,6 +1884,7 @@ let s:emmet_settings = {
 \        'indentation': '  ',
 \        'extends': 'html',
 \        'snippets': {
+\            '!': "html:5",
 \            '!!!': "doctype html\n",
 \            '!!!4t': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"\n",
 \            '!!!4s': "doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"\n",
