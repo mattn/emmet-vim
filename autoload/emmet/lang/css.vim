@@ -97,6 +97,9 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
         if !has_key(snippets, snippet_name)
           let pat = '^' . join(split(tag_name, '\zs'), '\%(\|[^:-]\+-\)')
           let vv = filter(sort(keys(snippets)), 'snippets[v:val] =~ pat')
+          if len(vv) == 0
+            let vv = filter(sort(keys(snippets)), 'substitute(v:val, ":", "", "g") == snippet_name')
+          endif
           if len(vv) > 0
             let snippet_name = vv[0]
           else
