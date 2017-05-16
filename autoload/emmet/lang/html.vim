@@ -402,7 +402,6 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     endif
     let abbr = abbr[stridx(abbr, match) + len(match):]
     if abbr == '/'
-		let g:hoge = 1
       let current.empty = 1
     endif
 
