@@ -298,11 +298,11 @@ finish
         },
         {
           'query': "blockquote>b>i<<b",
-          'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>\n",
+          'result': "<blockquote>\n\t<b><i></i></b>\n</blockquote>\n<b></b>\n",
         },
         {
           'query': "blockquote>b>i^^b",
-          'result': "<blockquote><b><i></i></b></blockquote>\n<b></b>\n",
+          'result': "<blockquote>\n\t<b><i></i></b>\n</blockquote>\n<b></b>\n",
         },
         {
           'query': "a[href=foo][class=bar]",
