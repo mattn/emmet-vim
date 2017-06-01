@@ -267,10 +267,11 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             let ks = []
 			if has_key(default_attributes, current.name)
               let dfa = default_attributes[current.name]
-              let ks = type(dfa) == 3 ? keys(dfa[0]) : keys(dfa)
+              let ks = type(dfa) == 3 ? len(dfa) > 0 ? keys(dfa[0]) : [] : keys(dfa)
             endif
             if len(ks) == 0 && has_key(default_attributes, current.name . ':src')
-              let ks = keys(default_attributes[current.name . ':src'])
+              let dfa = default_attributes[current.name . ':src']
+              let ks = type(dfa) == 3 ? len(dfa) > 0 ? keys(dfa[0]) : [] : keys(dfa)
             endif
             if len(ks) > 0
               let current.attr[ks[0]] = atts
@@ -593,7 +594,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     if nc > 0
       for n in range(nc)
         let child = current.child[n]
-        if child.multiplier > 1
+        if child.multiplier > 1 || (child.multiplier == 1 && len(child.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1)
           let str .= "\n" . indent
           let dr = 1
         elseif len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
