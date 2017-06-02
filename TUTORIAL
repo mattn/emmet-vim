@@ -160,6 +160,9 @@ Tutorial for Emmet.vim
   ---------------------
   <a href="http://www.google.com/">Google</a>
   ---------------------
+  This requires internet connection, if you just want the template, put
+    let g:emmet#anchorizeURLDoNotQuery = 1
+  in your .vimrc or init.vim.
 
 13. Make some quoted text from a URL
 
@@ -175,6 +178,7 @@ Tutorial for Emmet.vim
   	<cite>http://github.com/</cite>
   </blockquote>
   ---------------------
+  `g:emmet#anchorizeURLDoNotQuery` works for this one too.
 
 14. Installing emmet.vim for the language you are using:
 
