@@ -594,7 +594,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     if nc > 0
       for n in range(nc)
         let child = current.child[n]
-        if child.multiplier > 1 || (child.multiplier == 1 && len(child.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1)
+        if child.multiplier > 1 || (child.multiplier == 1 && len(child.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1) || settings.html.block_all_childless
           let str .= "\n" . indent
           let dr = 1
         elseif len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
@@ -613,7 +613,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
         let str .= inner
       endfor
     else
-      if settings.html.indent_blockelement && len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
+      if settings.html.indent_blockelement && len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1 || settings.html.block_all_childless
         let str .= "\n" . indent . '${cursor}' . "\n"
       else
         let str .= '${cursor}'
