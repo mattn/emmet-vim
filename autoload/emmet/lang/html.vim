@@ -280,7 +280,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             endif
           else
             while len(atts)
-              let amat = matchstr(atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\|[^ ''"\]]*\)\{0,1}\)')
+              let amat = matchstr(atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(={{.\{-}}}\|="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\|[^ ''"\]]*\)\{0,1}\)')
               if len(amat) == 0
                 break
               endif
