@@ -878,7 +878,7 @@ endfunction
 function! emmet#lang#html#splitJoinTag() abort
   let curpos = emmet#util#getcurpos()
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\%(/\{0,1}\)>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
