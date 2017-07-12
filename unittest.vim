@@ -557,6 +557,10 @@ finish
           'query': "<div>\n\t<span$$$$\\<c-y>j$$$$/>\n</div>",
           'result': "<div>\n\t<span></span>\n</div>",
         },
+        {
+          'query': "<div onclick=\"javascript:console.log(Date.now() % 1000 > 500)\">test$$$$\\<c-y>j$$$$/>\n</div>",
+          'result': "<div onclick=\"javascript:console.log(Date.now() % 1000 > 500)\" />",
+        },
       ],
     },
     {
