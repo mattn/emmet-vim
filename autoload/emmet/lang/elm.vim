@@ -133,7 +133,7 @@ function! emmet#lang#elm#toString(settings, current, type, inline, filters, item
         if attr ==# 'id' && len(valtmp) > 0
           let tmp .=', id "' . Val . '"'
         elseif attr ==# 'class' && len(valtmp) > 0
-          let tmp .= ', class "' . substitute(Val, ' ', '.', 'g') . '"'
+          let tmp .= ', class "' . substitute(Val, '\.', ' ', 'g') . '"'
         else
           let tmp .= ', ' . attr . ' "' . Val . '"'
         endif
