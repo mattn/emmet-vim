@@ -148,7 +148,7 @@ You should copy this section and create new buffer, paste and write as
       </p>
   </div>
 <
-2. Expand abbreviation                            *emmet-expand-word* *<C-y>;*
+2. Expand word                                    *emmet-expand-word* *<C-y>;*
 
   When you want to expand word except html tokens like below, use this.
 >
