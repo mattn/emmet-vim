@@ -19,11 +19,16 @@ To install using pathogen.vim:
 
     cd ~/.vim/bundle
     git clone https://github.com/mattn/emmet-vim.git
-    
+
 To install using [Vundle](https://github.com/gmarik/vundle):
 
     " add this line to your .vimrc file
     Plugin 'mattn/emmet-vim'
+
+To install using [Vim-Plug](https://github.com/junegunn/vim-plug):
+
+    " add this line to your .vimrc file
+    Plug 'mattn/emmet-vim'
 
 To checkout the source from repository:
 
