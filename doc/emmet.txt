@@ -152,14 +152,12 @@ You should copy this section and create new buffer, paste and write as
 
   When you want to expand word except html tokens like below, use this.
 >
-  <html
-  >foo
+  <html>foo
 <
   This will be expanded like:
 >
-  <html
-  ><foo></foo>
-
+  <html><foo></foo>
+<
 3. Update tag                                     *emmet-update-tag* *<C-y>u*
 
   The begining of tags '<div>' on below
@@ -1266,14 +1264,14 @@ CUSTOMIZE                                                    *emmet-customize*
 1. Key mapping                                  *emmet-customize-key-mappings*
 
   To specify leading key for expanding or balance tag, or for all,
-  Add this line in your 'vimrc': >
+  Add this line in your 'vimrc':
 >
   let g:user_emmet_leader_key = '<C-y>'
 <
   Note that to expand abbreviation a trailing ',' must be typed, so
   the resultant keymap is '<C-y>,'.
 
-  If you prefer to map for each actions separately, use following valuables:
+  If you prefer to map for each action separately, use following variables:
 >
   let g:user_emmet_expandabbr_key = '<C-y>,'
   let g:user_emmet_expandword_key = '<C-y>;'
@@ -1334,7 +1332,7 @@ CUSTOMIZE                                                    *emmet-customize*
 
 3. Define tag's behavior                          *emmet-define-tags-behavior*
 
-  User can create abbreviations and snippets for each filetypes
+  User can create abbreviations and snippets for each filetype
   using |g:user_emmet_settings|. For details, see official site of Emmet.
   For example, user can add following:
 >
