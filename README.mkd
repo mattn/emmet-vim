@@ -69,7 +69,7 @@ Then type `<c-y>,` (<kbd>Ctrl</kbd><kbd>y</kbd><kbd>,</kbd>), and you should see
 </html>
 ```
 
-[More Tutorials](https://raw.github.com/mattn/emmet-vim/master/TUTORIAL)
+[More Tutorials](https://raw.github.com/mattn/emmet-vim/blob/master/TUTORIAL)
 
 
 ## Enable in different mode
