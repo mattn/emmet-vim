@@ -12,4 +12,4 @@ release: emmet-vim.zip
 
 test:
 	@-rm -f test.log 2> /dev/null
-	@vim --clean -N -c "let &rtp .= ',' . getcwd()" -c "so unittest.vim" -c EmmetUnitTest! || cat test.log || exit 1
+	@vim -N -c "let &rtp .= ',' . getcwd()" -c "so unittest.vim" -c EmmetUnitTest! || cat test.log || exit 1
