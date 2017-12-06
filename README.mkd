@@ -1,7 +1,7 @@
 # Emmet-vim
 
 
-[![Build Status](https://travis-ci.org/mattn/emmet-vim.svg?branch=master)](https://travis-ci.org/mattn/emmet-vim) [![codecov](https://codecov.io/gh/mattn/emmet-vim/branch/master/graph/badge.svg)](https://codecov.io/gh/mattn/emmet-vim)
+[![Build Status](https://travis-ci.org/mattn/emmet-vim.svg?branch=master)](https://travis-ci.org/mattn/emmet-vim)
 
 [emmet-vim](http://mattn.github.com/emmet-vim) is a vim plug-in
 which provides support for expanding abbreviations similar to

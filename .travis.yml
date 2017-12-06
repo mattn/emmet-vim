@@ -3,17 +3,8 @@ sudo: false
 git:
   depth: 10
 
-install:
-  - |
-  - pip install covimerage --user
-
 script:
   - uname -a
   - which -a vim
   - vim --cmd version --cmd quit
   - make test
-
-after_success:
-  - covimerage write_coverage $TEST_PROFILE
-  - coverage xml
-  - bash <(curl -s https://codecov.io/bash)
