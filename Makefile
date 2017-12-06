@@ -9,3 +9,7 @@ emmet-vim.zip: remove-zip
 
 release: emmet-vim.zip
 	vimup update-script emmet.vim
+
+test:
+	@rm test.log
+	@vim --clean -N -c "let &rtp .= ',' . getcwd()" -c "so unittest.vim" -c EmmetUnitTest! || cat test.log || exit 1

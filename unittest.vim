@@ -1,5 +1,6 @@
 " {{{
 let s:sfile = expand('<sfile>')
+let s:logging = 0
 
 function! s:reload(d)
   exe 'so' a:d.'/plugin/emmet.vim'
@@ -8,22 +9,32 @@ function! s:reload(d)
   endfor
 endfunction
 
+function! s:logn(msg)
+  echon a:msg
+  call writefile([a:msg, ''], "test.log", "ab")
+endfunction
+
+function! s:log(msg)
+  echo a:msg
+  call writefile(split(a:msg, "\n"), "test.log", "ab")
+endfunction
+
 function! s:show_type(type)
-  echohl Search | echon '[' a:type "]\n" | echohl None
+  echohl Search | call s:log('['.a:type.']') | echohl None
   echo "\r"
 endfunction
 
 function! s:show_category(category)
-  echohl MatchParen | echon '[' a:category "]\n" | echohl None
+  echohl MatchParen | call s:log('['.a:category.']') | echohl None
   echo "\r"
 endfunction
 
 function! s:show_pass(pass)
-  echohl Title | echo 'pass'.a:pass."\n" | echohl None
+  echohl Title | call s:log('pass '.substitute(a:pass, '\s', '', 'g')) | echohl None
 endfunction
 
 function! s:show_done()
-  echohl IncSearch | echo 'done' | echohl None
+  echohl IncSearch | call s:log('done') | echohl None
 endfunction
 
 function! s:escape(str)
@@ -36,37 +47,39 @@ endfunction
 function! s:show_title(no, title)
   let title = s:escape(a:title)
   let width = &columns - 23
-  echohl MoreMsg | echon "\rtesting #".printf('%03d', a:no)
-  echohl None | echon ': ' . (len(title) < width ? (title.repeat(' ', width-len(title))) : strpart(title, 0, width)) . ' ... '
+  echon "\r"
+  echohl MoreMsg | call s:logn('testing #'.printf('%03d', a:no))
+  echohl None | call s:logn(': '.(len(title) < width ? (title.repeat(' ', width-len(title))) : strpart(title, 0, width)).' ... ')
 endfunction
 
 function! s:show_skip(no, title)
   let title = s:escape(a:title)
   let width = &columns - 23
-  echohl WarningMsg | echon "\rskipped #".printf('%03d', a:no)
-  echohl None | echon ': ' . (len(title) < width ? (title.repeat(' ', width-len(title))) : strpart(title, 0, width)) . ' ... '
+  echon "\r"
+  echohl WarningMsg | call s:logn('skipped #'.printf('%03d', a:no))
+  echohl None | call s:logn(': '.(len(title) < width ? (title.repeat(' ', width-len(title))) : strpart(title, 0, width)).' ... ')
   echo ''
 endfunction
 
 function! s:show_ok()
-  echohl Title | echon "ok\n" | echohl None
+  echohl Title | call s:logn('ok') | echohl None
   echo ''
 endfunction
 
 function! s:show_ng(no, expect, got)
-  echohl WarningMsg | echon "ng\n" | echohl None
-  echohl ErrorMsg | echo 'failed test #'.a:no | echohl None
+  echohl WarningMsg | call s:logn('ng') | echohl None
+  echohl ErrorMsg | call s:log('failed test #'.a:no) | echohl None
   set more
-  echohl WarningMsg | echo printf('expect(%d):', len(a:expect)) | echohl None
+  echohl WarningMsg | call s:log(printf('expect(%d):', len(a:expect))) | echohl None
   echo join(split(a:expect, "\n", 1), "|\n")
-  echohl WarningMsg | echo printf('got(%d):', len(a:got)) | echohl None
-  echo join(split(a:got, "\n", 1), "|\n")
+  echohl WarningMsg | call s:log(printf('got(%d):', len(a:got))) | echohl None
+  call s:log(join(split(a:got, "\n", 1), "|\n"))
   let cs = split(a:expect, '\zs')
   for c in range(len(cs))
     if c < len(a:got)
       if a:expect[c] != a:got[c]
-        echohl WarningMsg | echo 'differ at:' | echohl None
-        echo a:expect[c :-1]
+        echohl WarningMsg | call s:log('differ at:') | echohl None
+        call s:log(a:expect[c :-1])
         break
       endif
     endif
@@ -155,8 +168,9 @@ function! s:test(...)
   endfor
 endfunction
 
-function! s:do_tests(...)
+function! s:do_tests(bang, ...)
   try
+    let s:logging = a:bang
     if exists('g:user_emmet_settings')
       let s:old_user_emmet_settings = g:user_emmet_settings
     endif
@@ -166,8 +180,14 @@ function! s:do_tests(...)
     let &more = 0
     call call('s:test', a:000)
     call s:show_done()
+    if a:bang == '!'
+      qall!
+    endif
   catch
     echohl ErrorMsg | echomsg v:exception | echohl None
+    if a:bang == '!'
+      cquit!
+    endif
   finally
     let &more=oldmore
     if exists('s:old_user_emmet_settings')
@@ -190,7 +210,7 @@ function! s:emmet_unittest_complete(arglead, cmdline, cmdpos)
   return []
 endfunction
 
-command! -nargs=* -complete=customlist,<SID>emmet_unittest_complete EmmetUnitTest call s:do_tests(<f-args>)
+command! -bang -nargs=* -complete=customlist,<SID>emmet_unittest_complete EmmetUnitTest call s:do_tests("<bang>", <f-args>)
 if s:sfile == expand('%:p')
   EmmetUnitTest
 endif
@@ -560,6 +580,10 @@ finish
         {
           'query': "<div onclick=\"javascript:console.log(Date.now() % 1000 > 500)\">test$$$$\\<c-y>j$$$$/>\n</div>",
           'result': "<div onclick=\"javascript:console.log(Date.now() % 1000 > 500)\" />",
+        },
+        {
+          'query': "<div>\n\t<some-tag$$$$\\<c-y>j$$$$/>\n</div>",
+          'result': "<div>\n\t<some-tag></some-tag>\n</div>",
         },
       ],
     },
