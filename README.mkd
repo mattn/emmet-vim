@@ -1,12 +1,13 @@
 # Emmet-vim
 
+
+[![Build Status](https://travis-ci.org/mattn/emmet-vim.svg?branch=master)](https://travis-ci.org/mattn/emmet-vim) [![codecov](https://codecov.io/gh/mattn/emmet-vim/branch/master/graph/badge.svg)](https://codecov.io/gh/mattn/emmet-vim)
+
 [emmet-vim](http://mattn.github.com/emmet-vim) is a vim plug-in
 which provides support for expanding abbreviations similar to
 [emmet](http://emmet.io/).
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mattn/emmet-vim/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
-![](https://raw.githubusercontent.com/mattn/emmet-vim/master/doc/screenshot.gif)
+![screenshot](https://raw.githubusercontent.com/mattn/emmet-vim/master/doc/screenshot.gif)
 
 ## Installation
 
