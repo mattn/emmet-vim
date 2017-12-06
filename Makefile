@@ -11,5 +11,5 @@ release: emmet-vim.zip
 	vimup update-script emmet.vim
 
 test:
-	@-rm test.log 2> /dev/null
+	@-rm -f test.log 2> /dev/null
 	@vim --clean -N -c "let &rtp .= ',' . getcwd()" -c "so unittest.vim" -c EmmetUnitTest! || cat test.log || exit 1
