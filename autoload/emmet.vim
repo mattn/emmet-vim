@@ -303,7 +303,7 @@ function! emmet#toString(...) abort
         let inner = current.value[1:-2]
       endif
       let inner = substitute(inner, "\n", "\n" . indent, 'g')
-      let str = substitute(str, '\${\(\w\+\)}', '\=s:localvar(current, submatch(1))', '')
+      let str = substitute(str, '\${:\(\w\+\)}', '\=s:localvar(current, submatch(1))', '')
       let str = substitute(str, '\${child}', inner, '')
     endif
     let itemno = itemno + 1
