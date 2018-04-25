@@ -196,6 +196,18 @@ function! s:itemno(itemno, current) abort
   endif
 endfunction
 
+function! s:localvar(current, key) abort
+  let val = ''
+  let cur = a:current
+  while !empty(cur)
+    if has_key(cur, 'variables') && has_key(cur.variables, a:key)
+      return cur.variables[a:key]
+    endif
+    let cur = cur.parent
+  endwhile
+  return ''
+endfunction
+
 function! emmet#toString(...) abort
   let current = a:1
   if a:0 > 1
@@ -291,6 +303,7 @@ function! emmet#toString(...) abort
         let inner = current.value[1:-2]
       endif
       let inner = substitute(inner, "\n", "\n" . indent, 'g')
+      let str = substitute(str, '\${\(\w\+\)}', '\=s:localvar(current, submatch(1))', '')
       let str = substitute(str, '\${child}', inner, '')
     endif
     let itemno = itemno + 1
