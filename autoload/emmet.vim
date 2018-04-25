@@ -869,6 +869,8 @@ function! emmet#anchorizeURL(flag) abort
   let rtype = emmet#lang#type(type)
   if &filetype ==# 'markdown'
     let expand = printf('[%s](%s)', substitute(title, '[\[\]]', '\\&', 'g'), url)
+  elseif &filetype ==# 'rst'
+    let expand = printf('`%s <%s>`_', substitute(title, '[\[\]]', '\\&', 'g'), url)
   elseif a:flag ==# 0
     let a = emmet#lang#html#parseTag('<a>')
     let a.attr.href = url
