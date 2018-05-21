@@ -6,7 +6,7 @@
 let s:save_cpo = &cpoptions
 set cpoptions&vim
 
-let s:filtermx = '|\(\%(bem\|html\|haml\|slim\|e\|c\|s\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
+let s:filtermx = '|\(\%(bem\|html\|blade\|haml\|slim\|e\|c\|s\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
 
 function! emmet#getExpandos(type, key) abort
   let expandos = emmet#getResource(a:type, 'expandos', {})
