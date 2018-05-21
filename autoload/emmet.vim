@@ -182,17 +182,9 @@ endfunction
 function! s:itemno(itemno, current) abort
   let current = a:current
   if current.basedirect > 0
-    if current.basevalue ==# 0
-      return a:itemno
-    else
-      return current.basevalue - 1 + a:itemno
-    endif
+    return current.basevalue - 1 + a:itemno
   else
-    if current.basevalue ==# 0
-      return current.multiplier - 1 - a:itemno
-    else
-      return current.multiplier + current.basevalue - 2 - a:itemno
-    endif
+    return current.multiplier + current.basevalue - 2 - a:itemno
   endif
 endfunction
 

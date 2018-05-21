@@ -154,7 +154,11 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     endif
 
     let basedirect = basevalue[1] ==# '-' ? -1 : 1
-    let basevalue = 0 + abs(basevalue[1:])
+    if basevalue != ''
+      let basevalue = 0 + abs(basevalue[1:])
+    else
+      let basevalue = 1
+    endif
     if multiplier <= 0 | let multiplier = 1 | endif
 
     " make default node

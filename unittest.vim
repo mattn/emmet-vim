@@ -679,6 +679,15 @@ finish
         },
       ],
     },
+    {
+      'name': 'base value',
+      'tests': [
+        {
+          'query': "ul>li#id$@0*3",
+          'result': "<ul>\n\t<li id=\"id0\"></li>\n\t<li id=\"id1\"></li>\n\t<li id=\"id2\"></li>\n</ul>\n",
+        },
+      ],
+    },
   ],
   'dummy': "}}}"},
 { 'test-css': '{{{',
