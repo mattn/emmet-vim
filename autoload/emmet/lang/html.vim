@@ -201,15 +201,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     for k in keys(custom_expands)
       if tag_name =~# k
         let snippet = '${' . (empty(custom) ? tag_name : custom) . '}'
-        if current.name != ''
-          let snode = emmet#newNode()
-          let snode.snippet = snippet
-          let snode.parent = current
-          let snode.multiplier = 1
-          call add(current.child, snode)
-        else
-          let current.snippet = snippet
-        endif
+        let current.name = ''
+        let current.snippet = snippet
         break
       elseif custom =~# k
         let snippet = '${' . custom . '}'
