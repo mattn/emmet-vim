@@ -291,6 +291,8 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             endif
             if len(ks) > 0
               let current.attr[ks[0]] = atts
+            elseif atts =~# '\.$'
+              let current.attr[atts[:-2]] = function('emmet#types#true')
             else
               let current.attr[atts] = ''
             endif
