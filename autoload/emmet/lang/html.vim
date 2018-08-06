@@ -143,7 +143,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
 
     if empty(tag_name)
       let pname = len(parent.child) > 0 ? parent.child[0].name : ''
-      if !empty(pname) && has_key(pmap, pname)
+      if !empty(pname) && has_key(pmap, pname) && custom == ''
         let tag_name = pmap[pname]
       elseif !empty(pname) && index(inlineLevel, pname) > -1
         let tag_name = 'span'
@@ -206,6 +206,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         let current.snippet = snippet
         break
       elseif custom =~# k
+		  let g:hoge = current
         let snippet = '${' . custom . '}'
         let current.snippet = '${' . custom . '}'
         if current.name != ''
