@@ -1,6 +1,6 @@
 let s:bx = '{\%("[^"]*"\|''[^'']*''\|\$#\|\${\w\+}\|\$\+\|{[^{]\+\|[^{}]\)\{-}}'
-let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
-\     .'\((*\)\{-}\s*'
+let s:mx = '\([+>]\|[<^]\+\)\{-}'
+\     .'\((*\)\{-}'
 \       .'\([@#.]\{-}[a-zA-Z_\!][a-zA-Z0-9:_\!\-$]*\|' . s:bx . '\|\[[^\]]\+\]\)'
 \       .'\('
 \         .'\%('
@@ -32,13 +32,14 @@ function! emmet#lang#html#findTokens(str) abort
   endwhile
   let last_pos = pos
   while len(str) > 0
+    let white = matchstr(str, '^\s\+', pos)
+    if white != ''
+      let last_pos = pos + len(white)
+	  let pos = last_pos
+    endif
     let token = matchstr(str, s:mx, pos)
     if token ==# ''
       break
-    endif
-    if token =~# '^\s'
-      let token = matchstr(token, '^\s*\zs.*')
-      let last_pos = stridx(str, token, pos)
     endif
     let pos = stridx(str, token, pos) + len(token)
   endwhile
@@ -142,7 +143,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
 
     if empty(tag_name)
       let pname = len(parent.child) > 0 ? parent.child[0].name : ''
-      if !empty(pname) && has_key(pmap, pname)
+      if !empty(pname) && has_key(pmap, pname) && custom == ''
         let tag_name = pmap[pname]
       elseif !empty(pname) && index(inlineLevel, pname) > -1
         let tag_name = 'span'
@@ -205,6 +206,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         let current.snippet = snippet
         break
       elseif custom =~# k
+		  let g:hoge = current
         let snippet = '${' . custom . '}'
         let current.snippet = '${' . custom . '}'
         if current.name != ''

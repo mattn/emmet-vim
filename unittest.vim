@@ -122,6 +122,7 @@ function! s:test(...)
         if stridx(query, '$$$$') != -1
           silent! 1new
           silent! exe 'setlocal ft='.testgroup.type
+          EmmetInstall
           silent! let key = matchstr(query, '.*\$\$\$\$\zs.*\ze\$\$\$\$')
           if len(key) > 0
             exe printf('let key = "%s"', key)
@@ -192,6 +193,9 @@ function! s:do_tests(bang, ...)
     let &more=oldmore
     if exists('s:old_user_emmet_settings')
       let g:user_emmet_settings = s:old_user_emmet_settings
+    endif
+    if exists('s:old_user_emmet_install_global')
+      let g:user_emmet_install_global = s:old_user_emmet_install_global
     endif
   endtry
 endfunction
@@ -353,19 +357,19 @@ finish
           'result': "<table>\n\t<tr>\n\t\t<td id=\"foo\" class=\"name\"></td>\n\t\t<td></td>\n\t\t<td></td>\n\t\t<td></td>\n\t</tr>\n</table>\n",
         },
         {
-          'query': "div#header + div#footer",
+          'query': "div#header+div#footer",
           'result': "<div id=\"header\"></div>\n<div id=\"footer\"></div>\n",
         },
         {
-          'query': "#header + div#footer",
+          'query': "#header+div#footer",
           'result': "<div id=\"header\"></div>\n<div id=\"footer\"></div>\n",
         },
         {
-          'query': "#header > ul > li < p{Footer}",
+          'query': "#header>ul>li<p{Footer}",
           'result': "<div id=\"header\">\n\t<ul>\n\t\t<li></li>\n\t</ul>\n\t<p>Footer</p>\n</div>\n",
         },
         {
-          'query': "#header > ul > li ^ p{Footer}",
+          'query': "#header>ul>li^p{Footer}",
           'result': "<div id=\"header\">\n\t<ul>\n\t\t<li></li>\n\t</ul>\n\t<p>Footer</p>\n</div>\n",
         },
         {
@@ -841,7 +845,7 @@ finish
       ],
     },
     {
-      'name': 'expand abbreviation',
+      'name': 'split join',
       'tests': [
         {
           'query': "%a foo\n  bar$$$$\\<c-y>j$$$$",
