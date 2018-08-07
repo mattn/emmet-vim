@@ -464,6 +464,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
   let q = emmet#getResource(type, 'quote_char', '"')
   let ct = emmet#getResource(type, 'comment_type', 'both')
   let an = emmet#getResource(type, 'attribute_name', {})
+  let empty_elements = emmet#getResource(type, 'empty_elements', settings.html.empty_elements)
   let empty_element_suffix = emmet#getResource(type, 'empty_element_suffix', settings.html.empty_element_suffix)
 
   if emmet#useFilter(filters, 'haml')
@@ -587,7 +588,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
   endif
   if current.empty
     let str .= ' />'
-  elseif stridx(','.settings.html.empty_elements.',', ','.current_name.',') != -1
+  elseif stridx(','.empty_elements.',', ','.current_name.',') != -1
     let str .= empty_element_suffix
   else
     let str .= '>'

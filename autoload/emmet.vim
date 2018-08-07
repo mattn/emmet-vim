@@ -1882,6 +1882,12 @@ let s:emmet_settings = {
 \        'indentation': '    ',
 \        'extends': 'html',
 \    },
+\    'xml': {
+\        'extends': 'html',
+\        'empty_elements': '',
+\        'block_elements': '',
+\        'inline_elements': '',
+\    },
 \    'htmldjango': {
 \        'extends': 'html',
 \    },
