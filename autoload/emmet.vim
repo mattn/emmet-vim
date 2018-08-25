@@ -385,7 +385,7 @@ function! emmet#getFileType(...) abort
     let type = 'html'
   elseif type =~# '^javaScript'
     let type = 'javascript'
-  elseif len(type) ==# 0 && type =~# '^xml'
+  elseif type =~# '^xml'
     let type = 'xml'
   else
     if has_key(s:emmet_settings, &filetype)
