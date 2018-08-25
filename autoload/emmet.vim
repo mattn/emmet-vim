@@ -376,46 +376,42 @@ endfunction
 
 function! emmet#getFileType(...) abort
   let flg = get(a:000, 0, 0)
-  let type = ''
-
-  if has_key(s:emmet_settings, &filetype)
-    let type = &filetype
+  
+  let pos = emmet#util#getcurpos()
+  let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
+  if type =~# '^css\w'
+    let type = 'css'
+  elseif type =~# '^html\w'
+    let type = 'html'
+  elseif type =~# '^javaScript'
+    let type = 'javascript'
+  elseif len(type) ==# 0 && type =~# '^xml'
+    let type = 'xml'
   else
-    let types = split(&filetype, '\.')
-    for part in types
-      if emmet#lang#exists(part)
-        let type = part
-        break
-      endif
-      let base = emmet#getBaseType(part)
-      if base !=# ''
-        if flg
-          let type = &filetype
-        else
-          let type = base
+    if has_key(s:emmet_settings, &filetype)
+      let type = &filetype
+    else
+      let types = split(&filetype, '\.')
+      for part in types
+        if emmet#lang#exists(part)
+          let type = part
+          break
         endif
-        unlet base
-        break
-      endif
-    endfor
+        let base = emmet#getBaseType(part)
+        if base !=# ''
+          if flg
+            let type = &filetype
+          else
+            let type = base
+          endif
+          unlet base
+          break
+        endif
+      endfor
+    endif
+    if len(type) ==# 0 | let type = 'html' | endif
   endif
-  if type ==# 'html'
-    let pos = emmet#util#getcurpos()
-    let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
-    if type =~# '^css\w'
-      let type = 'css'
-    endif
-    if type =~# '^html\w'
-      let type = 'html'
-    endif
-    if type =~# '^javaScript'
-      let type = 'javascript'
-    endif
-    if len(type) ==# 0 && type =~# '^xml'
-      let type = 'xml'
-    endif
-  endif
-  if len(type) ==# 0 | let type = 'html' | endif
+
   return type
 endfunction
 
@@ -523,7 +519,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
   if len(filters) ==# 0
     let filters = ['html']
   endif
-
+  
   if a:mode ==# 2
     let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
     if len(leader) ==# 0
