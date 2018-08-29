@@ -383,11 +383,11 @@ function! emmet#getFileType(...) abort
 
   let pos = emmet#util#getcurpos()
   let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
-  if type =~? '^css\w'
+  if type =~? '^css'
     let type = 'css'
-  elseif type =~? '^html\w'
+  elseif type =~? '^html'
     let type = 'html'
-  elseif type =~? '^js\w' || '^javascript'
+  elseif type =~? '^js' || '^javascript'
     let type = 'javascript'
   elseif type =~? '^xml'
     let type = 'xml'
