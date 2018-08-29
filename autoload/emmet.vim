@@ -387,7 +387,7 @@ function! emmet#getFileType(...) abort
     let type = 'css'
   elseif type =~? '^html'
     let type = 'html'
-  elseif type =~? '^js' || '^javascript'
+  elseif type =~? '^js\w' || type =~? '^javascript'
     let type = 'javascript'
   elseif type =~? '^xml'
     let type = 'xml'
