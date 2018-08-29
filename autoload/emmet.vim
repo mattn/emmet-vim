@@ -383,7 +383,7 @@ function! emmet#getFileType(...) abort
     let type = 'css'
   elseif type =~# '^html\w'
     let type = 'html'
-  elseif type =~# '^javaScript'
+  elseif type =~# '^js\w'
     let type = 'javascript'
   elseif type =~# '^xml'
     let type = 'xml'
@@ -409,10 +409,9 @@ function! emmet#getFileType(...) abort
         endif
       endfor
     endif
-    if len(type) ==# 0 | let type = 'html' | endif
   endif
 
-  return type
+  return len(type) == 0 ? 'html' : type
 endfunction
 
 function! emmet#getDollarExprs(expand) abort
