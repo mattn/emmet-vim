@@ -377,38 +377,38 @@ endfunction
 function! emmet#getFileType(...) abort
   let flg = get(a:000, 0, 0)
   
+  if has_key(s:emmet_settings, &filetype)
+    return &filetype
+  endif 
+
   let pos = emmet#util#getcurpos()
   let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
-  if type =~# '^css\w'
+  if type =~? '^css\w'
     let type = 'css'
-  elseif type =~# '^html\w'
+  elseif type =~? '^html\w'
     let type = 'html'
-  elseif type =~# '^js\w'
+  elseif type =~? '^js\w' || '^javascript'
     let type = 'javascript'
-  elseif type =~# '^xml'
+  elseif type =~? '^xml'
     let type = 'xml'
   else
-    if has_key(s:emmet_settings, &filetype)
-      let type = &filetype
-    else
-      let types = split(&filetype, '\.')
-      for part in types
-        if emmet#lang#exists(part)
-          let type = part
-          break
+    let types = split(&filetype, '\.')
+    for part in types
+      if emmet#lang#exists(part)
+        let type = part
+        break
+      endif
+      let base = emmet#getBaseType(part)
+      if base !=# ''
+        if flg
+          let type = &filetype
+        else
+          let type = base
         endif
-        let base = emmet#getBaseType(part)
-        if base !=# ''
-          if flg
-            let type = &filetype
-          else
-            let type = base
-          endif
-          unlet base
-          break
-        endif
-      endfor
-    endif
+        unlet base
+        break
+      endif
+    endfor
   endif
 
   return len(type) == 0 ? 'html' : type
