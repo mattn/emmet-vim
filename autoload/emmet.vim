@@ -520,7 +520,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
   if len(filters) ==# 0
     let filters = ['html']
   endif
-  
+
   if a:mode ==# 2
     let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
     if len(leader) ==# 0
