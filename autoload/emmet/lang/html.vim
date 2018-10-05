@@ -252,7 +252,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
               endif
             endfor
           endif
-          if has_key(settings.html.default_attributes, current.name)
+          if has_key(default_attributes, current.name)
             let current.name = substitute(current.name, ':.*$', '', '')
           endif
           break
@@ -466,8 +466,12 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
   let q = emmet#getResource(type, 'quote_char', '"')
   let ct = emmet#getResource(type, 'comment_type', 'both')
   let an = emmet#getResource(type, 'attribute_name', {})
-  let empty_elements = emmet#getResource(type, 'empty_elements', settings.html.empty_elements)
-  let empty_element_suffix = emmet#getResource(type, 'empty_element_suffix', settings.html.empty_element_suffix)
+  let empty_elements = emmet#getResource(type, 'empty_elements', '')
+  let empty_element_suffix = emmet#getResource(type, 'empty_element_suffix', '')
+  let inline_elements = emmet#getResource(type, 'inline_elements', '')
+  let block_elements = emmet#getResource(type, 'block_elements', '')
+  let indent_blockelement = emmet#getResource(type, 'indent_blockelement', '')
+  let block_all_childless = emmet#getResource(type, 'block_all_childless', 0)
 
   if emmet#useFilter(filters, 'haml')
     return emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
@@ -615,11 +619,11 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     if nc > 0
       for n in range(nc)
         let child = current.child[n]
-        if child.multiplier > 1 || (child.multiplier == 1 && len(child.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1) || settings.html.block_all_childless
+        if child.multiplier > 1 || (child.multiplier == 1 && len(child.child) > 0 && stridx(','.inline_elements.',', ','.current_name.',') == -1) || block_all_childless
           let str .= "\n" . indent
           let dr = 1
-        elseif len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-          if nc > 1 || (len(child.name) > 0 && stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1)
+        elseif len(current_name) > 0 && stridx(','.inline_elements.',', ','.current_name.',') == -1
+          if nc > 1 || (len(child.name) > 0 && stridx(','.inline_elements.',', ','.child.name.',') == -1)
             let str .= "\n" . indent
             let dr = 1
           elseif current.multiplier == 1 && nc == 1 && len(child.name) == 0
@@ -634,7 +638,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
         let str .= inner
       endfor
     else
-      if settings.html.indent_blockelement && len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1 || settings.html.block_all_childless
+      if indent_blockelement && len(current_name) > 0 && stridx(','.inline_elements.',', ','.current_name.',') == -1 || block_all_childless
         let str .= "\n" . indent . '${cursor}' . "\n"
       else
         let str .= '${cursor}'
@@ -652,7 +656,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
       let str .= "\n<!-- /" . comment . ' -->'
     endif
   endif
-  if len(current_name) > 0 && current.multiplier > 0 || stridx(','.settings.html.block_elements.',', ','.current_name.',') != -1
+  if len(current_name) > 0 && current.multiplier > 0 || stridx(','.block_elements.',', ','.current_name.',') != -1
     let str .= "\n"
   endif
   return str
@@ -822,7 +826,7 @@ function! emmet#lang#html#balanceTag(flag) range abort
       let pos1 = searchpos(mx, 'bW')
       let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
       let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
-      if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
+      if stridx(','.empty_elements.',', ','.tag_name.',') != -1
         let pos2 = searchpos('>', 'nW')
       else
         let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
@@ -855,7 +859,7 @@ function! emmet#lang#html#balanceTag(flag) range abort
       endif
       let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
       let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
-      if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
+      if stridx(','.empty_elements.',', ','.tag_name.',') != -1
         let pos2 = searchpos('>', 'nW')
       else
         let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
