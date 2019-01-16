@@ -378,7 +378,7 @@ function! emmet#getFileType(...) abort
   let flg = get(a:000, 0, 0)
   
   if has_key(s:emmet_settings, &filetype)
-    return &filetype
+    let type = &filetype
   endif 
 
   let pos = emmet#util#getcurpos()
