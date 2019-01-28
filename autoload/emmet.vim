@@ -1648,6 +1648,7 @@ let s:emmet_settings = {
 \           "wfsm:n": "-webkit-font-smoothing:none;"
 \        },
 \        'filters': 'fc',
+\        'ignore_embeded_filetype': 1,
 \    },
 \    'sass': {
 \        'extends': 'css',
@@ -1669,7 +1670,6 @@ let s:emmet_settings = {
 \    },
 \    'css.drupal': {
 \        'extends': 'css',
-\        'ignore_embeded_filetype': 1,
 \    },
 \    'html': {
 \        'snippets': {
