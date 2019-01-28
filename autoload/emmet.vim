@@ -1669,6 +1669,7 @@ let s:emmet_settings = {
 \    },
 \    'css.drupal': {
 \        'extends': 'css',
+\        'ignore_embeded_filetype': 1,
 \    },
 \    'html': {
 \        'snippets': {
