@@ -391,6 +391,10 @@ function! emmet#getFileType(...) abort
     let type = 'jsx'
   elseif type =~? '^js\w' || type =~? '^javascript'
     let type = 'javascript'
+  elseif type =~? '^tsx'
+    let type = 'tsx'
+  elseif type =~? '^ts\w' || type =~? '^typescript'
+    let type = 'typescript'
   elseif type =~? '^xml'
     let type = 'xml'
   else
@@ -1986,6 +1990,9 @@ let s:emmet_settings = {
 \        'extends': 'html',
 \        'attribute_name': {'class': 'className', 'for': 'htmlFor'},
 \        'empty_element_suffix': ' />',
+\    },
+\    'tsx': {
+\        'extends': 'jsx',
 \    },
 \    'xslt': {
 \        'extends': 'xsl',
