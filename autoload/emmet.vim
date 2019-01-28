@@ -379,6 +379,9 @@ function! emmet#getFileType(...) abort
   
   if has_key(s:emmet_settings, &filetype)
     let type = &filetype
+    if emmet#getResource(type, 'ignore_embeded_filetype', 0)
+      return type 
+    endif
   endif 
 
   let pos = emmet#util#getcurpos()
@@ -1645,6 +1648,7 @@ let s:emmet_settings = {
 \           "wfsm:n": "-webkit-font-smoothing:none;"
 \        },
 \        'filters': 'fc',
+\        'ignore_embeded_filetype': 1,
 \    },
 \    'sass': {
 \        'extends': 'css',
@@ -2023,6 +2027,7 @@ let s:emmet_settings = {
 \                    ."\tbody\n"
 \                    ."\t\t${child}|\n",
 \        },
+\        'ignore_embeded_filetype': 1,
 \    },
 \    'xhtml': {
 \        'extends': 'html'
