@@ -147,7 +147,9 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         let tag_name = pmap[pname]
       elseif !empty(pname) && index(inlineLevel, pname) > -1
         let tag_name = 'span'
-      elseif len(parent.child) == 0 || len(custom) == 0
+      elseif len(custom) == 0
+        let tag_name = 'div'
+      elseif len(custom) != 0 && multiplier > 1	
         let tag_name = 'div'
       else
         let tag_name = custom
