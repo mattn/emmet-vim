@@ -69,10 +69,14 @@ function! emmet#getBaseType(type) abort
   else
     let ext = extends[0]
   endif
-  if a:type !=# ext
-    return emmet#getBaseType(ext)
-  endif
-  return ''
+"  if a:type !=# ext
+"    return emmet#getBaseType(ext)
+"  endif
+"  return ''
+
+  " Now <vim-pug> works fine
+  " <vim-jade> also to
+  return ext
 endfunction
 
 function! emmet#isExtends(type, extend) abort
