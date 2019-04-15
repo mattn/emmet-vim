@@ -515,8 +515,7 @@ function! emmet#unescapeDollarExpr(expand) abort
 endfunction
 
 function! emmet#expandAbbr(mode, abbr) range abort
-  let type = emmet#getFileType()
-  let rtype = emmet#lang#type(emmet#getFileType(1))
+  let type = emmet#lang#type(emmet#getFileType(1))
   let indent = emmet#getIndentation(type)
   let expand = ''
   let line = ''
