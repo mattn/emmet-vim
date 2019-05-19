@@ -810,11 +810,7 @@ endfunction
 
 function! emmet#lang#html#balanceTag(flag) range abort
   let vblock = emmet#util#getVisualBlock()
-  if a:flag == -2 || a:flag == 2
-    let curpos = [0, line("'<"), col("'<"), 0]
-  else
-    let curpos = emmet#util#getcurpos()
-  endif
+  let curpos = emmet#util#getcurpos()
   let settings = emmet#getSettings()
 
   if a:flag > 0
@@ -846,8 +842,8 @@ function! emmet#lang#html#balanceTag(flag) range abort
     let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     while 1
       let pos1 = searchpos(mx, 'W')
-      if pos1 == curpos[1:2]
-        let pos1 = searchpos(mx . '\zs', 'W')
+      if pos1 == [0, 0] || pos1 == curpos[1:2]
+        let pos1 = searchpos('>\zs', 'W')
         let pos2 = searchpos('.\ze<', 'W')
         let block = [pos1, pos2]
         if emmet#util#regionIsValid(block)
@@ -872,11 +868,7 @@ function! emmet#lang#html#balanceTag(flag) range abort
       endif
     endwhile
   endif
-  if a:flag == -2 || a:flag == 2
-    silent! exe 'normal! gv'
-  else
-    call setpos('.', curpos)
-  endif
+  call setpos('.', curpos)
 endfunction
 
 function! emmet#lang#html#moveNextPrevItem(flag) abort
