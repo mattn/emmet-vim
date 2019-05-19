@@ -28,3 +28,25 @@ function! emmet#lang#type(type) abort
   endwhile
   return 'html'
 endfunction
+
+" get all extends for a type recursively
+function! emmet#lang#getExtends(type) abort
+  let settings = emmet#getSettings()
+
+  if !has_key(settings[a:type], 'extends')
+    return []
+  endif
+
+  let extends = settings[a:type].extends
+  if type(extends) ==# 1
+    let tmp = split(extends, '\s*,\s*')
+    unlet! extends
+    let extends = tmp
+  endif
+
+  for ext in extends
+    let extends = extends + emmet#lang#getExtends(ext)
+  endfor
+
+  return extends
+endfunction

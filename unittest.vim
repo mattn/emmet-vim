@@ -1060,5 +1060,67 @@ finish
     },
   ],
   'dummy': "}}}"},
+{ 'test-jade': "{{{",
+  'type': 'jade',
+  'categories': [
+    {
+      'name': 'expand abbreviation',
+      'tests': [
+        {
+          'query': "!!!$$$$\\<c-y>,$$$$",
+          'result': "doctype html\n\n",
+        },
+        {
+          'query': "span.my-span$$$$\\<c-y>,$$$$",
+          'result': "span.my-span",
+        },
+      ],
+    },
+  ],
+  'dummy': "}}}"},
+{ 'test-pug': "{{{",
+  'type': 'pug',
+  'categories': [
+    {
+      'name': 'expand abbreviation',
+      'tests': [
+        {
+          'query': "!!!$$$$\\<c-y>,$$$$",
+          'result': "doctype html\n\n",
+        },
+        {
+          'query': "span.my-span$$$$\\<c-y>,$$$$",
+          'result': "span.my-span",
+        },
+        {
+          'query': "input$$$$\\<c-y>,text$$$$",
+          'result': "input(type=\"text\")",
+        },
+      ],
+    },
+  ],
+  'dummy': "}}}"},
+{ 'test-jsx': "{{{",
+  'type': 'javascript.jsx',
+  'categories': [
+    {
+      'name': 'expand abbreviation',
+      'tests': [
+        {
+          'query': "img$$$$\\<c-y>,$$$$",
+          'result': "<img src=\"\" alt=\"\" />",
+        },
+        {
+          'query': "span.my-span$$$$\\<c-y>,$$$$",
+          'result': "<span className=\"my-span\"></span>",
+        },
+        {
+          'query': "function() { return span.my-span$$$$\\<c-y>,$$$$; }",
+          'result': "function() { return <span className=\"my-span\"></span>; }",
+        },
+      ],
+    },
+  ],
+  'dummy': "}}}"},
 ]
 " vim:set et fdm=marker:
