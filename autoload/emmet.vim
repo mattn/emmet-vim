@@ -115,7 +115,7 @@ function! emmet#isExpandable() abort
   let part = matchstr(line, '\(\S.*\)$')
   let type = emmet#getFileType()
   let rtype = emmet#lang#type(type)
-  let part = emmet#lang#{ftype}#findTokens(part)
+  let part = emmet#lang#{rtype}#findTokens(part)
   return len(part) > 0
 endfunction
 
