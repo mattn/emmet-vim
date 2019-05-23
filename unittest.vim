@@ -49,7 +49,7 @@ function! s:show_title(no, title)
   let width = &columns - 23
   echon "\r"
   echohl MoreMsg | call s:logn('testing #'.printf('%03d', a:no))
-  echohl None | call s:logn(': '.(len(title) < width ? (title.repeat(' ', width-len(title))) : strpart(title, 0, width)).' ... ')
+  echohl None | call s:logn(': '.(len(title) < width ? (title.' '.repeat('.', width-len(title)+1)) : strpart(title, 0, width+2)).'... ')
 endfunction
 
 function! s:show_skip(no, title)
@@ -57,7 +57,7 @@ function! s:show_skip(no, title)
   let width = &columns - 23
   echon "\r"
   echohl WarningMsg | call s:logn('skipped #'.printf('%03d', a:no))
-  echohl None | call s:logn(': '.(len(title) < width ? (title.repeat(' ', width-len(title))) : strpart(title, 0, width)).' ... ')
+  echohl None | call s:logn(': '.(len(title) < width ? (title.' '.repeat('.', width-len(title)+1)) : strpart(title, 0, width+2)).'... ')
   echo ''
 endfunction
 
