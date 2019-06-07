@@ -878,6 +878,7 @@ function! emmet#lang#html#moveNextPrevItem(flag) abort
   if pos != [0,0]
     call feedkeys('v?\s\zs'.mx."\<cr>", '')
   endif
+  return ''
 endfunction
 
 function! emmet#lang#html#moveNextPrev(flag) abort
@@ -888,6 +889,7 @@ function! emmet#lang#html#moveNextPrev(flag) abort
     silent! normal! l
     startinsert
   endif
+  return ''
 endfunction
 
 function! emmet#lang#html#splitJoinTag() abort
