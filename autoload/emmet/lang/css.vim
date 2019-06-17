@@ -54,32 +54,30 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
             if token =~# '^[z]'
               " TODO
               let value .= substitute(v, '[^0-9.]*$', '', '')
+            elseif v =~# 'em$'
+              let value .= v
+            elseif v =~# 'ex$'
+              let value .= v
+            elseif v =~# 'vh$'
+              let value .= v
+            elseif v =~# 'vw$'
+              let value .= v
+            elseif v =~# 'rem$'
+              let value .= v
+            elseif v ==# 'auto'
+              let value .= v
             elseif v =~# 'p$'
               let value .= substitute(v, 'p$', '%', '')
             elseif v =~# '%$'
               let value .= v
             elseif v =~# 'e$'
               let value .= substitute(v, 'e$', 'em', '')
-            elseif v =~# 'em$'
-              let value .= v
-            elseif v =~# 'ex$'
-              let value .= v
             elseif v =~# 'x$'
               let value .= substitute(v, 'x$', 'ex', '')
-            elseif v =~# 'em$'
-              let value .= v
-            elseif v =~# 'vh$'
-              let value .= v
-            elseif v =~# 'vw$'
-              let value .= v
             elseif v =~# 're$'
               let value .= substitute(v, 're$', 'rem', '')
-            elseif v =~# 'rem$'
-              let value .= v
             elseif v =~# '\.'
               let value .= v . 'em'
-            elseif v ==# 'auto'
-              let value .= v
             elseif v ==# '0'
               let value .= '0'
             else
