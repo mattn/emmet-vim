@@ -41,6 +41,9 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
         let value = ''
         for vt in split(prop[2], '\a\+\zs')
           let ut = matchstr(vt, '[a-z]\+$')
+          if ut == 'auto'
+            let ut = ''
+          endif
           for v in split(vt, '\d\zs-')
             if len(value) > 0
               let value .= ' '
