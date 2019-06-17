@@ -39,40 +39,46 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
           let token = token[1:]
         endif
         let value = ''
-        for v in split(prop[2], '\a\+\zs')
-          if len(value) > 0
-            let value .= ' '
-          endif
-          if token =~# '^[z]'
-            " TODO
-            let value .= substitute(v, '[^0-9.]*$', '', '')
-          elseif v =~# 'p$'
-            let value .= substitute(v, 'p$', '%', '')
-          elseif v =~# '%$'
-            let value .= v
-          elseif v =~# 'e$'
-            let value .= substitute(v, 'e$', 'em', '')
-          elseif v =~# 'x$'
-            let value .= substitute(v, 'x$', 'ex', '')
-          elseif v =~# 'em$'
-            let value .= v
-          elseif v =~# 'vh$'
-            let value .= v
-          elseif v =~# 'vw$'
-            let value .= v
-          elseif v =~# 're$'
-            let value .= substitute(v, 're$', 'rem', '')
-          elseif v =~# 'rem$'
-            let value .= v
-          elseif v =~# '\.'
-            let value .= v . 'em'
-          elseif v ==# 'auto'
-            let value .= v
-          elseif v ==# '0'
-            let value .= '0'
-          else
-            let value .= v . 'px'
-          endif
+        for vt in split(prop[2], '\a\+\zs')
+          let ut = matchstr(vt, '[a-z]\+$')
+          for v in split(vt, '\d\zs-')
+            if len(value) > 0
+              let value .= ' '
+            endif
+            if v !~ '[a-z]\+$'
+              let v .= ut
+            endif
+            if token =~# '^[z]'
+              " TODO
+              let value .= substitute(v, '[^0-9.]*$', '', '')
+            elseif v =~# 'p$'
+              let value .= substitute(v, 'p$', '%', '')
+            elseif v =~# '%$'
+              let value .= v
+            elseif v =~# 'e$'
+              let value .= substitute(v, 'e$', 'em', '')
+            elseif v =~# 'x$'
+              let value .= substitute(v, 'x$', 'ex', '')
+            elseif v =~# 'em$'
+              let value .= v
+            elseif v =~# 'vh$'
+              let value .= v
+            elseif v =~# 'vw$'
+              let value .= v
+            elseif v =~# 're$'
+              let value .= substitute(v, 're$', 'rem', '')
+            elseif v =~# 'rem$'
+              let value .= v
+            elseif v =~# '\.'
+              let value .= v . 'em'
+            elseif v ==# 'auto'
+              let value .= v
+            elseif v ==# '0'
+              let value .= '0'
+            else
+              let value .= v . 'px'
+            endif
+          endfor
         endfor
       endif
 
