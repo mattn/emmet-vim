@@ -60,6 +60,10 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
               let value .= v
             elseif v =~# 'e$'
               let value .= substitute(v, 'e$', 'em', '')
+            elseif v =~# 'em$'
+              let value .= v
+            elseif v =~# 'ex$'
+              let value .= v
             elseif v =~# 'x$'
               let value .= substitute(v, 'x$', 'ex', '')
             elseif v =~# 'em$'
