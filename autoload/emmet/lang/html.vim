@@ -894,8 +894,9 @@ endfunction
 
 function! emmet#lang#html#splitJoinTag() abort
   let curpos = emmet#util#getcurpos()
+  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\%(/\{0,1}\)>'
+    let old = getpos('.')[1:2]
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
@@ -924,6 +925,10 @@ function! emmet#lang#html#splitJoinTag() abort
         if block[0][0] > 0
           call setpos('.', [0, block[0][0]-1, block[0][1], 0])
         else
+          call setpos('.', curpos)
+          return
+        endif
+        if pos1 == old
           call setpos('.', curpos)
           return
         endif
