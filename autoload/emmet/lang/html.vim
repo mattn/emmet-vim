@@ -692,7 +692,7 @@ function! emmet#lang#html#imageSize() abort
   call emmet#util#setContent(img_region, html)
 endfunction
 
-function! emmet#lang#html#encodeImage() abort
+function! emmet#lang#html#imageEncode() abort
   let img_region = emmet#util#searchRegion('<img\s', '>')
   if !emmet#util#regionIsValid(img_region) || !emmet#util#cursorInRegion(img_region)
     return
@@ -706,17 +706,16 @@ function! emmet#lang#html#encodeImage() abort
     return
   endif
   let fn = current.attr.src
-  if fn !~# '^\(/\|http\)'
+  if fn =~# '^\s*$'
+    return
+  elseif fn !~# '^\(/\|http\)'
     let fn = simplify(expand('%:h') . '/' . fn)
   endif
 
-  let [width, height] = emmet#util#getImageSize(fn)
-  if width == -1 && height == -1
-    return
-  endif
-  let current.attr.width = width
-  let current.attr.height = height
-  let html = emmet#toString(current, 'html', 1)
+  let encoded = emmet#util#imageEncodeDecode(fn, 0)
+  let current.attr.src = encoded
+  let html = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
+  let html = substitute(html, '\${cursor}', '', '')
   call emmet#util#setContent(img_region, html)
 endfunction
 

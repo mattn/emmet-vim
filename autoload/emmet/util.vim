@@ -233,12 +233,12 @@ function! emmet#util#getImageSize(fn) abort
   else
     if fn !~# '^\w\+://'
       let path = fnamemodify(expand('%'), ':p:gs?\\?/?')
-      if has('win32') || has('win64') | 
+      if has('win32') || has('win64') |
         let path = tolower(path)
       endif
       for k in keys(g:emmet_docroot)
         let root = fnamemodify(k, ':p:gs?\\?/?')
-        if has('win32') || has('win64') | 
+        if has('win32') || has('win64') |
           let root = tolower(root)
         endif
         if stridx(path, root) == 0
@@ -296,6 +296,67 @@ function! emmet#util#isImageMagickInstalled() abort
     return 0
   endif
   return executable('identify')
+endfunction
+
+function! s:b64encode(bytes, table, pad)
+  let b64 = []
+  for i in range(0, len(a:bytes) - 1, 3)
+    let n = a:bytes[i] * 0x10000
+          \ + get(a:bytes, i + 1, 0) * 0x100
+          \ + get(a:bytes, i + 2, 0)
+    call add(b64, a:table[n / 0x40000])
+    call add(b64, a:table[n / 0x1000 % 0x40])
+    call add(b64, a:table[n / 0x40 % 0x40])
+    call add(b64, a:table[n % 0x40])
+  endfor
+  if len(a:bytes) % 3 == 2
+    let b64[-1] = a:pad
+  elseif len(a:bytes) % 3 == 1
+    let b64[-1] = a:pad
+    let b64[-2] = a:pad
+  endif
+  return b64
+endfunction
+
+function! emmet#util#imageEncodeDecode(fn, flag) abort
+  let fn = a:fn
+
+  if filereadable(fn)
+    let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
+  else
+    if fn !~# '^\w\+://'
+      let path = fnamemodify(expand('%'), ':p:gs?\\?/?')
+      if has('win32') || has('win64') |
+        let path = tolower(path)
+      endif
+      for k in keys(g:emmet_docroot)
+        let root = fnamemodify(k, ':p:gs?\\?/?')
+        if has('win32') || has('win64') |
+          let root = tolower(root)
+        endif
+        if stridx(path, root) == 0
+          let v = g:emmet_docroot[k]
+          let fn = (len(v) == 0 ? k : v) . fn
+          break
+        endif
+      endfor
+    endif
+    let hex = substitute(system(g:emmet_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
+  endif
+
+  let bin = map(split(hex, '..\zs'), 'eval("0x" . v:val)')
+  let table = split('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', '\zs')
+  let ret = 'data:image/'
+  if hex =~# '^89504e470d0a1a0a'
+    let ret .= 'png'
+  elseif hex =~# '^ffd8'
+    let ret .= 'jpeg'
+  elseif hex =~# '^47494638'
+    let ret .= 'gif'
+  else
+    let ret .= 'unknown'
+  endif
+  return ret . ';base64,' . join(s:b64encode(bin, table, '='), '')
 endfunction
 
 function! emmet#util#unique(arr) abort

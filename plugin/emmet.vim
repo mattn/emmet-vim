@@ -120,6 +120,8 @@ function! s:install_plugin(mode, buffer)
   \ {'mode': 'n', 'var': '', 'key': '', 'plug': 'emmet-move-prev-item', 'func': ':call emmet#moveNextPrevItem(1)<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_imagesize_key', 'key': 'i', 'plug': 'emmet-image-size', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#imageSize()<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_imagesize_key', 'key': 'i', 'plug': 'emmet-image-size', 'func': ':call emmet#imageSize()<cr>'},
+  \ {'mode': 'i', 'var': 'user_emmet_imageencode_key', 'key': 'I', 'plug': 'emmet-image-encode', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#imageEncode()<cr>'},
+  \ {'mode': 'n', 'var': 'user_emmet_imageencode_key', 'key': 'I', 'plug': 'emmet-image-encode', 'func': ':call emmet#imageEncode()<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_togglecomment_key', 'key': '/', 'plug': 'emmet-toggle-comment', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#toggleComment()<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_togglecomment_key', 'key': '/', 'plug': 'emmet-toggle-comment', 'func': ':call emmet#toggleComment()<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_splitjointag_key', 'key': 'j', 'plug': 'emmet-split-join-tag', 'func': '<esc>:call emmet#splitJoinTag()<cr>'},

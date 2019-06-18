@@ -811,9 +811,9 @@ function! emmet#imageSize() abort
   return ''
 endfunction
 
-function! emmet#encodeImage() abort
+function! emmet#imageEncode() abort
   let type = emmet#getFileType()
-  return emmet#lang#{emmet#lang#type(type)}#encodeImage()
+  return emmet#lang#{emmet#lang#type(type)}#imageEncode()
 endfunction
 
 function! emmet#toggleComment() abort
