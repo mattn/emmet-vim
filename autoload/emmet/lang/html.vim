@@ -910,28 +910,30 @@ function! emmet#lang#html#splitJoinTag() abort
       if tag_name[0] ==# '/'
         let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
         call setpos('.', [0, pos1[0], pos1[1], 0])
-        let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
+        let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^>]*>', '', '</' . tag_name[1:] . '>', 'W')
       else
-        let pos2 = searchpos('</' . tag_name . '>', 'cneW')
+        let pos2 = searchpairpos('<'. tag_name . '[^>]*>', '', '</' . tag_name . '>', 'W')
       endif
+      if pos2 == [0, 0]
+        return
+      endif
+      let pos2 = searchpos('>', 'neW')
       let block = [pos1, pos2]
-      let content = emmet#util#getContent(block)
-      if emmet#util#pointInRegion(curpos[1:2], block) && content[1:] !~# '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
+      if emmet#util#pointInRegion(curpos[1:2], block)
         let content = matchstr(content, mx)[:-2] . ' />'
         call emmet#util#setContent(block, content)
         call setpos('.', [0, block[0][0], block[0][1], 0])
         return
+      endif
+      if block[0][0] > 0
+        call setpos('.', [0, block[0][0]-1, block[0][1], 0])
       else
-        if block[0][0] > 0
-          call setpos('.', [0, block[0][0]-1, block[0][1], 0])
-        else
-          call setpos('.', curpos)
-          return
-        endif
-        if pos1 == old
-          call setpos('.', curpos)
-          return
-        endif
+        call setpos('.', curpos)
+        return
+      endif
+      if pos1 == old
+        call setpos('.', curpos)
+        return
       endif
     endif
   endwhile
