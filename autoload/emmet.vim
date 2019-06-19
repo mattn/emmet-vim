@@ -848,6 +848,12 @@ function! emmet#removeTag() abort
   return ''
 endfunction
 
+function! emmet#mergeLines() abort
+  let type = emmet#getFileType()
+  call emmet#lang#{emmet#lang#type(type)}#mergeLines()
+  return ''
+endfunction
+
 function! emmet#anchorizeURL(flag) abort
   let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
   let pos1 = searchpos(mx, 'bcnW')
