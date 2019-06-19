@@ -329,3 +329,7 @@ function! emmet#lang#jade#removeTag() abort
     exe sn ',' (n-1) 'delete'
   endif
 endfunction
+
+function! emmet#lang#jade#mergeLines() abort
+  " nothing to do
+endfunction

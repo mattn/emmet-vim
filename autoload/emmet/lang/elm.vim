@@ -208,7 +208,34 @@ function! emmet#lang#elm#toString(settings, current, type, inline, filters, item
   endif
 
   let str .= "\n"
-
   return str
+endfunction
 
+function! emmet#lang#elm#imageEncode() abort
+endfunction
+
+function! emmet#lang#elm#parseTag(tag) abort
+  return {}
+endfunction
+
+function! emmet#lang#elm#toggleComment() abort
+endfunction
+
+function! emmet#lang#elm#balanceTag(flag) range abort
+endfunction
+
+function! emmet#lang#elm#moveNextPrevItem(flag) abort
+  return emmet#lang#elm#moveNextPrev(a:flag)
+endfunction
+
+function! emmet#lang#elm#moveNextPrev(flag) abort
+endfunction
+
+function! emmet#lang#elm#splitJoinTag() abort
+endfunction
+
+function! emmet#lang#elm#removeTag() abort
+endfunction
+
+function! emmet#lang#elm#mergeLines() abort
 endfunction

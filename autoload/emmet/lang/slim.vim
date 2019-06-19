@@ -279,3 +279,6 @@ function! emmet#lang#slim#removeTag() abort
     exe sn ',' (n-1) 'delete'
   endif
 endfunction
+
+function! emmet#lang#slim#mergeLines() abort
+endfunction

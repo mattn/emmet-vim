@@ -332,3 +332,6 @@ function! emmet#lang#haml#removeTag() abort
     exe sn ',' (n-1) 'delete'
   endif
 endfunction
+
+function! emmet#lang#haml#mergeLines() abort
+endfunction

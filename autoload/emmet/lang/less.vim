@@ -45,3 +45,7 @@ endfunction
 function! emmet#lang#less#removeTag() abort
   call emmet#lang#css#removeTag()
 endfunction
+
+function! emmet#lang#less#mergeLines() abort
+  call emmet#lang#css#mergeLines()
+endfunction

@@ -368,3 +368,7 @@ endfunction
 function! emmet#lang#css#removeTag() abort
   " nothing to do
 endfunction
+
+function! emmet#lang#css#mergeLines() abort
+  " nothing to do
+endfunction

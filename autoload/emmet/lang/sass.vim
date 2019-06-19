@@ -158,3 +158,6 @@ endfunction
 
 function! emmet#lang#sass#removeTag() abort
 endfunction
+
+function! emmet#lang#sass#mergeLines() abort
+endfunction

@@ -123,3 +123,7 @@ endfunction
 function! emmet#lang#scss#removeTag() abort
   call emmet#lang#css#removeTag()
 endfunction
+
+function! emmet#lang#scss#mergeLines() abort
+  call emmet#lang#css#mergeLines()
+endfunction
