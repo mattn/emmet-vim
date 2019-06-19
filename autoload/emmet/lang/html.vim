@@ -208,7 +208,6 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
         let current.snippet = snippet
         break
       elseif custom =~# k
-		  let g:hoge = current
         let snippet = '${' . custom . '}'
         let current.snippet = '${' . custom . '}'
         if current.name != ''
@@ -825,7 +824,7 @@ function! emmet#lang#html#balanceTag(flag) range abort
         let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
       endif
       let block = [pos1, pos2]
-      if pos1[0] == 0 && pos1[1] == 0
+      if pos1 == [0, 0]
         break
       endif
       if emmet#util#pointInRegion(last, block) && emmet#util#regionIsValid(block)
@@ -858,7 +857,7 @@ function! emmet#lang#html#balanceTag(flag) range abort
         let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
       endif
       let block = [pos1, pos2]
-      if pos1[0] == 0 && pos1[1] == 0
+      if pos1 == [0, 0]
         break
       endif
       if emmet#util#regionIsValid(block)
@@ -976,29 +975,37 @@ endfunction
 
 function! emmet#lang#html#mergeLines() abort
   let curpos = emmet#util#getcurpos()
-  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
+  let settings = emmet#getSettings()
 
-  let pos1 = searchpos(mx, 'bcnW')
-  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
-  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-  if content[-2:] ==# '/>' && emmet#util#cursorInRegion(block)
-    call setpos('.', [0, block[0][0], block[0][1], 0])
-    return
-  endif
-  if tag_name[0] ==# '/'
-    let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
-    call setpos('.', [0, pos1[0], pos1[1], 0])
-    let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^/>]*>', '', '</' . tag_name[1:] . '>', 'W')
-  else
-    let pos2 = searchpairpos('<'. tag_name . '[^/>]*>', '', '</' . tag_name . '>', 'W')
-  endif
-  if pos2 == [0, 0]
-    return
-  endif
-  let pos2 = searchpos('>', 'neW')
-  let block = [pos1, pos2]
+  let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+  let last = curpos[1:2]
+  while 1
+    let pos1 = searchpos(mx, 'bcW')
+    let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+	echomsg string(content)
+    let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
+    if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
+      let pos2 = searchpos('>', 'nW')
+    else
+      let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
+    endif
+    if pos1 == [0, 0] || pos2 == [0, 0]
+      call setpos('.', curpos)
+      return
+    endif
+    let block = [pos1, pos2]
+    if emmet#util#pointInRegion(last, block) && emmet#util#regionIsValid(block)
+      break
+    endif
+    if pos1 == last
+      call setpos('.', curpos)
+      return
+    endif
+    let last = pos1
+  endwhile
+
   let content = emmet#util#getContent(block)
+  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
   let content = join(map(split(content, mx . '\zs\s*'), 'trim(v:val)'), '')
   call emmet#util#setContent(block, content)
   if block[0][0] > 0

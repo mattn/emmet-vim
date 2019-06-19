@@ -132,7 +132,8 @@ function! s:install_plugin(mode, buffer)
   \ {'mode': 'n', 'var': 'user_emmet_anchorizeurl_key', 'key': 'a', 'plug': 'emmet-anchorize-url', 'func': ':call emmet#anchorizeURL(0)<cr>'},
   \ {'mode': 'i', 'var': 'user_emmet_anchorizesummary_key', 'key': 'A', 'plug': 'emmet-anchorize-summary', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#anchorizeURL(1)<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_anchorizesummary_key', 'key': 'A', 'plug': 'emmet-anchorize-summary', 'func': ':call emmet#anchorizeURL(1)<cr>'},
-  \ {'mode': 'v', 'var': 'user_emmet_mergelines_key', 'key': 'm', 'plug': 'emmet-merge-lines', 'func': ':call emmet#mergeLines()<cr>'},
+  \ {'mode': 'i', 'var': 'user_emmet_mergelines_key', 'key': 'm', 'plug': 'emmet-merge-lines', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#mergeLines()<cr>'},
+  \ {'mode': 'n', 'var': 'user_emmet_mergelines_key', 'key': 'm', 'plug': 'emmet-merge-lines', 'func': ':call emmet#mergeLines()<cr>'},
   \ {'mode': 'v', 'var': 'user_emmet_codepretty_key', 'key': 'c', 'plug': 'emmet-code-pretty', 'func': ':call emmet#codePretty()<cr>'},
   \]
 
