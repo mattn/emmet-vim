@@ -770,7 +770,7 @@ function! emmet#lang#html#toggleComment() abort
     let tag_name = matchstr(content, '^<\zs/\{0,1}[^ \r\n>]\+')
     if tag_name[0] ==# '/'
       call setpos('.', [0, pos1[0], pos1[1], 0])
-      let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^>]*>', '', '</' . tag_name[1:] . '>', 'bnW')
+      let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^/>]*>', '', '</' . tag_name[1:] . '>', 'bnW')
       let pos1 = searchpos('>', 'cneW')
       let block = [pos2, pos1]
     elseif tag_name =~# '/$'
@@ -785,7 +785,7 @@ function! emmet#lang#html#toggleComment() abort
       endif
     else
       call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos3 = searchpairpos('<'. tag_name . '\>[^>]*>', '', '</' . tag_name . '>', 'nW')
+      let pos3 = searchpairpos('<'. tag_name . '\>[^/>]*>', '', '</' . tag_name . '>', 'nW')
       if pos3 == [0, 0]
         let block = [pos1, pos2]
       else
@@ -893,8 +893,9 @@ endfunction
 
 function! emmet#lang#html#splitJoinTag() abort
   let curpos = emmet#util#getcurpos()
+  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\%(/\{0,1}\)>'
+    let old = getpos('.')[1:2]
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
     let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
@@ -904,67 +905,75 @@ function! emmet#lang#html#splitJoinTag() abort
       call emmet#util#setContent(block, content)
       call setpos('.', [0, block[0][0], block[0][1], 0])
       return
+    endif
+    if tag_name[0] ==# '/'
+      let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+      call setpos('.', [0, pos1[0], pos1[1], 0])
+      let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^/>]*>', '', '</' . tag_name[1:] . '>', 'W')
     else
-      if tag_name[0] ==# '/'
-        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
-        call setpos('.', [0, pos1[0], pos1[1], 0])
-        let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
-      else
-        let pos2 = searchpos('</' . tag_name . '>', 'cneW')
-      endif
-      let block = [pos1, pos2]
-      let content = emmet#util#getContent(block)
-      if emmet#util#pointInRegion(curpos[1:2], block) && content[1:] !~# '<' . tag_name . '[^a-zA-Z0-9]*[^>]*>'
-        let content = matchstr(content, mx)[:-2] . ' />'
-        call emmet#util#setContent(block, content)
-        call setpos('.', [0, block[0][0], block[0][1], 0])
-        return
-      else
-        if block[0][0] > 0
-          call setpos('.', [0, block[0][0]-1, block[0][1], 0])
-        else
-          call setpos('.', curpos)
-          return
-        endif
-      endif
+      let pos2 = searchpairpos('<'. tag_name . '[^/>]*>', '', '</' . tag_name . '>', 'W')
+    endif
+    if pos2 == [0, 0]
+      return
+    endif
+    let pos2 = searchpos('>', 'neW')
+    let block = [pos1, pos2]
+    if emmet#util#pointInRegion(curpos[1:2], block)
+      let content = matchstr(content, mx)[:-2] . ' />'
+      call emmet#util#setContent(block, content)
+      call setpos('.', [0, block[0][0], block[0][1], 0])
+      return
+    endif
+    if block[0][0] > 0
+      call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+    else
+      call setpos('.', curpos)
+      return
+    endif
+    if pos1 == old
+      call setpos('.', curpos)
+      return
     endif
   endwhile
 endfunction
 
 function! emmet#lang#html#removeTag() abort
   let curpos = emmet#util#getcurpos()
-  while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*'
-    let pos1 = searchpos(mx, 'bcnW')
-    let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = matchstr(content, '^<\zs/\{0,1}[a-zA-Z0-9:_\-]*')
-    let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-    if content[-2:] ==# '/>' && emmet#util#cursorInRegion(block)
-      call emmet#util#setContent(block, '')
-      call setpos('.', [0, block[0][0], block[0][1], 0])
-      return
+  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
+
+  let pos1 = searchpos(mx, 'bcnW')
+  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
+  let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
+  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
+  if content[-2:] ==# '/>' && emmet#util#cursorInRegion(block)
+    call emmet#util#setContent(block, '')
+    call setpos('.', [0, block[0][0], block[0][1], 0])
+    return
+  endif
+  if tag_name[0] ==# '/'
+    let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+    call setpos('.', [0, pos1[0], pos1[1], 0])
+    let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^/>]*>', '', '</' . tag_name[1:] . '>', 'W')
+  else
+	  echomsg string(tag_name)
+    let pos2 = searchpairpos('<'. tag_name . '[^/>]*>', '', '</' . tag_name . '>', 'W')
+  endif
+  echomsg string(pos2)
+  if pos2 == [0, 0]
+    return
+  endif
+  let pos2 = searchpos('>', 'neW')
+  let block = [pos1, pos2]
+  if emmet#util#pointInRegion(curpos[1:2], block)
+    call emmet#util#setContent(block, '')
+    call setpos('.', [0, block[0][0], block[0][1], 0])
+    return
+  else
+    if block[0][0] > 0
+      call setpos('.', [0, block[0][0]-1, block[0][1], 0])
     else
-      if tag_name[0] ==# '/'
-        let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
-        call setpos('.', [0, pos1[0], pos1[1], 0])
-        let pos2 = searchpos('</' . tag_name[1:] . '>', 'cneW')
-      else
-        let pos2 = searchpos('</' . tag_name . '>', 'cneW')
-      endif
-      let block = [pos1, pos2]
-      let content = emmet#util#getContent(block)
-      if emmet#util#pointInRegion(curpos[1:2], block) && content[1:] !~# '^<' . tag_name . '[^a-zA-Z0-9]'
-        call emmet#util#setContent(block, '')
-        call setpos('.', [0, block[0][0], block[0][1], 0])
-        return
-      else
-        if block[0][0] > 0
-          call setpos('.', [0, block[0][0]-1, block[0][1], 0])
-        else
-          call setpos('.', curpos)
-          return
-        endif
-      endif
+      call setpos('.', curpos)
+      return
     endif
-  endwhile
+  endif
 endfunction

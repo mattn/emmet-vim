@@ -386,6 +386,9 @@ function! emmet#getFileType(...) abort
   if type == 'htmlTagName'
     let type = ''
   endif
+  if type =~ '^mkdSnippet'
+    let type = tolower(type[10:])
+  endif
 
   if type =~? '^css'
     let type = 'css'
