@@ -65,7 +65,7 @@ endfunction
 function! emmet#lang#sass#imageSize() abort
 endfunction
 
-function! emmet#lang#sass#encodeImage() abort
+function! emmet#lang#sass#imageEncode() abort
 endfunction
 
 function! emmet#lang#sass#parseTag(tag) abort

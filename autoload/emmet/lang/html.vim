@@ -714,9 +714,9 @@ function! emmet#lang#html#imageEncode() abort
 
   let encoded = emmet#util#imageEncodeDecode(fn, 0)
   let current.attr.src = encoded
-  let html = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
-  let html = substitute(html, '\${cursor}', '', '')
-  call emmet#util#setContent(img_region, html)
+  let content = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
+  let content = substitute(content, '\${cursor}', '', '')
+  call emmet#util#setContent(img_region, content)
 endfunction
 
 function! emmet#lang#html#parseTag(tag) abort

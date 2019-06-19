@@ -268,7 +268,7 @@ function! emmet#lang#css#imageSize() abort
   call emmet#util#setContent(img_region, content)
 endfunction
 
-function! emmet#lang#css#encodeImage() abort
+function! emmet#lang#css#imageEncode() abort
 endfunction
 
 function! emmet#lang#css#parseTag(tag) abort

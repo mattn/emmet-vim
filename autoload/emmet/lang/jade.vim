@@ -152,7 +152,7 @@ function! emmet#lang#jade#imageSize() abort
   call setline('.', substitute(matchstr(line, '^\s*') . jade, "\n", '', 'g'))
 endfunction
 
-function! emmet#lang#jade#encodeImage() abort
+function! emmet#lang#jade#imageEncode() abort
 endfunction
 
 function! emmet#lang#jade#parseTag(tag) abort

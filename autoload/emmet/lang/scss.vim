@@ -64,8 +64,8 @@ function! emmet#lang#scss#imageSize() abort
   call emmet#lang#css#imageSize()
 endfunction
 
-function! emmet#lang#scss#encodeImage() abort
-  return emmet#lang#css#encodeImage()
+function! emmet#lang#scss#imageEncode() abort
+  return emmet#lang#css#imageEncode()
 endfunction
 
 function! emmet#lang#scss#parseTag(tag) abort
