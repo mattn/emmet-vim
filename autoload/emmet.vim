@@ -380,7 +380,7 @@ function! emmet#getFileType(...) abort
   endif 
 
   let pos = emmet#util#getcurpos()
-  let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
+  let type = synIDattr(synID(max([pos[1], 1]), max([pos[2], 1]), 1), 'name')
 
   " ignore htmlTagName as it seems to occur too often
   if type == 'htmlTagName'

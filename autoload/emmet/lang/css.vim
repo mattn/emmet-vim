@@ -296,7 +296,9 @@ function! emmet#lang#css#toggleComment() abort
       let line = substitute(matchstr(line, mx), mx, '\2', '')
       let line = space . substitute(line, '^\s*\|\s*$', '\1', 'g')
     else
-      let mx = '^\(\s*\)\(.*\)\s*$'
+      let mx = '^\(\s*\)\(''[^'']*''\|[^'']*\|;\)\s*$'
+      " TODO multi-property
+      "let mx = '^\(\s*\)\(\%(''[^'']*''\|[^'';]\+\)*;\{0,1}\)'
       let line = substitute(line, mx, '\1/* \2 */', '')
     endif
     call setline('.', line)
@@ -352,13 +354,8 @@ function! emmet#lang#css#moveNextPrevItem(flag) abort
 endfunction
 
 function! emmet#lang#css#moveNextPrev(flag) abort
-  let pos = search('""\|()\|\(:\s*\zs$\)', a:flag ? 'Wbp' : 'Wp')
-  if pos == 2
-    startinsert!
-  else
-    silent! normal! l
-    startinsert
-  endif
+  call search('""\|()\|\(:\s*\zs;\{1,0}$\)', a:flag ? 'Wbp' : 'Wp')
+  return ''
 endfunction
 
 function! emmet#lang#css#splitJoinTag() abort
