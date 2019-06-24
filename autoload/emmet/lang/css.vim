@@ -269,6 +269,20 @@ function! emmet#lang#css#imageSize() abort
 endfunction
 
 function! emmet#lang#css#imageEncode() abort
+  let img_region = emmet#util#searchRegion('url(', ')')
+  if !emmet#util#regionIsValid(img_region) || !emmet#util#cursorInRegion(img_region)
+    return
+  endif
+  let content = emmet#util#getContent(img_region)
+  let fn = matchstr(content, '\<url(\zs[^)]\+\ze)')
+  let fn = substitute(fn, '[''" \t]', '', 'g')
+  if fn =~# '^\s*$'
+    return
+  elseif fn !~# '^\(/\|http\)'
+    let fn = simplify(expand('%:h') . '/' . fn)
+  endif
+  let encoded = emmet#util#imageEncodeDecode(fn, 0)
+  call emmet#util#setContent(img_region, 'url(' . encoded . ')')
 endfunction
 
 function! emmet#lang#css#parseTag(tag) abort
