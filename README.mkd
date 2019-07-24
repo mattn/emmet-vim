@@ -16,10 +16,9 @@ which provides support for expanding abbreviations similar to
     cd ~/.vim
     unzip emmet-vim.zip
 
-To install using pathogen.vim:
+To install using [pathogen.vim](https://github.com/tpope/vim-pathogen):
 
-    cd ~/.vim/bundle
-    git clone https://github.com/mattn/emmet-vim.git
+    git clone https://github.com/mattn/emmet-vim.git ~/.vim/bundle/emmet-vim
 
 To install using [Vundle](https://github.com/gmarik/vundle):
 
