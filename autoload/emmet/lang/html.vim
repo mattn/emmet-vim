@@ -17,7 +17,7 @@ function! emmet#lang#html#findTokens(str) abort
   let str = a:str
   let [pos, last_pos] = [0, 0]
   while 1
-    let tag = matchstr(str, '<[a-zA-Z].\{-}>', pos)
+    let tag = matchstr(str, '<[a-zA-Z/].\{-}>', pos)
     if len(tag) == 0
       break
     endif
