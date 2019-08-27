@@ -160,7 +160,7 @@ You should copy this section and create new buffer, paste and write as
 <
 3. Update tag                                     *emmet-update-tag* *<C-y>u*
 
-  The begining of tags '<div>' on below
+  The beginning of tags '<div>' on below
 >
   <div>foo</div>
 <

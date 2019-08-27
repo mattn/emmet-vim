@@ -46,7 +46,7 @@
 " Tips:
 "
 "   You can customize behavior of expanding with overriding config.
-"   This configuration will be marged at loading plugin.
+"   This configuration will be merged at loading plugin.
 "
 "     let g:user_emmet_settings = {
 "     \  'indentation' : '  ',
