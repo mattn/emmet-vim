@@ -15,6 +15,7 @@ function! emmet#lang#type(type) abort
   let settings = emmet#getSettings()
   while base != ''
     for b in split(base, '\.')
+      let b = substitute(b, '-.*', '', '')
       if emmet#lang#exists(b)
         return b
       endif

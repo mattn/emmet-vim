@@ -13,10 +13,11 @@ function! emmet#lang#css#parseIntoTree(abbr, type) abort
   let prefix = 0
   let value = ''
 
-  let indent = emmet#getIndentation(type)
-  let aliases = emmet#getResource(type, 'aliases', {})
-  let snippets = emmet#getResource(type, 'snippets', {})
-  let use_pipe_for_cursor = emmet#getResource(type, 'use_pipe_for_cursor', 1)
+  let ftype = substitute(type, '-.*', '', '')
+  let indent = emmet#getIndentation(ftype)
+  let aliases = emmet#getResource(ftype, 'aliases', {})
+  let snippets = emmet#getResource(ftype, 'snippets', {})
+  let use_pipe_for_cursor = emmet#getResource(ftype, 'use_pipe_for_cursor', 1)
 
   let root = emmet#newNode()
 
