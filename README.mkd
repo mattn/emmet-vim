@@ -15,6 +15,20 @@ which provides support for expanding abbreviations similar to
 
     cd ~/.vim
     unzip emmet-vim.zip
+    
+To install using [Vim 8+](https://www.vim.org/vim-8.1-released.php):
+
+Add `packloadall` to your `.vimrc` (if you haven't already):
+`.vimrc`: 
+```vim 
+packloadall
+```
+
+Clone `emmet-vim` into your `~/.vim/pack/plugins/start` directory:
+```bash 
+mkdir -p ~/.vim/pack/plugins/start
+git clone https://github.com/mattn/emmet-vim.git ~/.vim/pack/plugins/start/emmet-vim
+```
 
 To install using [pathogen.vim](https://github.com/tpope/vim-pathogen):
 
