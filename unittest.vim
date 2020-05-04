@@ -681,6 +681,10 @@ finish
           'query': "<h$$$$\\<c-y>u.global\\<cr>$$$$3></h3>",
           'result': "<h3 class=\"global\"></h3>",
         },
+        {
+          'query': "<button$$$$\\<c-y>u.btn\\<cr>$$$$ disabled></button>",
+          'result': "<button class=\"btn\" disabled></button>",
+        },
       ],
     },
     {
