@@ -232,10 +232,18 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
             let current.attrs_order += keys(a)
             if use_pipe_for_cursor
               for k in keys(a)
+                if type(a[k]) == 7
+                  call remove(current.attr, k)
+                  continue
+                endif
                 let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
               endfor
             else
               for k in keys(a)
+                if type(a[k]) == 7
+                  call remove(current.attr, k)
+                  continue
+                endif
                 let current.attr[k] = a[k]
               endfor
             endif
@@ -244,10 +252,18 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
               let current.attrs_order += keys(a)
               if use_pipe_for_cursor
                 for k in keys(a)
+                  if type(a[k]) == 7
+                    call remove(current.attr, k)
+                    continue
+                  endif
                   let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
                 endfor
               else
                 for k in keys(a)
+                  if type(a[k]) == 7
+                    call remove(current.attr, k)
+                    continue
+                  endif
                   let current.attr[k] = a[k]
                 endfor
               endif
