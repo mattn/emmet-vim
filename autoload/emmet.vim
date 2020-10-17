@@ -404,6 +404,8 @@ function! emmet#getFileType(...) abort
     let type = 'typescript'
   elseif type =~? '^xml'
     let type = 'xml'
+  elseif type == 'styledEmmetAbbreviation'
+    let type = 'styled'
   else
     let types = split(&filetype, '\.')
     for part in types
@@ -1678,6 +1680,9 @@ let s:emmet_settings = {
 \        'extends': 'css',
 \    },
 \    'css.drupal': {
+\        'extends': 'css',
+\    },
+\    'styled': {
 \        'extends': 'css',
 \    },
 \    'html': {
