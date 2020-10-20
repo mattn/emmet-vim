@@ -174,6 +174,11 @@ if get(g:, 'user_emmet_install_command', 1)
   command! -nargs=1 Emmet call emmet#expandAbbr(4, <q-args>)
 endif
 
+augroup ___emmet_setup___
+  au!
+  autocmd Syntax * syntax match styledEmmetAbbreviation "[a-z0-9#+!%]\+" containedin=styledDefinition contained
+augroup END
+
 let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
