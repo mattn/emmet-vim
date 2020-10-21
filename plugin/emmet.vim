@@ -174,9 +174,15 @@ if get(g:, 'user_emmet_install_command', 1)
   command! -nargs=1 Emmet call emmet#expandAbbr(4, <q-args>)
 endif
 
+function! s:setup_styledEmmetAbbreviation() abort
+  if index(['javascript', 'javascriptreact', 'typescript', 'typescriptreact'], &filetype) != -1
+    syntax match styledEmmetAbbreviation "[a-z0-9#+!%]\+" containedin=styledDefinition contained
+  endif
+endfunction
+
 augroup ___emmet_setup___
   au!
-  autocmd Syntax * syntax match styledEmmetAbbreviation "[a-z0-9#+!%]\+" containedin=styledDefinition contained
+  autocmd Syntax * call s:setup_styledEmmetAbbreviation()
 augroup END
 
 let &cpoptions = s:save_cpo
