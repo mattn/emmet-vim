@@ -2064,8 +2064,18 @@ let s:emmet_settings = {
 \        'attribute_name': {'class': 'className', 'for': 'htmlFor'},
 \        'empty_element_suffix': ' />',
 \    },
+\    'javascriptreact': {
+\        'extends': 'html',
+\        'attribute_name': {'class': 'className', 'for': 'htmlFor'},
+\        'empty_element_suffix': ' />',
+\    },
 \    'tsx': {
 \        'extends': 'jsx',
+\    },
+\    'typescriptreact': {
+\        'extends': 'html',
+\        'attribute_name': {'class': 'className', 'for': 'htmlFor'},
+\        'empty_element_suffix': ' />',
 \    },
 \    'xslt': {
 \        'extends': 'xsl',
