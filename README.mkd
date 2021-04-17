@@ -114,6 +114,12 @@ You can change the **path** to your **snippets_custom.json** according to your p
 
 [Yasuhiro Matsumoto](http://mattn.kaoriya.net/)
 
+## FAQ
+
+* Pressing ctrl+y+, doesn't work
+
+  Probably you set `timeoutlen=0`. Most of Vim plugins which using key-mappings does not work with `timeoutlen=0`.
+
 ## Links
 
 ### Emmet official site:
