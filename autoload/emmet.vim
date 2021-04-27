@@ -791,7 +791,7 @@ function! emmet#updateTag() abort
   for k in keys(item.attr)
     let current.attr[k] = item.attr[k]
   endfor
-  let html = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
+  let html = substitute(emmet#toString(current, type, 1), '\n', '', '')
   let html = substitute(html, '\${cursor}', '', '')
   let html = matchstr(html,  '^<[^><]\+>')
   call emmet#util#setContent(region, html)
