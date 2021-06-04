@@ -150,7 +150,7 @@ function! s:install_plugin(mode, buffer)
         let key = g:user_emmet_leader_key . item.key
       endif
       if !hasmapto('<plug>(' . item.plug . ')', item.mode) && !len(maparg(key, item.mode))
-        exe item.mode . 'map ' . buffer . ' <unique> ' . key . ' <plug>(' . item.plug . ')'
+        exe item.mode . 'map ' . buffer . ' <unique> <silent>' . key . ' <plug>(' . item.plug . ')'
       endif
     endif
   endfor
