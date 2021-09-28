@@ -29,14 +29,14 @@ git clone https://github.com/mattn/emmet-vim.git ~/.vim/bundle/emmet-vim
 
 To install using [Vundle](https://github.com/gmarik/vundle):
 
-```
+```vim
 " add this line to your .vimrc file
 Plugin 'mattn/emmet-vim'
 ```
 
 To install using [Vim-Plug](https://github.com/junegunn/vim-plug):
 
-```
+```vim
 " add this line to your .vimrc file
 Plug 'mattn/emmet-vim'
 ```
