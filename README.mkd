@@ -110,6 +110,32 @@ You can change the **path** to your **snippets_custom.json** according to your p
 
 [Here](http://docs.emmet.io/customization/snippets/) you can find instructions about creating your customized **snippets.json** file.
 
+## Snippet to add meta tag for responsiveness
+Update this in your .vimrc file.
+
+
+	let g:user_emmet_settings = {
+	\  'variables': {'lang': 'ja'},
+	\  'html': {
+	\    'default_attributes': {
+	\      'option': {'value': v:null},
+	\      'textarea': {'id': v:null, 'name': v:null, 'cols': 10, 'rows': 10},
+	\    },
+	\    'snippets': {
+	\      'html:5': "<!DOCTYPE html>\n"
+	\              ."<html lang=\"${lang}\">\n"
+	\              ."<head>\n"
+	\              ."\t<meta charset=\"${charset}\">\n"
+	\              ."\t<title></title>\n"
+	\              ."\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+	\              ."</head>\n"
+	\              ."<body>\n\t${child}|\n</body>\n"
+	\              ."</html>",
+	\    },
+	\  },
+	\}
+
+
 ## Project Authors
 
 [Yasuhiro Matsumoto](http://mattn.kaoriya.net/)
