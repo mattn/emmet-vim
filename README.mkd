@@ -7,10 +7,7 @@
 which provides support for expanding abbreviations similar to
 [emmet](http://emmet.io/).
 
-<div align="center">
-
 ![screenshot](https://raw.githubusercontent.com/mattn/emmet-vim/master/doc/screenshot.gif)
-</div>
 
 ## Installation
 
