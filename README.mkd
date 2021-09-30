@@ -13,42 +13,56 @@ which provides support for expanding abbreviations similar to
 
 [Download zip file](http://www.vim.org/scripts/script.php?script_id=2981):
 
-    cd ~/.vim
-    unzip emmet-vim.zip
+```sh
+cd ~/.vim
+unzip emmet-vim.zip
+```
 
 To install using [pathogen.vim](https://github.com/tpope/vim-pathogen):
 
-    git clone https://github.com/mattn/emmet-vim.git ~/.vim/bundle/emmet-vim
+```sh
+git clone https://github.com/mattn/emmet-vim.git ~/.vim/bundle/emmet-vim
+```
 
 To install using [Vundle](https://github.com/gmarik/vundle):
 
-    " add this line to your .vimrc file
-    Plugin 'mattn/emmet-vim'
+```vim
+" add this line to your .vimrc file
+Plugin 'mattn/emmet-vim'
+```
 
 To install using [Vim-Plug](https://github.com/junegunn/vim-plug):
 
-    " add this line to your .vimrc file
-    Plug 'mattn/emmet-vim'
+```vim
+" add this line to your .vimrc file
+Plug 'mattn/emmet-vim'
+```
 
 To checkout the source from repository:
 
-    cd ~/.vim/bundle
-    git clone https://github.com/mattn/emmet-vim.git
+```sh
+cd ~/.vim/bundle
+git clone https://github.com/mattn/emmet-vim.git
+```
 
 or:
 
-    git clone https://github.com/mattn/emmet-vim.git
-    cd emmet-vim
-    cp plugin/emmet.vim ~/.vim/plugin/
-    cp autoload/emmet.vim ~/.vim/autoload/
-    cp -a autoload/emmet ~/.vim/autoload/
+```sh
+git clone https://github.com/mattn/emmet-vim.git
+cd emmet-vim
+cp plugin/emmet.vim ~/.vim/plugin/
+cp autoload/emmet.vim ~/.vim/autoload/
+cp -a autoload/emmet ~/.vim/autoload/
+```
 
 
 ## Quick Tutorial
 
 Open or create a New File:
 
-    vim index.html
+```sh
+vim index.html
+```
 
 Type ("\_" is the cursor position):
 
