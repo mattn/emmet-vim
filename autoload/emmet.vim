@@ -785,15 +785,28 @@ function! emmet#updateTag() abort
   if empty(current)
     return ''
   endif
+  let old_tag_name = current.name
 
   let str = substitute(input('Enter Abbreviation: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
+  let tag_changed = str =~# '^\s*\w'
   let item = emmet#parseIntoTree(str, type).child[0]
   for k in keys(item.attr)
     let current.attr[k] = item.attr[k]
   endfor
+  if tag_changed
+    let current.name = item.name
+  endif
   let html = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
   let html = substitute(html, '\${cursor}', '', '')
   let html = matchstr(html,  '^<[^><]\+>')
+  if tag_changed
+    let pos2 = searchpairpos('<' . old_tag_name . '\>[^>]*>', '', '</' . old_tag_name . '>', 'W')
+    if pos2 != [0, 0]
+      let html .= emmet#util#getContent([region[1], pos2])[1:-2]
+      let html .= '</' . current.name . '>'
+      let region = [region[0], [pos2[0], pos2[1] + len(old_tag_name) + 3]]
+    endif
+  endif
   call emmet#util#setContent(region, html)
   return ''
 endfunction

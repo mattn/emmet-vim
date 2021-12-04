@@ -736,11 +736,11 @@ endfunction
 
 function! emmet#lang#html#parseTag(tag) abort
   let current = emmet#newNode()
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\?\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
+  let mx = '<\([a-zA-Z][a-zA-Z0-9-]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9-]\+=\?\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')
   let attrs = substitute(match, mx, '\2', 'i')
-  let mx = '\([a-zA-Z0-9]\+\)\(\(=[^"'' \t]\+\)\|="\([^"]\{-}\)"\|=''\([^'']\{-}\)''\)\?'
+  let mx = '\([a-zA-Z0-9-]\+\)\(\(=[^"'' \t]\+\)\|="\([^"]\{-}\)"\|=''\([^'']\{-}\)''\)\?'
   while len(attrs) > 0
     let match = matchstr(attrs, mx)
     if len(match) == 0
