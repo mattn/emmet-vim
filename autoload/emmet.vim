@@ -1018,9 +1018,11 @@ endfunction
 unlet! s:emmet_settings
 let s:emmet_settings = {
 \    'variables': {
+\      'charset': "UTF-8",
+\      'content': "width=device-width, initial-scale=1.0",
 \      'lang': "en",
 \      'locale': "en-US",
-\      'charset': "UTF-8",
+\      'name': "viewport",
 \      'newline': "\n",
 \      'use_selection': 0,
 \    },
@@ -1755,7 +1757,8 @@ let s:emmet_settings = {
 \                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."\t<meta charset=\"${charset}\">\n"
-\                    ."\t<title></title>\n"
+\                    ."\t<meta name=\"${name}\" content=\"${content}\">\n"
+\                    ."\t<title>Document</title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
@@ -2027,6 +2030,7 @@ let s:emmet_settings = {
 \                    ."html(lang=\"${lang}\")\n"
 \                    ."\thead\n"
 \                    ."\t\tmeta(charset=\"${charset}\")\n"
+\                    ."\t\tmeta(name=\"${name}\", content=\"${content}\")\n"
 \                    ."\t\ttitle\n"
 \                    ."\tbody\n\t\t${child}|",
 \        },
@@ -2101,6 +2105,7 @@ let s:emmet_settings = {
 \                    ."%html{:lang => \"${lang}\"}\n"
 \                    ."\t%head\n"
 \                    ."\t\t%meta{:charset => \"${charset}\"}\n"
+\                    ."\t\t%meta{:name => \"${name}\", :content => \"${content}\"}\n"
 \                    ."\t\t%title\n"
 \                    ."\t%body\n"
 \                    ."\t\t${child}|\n",
@@ -2115,6 +2120,7 @@ let s:emmet_settings = {
 \                    ."html lang=\"${lang}\"\n"
 \                    ."\thead\n"
 \                    ."\t\tmeta charset=\"${charset}\"\n"
+\                    ."\t\tmeta name=\"${name}\" content=\"${content}\"\n"
 \                    ."\t\ttitle\n"
 \                    ."\tbody\n"
 \                    ."\t\t${child}|\n",
