@@ -353,6 +353,8 @@ function! emmet#util#imageEncodeDecode(fn, flag) abort
     let ret .= 'jpeg'
   elseif hex =~# '^47494638'
     let ret .= 'gif'
+  elseif hex =~# '^00000020667479706176696600000000'
+    let ret .= 'avif'
   else
     let ret .= 'unknown'
   endif
