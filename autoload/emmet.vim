@@ -379,8 +379,12 @@ function! emmet#getFileType(...) abort
     endif
   endif 
 
-  let pos = emmet#util#getcurpos()
-  let type = synIDattr(synID(max([pos[1], 1]), max([pos[2], 1]), 1), 'name')
+  if get(g:, 'loaded_nvim_treesitter', 0)
+    let type = luaeval('require"emmet_utils".get_node_at_cursor()')
+  else
+    let pos = emmet#util#getcurpos()
+    let type = synIDattr(synID(max([pos[1], 1]), max([pos[2], 1]), 1), 'name')
+  endif
 
   " ignore htmlTagName as it seems to occur too often
   if type == 'htmlTagName'
