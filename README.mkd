@@ -196,5 +196,5 @@ Update this in your .vimrc file.
 
 ### A Chinese translation of the tutorial:
 
-* <http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html>
+* <https://blog.zfanw.com/zencoding-vim-tutorial-chinese/>
 
