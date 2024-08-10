@@ -379,7 +379,7 @@ function! emmet#getFileType(...) abort
     endif
   endif 
 
-  if exists('g:loaded_nvim_treesitter') == 1
+  if get(g:, 'loaded_nvim_treesitter', 0)
     let type = luaeval('require"emmet_utils".get_node_at_cursor()')
   else
     let pos = emmet#util#getcurpos()
