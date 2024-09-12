@@ -371,16 +371,21 @@ endfunction
 
 function! emmet#getFileType(...) abort
   let flg = get(a:000, 0, 0)
-  
+
   if has_key(s:emmet_settings, &filetype)
     let type = &filetype
     if emmet#getResource(type, 'ignore_embeded_filetype', 0)
-      return type 
+      return type
     endif
-  endif 
+  endif
 
+  let node = v:null
   if get(g:, 'loaded_nvim_treesitter', 0)
-    let type = luaeval('require"emmet_utils".get_node_at_cursor()')
+    let node = luaeval('require"emmet_utils".get_node_at_cursor()')
+  endif
+
+  if node
+    let type = node
   else
     let pos = emmet#util#getcurpos()
     let type = synIDattr(synID(max([pos[1], 1]), max([pos[2], 1]), 1), 'name')
