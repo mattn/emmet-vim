@@ -202,7 +202,7 @@ function! emmet#toString(...) abort
   else
     let type = &filetype
   endif
-  if len(type) ==# 0 | let type = 'html' | endif
+  if type ==# '' | let type = 'html' | endif
   if a:0 > 2
     let inline = a:3
   else
@@ -430,7 +430,7 @@ function! emmet#getFileType(...) abort
     endfor
   endif
 
-  return len(type) == 0 ? 'html' : type
+  return type == '' ? 'html' : type
 endfunction
 
 function! emmet#getDollarExprs(expand) abort
