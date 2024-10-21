@@ -371,13 +371,13 @@ endfunction
 
 function! emmet#getFileType(...) abort
   let flg = get(a:000, 0, 0)
-  
+
   if has_key(s:emmet_settings, &filetype)
     let type = &filetype
     if emmet#getResource(type, 'ignore_embeded_filetype', 0)
-      return type 
+      return type
     endif
-  endif 
+  endif
 
   if get(g:, 'loaded_nvim_treesitter', 0)
     let type = luaeval('require"emmet_utils".get_node_at_cursor()')
@@ -1759,6 +1759,7 @@ let s:emmet_settings = {
 \                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."\t<meta charset=\"${charset}\">\n"
+\                    ."\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
 \                    ."\t<title></title>\n"
 \                    ."</head>\n"
 \                    ."<body>\n\t${child}|\n</body>\n"
