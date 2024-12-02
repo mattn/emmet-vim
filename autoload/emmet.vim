@@ -882,7 +882,7 @@ function! emmet#anchorizeURL(flag) abort
     return ''
   endif
 
-  let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
+  let mx = '<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>'
   let content = emmet#util#getContentFromURL(url)
   let content = substitute(content, '\r', '', 'g')
   let content = substitute(content, '[ \n]\+', ' ', 'g')
