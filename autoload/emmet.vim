@@ -768,8 +768,8 @@ function! emmet#expandAbbr(mode, abbr) range abort
       endif
     finally
       let &gdefault = l:gdefault
+      let &selection = oldselection
     endtry
-    let &selection = oldselection
   endif
   return ''
 endfunction
