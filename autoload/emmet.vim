@@ -430,7 +430,7 @@ function! emmet#getFileType(...) abort
     endfor
   endif
 
-  return len(type) == 0 ? 'html' : type
+  return empty(type) ? 'html' : type
 endfunction
 
 function! emmet#getDollarExprs(expand) abort
