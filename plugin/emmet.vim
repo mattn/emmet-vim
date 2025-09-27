@@ -15,7 +15,7 @@
 "      +-------------------------------------
 "      | html:5_
 "      +-------------------------------------
-"   "_" is a cursor position. and type "<c-y>," (Ctrl+y and Comma)
+"   "_" is a cursor position. and type "<c-z>," (Ctrl+y and Comma)
 "   NOTE: Don't worry about key map. you can change it easily.
 "      +-------------------------------------
 "      | <!DOCTYPE HTML>
@@ -34,7 +34,7 @@
 "      +-------------------------------------
 "      | div#foo$*2>div.bar
 "      +-------------------------------------
-"   And type "<c-y>,"
+"   And type "<c-z>,"
 "      +-------------------------------------
 "      |<div id="foo1">
 "      |    <div class="bar">_</div>
@@ -92,7 +92,7 @@ if !exists('g:emmet_curl_command')
 endif
 
 if !exists('g:user_emmet_leader_key')
-  let g:user_emmet_leader_key = '<c-y>'
+  let g:user_emmet_leader_key = '<c-z>'
 endif
 
 function! s:install_plugin(mode, buffer)
