@@ -229,7 +229,7 @@ function! emmet#util#getImageSize(fn) abort
   endif
 
   if filereadable(l:fn)
-    let l:hex = substitute(system('xxd -p "'.l:fn.'"'), '\n', '', 'g')
+    let l:hex = substitute(system('xxd -p '.shellescape(l:fn)), '\n', '', 'g')
   else
     if l:fn !~# '^\w\+://'
       let l:path = fnamemodify(expand('%'), ':p:gs?\\?/?')
@@ -248,7 +248,7 @@ function! emmet#util#getImageSize(fn) abort
         endif
       endfor
     endif
-    let l:hex = substitute(system(g:emmet_curl_command.' "'.l:fn.'" | xxd -p'), '\n', '', 'g')
+    let l:hex = substitute(system(g:emmet_curl_command.' '.shellescape(l:fn).' | xxd -p'), '\n', '', 'g')
   endif
 
   let [l:width, l:height] = [-1, -1]
@@ -283,7 +283,7 @@ function! emmet#util#getImageSize(fn) abort
 endfunction
 
 function! emmet#util#imageSizeWithImageMagick(fn) abort
-  let l:img_info = system('identify -format "%wx%h" "'.a:fn.'"')
+  let l:img_info = system('identify -format "%wx%h" '.shellescape(a:fn))
   let l:img_size = split(substitute(l:img_info, '\n', '', ''), 'x')
   if len(l:img_size) != 2
     return [-1, -1]
@@ -322,7 +322,7 @@ function! emmet#util#imageEncodeDecode(fn, flag) abort
   let l:fn = a:fn
 
   if filereadable(l:fn)
-    let l:hex = substitute(system('xxd -p "'.l:fn.'"'), '\n', '', 'g')
+    let l:hex = substitute(system('xxd -p '.shellescape(l:fn)), '\n', '', 'g')
   else
     if l:fn !~# '^\w\+://'
       let l:path = fnamemodify(expand('%'), ':p:gs?\\?/?')
@@ -341,7 +341,7 @@ function! emmet#util#imageEncodeDecode(fn, flag) abort
         endif
       endfor
     endif
-    let l:hex = substitute(system(g:emmet_curl_command.' "'.l:fn.'" | xxd -p'), '\n', '', 'g')
+    let l:hex = substitute(system(g:emmet_curl_command.' '.shellescape(l:fn).' | xxd -p'), '\n', '', 'g')
   endif
 
   let l:bin = map(split(l:hex, '..\zs'), 'eval("0x" . v:val)')
