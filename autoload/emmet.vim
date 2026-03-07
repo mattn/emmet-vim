@@ -123,12 +123,11 @@ function! emmet#mergeConfig(lhs, rhs) abort
   let [l:lhs, l:rhs] = [a:lhs, a:rhs]
   if type(l:lhs) ==# 3
     if type(l:rhs) ==# 3
-      let l:lhs += l:rhs
       if len(l:lhs)
         call remove(l:lhs, 0, len(l:lhs)-1)
       endif
       for l:rhi in l:rhs
-        call add(l:lhs, l:rhs[l:rhi])
+        call add(l:lhs, l:rhi)
       endfor
     elseif type(l:rhs) ==# 4
       let l:lhs += map(keys(l:rhs), '{v:val : l:rhs[v:val]}')
