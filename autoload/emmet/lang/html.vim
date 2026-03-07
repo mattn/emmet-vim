@@ -156,10 +156,11 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
       endif
     endif
 
-    let l:basedirect = l:basevalue[1] ==# '-' ? -1 : 1
     if l:basevalue != ''
+      let l:basedirect = l:basevalue[1] ==# '-' ? -1 : 1
       let l:basevalue = 0 + abs(l:basevalue[1:])
     else
+      let l:basedirect = 1
       let l:basevalue = 1
     endif
     if l:multiplier <= 0 | let l:multiplier = 1 | endif
