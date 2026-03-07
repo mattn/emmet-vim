@@ -855,21 +855,14 @@ function! emmet#splitJoinTag() abort
 endfunction
 
 function! emmet#mergeLines() range abort
-  let l:lines = join(map(getline(a:firstline, a:lastline), 'matchstr(v:val, "^\\s*\\zs.*\\ze\\s*$")'), '')
-  let l:indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
-  silent! exe 'normal! gvc'
-  call setline('.', l:indent . l:lines)
+  let l:type = emmet#getFileType()
+  call emmet#lang#{emmet#lang#type(l:type)}#mergeLines()
+  return ''
 endfunction
 
 function! emmet#removeTag() abort
   let l:type = emmet#getFileType()
   call emmet#lang#{emmet#lang#type(l:type)}#removeTag()
-  return ''
-endfunction
-
-function! emmet#mergeLines() abort
-  let l:type = emmet#getFileType()
-  call emmet#lang#{emmet#lang#type(l:type)}#mergeLines()
   return ''
 endfunction
 
