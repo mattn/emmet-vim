@@ -14,54 +14,54 @@ let s:mx = '\([+>]\|[<^]\+\)\{-}'
 \     .'\(\%()\%(\(@-\{0,1}[0-9]*\)\{0,1}\*[0-9]\+\)\{0,1}\)*\)'
 
 function! emmet#lang#html#findTokens(str) abort
-  let str = a:str
-  let [pos, last_pos] = [0, 0]
+  let l:str = a:str
+  let [l:pos, l:last_pos] = [0, 0]
   while 1
-    let tag = matchstr(str, '<[a-zA-Z].\{-}>', pos)
-    if len(tag) == 0
+    let l:tag = matchstr(l:str, '<[a-zA-Z].\{-}>', l:pos)
+    if len(l:tag) == 0
       break
     endif
-    let pos = stridx(str, tag, pos) + len(tag)
+    let l:pos = stridx(l:str, l:tag, l:pos) + len(l:tag)
   endwhile
   while 1
-    let tag = matchstr(str, '{%[^%]\{-}%}', pos)
-    if len(tag) == 0
+    let l:tag = matchstr(l:str, '{%[^%]\{-}%}', l:pos)
+    if len(l:tag) == 0
       break
     endif
-    let pos = stridx(str, tag, pos) + len(tag)
+    let l:pos = stridx(l:str, l:tag, l:pos) + len(l:tag)
   endwhile
-  let last_pos = pos
-  while len(str) > 0
-    let white = matchstr(str, '^\s\+', pos)
-    if white != ''
-      let last_pos = pos + len(white)
-	  let pos = last_pos
+  let l:last_pos = l:pos
+  while len(l:str) > 0
+    let l:white = matchstr(l:str, '^\s\+', l:pos)
+    if l:white != ''
+      let l:last_pos = l:pos + len(l:white)
+	  let l:pos = l:last_pos
     endif
-    let token = matchstr(str, s:mx, pos)
-    if token ==# ''
+    let l:token = matchstr(l:str, s:mx, l:pos)
+    if l:token ==# ''
       break
     endif
-    let pos = stridx(str, token, pos) + len(token)
+    let l:pos = stridx(l:str, l:token, l:pos) + len(l:token)
   endwhile
-  let str = a:str[last_pos :-1]
-  if str =~# '^\w\+="[^"]*$'
+  let l:str = a:str[l:last_pos :-1]
+  if l:str =~# '^\w\+="[^"]*$'
     return ''
   endif
-  return str
+  return l:str
 endfunction
 
 function! emmet#lang#html#parseIntoTree(abbr, type) abort
-  let abbr = a:abbr
-  let type = a:type
+  let l:abbr = a:abbr
+  let l:type = a:type
 
-  let settings = emmet#getSettings()
-  if !has_key(settings, type)
-    let type = 'html'
+  let l:settings = emmet#getSettings()
+  if !has_key(l:settings, l:type)
+    let l:type = 'html'
   endif
-  if len(type) == 0 | let type = 'html' | endif
+  if len(l:type) == 0 | let l:type = 'html' | endif
 
-  let indent = emmet#getIndentation(type)
-  let pmap = {
+  let l:indent = emmet#getIndentation(l:type)
+  let l:pmap = {
   \'p': 'span',
   \'ul': 'li',
   \'ol': 'li',
@@ -79,198 +79,198 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
   \'map': 'area'
   \}
 
-  let inlineLevel = split('a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',',')
+  let l:inlineLevel = split('a,abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var',',')
 
-  let custom_expands = emmet#getResource(type, 'custom_expands', {})
-  if empty(custom_expands) && has_key(settings, 'custom_expands')
-    let custom_expands = settings['custom_expands']
+  let l:custom_expands = emmet#getResource(l:type, 'custom_expands', {})
+  if empty(l:custom_expands) && has_key(l:settings, 'custom_expands')
+    let l:custom_expands = l:settings['custom_expands']
   endif
 
   " try 'foo' to (foo-x)
-  let rabbr = emmet#getExpandos(type, abbr)
-  if rabbr == abbr
+  let l:rabbr = emmet#getExpandos(l:type, l:abbr)
+  if l:rabbr == l:abbr
     " try 'foo+(' to (foo-x)
-    let rabbr = substitute(abbr, '\%(+\|^\)\([a-zA-Z][a-zA-Z0-9+]\+\)+\([(){}>]\|$\)', '\="(".emmet#getExpandos(type, submatch(1)).")".submatch(2)', 'i')
+    let l:rabbr = substitute(l:abbr, '\%(+\|^\)\([a-zA-Z][a-zA-Z0-9+]\+\)+\([(){}>]\|$\)', '\="(".emmet#getExpandos(l:type, submatch(1)).")".submatch(2)', 'i')
   endif
-  let abbr = rabbr
+  let l:abbr = l:rabbr
 
-  let root = emmet#newNode()
-  let root['variables'] = {}
-  let parent = root
-  let last = root
-  let pos = []
-  while len(abbr)
+  let l:root = emmet#newNode()
+  let l:root['variables'] = {}
+  let l:parent = l:root
+  let l:last = l:root
+  let l:pos = []
+  while len(l:abbr)
     " parse line
-    let match = matchstr(abbr, s:mx)
-    let str = substitute(match, s:mx, '\0', 'ig')
-    let operator = substitute(match, s:mx, '\1', 'ig')
-    let block_start = substitute(match, s:mx, '\2', 'ig')
-    let tag_name = substitute(match, s:mx, '\3', 'ig')
-    let attributes = substitute(match, s:mx, '\4', 'ig')
-    let value = substitute(match, s:mx, '\5', 'ig')
-    let basevalue = substitute(match, s:mx, '\6', 'ig')
-    let multiplier = 0 + substitute(match, s:mx, '\7', 'ig')
-    let block_end = substitute(match, s:mx, '\8', 'ig')
-    let custom = ''
-    let important = 0
-    if len(str) == 0
+    let l:match = matchstr(l:abbr, s:mx)
+    let l:str = substitute(l:match, s:mx, '\0', 'ig')
+    let l:operator = substitute(l:match, s:mx, '\1', 'ig')
+    let l:block_start = substitute(l:match, s:mx, '\2', 'ig')
+    let l:tag_name = substitute(l:match, s:mx, '\3', 'ig')
+    let l:attributes = substitute(l:match, s:mx, '\4', 'ig')
+    let l:value = substitute(l:match, s:mx, '\5', 'ig')
+    let l:basevalue = substitute(l:match, s:mx, '\6', 'ig')
+    let l:multiplier = 0 + substitute(l:match, s:mx, '\7', 'ig')
+    let l:block_end = substitute(l:match, s:mx, '\8', 'ig')
+    let l:custom = ''
+    let l:important = 0
+    if len(l:str) == 0
       break
     endif
-    if tag_name =~# '^#'
-      let attributes = tag_name . attributes
-      let tag_name = ''
+    if l:tag_name =~# '^#'
+      let l:attributes = l:tag_name . l:attributes
+      let l:tag_name = ''
     endif
-    if tag_name =~# '[^!]!$'
-      let tag_name = tag_name[:-2]
-      let important = 1
+    if l:tag_name =~# '[^!]!$'
+      let l:tag_name = l:tag_name[:-2]
+      let l:important = 1
     endif
-    if tag_name =~# '^\.'
-      let attributes = tag_name . attributes
-      let tag_name = ''
+    if l:tag_name =~# '^\.'
+      let l:attributes = l:tag_name . l:attributes
+      let l:tag_name = ''
     endif
-    if tag_name =~# '^\[.*\]$'
-      let attributes = tag_name . attributes
-      let tag_name = ''
+    if l:tag_name =~# '^\[.*\]$'
+      let l:attributes = l:tag_name . l:attributes
+      let l:tag_name = ''
     endif
 
-    for k in keys(custom_expands)
-      if tag_name =~ k
-        let custom = tag_name
-        let tag_name = ''
+    for l:k in keys(l:custom_expands)
+      if l:tag_name =~ l:k
+        let l:custom = l:tag_name
+        let l:tag_name = ''
         break
       endif
     endfor
 
-    if empty(tag_name)
-      let pname = len(parent.child) > 0 ? parent.child[0].name : ''
-      if !empty(pname) && has_key(pmap, pname) && custom == ''
-        let tag_name = pmap[pname]
-      elseif !empty(pname) && index(inlineLevel, pname) > -1
-        let tag_name = 'span'
-      elseif len(custom) == 0
-        let tag_name = 'div'
-      elseif len(custom) != 0 && multiplier > 1	
-        let tag_name = 'div'
+    if empty(l:tag_name)
+      let l:pname = len(l:parent.child) > 0 ? l:parent.child[0].name : ''
+      if !empty(l:pname) && has_key(l:pmap, l:pname) && l:custom == ''
+        let l:tag_name = l:pmap[l:pname]
+      elseif !empty(l:pname) && index(l:inlineLevel, l:pname) > -1
+        let l:tag_name = 'span'
+      elseif len(l:custom) == 0
+        let l:tag_name = 'div'
+      elseif len(l:custom) != 0 && l:multiplier > 1
+        let l:tag_name = 'div'
       else
-        let tag_name = custom
+        let l:tag_name = l:custom
       endif
     endif
 
-    let basedirect = basevalue[1] ==# '-' ? -1 : 1
-    if basevalue != ''
-      let basevalue = 0 + abs(basevalue[1:])
+    let l:basedirect = l:basevalue[1] ==# '-' ? -1 : 1
+    if l:basevalue != ''
+      let l:basevalue = 0 + abs(l:basevalue[1:])
     else
-      let basevalue = 1
+      let l:basevalue = 1
     endif
-    if multiplier <= 0 | let multiplier = 1 | endif
+    if l:multiplier <= 0 | let l:multiplier = 1 | endif
 
     " make default node
-    let current = emmet#newNode()
+    let l:current = emmet#newNode()
 
-    let current.name = tag_name
-    let current.important = important
+    let l:current.name = l:tag_name
+    let l:current.important = l:important
 
     " aliases
-    let aliases = emmet#getResource(type, 'aliases', {})
-    if has_key(aliases, tag_name)
-      let current.name = aliases[tag_name]
+    let l:aliases = emmet#getResource(l:type, 'aliases', {})
+    if has_key(l:aliases, l:tag_name)
+      let l:current.name = l:aliases[l:tag_name]
     endif
 
-    let use_pipe_for_cursor = emmet#getResource(type, 'use_pipe_for_cursor', 1)
+    let l:use_pipe_for_cursor = emmet#getResource(l:type, 'use_pipe_for_cursor', 1)
 
     " snippets
-    let snippets = emmet#getResource(type, 'snippets', {})
-    if !empty(snippets)
-      let snippet_name = tag_name
-      if has_key(snippets, snippet_name)
-        let snippet = snippet_name
-        while has_key(snippets, snippet)
-          let snippet = snippets[snippet]
+    let l:snippets = emmet#getResource(l:type, 'snippets', {})
+    if !empty(l:snippets)
+      let l:snippet_name = l:tag_name
+      if has_key(l:snippets, l:snippet_name)
+        let l:snippet = l:snippet_name
+        while has_key(l:snippets, l:snippet)
+          let l:snippet = l:snippets[l:snippet]
         endwhile
-        if use_pipe_for_cursor
-          let snippet = substitute(snippet, '|', '${cursor}', 'g')
+        if l:use_pipe_for_cursor
+          let l:snippet = substitute(l:snippet, '|', '${cursor}', 'g')
         endif
         " just redirect to expanding
-        if type == 'html' && snippet !~ '^\s*[{\[<]'
-           return emmet#lang#html#parseIntoTree(snippet, a:type)
+        if l:type == 'html' && l:snippet !~ '^\s*[{\[<]'
+           return emmet#lang#html#parseIntoTree(l:snippet, a:type)
         endif
-        let lines = split(snippet, "\n", 1)
-        call map(lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(indent, "\\\\"), "g")')
-        let current.snippet = join(lines, "\n")
-        let current.name = ''
+        let l:lines = split(l:snippet, "\n", 1)
+        call map(l:lines, 'substitute(v:val, "\\(    \\|\\t\\)", escape(l:indent, "\\\\"), "g")')
+        let l:current.snippet = join(l:lines, "\n")
+        let l:current.name = ''
       endif
     endif
 
-    for k in keys(custom_expands)
-      if tag_name =~# k
-        let snippet = '${' . (empty(custom) ? tag_name : custom) . '}'
-        let current.name = ''
-        let current.snippet = snippet
+    for l:k in keys(l:custom_expands)
+      if l:tag_name =~# l:k
+        let l:snippet = '${' . (empty(l:custom) ? l:tag_name : l:custom) . '}'
+        let l:current.name = ''
+        let l:current.snippet = l:snippet
         break
-      elseif custom =~# k
-        let snippet = '${' . custom . '}'
-        let current.snippet = '${' . custom . '}'
-        if current.name != ''
-          let snode = emmet#newNode()
-          let snode.snippet = snippet
-          let snode.parent = current
-          call add(current.child, snode)
+      elseif l:custom =~# l:k
+        let l:snippet = '${' . l:custom . '}'
+        let l:current.snippet = '${' . l:custom . '}'
+        if l:current.name != ''
+          let l:snode = emmet#newNode()
+          let l:snode.snippet = l:snippet
+          let l:snode.parent = l:current
+          call add(l:current.child, l:snode)
         else
-          let current.snippet = snippet
+          let l:current.snippet = l:snippet
         endif
         break
       endif
     endfor
 
     " default_attributes
-    let default_attributes = emmet#getResource(type, 'default_attributes', {})
-    if !empty(default_attributes)
-      for pat in [current.name, tag_name]
-        if has_key(default_attributes, pat)
-          if type(default_attributes[pat]) == 4
-            let a = default_attributes[pat]
-            let current.attrs_order += keys(a)
-            if use_pipe_for_cursor
-              for k in keys(a)
-                if type(a[k]) == 7
-                  call remove(current.attr, k)
+    let l:default_attributes = emmet#getResource(l:type, 'default_attributes', {})
+    if !empty(l:default_attributes)
+      for l:pat in [l:current.name, l:tag_name]
+        if has_key(l:default_attributes, l:pat)
+          if type(l:default_attributes[l:pat]) == 4
+            let l:a = l:default_attributes[l:pat]
+            let l:current.attrs_order += keys(l:a)
+            if l:use_pipe_for_cursor
+              for l:k in keys(l:a)
+                if type(l:a[l:k]) == 7
+                  call remove(l:current.attr, l:k)
                   continue
                 endif
-                let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
+                let l:current.attr[l:k] = len(l:a[l:k]) ? substitute(l:a[l:k], '|', '${cursor}', 'g') : '${cursor}'
               endfor
             else
-              for k in keys(a)
-                if type(a[k]) == 7
-                  call remove(current.attr, k)
+              for l:k in keys(l:a)
+                if type(l:a[l:k]) == 7
+                  call remove(l:current.attr, l:k)
                   continue
                 endif
-                let current.attr[k] = a[k]
+                let l:current.attr[l:k] = l:a[l:k]
               endfor
             endif
           else
-            for a in default_attributes[pat]
-              let current.attrs_order += keys(a)
-              if use_pipe_for_cursor
-                for k in keys(a)
-                  if type(a[k]) == 7
-                    call remove(current.attr, k)
+            for l:a in l:default_attributes[l:pat]
+              let l:current.attrs_order += keys(l:a)
+              if l:use_pipe_for_cursor
+                for l:k in keys(l:a)
+                  if type(l:a[l:k]) == 7
+                    call remove(l:current.attr, l:k)
                     continue
                   endif
-                  let current.attr[k] = len(a[k]) ? substitute(a[k], '|', '${cursor}', 'g') : '${cursor}'
+                  let l:current.attr[l:k] = len(l:a[l:k]) ? substitute(l:a[l:k], '|', '${cursor}', 'g') : '${cursor}'
                 endfor
               else
-                for k in keys(a)
-                  if type(a[k]) == 7
-                    call remove(current.attr, k)
+                for l:k in keys(l:a)
+                  if type(l:a[l:k]) == 7
+                    call remove(l:current.attr, l:k)
                     continue
                   endif
-                  let current.attr[k] = a[k]
+                  let l:current.attr[l:k] = l:a[l:k]
                 endfor
               endif
             endfor
           endif
-          if has_key(settings.html.default_attributes, current.name)
-            let current.name = substitute(current.name, ':.*$', '', '')
+          if has_key(l:settings.html.default_attributes, l:current.name)
+            let l:current.name = substitute(l:current.name, ':.*$', '', '')
           endif
           break
         endif
@@ -278,187 +278,187 @@ function! emmet#lang#html#parseIntoTree(abbr, type) abort
     endif
 
     " parse attributes
-    if len(attributes)
-      let attr = attributes
-      while len(attr)
-        let item = matchstr(attr, '\(\%(\%(#[{}a-zA-Z0-9_\-\$]\+\)\|\%(\[\%(\[[^\]]*\]\|"[^"]*"\|[^"\[\]]*\)\+\]\)\|\%(\.[{}a-zA-Z0-9_\-\$]\+\)*\)\)')
+    if len(l:attributes)
+      let l:attr = l:attributes
+      while len(l:attr)
+        let l:item = matchstr(l:attr, '\(\%(\%(#[{}a-zA-Z0-9_\-\$]\+\)\|\%(\[\%(\[[^\]]*\]\|"[^"]*"\|[^"\[\]]*\)\+\]\)\|\%(\.[{}a-zA-Z0-9_\-\$]\+\)*\)\)')
         if g:emmet_debug > 1
-          echomsg 'attr=' . item
+          echomsg 'attr=' . l:item
         endif
-        if len(item) == 0
+        if len(l:item) == 0
           break
         endif
-        if item[0] ==# '#'
-          let current.attr.id = item[1:]
-          let root['variables']['id'] = current.attr.id
+        if l:item[0] ==# '#'
+          let l:current.attr.id = l:item[1:]
+          let l:root['variables']['id'] = l:current.attr.id
         endif
-        if item[0] ==# '.'
-          let current.attr.class = substitute(item[1:], '\.', ' ', 'g')
-          let root['variables']['class'] = current.attr.class
+        if l:item[0] ==# '.'
+          let l:current.attr.class = substitute(l:item[1:], '\.', ' ', 'g')
+          let l:root['variables']['class'] = l:current.attr.class
         endif
-        if item[0] ==# '['
-          let atts = item[1:-2]
-          if matchstr(atts, '^\s*\zs[0-9a-zA-Z_\-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') ==# ''
-            let ks = []
-			if has_key(default_attributes, current.name)
-              let dfa = default_attributes[current.name]
-              let ks = type(dfa) == 3 ? len(dfa) > 0 ? keys(dfa[0]) : [] : keys(dfa)
+        if l:item[0] ==# '['
+          let l:atts = l:item[1:-2]
+          if matchstr(l:atts, '^\s*\zs[0-9a-zA-Z_\-:]\+\(="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\)') ==# ''
+            let l:ks = []
+			if has_key(l:default_attributes, l:current.name)
+              let l:dfa = l:default_attributes[l:current.name]
+              let l:ks = type(l:dfa) == 3 ? len(l:dfa) > 0 ? keys(l:dfa[0]) : [] : keys(l:dfa)
             endif
-            if len(ks) == 0 && has_key(default_attributes, current.name . ':src')
-              let dfa = default_attributes[current.name . ':src']
-              let ks = type(dfa) == 3 ? len(dfa) > 0 ? keys(dfa[0]) : [] : keys(dfa)
+            if len(l:ks) == 0 && has_key(l:default_attributes, l:current.name . ':src')
+              let l:dfa = l:default_attributes[l:current.name . ':src']
+              let l:ks = type(l:dfa) == 3 ? len(l:dfa) > 0 ? keys(l:dfa[0]) : [] : keys(l:dfa)
             endif
-            if len(ks) > 0
-              let current.attr[ks[0]] = atts
-            elseif atts =~# '\.$'
-              let current.attr[atts[:-2]] = function('emmet#types#true')
+            if len(l:ks) > 0
+              let l:current.attr[l:ks[0]] = l:atts
+            elseif l:atts =~# '\.$'
+              let l:current.attr[l:atts[:-2]] = function('emmet#types#true')
             else
-              let current.attr[atts] = ''
+              let l:current.attr[l:atts] = ''
             endif
           else
-            while len(atts)
-              let amat = matchstr(atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(={{.\{-}}}\|="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\|[^ ''"\]]*\)\{0,1}\)')
-              if len(amat) == 0
+            while len(l:atts)
+              let l:amat = matchstr(l:atts, '^\s*\zs\([0-9a-zA-Z-:]\+\%(={{.\{-}}}\|="[^"]*"\|=''[^'']*''\|=[^ ''"]\+\|[^ ''"\]]*\)\{0,1}\)')
+              if len(l:amat) == 0
                 break
               endif
-              let key = split(amat, '=')[0]
-              let Val = amat[len(key)+1:]
-              if key =~# '\.$' && Val ==# ''
-                let key = key[:-2]
-                unlet Val
-                let Val = function('emmet#types#true')
-              elseif Val =~# '^["'']'
-                let Val = Val[1:-2]
+              let l:key = split(l:amat, '=')[0]
+              let l:Val = l:amat[len(l:key)+1:]
+              if l:key =~# '\.$' && l:Val ==# ''
+                let l:key = l:key[:-2]
+                unlet l:Val
+                let l:Val = function('emmet#types#true')
+              elseif l:Val =~# '^["'']'
+                let l:Val = l:Val[1:-2]
               endif
-              let current.attr[key] = Val
-              if index(current.attrs_order, key) == -1
-                let current.attrs_order += [key]
+              let l:current.attr[l:key] = l:Val
+              if index(l:current.attrs_order, l:key) == -1
+                let l:current.attrs_order += [l:key]
               endif
-              let atts = atts[stridx(atts, amat) + len(amat):]
-              unlet Val
+              let l:atts = l:atts[stridx(l:atts, l:amat) + len(l:amat):]
+              unlet l:Val
             endwhile
           endif
         endif
-        let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
+        let l:attr = substitute(strpart(l:attr, len(l:item)), '^\s*', '', '')
       endwhile
     endif
 
     " parse text
-    if tag_name =~# '^{.*}$'
-      let current.name = ''
-      let current.value = tag_name
+    if l:tag_name =~# '^{.*}$'
+      let l:current.name = ''
+      let l:current.value = l:tag_name
     else
-      let current.value = value
+      let l:current.value = l:value
     endif
-    let current.basedirect = basedirect
-    let current.basevalue = basevalue
-    let current.multiplier = multiplier
+    let l:current.basedirect = l:basedirect
+    let l:current.basevalue = l:basevalue
+    let l:current.multiplier = l:multiplier
 
     " parse step inside/outside
-    if !empty(last)
-      if operator =~# '>'
-        unlet! parent
-        let parent = last
-        let current.parent = last
-        let current.pos = last.pos + 1
+    if !empty(l:last)
+      if l:operator =~# '>'
+        unlet! l:parent
+        let l:parent = l:last
+        let l:current.parent = l:last
+        let l:current.pos = l:last.pos + 1
       else
-        let current.parent = parent
-        let current.pos = last.pos
+        let l:current.parent = l:parent
+        let l:current.pos = l:last.pos
       endif
     else
-      let current.parent = parent
-      let current.pos = 1
+      let l:current.parent = l:parent
+      let l:current.pos = 1
     endif
-    if operator =~# '[<^]'
-      for c in range(len(operator))
-        let tmp = parent.parent
-        if empty(tmp)
+    if l:operator =~# '[<^]'
+      for l:c in range(len(l:operator))
+        let l:tmp = l:parent.parent
+        if empty(l:tmp)
           break
         endif
-        let parent = tmp
-        let current.parent = tmp
+        let l:parent = l:tmp
+        let l:current.parent = l:tmp
       endfor
     endif
 
-    call add(parent.child, current)
-    let last = current
+    call add(l:parent.child, l:current)
+    let l:last = l:current
 
     " parse block
-    if block_start =~# '('
-      if operator =~# '>'
-        let last.pos += 1
+    if l:block_start =~# '('
+      if l:operator =~# '>'
+        let l:last.pos += 1
       endif
-      let last.block = 1
-      for n in range(len(block_start))
-        let pos += [last.pos]
+      let l:last.block = 1
+      for l:n in range(len(l:block_start))
+        let l:pos += [l:last.pos]
       endfor
     endif
-    if block_end =~# ')'
-      for n in split(substitute(substitute(block_end, ' ', '', 'g'), ')', ',),', 'g'), ',')
-        if n ==# ')'
-          if len(pos) > 0 && last.pos >= pos[-1]
-            for c in range(last.pos - pos[-1])
-              let tmp = parent.parent
-              if !has_key(tmp, 'parent')
+    if l:block_end =~# ')'
+      for l:n in split(substitute(substitute(l:block_end, ' ', '', 'g'), ')', ',),', 'g'), ',')
+        if l:n ==# ')'
+          if len(l:pos) > 0 && l:last.pos >= l:pos[-1]
+            for l:c in range(l:last.pos - l:pos[-1])
+              let l:tmp = l:parent.parent
+              if !has_key(l:tmp, 'parent')
                 break
               endif
-              let parent = tmp
+              let l:parent = l:tmp
             endfor
-            if len(pos) > 0
-              call remove(pos, -1)
+            if len(l:pos) > 0
+              call remove(l:pos, -1)
             endif
-            let last = parent
-            let last.pos += 1
+            let l:last = l:parent
+            let l:last.pos += 1
           endif
-        elseif len(n)
-          let st = 0
-          for nc in range(len(last.child))
-            if last.child[nc].block
-              let st = nc
+        elseif len(l:n)
+          let l:st = 0
+          for l:nc in range(len(l:last.child))
+            if l:last.child[l:nc].block
+              let l:st = l:nc
               break
             endif
           endfor
-          let cl = last.child[st :]
-          let cls = []
-          for c in range(n[1:])
-            for cc in cl
-              if cc.multiplier > 1
-                let cc.basedirect = c + 1
+          let l:cl = l:last.child[l:st :]
+          let l:cls = []
+          for l:c in range(l:n[1:])
+            for l:cc in l:cl
+              if l:cc.multiplier > 1
+                let l:cc.basedirect = l:c + 1
               else
-                let cc.basevalue = c + 1
+                let l:cc.basevalue = l:c + 1
               endif
             endfor
-            let cls += deepcopy(cl)
+            let l:cls += deepcopy(l:cl)
           endfor
-          if st > 0
-            let last.child = last.child[:st-1] + cls
+          if l:st > 0
+            let l:last.child = l:last.child[:l:st-1] + l:cls
           else
-            let last.child = cls
+            let l:last.child = l:cls
           endif
         endif
       endfor
     endif
-    let abbr = abbr[stridx(abbr, match) + len(match):]
-    if abbr == '/'
-      let current.empty = 1
+    let l:abbr = l:abbr[stridx(l:abbr, l:match) + len(l:match):]
+    if l:abbr == '/'
+      let l:current.empty = 1
     endif
 
     if g:emmet_debug > 1
-      echomsg 'str='.str
-      echomsg 'block_start='.block_start
-      echomsg 'tag_name='.tag_name
-      echomsg 'operator='.operator
-      echomsg 'attributes='.attributes
-      echomsg 'value='.value
-      echomsg 'basevalue='.basevalue
-      echomsg 'multiplier='.multiplier
-      echomsg 'block_end='.block_end
-      echomsg 'abbr='.abbr
-      echomsg 'pos='.string(pos)
+      echomsg 'str='.l:str
+      echomsg 'block_start='.l:block_start
+      echomsg 'tag_name='.l:tag_name
+      echomsg 'operator='.l:operator
+      echomsg 'attributes='.l:attributes
+      echomsg 'value='.l:value
+      echomsg 'basevalue='.l:basevalue
+      echomsg 'multiplier='.l:multiplier
+      echomsg 'block_end='.l:block_end
+      echomsg 'abbr='.l:abbr
+      echomsg 'pos='.string(l:pos)
       echomsg '---'
     endif
   endwhile
-  return root
+  return l:root
 endfunction
 
 function! s:dollar_add(base,no) abort
@@ -472,438 +472,438 @@ function! s:dollar_add(base,no) abort
 endfunction
 
 function! emmet#lang#html#toString(settings, current, type, inline, filters, itemno, indent) abort
-  let settings = a:settings
-  let current = a:current
-  let type = a:type
-  let inline = a:inline
-  let filters = a:filters
-  let itemno = a:itemno
-  let indent = a:indent
-  let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
-  let q = emmet#getResource(type, 'quote_char', '"')
-  let ct = emmet#getResource(type, 'comment_type', 'both')
-  let an = emmet#getResource(type, 'attribute_name', {})
-  let empty_elements = emmet#getResource(type, 'empty_elements', settings.html.empty_elements)
-  let empty_element_suffix = emmet#getResource(type, 'empty_element_suffix', settings.html.empty_element_suffix)
+  let l:settings = a:settings
+  let l:current = a:current
+  let l:type = a:type
+  let l:inline = a:inline
+  let l:filters = a:filters
+  let l:itemno = a:itemno
+  let l:indent = a:indent
+  let l:dollar_expr = emmet#getResource(l:type, 'dollar_expr', 1)
+  let l:q = emmet#getResource(l:type, 'quote_char', '"')
+  let l:ct = emmet#getResource(l:type, 'comment_type', 'both')
+  let l:an = emmet#getResource(l:type, 'attribute_name', {})
+  let l:empty_elements = emmet#getResource(l:type, 'empty_elements', l:settings.html.empty_elements)
+  let l:empty_element_suffix = emmet#getResource(l:type, 'empty_element_suffix', l:settings.html.empty_element_suffix)
 
-  if emmet#useFilter(filters, 'haml')
-    return emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
+  if emmet#useFilter(l:filters, 'haml')
+    return emmet#lang#haml#toString(l:settings, l:current, l:type, l:inline, l:filters, l:itemno, l:indent)
   endif
-  if emmet#useFilter(filters, 'slim')
-    return emmet#lang#slim#toString(settings, current, type, inline, filters, itemno, indent)
-  endif
-
-  let comment = ''
-  let current_name = current.name
-  if dollar_expr
-    let current_name = substitute(current_name, '\$$', itemno+1, '')
+  if emmet#useFilter(l:filters, 'slim')
+    return emmet#lang#slim#toString(l:settings, l:current, l:type, l:inline, l:filters, l:itemno, l:indent)
   endif
 
-  let str = ''
-  if len(current_name) == 0
-    let text = current.value[1:-2]
-    if dollar_expr
+  let l:comment = ''
+  let l:current_name = l:current.name
+  if l:dollar_expr
+    let l:current_name = substitute(l:current_name, '\$$', l:itemno+1, '')
+  endif
+
+  let l:str = ''
+  if len(l:current_name) == 0
+    let l:text = l:current.value[1:-2]
+    if l:dollar_expr
       " TODO: regexp engine specified
-      let nr = itemno + 1
+      let l:nr = l:itemno + 1
       if exists('&regexpengine')
-        let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr)).submatch(3)', 'g')
+        let l:text = substitute(l:text, '\%#=1\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],l:nr)).submatch(3)', 'g')
       else
-        let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr).submatch(3)', 'g')
+        let l:text = substitute(l:text, '\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],l:nr).submatch(3)', 'g')
       endif
-      let text = substitute(text, '\${nr}', "\n", 'g')
-      let text = substitute(text, '\\\$', '$', 'g')
+      let l:text = substitute(l:text, '\${nr}', "\n", 'g')
+      let l:text = substitute(l:text, '\\\$', '$', 'g')
     endif
-    return text
+    return l:text
   endif
-  if len(current_name) > 0
-    let str .= '<' . current_name
+  if len(l:current_name) > 0
+    let l:str .= '<' . l:current_name
   endif
-  for attr in emmet#util#unique(current.attrs_order + keys(current.attr))
-    if !has_key(current.attr, attr)
+  for l:attr in emmet#util#unique(l:current.attrs_order + keys(l:current.attr))
+    if !has_key(l:current.attr, l:attr)
       continue
     endif
-    let Val = current.attr[attr]
-    if type(Val) == 2 && Val == function('emmet#types#true')
-      unlet Val
-      let Val = 'true'
+    let l:Val = l:current.attr[l:attr]
+    if type(l:Val) == 2 && l:Val == function('emmet#types#true')
+      unlet l:Val
+      let l:Val = 'true'
       if g:emmet_html5
-        let str .= ' ' . attr
+        let l:str .= ' ' . l:attr
       else
-        let str .= ' ' . attr . '=' . q . attr . q
+        let l:str .= ' ' . l:attr . '=' . l:q . l:attr . l:q
       endif
-      if emmet#useFilter(filters, 'c')
-        if attr ==# 'id' | let comment .= '#' . Val | endif
-        if attr ==# 'class' | let comment .= '.' . Val | endif
+      if emmet#useFilter(l:filters, 'c')
+        if l:attr ==# 'id' | let l:comment .= '#' . l:Val | endif
+        if l:attr ==# 'class' | let l:comment .= '.' . l:Val | endif
       endif
     else
-      if dollar_expr
-        while Val =~# '\$\([^#{]\|$\)'
+      if l:dollar_expr
+        while l:Val =~# '\$\([^#{]\|$\)'
           " TODO: regexp engine specified
           if exists('&regexpengine')
-            let Val = substitute(Val, '\%#=1\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+            let l:Val = substitute(l:Val, '\%#=1\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", l:itemno+1).submatch(2)', 'g')
           else
-            let Val = substitute(Val, '\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+            let l:Val = substitute(l:Val, '\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", l:itemno+1).submatch(2)', 'g')
           endif
         endwhile
-        let attr = substitute(attr, '\$$', itemno+1, '')
+        let l:attr = substitute(l:attr, '\$$', l:itemno+1, '')
       endif
-      if attr ==# 'class' && emmet#useFilter(filters, 'bem')
-        let vals = split(Val, '\s\+')
-        let Val = ''
-        let lead = ''
-        for _val in vals
-          if len(Val) > 0
-            let Val .= ' '
+      if l:attr ==# 'class' && emmet#useFilter(l:filters, 'bem')
+        let l:vals = split(l:Val, '\s\+')
+        let l:Val = ''
+        let l:lead = ''
+        for l:_val in l:vals
+          if len(l:Val) > 0
+            let l:Val .= ' '
           endif
-          if _val =~# '^_'
-            if has_key(current.parent.attr, 'class')
-              let lead = current.parent.attr["class"]
-              if _val =~# '^__'
-                let Val .= lead . _val
+          if l:_val =~# '^_'
+            if has_key(l:current.parent.attr, 'class')
+              let l:lead = l:current.parent.attr["class"]
+              if l:_val =~# '^__'
+                let l:Val .= l:lead . l:_val
               else
-                let Val .= lead . ' ' . lead . _val
+                let l:Val .= l:lead . ' ' . l:lead . l:_val
               endif
             else
-              let lead = split(vals[0], '_')[0]
-              let Val .= lead . _val
+              let l:lead = split(l:vals[0], '_')[0]
+              let l:Val .= l:lead . l:_val
             endif
-          elseif _val =~# '^-'
-            for l in split(_val, '_')
-              if len(Val) > 0
-                let Val .= ' '
+          elseif l:_val =~# '^-'
+            for l:l in split(l:_val, '_')
+              if len(l:Val) > 0
+                let l:Val .= ' '
               endif
-              let l = substitute(l, '^-', '__', '')
-              if len(lead) == 0
-                let pattr = current.parent.attr
-                if has_key(pattr, 'class')
-                  let lead = split(pattr['class'], '\s\+')[0]
+              let l:l = substitute(l:l, '^-', '__', '')
+              if len(l:lead) == 0
+                let l:pattr = l:current.parent.attr
+                if has_key(l:pattr, 'class')
+                  let l:lead = split(l:pattr['class'], '\s\+')[0]
                 endif
               endif
-              let Val .= lead . l
-              let lead .= l . '_'
+              let l:Val .= l:lead . l:l
+              let l:lead .= l:l . '_'
             endfor
           else
-            let Val .= _val
+            let l:Val .= l:_val
           endif
         endfor
       endif
-      if has_key(an, attr)
-        let attr = an[attr]
+      if has_key(l:an, l:attr)
+        let l:attr = l:an[l:attr]
       endif
-      if emmet#isExtends(type, 'jsx') && Val =~ '^{.*}$'
-        let str .= ' ' . attr . '=' . Val
+      if emmet#isExtends(l:type, 'jsx') && l:Val =~ '^{.*}$'
+        let l:str .= ' ' . l:attr . '=' . l:Val
       else
-        let str .= ' ' . attr . '=' . q . Val . q
+        let l:str .= ' ' . l:attr . '=' . l:q . l:Val . l:q
       endif
-      if emmet#useFilter(filters, 'c')
-        if attr ==# 'id' | let comment .= '#' . Val | endif
-        if attr ==# 'class' | let comment .= '.' . Val | endif
+      if emmet#useFilter(l:filters, 'c')
+        if l:attr ==# 'id' | let l:comment .= '#' . l:Val | endif
+        if l:attr ==# 'class' | let l:comment .= '.' . l:Val | endif
       endif
     endif
-    unlet Val
+    unlet l:Val
   endfor
-  if len(comment) > 0 && ct ==# 'both'
-    let str = '<!-- ' . comment . " -->\n" . str
+  if len(l:comment) > 0 && l:ct ==# 'both'
+    let l:str = '<!-- ' . l:comment . " -->\n" . l:str
   endif
-  if current.empty
-    let str .= ' />'
-  elseif stridx(','.empty_elements.',', ','.current_name.',') != -1
-    let str .= empty_element_suffix
+  if l:current.empty
+    let l:str .= ' />'
+  elseif stridx(','.l:empty_elements.',', ','.l:current_name.',') != -1
+    let l:str .= l:empty_element_suffix
   else
-    let str .= '>'
-    let text = current.value[1:-2]
-    if dollar_expr
+    let l:str .= '>'
+    let l:text = l:current.value[1:-2]
+    if l:dollar_expr
       " TODO: regexp engine specified
-      let nr = itemno + 1
+      let l:nr = l:itemno + 1
       if exists('&regexpengine')
-        let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr)).submatch(3)', 'g')
+        let l:text = substitute(l:text, '\%#=1\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],l:nr)).submatch(3)', 'g')
       else
-        let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],nr)).submatch(3)', 'g')
+        let l:text = substitute(l:text, '\%(\\\)\@\<!\(\$\+\)\(@-\?[0-9]\+\)\{0,1}\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d",s:dollar_add(submatch(2)[1:],l:nr)).submatch(3)', 'g')
       endif
-      let text = substitute(text, '\${nr}', "\n", 'g')
-      let text = substitute(text, '\\\$', '$', 'g')
-      if text != ''
-        let str = substitute(str, '\("\zs$#\ze"\|\s\zs\$#"\|"\$#\ze\s\)', text, 'g')
+      let l:text = substitute(l:text, '\${nr}', "\n", 'g')
+      let l:text = substitute(l:text, '\\\$', '$', 'g')
+      if l:text != ''
+        let l:str = substitute(l:str, '\("\zs$#\ze"\|\s\zs\$#"\|"\$#\ze\s\)', l:text, 'g')
       endif
     endif
-    let str .= text
-    let nc = len(current.child)
-    let dr = 0
-    if nc > 0
-      for n in range(nc)
-        let child = current.child[n]
-        if child.multiplier > 1 || (child.multiplier == 1 && len(child.child) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1) || settings.html.block_all_childless
-          let str .= "\n" . indent
-          let dr = 1
-        elseif len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1
-          if nc > 1 || (len(child.name) > 0 && stridx(','.settings.html.inline_elements.',', ','.child.name.',') == -1)
-            let str .= "\n" . indent
-            let dr = 1
-          elseif current.multiplier == 1 && nc == 1 && len(child.name) == 0
-            let str .= "\n" . indent
-            let dr = 1
+    let l:str .= l:text
+    let l:nc = len(l:current.child)
+    let l:dr = 0
+    if l:nc > 0
+      for l:n in range(l:nc)
+        let l:child = l:current.child[l:n]
+        if l:child.multiplier > 1 || (l:child.multiplier == 1 && len(l:child.child) > 0 && stridx(','.l:settings.html.inline_elements.',', ','.l:current_name.',') == -1) || l:settings.html.block_all_childless
+          let l:str .= "\n" . l:indent
+          let l:dr = 1
+        elseif len(l:current_name) > 0 && stridx(','.l:settings.html.inline_elements.',', ','.l:current_name.',') == -1
+          if l:nc > 1 || (len(l:child.name) > 0 && stridx(','.l:settings.html.inline_elements.',', ','.l:child.name.',') == -1)
+            let l:str .= "\n" . l:indent
+            let l:dr = 1
+          elseif l:current.multiplier == 1 && l:nc == 1 && len(l:child.name) == 0
+            let l:str .= "\n" . l:indent
+            let l:dr = 1
           endif
         endif
-        let inner = emmet#toString(child, type, 0, filters, itemno, indent)
-        let inner = substitute(inner, "^\n", '', 'g')
-        let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
-        let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
-        let str .= inner
+        let l:inner = emmet#toString(l:child, l:type, 0, l:filters, l:itemno, l:indent)
+        let l:inner = substitute(l:inner, "^\n", '', 'g')
+        let l:inner = substitute(l:inner, "\n", "\n" . escape(l:indent, '\'), 'g')
+        let l:inner = substitute(l:inner, "\n" . escape(l:indent, '\') . '$', '', 'g')
+        let l:str .= l:inner
       endfor
     else
-      if settings.html.indent_blockelement && len(current_name) > 0 && stridx(','.settings.html.inline_elements.',', ','.current_name.',') == -1 || settings.html.block_all_childless
-        let str .= "\n" . indent . '${cursor}' . "\n"
+      if l:settings.html.indent_blockelement && len(l:current_name) > 0 && stridx(','.l:settings.html.inline_elements.',', ','.l:current_name.',') == -1 || l:settings.html.block_all_childless
+        let l:str .= "\n" . l:indent . '${cursor}' . "\n"
       else
-        let str .= '${cursor}'
+        let l:str .= '${cursor}'
       endif
     endif
-    if dr
-      let str .= "\n"
+    if l:dr
+      let l:str .= "\n"
     endif
-    let str .= '</' . current_name . '>'
+    let l:str .= '</' . l:current_name . '>'
   endif
-  if len(comment) > 0
-    if ct ==# 'lastonly'
-      let str .= '<!-- ' . comment . ' -->'
+  if len(l:comment) > 0
+    if l:ct ==# 'lastonly'
+      let l:str .= '<!-- ' . l:comment . ' -->'
     else
-      let str .= "\n<!-- /" . comment . ' -->'
+      let l:str .= "\n<!-- /" . l:comment . ' -->'
     endif
   endif
-  if len(current_name) > 0 && current.multiplier > 0 || stridx(','.settings.html.block_elements.',', ','.current_name.',') != -1
-    let str .= "\n"
+  if len(l:current_name) > 0 && l:current.multiplier > 0 || stridx(','.l:settings.html.block_elements.',', ','.l:current_name.',') != -1
+    let l:str .= "\n"
   endif
-  return str
+  return l:str
 endfunction
 
 function! emmet#lang#html#imageSize() abort
-  let img_region = emmet#util#searchRegion('<img\s', '>')
-  if !emmet#util#regionIsValid(img_region) || !emmet#util#cursorInRegion(img_region)
+  let l:img_region = emmet#util#searchRegion('<img\s', '>')
+  if !emmet#util#regionIsValid(l:img_region) || !emmet#util#cursorInRegion(l:img_region)
     return
   endif
-  let content = emmet#util#getContent(img_region)
-  if content !~# '^<img[^><]\+>$'
+  let l:content = emmet#util#getContent(l:img_region)
+  if l:content !~# '^<img[^><]\+>$'
     return
   endif
-  let current = emmet#lang#html#parseTag(content)
-  if empty(current) || !has_key(current.attr, 'src')
+  let l:current = emmet#lang#html#parseTag(l:content)
+  if empty(l:current) || !has_key(l:current.attr, 'src')
     return
   endif
-  let fn = current.attr.src
-  if fn =~# '^\s*$'
+  let l:fn = l:current.attr.src
+  if l:fn =~# '^\s*$'
     return
-  elseif fn !~# '^\(/\|http\)'
-    let fn = simplify(expand('%:h') . '/' . fn)
+  elseif l:fn !~# '^\(/\|http\)'
+    let l:fn = simplify(expand('%:h') . '/' . l:fn)
   endif
 
-  let [width, height] = emmet#util#getImageSize(fn)
-  if width == -1 && height == -1
+  let [l:width, l:height] = emmet#util#getImageSize(l:fn)
+  if l:width == -1 && l:height == -1
     return
   endif
-  let current.attr.width = width
-  let current.attr.height = height
-  let current.attrs_order += ['width', 'height']
-  let html = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
-  let html = substitute(html, '\${cursor}', '', '')
-  call emmet#util#setContent(img_region, html)
+  let l:current.attr.width = l:width
+  let l:current.attr.height = l:height
+  let l:current.attrs_order += ['width', 'height']
+  let l:html = substitute(emmet#toString(l:current, 'html', 1), '\n', '', '')
+  let l:html = substitute(l:html, '\${cursor}', '', '')
+  call emmet#util#setContent(l:img_region, l:html)
 endfunction
 
 function! emmet#lang#html#imageEncode() abort
-  let img_region = emmet#util#searchRegion('<img\s', '>')
-  if !emmet#util#regionIsValid(img_region) || !emmet#util#cursorInRegion(img_region)
+  let l:img_region = emmet#util#searchRegion('<img\s', '>')
+  if !emmet#util#regionIsValid(l:img_region) || !emmet#util#cursorInRegion(l:img_region)
     return
   endif
-  let content = emmet#util#getContent(img_region)
-  if content !~# '^<img[^><]\+>$'
+  let l:content = emmet#util#getContent(l:img_region)
+  if l:content !~# '^<img[^><]\+>$'
     return
   endif
-  let current = emmet#lang#html#parseTag(content)
-  if empty(current) || !has_key(current.attr, 'src')
+  let l:current = emmet#lang#html#parseTag(l:content)
+  if empty(l:current) || !has_key(l:current.attr, 'src')
     return
   endif
-  let fn = current.attr.src
-  if fn =~# '^\s*$'
+  let l:fn = l:current.attr.src
+  if l:fn =~# '^\s*$'
     return
-  elseif fn !~# '^\(/\|http\)'
-    let fn = simplify(expand('%:h') . '/' . fn)
+  elseif l:fn !~# '^\(/\|http\)'
+    let l:fn = simplify(expand('%:h') . '/' . l:fn)
   endif
 
-  let encoded = emmet#util#imageEncodeDecode(fn, 0)
-  let current.attr.src = encoded
-  let content = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
-  let content = substitute(content, '\${cursor}', '', '')
-  call emmet#util#setContent(img_region, content)
+  let l:encoded = emmet#util#imageEncodeDecode(l:fn, 0)
+  let l:current.attr.src = l:encoded
+  let l:content = substitute(emmet#toString(l:current, 'html', 1), '\n', '', '')
+  let l:content = substitute(l:content, '\${cursor}', '', '')
+  call emmet#util#setContent(l:img_region, l:content)
 endfunction
 
 function! emmet#lang#html#parseTag(tag) abort
-  let current = emmet#newNode()
-  let mx = '<\([a-zA-Z][a-zA-Z0-9-]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9-]\+=\?\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
-  let match = matchstr(a:tag, mx)
-  let current.name = substitute(match, mx, '\1', 'i')
-  let attrs = substitute(match, mx, '\2', 'i')
-  let mx = '\([a-zA-Z0-9-]\+\)\(\(=[^"'' \t]\+\)\|="\([^"]\{-}\)"\|=''\([^'']\{-}\)''\)\?'
-  while len(attrs) > 0
-    let match = matchstr(attrs, mx)
-    if len(match) == 0
+  let l:current = emmet#newNode()
+  let l:mx = '<\([a-zA-Z][a-zA-Z0-9-]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9-]\+=\?\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
+  let l:match = matchstr(a:tag, l:mx)
+  let l:current.name = substitute(l:match, l:mx, '\1', 'i')
+  let l:attrs = substitute(l:match, l:mx, '\2', 'i')
+  let l:mx = '\([a-zA-Z0-9-]\+\)\(\(=[^"'' \t]\+\)\|="\([^"]\{-}\)"\|=''\([^'']\{-}\)''\)\?'
+  while len(l:attrs) > 0
+    let l:match = matchstr(l:attrs, l:mx)
+    if len(l:match) == 0
       break
     endif
-    let attr_match = matchlist(match, mx)
-    let name = attr_match[1]
-    if len(attr_match[2])
-      let Val = len(attr_match[3]) ? attr_match[3] : attr_match[4]
+    let l:attr_match = matchlist(l:match, l:mx)
+    let l:name = l:attr_match[1]
+    if len(l:attr_match[2])
+      let l:Val = len(l:attr_match[3]) ? l:attr_match[3] : l:attr_match[4]
     else
-      let Val = function('emmet#types#true')
+      let l:Val = function('emmet#types#true')
     endif
-    let current.attr[name] = Val
-    let current.attrs_order += [name]
-    let attrs = attrs[stridx(attrs, match) + len(match):]
+    let l:current.attr[l:name] = l:Val
+    let l:current.attrs_order += [l:name]
+    let l:attrs = l:attrs[stridx(l:attrs, l:match) + len(l:match):]
   endwhile
-  return current
+  return l:current
 endfunction
 
 function! emmet#lang#html#toggleComment() abort
-  let orgpos = getpos('.')
-  let curpos = getpos('.')
-  let mx = '<\%#[^>]*>'
+  let l:orgpos = getpos('.')
+  let l:curpos = getpos('.')
+  let l:mx = '<\%#[^>]*>'
   while 1
-    let block = emmet#util#searchRegion('<!--', '-->')
-    if emmet#util#regionIsValid(block)
-      let block[1][1] += 2
-      let content = emmet#util#getContent(block)
-      let content = substitute(content, '^<!--\s\(.*\)\s-->$', '\1', '')
-      call emmet#util#setContent(block, content)
-      silent! call setpos('.', orgpos)
+    let l:block = emmet#util#searchRegion('<!--', '-->')
+    if emmet#util#regionIsValid(l:block)
+      let l:block[1][1] += 2
+      let l:content = emmet#util#getContent(l:block)
+      let l:content = substitute(l:content, '^<!--\s\(.*\)\s-->$', '\1', '')
+      call emmet#util#setContent(l:block, l:content)
+      silent! call setpos('.', l:orgpos)
       return
     endif
-    let block = emmet#util#searchRegion('<[^>]', '>')
-    if !emmet#util#regionIsValid(block)
-      let pos1 = searchpos('<', 'bcW')
-      if pos1[0] == 0 && pos1[1] == 0
+    let l:block = emmet#util#searchRegion('<[^>]', '>')
+    if !emmet#util#regionIsValid(l:block)
+      let l:pos1 = searchpos('<', 'bcW')
+      if l:pos1[0] == 0 && l:pos1[1] == 0
         return
       endif
-      let curpos = getpos('.')
+      let l:curpos = getpos('.')
       continue
     endif
-    let pos1 = block[0]
-    let pos2 = block[1]
-    let content = emmet#util#getContent(block)
-    let tag_name = matchstr(content, '^<\zs/\{0,1}[^ \r\n>]\+')
-    if tag_name[0] ==# '/'
-      call setpos('.', [0, pos1[0], pos1[1], 0])
-      let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^/>]*>', '', '</' . tag_name[1:] . '>', 'bnW')
-      let pos1 = searchpos('>', 'cneW')
-      let block = [pos2, pos1]
-    elseif tag_name =~# '/$'
-      if !emmet#util#pointInRegion(orgpos[1:2], block)
+    let l:pos1 = l:block[0]
+    let l:pos2 = l:block[1]
+    let l:content = emmet#util#getContent(l:block)
+    let l:tag_name = matchstr(l:content, '^<\zs/\{0,1}[^ \r\n>]\+')
+    if l:tag_name[0] ==# '/'
+      call setpos('.', [0, l:pos1[0], l:pos1[1], 0])
+      let l:pos2 = searchpairpos('<'. l:tag_name[1:] . '\>[^/>]*>', '', '</' . l:tag_name[1:] . '>', 'bnW')
+      let l:pos1 = searchpos('>', 'cneW')
+      let l:block = [l:pos2, l:pos1]
+    elseif l:tag_name =~# '/$'
+      if !emmet#util#pointInRegion(l:orgpos[1:2], l:block)
         " it's broken tree
-        call setpos('.', orgpos)
-        let block = emmet#util#searchRegion('>', '<')
-        let content = '><!-- ' . emmet#util#getContent(block)[1:-2] . ' --><'
-        call emmet#util#setContent(block, content)
-        silent! call setpos('.', orgpos)
+        call setpos('.', l:orgpos)
+        let l:block = emmet#util#searchRegion('>', '<')
+        let l:content = '><!-- ' . emmet#util#getContent(l:block)[1:-2] . ' --><'
+        call emmet#util#setContent(l:block, l:content)
+        silent! call setpos('.', l:orgpos)
         return
       endif
     else
-      call setpos('.', [0, pos2[0], pos2[1], 0])
-      let pos3 = searchpairpos('<'. tag_name . '\>[^/>]*>', '', '</' . tag_name . '>', 'nW')
-      if pos3 == [0, 0]
-        let block = [pos1, pos2]
+      call setpos('.', [0, l:pos2[0], l:pos2[1], 0])
+      let l:pos3 = searchpairpos('<'. l:tag_name . '\>[^/>]*>', '', '</' . l:tag_name . '>', 'nW')
+      if l:pos3 == [0, 0]
+        let l:block = [l:pos1, l:pos2]
       else
-        call setpos('.', [0, pos3[0], pos3[1], 0])
-        let pos2 = searchpos('>', 'neW')
-        let block = [pos1, pos2]
+        call setpos('.', [0, l:pos3[0], l:pos3[1], 0])
+        let l:pos2 = searchpos('>', 'neW')
+        let l:block = [l:pos1, l:pos2]
       endif
     endif
-    if !emmet#util#regionIsValid(block)
-      silent! call setpos('.', orgpos)
+    if !emmet#util#regionIsValid(l:block)
+      silent! call setpos('.', l:orgpos)
       return
     endif
-    if emmet#util#pointInRegion(curpos[1:2], block)
-      let content = '<!-- ' . emmet#util#getContent(block) . ' -->'
-      call emmet#util#setContent(block, content)
-      silent! call setpos('.', orgpos)
+    if emmet#util#pointInRegion(l:curpos[1:2], l:block)
+      let l:content = '<!-- ' . emmet#util#getContent(l:block) . ' -->'
+      call emmet#util#setContent(l:block, l:content)
+      silent! call setpos('.', l:orgpos)
       return
     endif
   endwhile
 endfunction
 
 function! emmet#lang#html#balanceTag(flag) range abort
-  let vblock = emmet#util#getVisualBlock()
-  let curpos = emmet#util#getcurpos()
-  let settings = emmet#getSettings()
+  let l:vblock = emmet#util#getVisualBlock()
+  let l:curpos = emmet#util#getcurpos()
+  let l:settings = emmet#getSettings()
 
   if a:flag > 0
-    let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*'
-    let last = curpos[1:2]
+    let l:mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*'
+    let l:last = l:curpos[1:2]
     while 1
-      let pos1 = searchpos(mx, 'bW')
-      let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-      let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
-      if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
-        let pos2 = searchpos('>', 'nW')
+      let l:pos1 = searchpos(l:mx, 'bW')
+      let l:content = matchstr(getline(l:pos1[0])[l:pos1[1]-1:], l:mx)
+      let l:tag_name = matchstr(l:content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
+      if stridx(','.l:settings.html.empty_elements.',', ','.l:tag_name.',') != -1
+        let l:pos2 = searchpos('>', 'nW')
       else
-        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
+        let l:pos2 = searchpairpos('<' . l:tag_name . '[^>]*>', '', '</'. l:tag_name . '\zs>', 'nW')
       endif
-      let block = [pos1, pos2]
-      if pos1 == [0, 0]
+      let l:block = [l:pos1, l:pos2]
+      if l:pos1 == [0, 0]
         break
       endif
-      if emmet#util#pointInRegion(last, block) && emmet#util#regionIsValid(block)
-        call emmet#util#selectRegion(block)
+      if emmet#util#pointInRegion(l:last, l:block) && emmet#util#regionIsValid(l:block)
+        call emmet#util#selectRegion(l:block)
         return
       endif
-      if pos1 == last
+      if l:pos1 == l:last
         break
       endif
-      let last = pos1
+      let l:last = l:pos1
     endwhile
   else
-    let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+    let l:mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     while 1
-      let pos1 = searchpos(mx, 'W')
-      if pos1 == [0, 0] || pos1 == curpos[1:2]
-        let pos1 = searchpos('>\zs', 'W')
-        let pos2 = searchpos('.\ze<', 'W')
-        let block = [pos1, pos2]
-        if emmet#util#regionIsValid(block)
-          call emmet#util#selectRegion(block)
+      let l:pos1 = searchpos(l:mx, 'W')
+      if l:pos1 == [0, 0] || l:pos1 == l:curpos[1:2]
+        let l:pos1 = searchpos('>\zs', 'W')
+        let l:pos2 = searchpos('.\ze<', 'W')
+        let l:block = [l:pos1, l:pos2]
+        if emmet#util#regionIsValid(l:block)
+          call emmet#util#selectRegion(l:block)
           return
         endif
       endif
-      let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-      let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
-      if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
-        let pos2 = searchpos('>', 'nW')
+      let l:content = matchstr(getline(l:pos1[0])[l:pos1[1]-1:], l:mx)
+      let l:tag_name = matchstr(l:content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
+      if stridx(','.l:settings.html.empty_elements.',', ','.l:tag_name.',') != -1
+        let l:pos2 = searchpos('>', 'nW')
       else
-        let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
+        let l:pos2 = searchpairpos('<' . l:tag_name . '[^>]*>', '', '</'. l:tag_name . '\zs>', 'nW')
       endif
-      let block = [pos1, pos2]
-      if pos1 == [0, 0]
+      let l:block = [l:pos1, l:pos2]
+      if l:pos1 == [0, 0]
         break
       endif
-      if emmet#util#regionIsValid(block)
-        call emmet#util#selectRegion(block)
+      if emmet#util#regionIsValid(l:block)
+        call emmet#util#selectRegion(l:block)
         return
       endif
     endwhile
   endif
-  call setpos('.', curpos)
+  call setpos('.', l:curpos)
 endfunction
 
 function! emmet#lang#html#moveNextPrevItem(flag) abort
   silent! exe "normal \<esc>"
-  let mx = '\%([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''">\]]*\)\{0,1}\)'
-  let pos = searchpos('\s'.mx.'\zs', '')
-  if pos != [0,0]
-    call feedkeys('v?\s\zs'.mx."\<cr>", '')
+  let l:mx = '\%([0-9a-zA-Z-:]\+\%(="[^"]*"\|=''[^'']*''\|[^ ''">\]]*\)\{0,1}\)'
+  let l:pos = searchpos('\s'.l:mx.'\zs', '')
+  if l:pos != [0,0]
+    call feedkeys('v?\s\zs'.l:mx."\<cr>", '')
   endif
   return ''
 endfunction
 
 function! emmet#lang#html#moveNextPrev(flag) abort
-  let pos = search('\%(</\w\+\)\@<!\zs><\/\|\(""\)\|^\(\s*\)$', a:flag ? 'Wpb' : 'Wp')
-  if pos == 3
+  let l:pos = search('\%(</\w\+\)\@<!\zs><\/\|\(""\)\|^\(\s*\)$', a:flag ? 'Wpb' : 'Wp')
+  if l:pos == 3
     startinsert!
-  elseif pos != 0
+  elseif l:pos != 0
     silent! normal! l
     startinsert
   endif
@@ -911,126 +911,126 @@ function! emmet#lang#html#moveNextPrev(flag) abort
 endfunction
 
 function! emmet#lang#html#splitJoinTag() abort
-  let curpos = emmet#util#getcurpos()
-  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
+  let l:curpos = emmet#util#getcurpos()
+  let l:mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
   while 1
-    let old = getpos('.')[1:2]
-    let pos1 = searchpos(mx, 'bcnW')
-    let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
-    let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-    if content[-2:] ==# '/>' && emmet#util#cursorInRegion(block)
-      let content = substitute(content[:-3], '\s*$', '', '')  . '></' . tag_name . '>'
-      call emmet#util#setContent(block, content)
-      call setpos('.', [0, block[0][0], block[0][1], 0])
+    let l:old = getpos('.')[1:2]
+    let l:pos1 = searchpos(l:mx, 'bcnW')
+    let l:content = matchstr(getline(l:pos1[0])[l:pos1[1]-1:], l:mx)
+    let l:tag_name = substitute(l:content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
+    let l:block = [l:pos1, [l:pos1[0], l:pos1[1] + len(l:content) - 1]]
+    if l:content[-2:] ==# '/>' && emmet#util#cursorInRegion(l:block)
+      let l:content = substitute(l:content[:-3], '\s*$', '', '')  . '></' . l:tag_name . '>'
+      call emmet#util#setContent(l:block, l:content)
+      call setpos('.', [0, l:block[0][0], l:block[0][1], 0])
       return
     endif
-    if tag_name[0] ==# '/'
-      let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
-      call setpos('.', [0, pos1[0], pos1[1], 0])
-      let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^/>]*>', '', '</' . tag_name[1:] . '>', 'W')
+    if l:tag_name[0] ==# '/'
+      let l:pos1 = searchpos('<' . l:tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+      call setpos('.', [0, l:pos1[0], l:pos1[1], 0])
+      let l:pos2 = searchpairpos('<'. l:tag_name[1:] . '\>[^/>]*>', '', '</' . l:tag_name[1:] . '>', 'W')
     else
-      let pos2 = searchpairpos('<'. tag_name . '[^/>]*>', '', '</' . tag_name . '>', 'W')
+      let l:pos2 = searchpairpos('<'. l:tag_name . '[^/>]*>', '', '</' . l:tag_name . '>', 'W')
     endif
-    if pos2 == [0, 0]
+    if l:pos2 == [0, 0]
       return
     endif
-    let pos2 = searchpos('>', 'neW')
-    let block = [pos1, pos2]
-    if emmet#util#pointInRegion(curpos[1:2], block)
-      let content = matchstr(content, mx)[:-2] . ' />'
-      call emmet#util#setContent(block, content)
-      call setpos('.', [0, block[0][0], block[0][1], 0])
+    let l:pos2 = searchpos('>', 'neW')
+    let l:block = [l:pos1, l:pos2]
+    if emmet#util#pointInRegion(l:curpos[1:2], l:block)
+      let l:content = matchstr(l:content, l:mx)[:-2] . ' />'
+      call emmet#util#setContent(l:block, l:content)
+      call setpos('.', [0, l:block[0][0], l:block[0][1], 0])
       return
     endif
-    if block[0][0] > 0
-      call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+    if l:block[0][0] > 0
+      call setpos('.', [0, l:block[0][0]-1, l:block[0][1], 0])
     else
-      call setpos('.', curpos)
+      call setpos('.', l:curpos)
       return
     endif
-    if pos1 == old
-      call setpos('.', curpos)
+    if l:pos1 == l:old
+      call setpos('.', l:curpos)
       return
     endif
   endwhile
 endfunction
 
 function! emmet#lang#html#removeTag() abort
-  let curpos = emmet#util#getcurpos()
-  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
+  let l:curpos = emmet#util#getcurpos()
+  let l:mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
 
-  let pos1 = searchpos(mx, 'bcnW')
-  let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
-  let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
-  if content[-2:] ==# '/>' && emmet#util#cursorInRegion(block)
-    call emmet#util#setContent(block, '')
-    call setpos('.', [0, block[0][0], block[0][1], 0])
+  let l:pos1 = searchpos(l:mx, 'bcnW')
+  let l:content = matchstr(getline(l:pos1[0])[l:pos1[1]-1:], l:mx)
+  let l:tag_name = substitute(l:content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
+  let l:block = [l:pos1, [l:pos1[0], l:pos1[1] + len(l:content) - 1]]
+  if l:content[-2:] ==# '/>' && emmet#util#cursorInRegion(l:block)
+    call emmet#util#setContent(l:block, '')
+    call setpos('.', [0, l:block[0][0], l:block[0][1], 0])
     return
   endif
-  if tag_name[0] ==# '/'
-    let pos1 = searchpos('<' . tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
-    call setpos('.', [0, pos1[0], pos1[1], 0])
-    let pos2 = searchpairpos('<'. tag_name[1:] . '\>[^/>]*>', '', '</' . tag_name[1:] . '>', 'W')
+  if l:tag_name[0] ==# '/'
+    let l:pos1 = searchpos('<' . l:tag_name[1:] . '[^a-zA-Z0-9]', 'bcnW')
+    call setpos('.', [0, l:pos1[0], l:pos1[1], 0])
+    let l:pos2 = searchpairpos('<'. l:tag_name[1:] . '\>[^/>]*>', '', '</' . l:tag_name[1:] . '>', 'W')
   else
-    let pos2 = searchpairpos('<'. tag_name . '[^/>]*>', '', '</' . tag_name . '>', 'W')
+    let l:pos2 = searchpairpos('<'. l:tag_name . '[^/>]*>', '', '</' . l:tag_name . '>', 'W')
   endif
-  if pos2 == [0, 0]
+  if l:pos2 == [0, 0]
     return
   endif
-  let pos2 = searchpos('>', 'neW')
-  let block = [pos1, pos2]
-  if emmet#util#pointInRegion(curpos[1:2], block)
-    call emmet#util#setContent(block, '')
-    call setpos('.', [0, block[0][0], block[0][1], 0])
+  let l:pos2 = searchpos('>', 'neW')
+  let l:block = [l:pos1, l:pos2]
+  if emmet#util#pointInRegion(l:curpos[1:2], l:block)
+    call emmet#util#setContent(l:block, '')
+    call setpos('.', [0, l:block[0][0], l:block[0][1], 0])
     return
   endif
-  if block[0][0] > 0
-    call setpos('.', [0, block[0][0]-1, block[0][1], 0])
+  if l:block[0][0] > 0
+    call setpos('.', [0, l:block[0][0]-1, l:block[0][1], 0])
   else
-    call setpos('.', curpos)
+    call setpos('.', l:curpos)
   endif
 endfunction
 
 function! emmet#lang#html#mergeLines() abort
-  let curpos = emmet#util#getcurpos()
-  let settings = emmet#getSettings()
+  let l:curpos = emmet#util#getcurpos()
+  let l:settings = emmet#getSettings()
 
-  let mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
-  let last = curpos[1:2]
+  let l:mx = '<\([a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
+  let l:last = l:curpos[1:2]
   while 1
-    let pos1 = searchpos(mx, 'bcW')
-    let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-	echomsg string(content)
-    let tag_name = matchstr(content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
-    if stridx(','.settings.html.empty_elements.',', ','.tag_name.',') != -1
-      let pos2 = searchpos('>', 'nW')
+    let l:pos1 = searchpos(l:mx, 'bcW')
+    let l:content = matchstr(getline(l:pos1[0])[l:pos1[1]-1:], l:mx)
+	echomsg string(l:content)
+    let l:tag_name = matchstr(l:content, '^<\zs[a-zA-Z0-9:_\-]*\ze')
+    if stridx(','.l:settings.html.empty_elements.',', ','.l:tag_name.',') != -1
+      let l:pos2 = searchpos('>', 'nW')
     else
-      let pos2 = searchpairpos('<' . tag_name . '[^>]*>', '', '</'. tag_name . '\zs>', 'nW')
+      let l:pos2 = searchpairpos('<' . l:tag_name . '[^>]*>', '', '</'. l:tag_name . '\zs>', 'nW')
     endif
-    if pos1 == [0, 0] || pos2 == [0, 0]
-      call setpos('.', curpos)
+    if l:pos1 == [0, 0] || l:pos2 == [0, 0]
+      call setpos('.', l:curpos)
       return
     endif
-    let block = [pos1, pos2]
-    if emmet#util#pointInRegion(last, block) && emmet#util#regionIsValid(block)
+    let l:block = [l:pos1, l:pos2]
+    if emmet#util#pointInRegion(l:last, l:block) && emmet#util#regionIsValid(l:block)
       break
     endif
-    if pos1 == last
-      call setpos('.', curpos)
+    if l:pos1 == l:last
+      call setpos('.', l:curpos)
       return
     endif
-    let last = pos1
+    let l:last = l:pos1
   endwhile
 
-  let content = emmet#util#getContent(block)
-  let mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
-  let content = join(map(split(content, mx . '\zs\s*'), 'trim(v:val)'), '')
-  call emmet#util#setContent(block, content)
-  if block[0][0] > 0
-    call setpos('.', [0, block[0][0], block[0][1], 0])
+  let l:content = emmet#util#getContent(l:block)
+  let l:mx = '<\(/\{0,1}[a-zA-Z][-a-zA-Z0-9:_\-]*\)\%(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\s*\%(/\{0,1}\)>'
+  let l:content = join(map(split(l:content, l:mx . '\zs\s*'), 'trim(v:val)'), '')
+  call emmet#util#setContent(l:block, l:content)
+  if l:block[0][0] > 0
+    call setpos('.', [0, l:block[0][0], l:block[0][1], 0])
   else
-    call setpos('.', curpos)
+    call setpos('.', l:curpos)
   endif
 endfunction

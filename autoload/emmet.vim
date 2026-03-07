@@ -9,27 +9,27 @@ set cpoptions&vim
 let s:filtermx = '|\(\%(bem\|html\|blade\|haml\|slim\|e\|c\|s\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
 
 function! emmet#getExpandos(type, key) abort
-  let expandos = emmet#getResource(a:type, 'expandos', {})
-  if has_key(expandos, a:key)
-    return expandos[a:key]
+  let l:expandos = emmet#getResource(a:type, 'expandos', {})
+  if has_key(l:expandos, a:key)
+    return l:expandos[a:key]
   endif
   return a:key
 endfunction
 
 function! emmet#splitFilterArg(filters) abort
-  for f in a:filters
-    if f =~# '^/'
-      return f[1:]
+  for l:f in a:filters
+    if l:f =~# '^/'
+      return l:f[1:]
     endif
   endfor
   return ''
 endfunction
 
 function! emmet#useFilter(filters, filter) abort
-  for f in a:filters
-    if a:filter ==# '/' && f =~# '^/'
+  for l:f in a:filters
+    if a:filter ==# '/' && l:f =~# '^/'
       return 1
-    elseif f ==# a:filter
+    elseif l:f ==# a:filter
       return 1
     endif
   endfor
@@ -38,21 +38,21 @@ endfunction
 
 function! emmet#getIndentation(...) abort
   if a:0 > 0
-    let type = a:1
+    let l:type = a:1
   else
-    let type = emmet#getFileType()
+    let l:type = emmet#getFileType()
   endif
-  if has_key(s:emmet_settings, type) && has_key(s:emmet_settings[type], 'indentation')
-    let indent = s:emmet_settings[type].indentation
+  if has_key(s:emmet_settings, l:type) && has_key(s:emmet_settings[l:type], 'indentation')
+    let l:indent = s:emmet_settings[l:type].indentation
   elseif has_key(s:emmet_settings, 'indentation')
-    let indent = s:emmet_settings.indentation
+    let l:indent = s:emmet_settings.indentation
   elseif has_key(s:emmet_settings.variables, 'indentation')
-    let indent = s:emmet_settings.variables.indentation
+    let l:indent = s:emmet_settings.variables.indentation
   else
-    let sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
-    let indent = (&l:expandtab || &l:tabstop !=# sw) ? repeat(' ', sw) : "\t"
+    let l:sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
+    let l:indent = (&l:expandtab || &l:tabstop !=# l:sw) ? repeat(' ', l:sw) : "\t"
   endif
-  return indent
+  return l:indent
 endfunction
 
 function! emmet#getBaseType(type) abort
@@ -62,15 +62,15 @@ function! emmet#getBaseType(type) abort
   if !has_key(s:emmet_settings[a:type], 'extends')
     return a:type
   endif
-  let extends = s:emmet_settings[a:type].extends
-  if type(extends) ==# 1
-    let tmp = split(extends, '\s*,\s*')
-    let ext = tmp[0]
+  let l:extends = s:emmet_settings[a:type].extends
+  if type(l:extends) ==# 1
+    let l:tmp = split(l:extends, '\s*,\s*')
+    let l:ext = l:tmp[0]
   else
-    let ext = extends[0]
+    let l:ext = l:extends[0]
   endif
-  if a:type !=# ext
-    return emmet#getBaseType(ext)
+  if a:type !=# l:ext
+    return emmet#getBaseType(l:ext)
   endif
   return ''
 endfunction
@@ -85,9 +85,9 @@ function! emmet#isExtends(type, extend) abort
   if !has_key(s:emmet_settings[a:type], 'extends')
     return 0
   endif
-  let extends = emmet#lang#getExtends(a:type)
-  for ext in extends
-    if a:extend ==# ext
+  let l:extends = emmet#lang#getExtends(a:type)
+  for l:ext in l:extends
+    if a:extend ==# l:ext
       return 1
     endif
   endfor
@@ -95,9 +95,9 @@ function! emmet#isExtends(type, extend) abort
 endfunction
 
 function! emmet#parseIntoTree(abbr, type) abort
-  let abbr = a:abbr
-  let type = a:type
-  return emmet#lang#{emmet#lang#type(type)}#parseIntoTree(abbr, type)
+  let l:abbr = a:abbr
+  let l:type = a:type
+  return emmet#lang#{emmet#lang#type(l:type)}#parseIntoTree(l:abbr, l:type)
 endfunction
 
 function! emmet#expandAbbrIntelligent(feedkey) abort
@@ -108,62 +108,62 @@ function! emmet#expandAbbrIntelligent(feedkey) abort
 endfunction
 
 function! emmet#isExpandable() abort
-  let line = getline('.')
-  if col('.') < len(line)
-    let line = matchstr(line, '^\(.*\%'.col('.').'c\)')
+  let l:line = getline('.')
+  if col('.') < len(l:line)
+    let l:line = matchstr(l:line, '^\(.*\%'.col('.').'c\)')
   endif
-  let part = matchstr(line, '\(\S.*\)$')
-  let type = emmet#getFileType()
-  let rtype = emmet#lang#type(type)
-  let part = emmet#lang#{rtype}#findTokens(part)
-  return len(part) > 0
+  let l:part = matchstr(l:line, '\(\S.*\)$')
+  let l:type = emmet#getFileType()
+  let l:rtype = emmet#lang#type(l:type)
+  let l:part = emmet#lang#{l:rtype}#findTokens(l:part)
+  return len(l:part) > 0
 endfunction
 
 function! emmet#mergeConfig(lhs, rhs) abort
-  let [lhs, rhs] = [a:lhs, a:rhs]
-  if type(lhs) ==# 3
-    if type(rhs) ==# 3
-      let lhs += rhs
-      if len(lhs)
-        call remove(lhs, 0, len(lhs)-1)
+  let [l:lhs, l:rhs] = [a:lhs, a:rhs]
+  if type(l:lhs) ==# 3
+    if type(l:rhs) ==# 3
+      let l:lhs += l:rhs
+      if len(l:lhs)
+        call remove(l:lhs, 0, len(l:lhs)-1)
       endif
-      for rhi in rhs
-        call add(lhs, rhs[rhi])
+      for l:rhi in l:rhs
+        call add(l:lhs, l:rhs[l:rhi])
       endfor
-    elseif type(rhs) ==# 4
-      let lhs += map(keys(rhs), '{v:val : rhs[v:val]}')
+    elseif type(l:rhs) ==# 4
+      let l:lhs += map(keys(l:rhs), '{v:val : l:rhs[v:val]}')
     endif
-  elseif type(lhs) ==# 4
-    if type(rhs) ==# 3
-      for V in rhs
-        if type(V) != 4
+  elseif type(l:lhs) ==# 4
+    if type(l:rhs) ==# 3
+      for l:V in l:rhs
+        if type(l:V) != 4
           continue
         endif
-        for k in keys(V)
-          let lhs[k] = V[k]
+        for l:k in keys(l:V)
+          let l:lhs[l:k] = l:V[l:k]
         endfor
       endfor
-    elseif type(rhs) ==# 4
-      for key in keys(rhs)
-        if type(rhs[key]) ==# 3
-          if !has_key(lhs, key)
-            let lhs[key] = []
+    elseif type(l:rhs) ==# 4
+      for l:key in keys(l:rhs)
+        if type(l:rhs[l:key]) ==# 3
+          if !has_key(l:lhs, l:key)
+            let l:lhs[l:key] = []
           endif
-          if type(lhs[key]) == 3
-            let lhs[key] += rhs[key]
-          elseif type(lhs[key]) == 4
-            for k in keys(rhs[key])
-              let lhs[key][k] = rhs[key][k]
+          if type(l:lhs[l:key]) == 3
+            let l:lhs[l:key] += l:rhs[l:key]
+          elseif type(l:lhs[l:key]) == 4
+            for l:k in keys(l:rhs[l:key])
+              let l:lhs[l:key][l:k] = l:rhs[l:key][l:k]
             endfor
           endif
-        elseif type(rhs[key]) ==# 4
-          if has_key(lhs, key)
-            call emmet#mergeConfig(lhs[key], rhs[key])
+        elseif type(l:rhs[l:key]) ==# 4
+          if has_key(l:lhs, l:key)
+            call emmet#mergeConfig(l:lhs[l:key], l:rhs[l:key])
           else
-            let lhs[key] = rhs[key]
+            let l:lhs[l:key] = l:rhs[l:key]
           endif
         else
-          let lhs[key] = rhs[key]
+          let l:lhs[l:key] = l:rhs[l:key]
         endif
       endfor
     endif
@@ -175,127 +175,127 @@ function! emmet#newNode() abort
 endfunction
 
 function! s:itemno(itemno, current) abort
-  let current = a:current
-  if current.basedirect > 0
-    return current.basevalue - 1 + a:itemno
+  let l:current = a:current
+  if l:current.basedirect > 0
+    return l:current.basevalue - 1 + a:itemno
   else
-    return current.multiplier + current.basevalue - 2 - a:itemno
+    return l:current.multiplier + l:current.basevalue - 2 - a:itemno
   endif
 endfunction
 
 function! s:localvar(current, key) abort
-  let val = ''
-  let cur = a:current
-  while !empty(cur)
-    if has_key(cur, 'variables') && has_key(cur.variables, a:key)
-      return cur.variables[a:key]
+  let l:val = ''
+  let l:cur = a:current
+  while !empty(l:cur)
+    if has_key(l:cur, 'variables') && has_key(l:cur.variables, a:key)
+      return l:cur.variables[a:key]
     endif
-    let cur = cur.parent
+    let l:cur = l:cur.parent
   endwhile
   return ''
 endfunction
 
 function! emmet#toString(...) abort
-  let current = a:1
+  let l:current = a:1
   if a:0 > 1
-    let type = a:2
+    let l:type = a:2
   else
-    let type = &filetype
+    let l:type = &filetype
   endif
-  if len(type) ==# 0 | let type = 'html' | endif
+  if len(l:type) ==# 0 | let l:type = 'html' | endif
   if a:0 > 2
-    let inline = a:3
+    let l:inline = a:3
   else
-    let inline = 0
+    let l:inline = 0
   endif
   if a:0 > 3
     if type(a:4) ==# 1
-      let filters = split(a:4, '\s*,\s*')
+      let l:filters = split(a:4, '\s*,\s*')
     else
-      let filters = a:4
+      let l:filters = a:4
     endif
   else
-    let filters = ['html']
+    let l:filters = ['html']
   endif
   if a:0 > 4
-    let group_itemno = a:5
+    let l:group_itemno = a:5
   else
-    let group_itemno = 0
+    let l:group_itemno = 0
   endif
   if a:0 > 5
-    let indent = a:6
+    let l:indent = a:6
   else
-    let indent = ''
+    let l:indent = ''
   endif
 
-  let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
-  let itemno = 0
-  let str = ''
-  let rtype = emmet#lang#type(type)
-  while itemno < current.multiplier
-    if len(current.name)
-      if current.multiplier ==# 1
-        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, s:itemno(group_itemno, current), indent)
+  let l:dollar_expr = emmet#getResource(l:type, 'dollar_expr', 1)
+  let l:itemno = 0
+  let l:str = ''
+  let l:rtype = emmet#lang#type(l:type)
+  while l:itemno < l:current.multiplier
+    if len(l:current.name)
+      if l:current.multiplier ==# 1
+        let l:inner = emmet#lang#{l:rtype}#toString(s:emmet_settings, l:current, l:type, l:inline, l:filters, s:itemno(l:group_itemno, l:current), l:indent)
       else
-        let inner = emmet#lang#{rtype}#toString(s:emmet_settings, current, type, inline, filters, s:itemno(itemno, current), indent)
+        let l:inner = emmet#lang#{l:rtype}#toString(s:emmet_settings, l:current, l:type, l:inline, l:filters, s:itemno(l:itemno, l:current), l:indent)
       endif
-      if current.multiplier > 1
-        let inner = substitute(inner, '\$#', '$line'.(itemno+1).'$', 'g')
+      if l:current.multiplier > 1
+        let l:inner = substitute(l:inner, '\$#', '$line'.(l:itemno+1).'$', 'g')
       endif
-      let str .= inner
+      let l:str .= l:inner
     else
-      let snippet = current.snippet
-      if len(snippet) ==# 0
-        let snippets = emmet#getResource(type, 'snippets', {})
-        if !empty(snippets) && has_key(snippets, 'emmet_snippet')
-          let snippet = snippets['emmet_snippet']
+      let l:snippet = l:current.snippet
+      if len(l:snippet) ==# 0
+        let l:snippets = emmet#getResource(l:type, 'snippets', {})
+        if !empty(l:snippets) && has_key(l:snippets, 'emmet_snippet')
+          let l:snippet = l:snippets['emmet_snippet']
         endif
       endif
-      if len(snippet) > 0
-        let tmp = snippet
-        let tmp = substitute(tmp, '\${emmet_name}', current.name, 'g')
-        let snippet_node = emmet#newNode()
-        let snippet_node.value = '{'.tmp.'}'
-        let snippet_node.important = current.important
-        let snippet_node.multiplier = current.multiplier
-        let str .= emmet#lang#{rtype}#toString(s:emmet_settings, snippet_node, type, inline, filters, s:itemno(group_itemno, current), indent)
-        if current.multiplier > 1
-          let str .= "\n"
+      if len(l:snippet) > 0
+        let l:tmp = l:snippet
+        let l:tmp = substitute(l:tmp, '\${emmet_name}', l:current.name, 'g')
+        let l:snippet_node = emmet#newNode()
+        let l:snippet_node.value = '{'.l:tmp.'}'
+        let l:snippet_node.important = l:current.important
+        let l:snippet_node.multiplier = l:current.multiplier
+        let l:str .= emmet#lang#{l:rtype}#toString(s:emmet_settings, l:snippet_node, l:type, l:inline, l:filters, s:itemno(l:group_itemno, l:current), l:indent)
+        if l:current.multiplier > 1
+          let l:str .= "\n"
         endif
       else
-        if len(current.name)
-          let str .= current.name
+        if len(l:current.name)
+          let l:str .= l:current.name
         endif
-        if len(current.value)
-          let text = current.value[1:-2]
-          if dollar_expr
+        if len(l:current.value)
+          let l:text = l:current.value[1:-2]
+          if l:dollar_expr
             " TODO: regexp engine specified
             if exists('&regexpengine')
-              let text = substitute(text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+              let l:text = substitute(l:text, '\%#=1\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([l:itemno, l:group_itemno])+1).submatch(2)', 'g')
             else
-              let text = substitute(text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([itemno, group_itemno])+1).submatch(2)', 'g')
+              let l:text = substitute(l:text, '\%(\\\)\@\<!\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", max([l:itemno, l:group_itemno])+1).submatch(2)', 'g')
             endif
-            let text = substitute(text, '\${nr}', "\n", 'g')
-            let text = substitute(text, '\\\$', '$', 'g')
+            let l:text = substitute(l:text, '\${nr}', "\n", 'g')
+            let l:text = substitute(l:text, '\\\$', '$', 'g')
           endif
-          let str .= text
+          let l:str .= l:text
         endif
       endif
-      let inner = ''
-      if len(current.child)
-        for n in current.child
-          let inner .= emmet#toString(n, type, inline, filters, s:itemno(group_itemno, n), indent)
+      let l:inner = ''
+      if len(l:current.child)
+        for l:n in l:current.child
+          let l:inner .= emmet#toString(l:n, l:type, l:inline, l:filters, s:itemno(l:group_itemno, l:n), l:indent)
         endfor
       else
-        let inner = current.value[1:-2]
+        let l:inner = l:current.value[1:-2]
       endif
-      let inner = substitute(inner, "\n", "\n" . indent, 'g')
-      let str = substitute(str, '\${:\(\w\+\)}', '\=s:localvar(current, submatch(1))', '')
-      let str = substitute(str, '\${child}', inner, '')
+      let l:inner = substitute(l:inner, "\n", "\n" . l:indent, 'g')
+      let l:str = substitute(l:str, '\${:\(\w\+\)}', '\=s:localvar(l:current, submatch(1))', '')
+      let l:str = substitute(l:str, '\${child}', l:inner, '')
     endif
-    let itemno = itemno + 1
+    let l:itemno = l:itemno + 1
   endwhile
-  return str
+  return l:str
 endfunction
 
 function! emmet#getSettings() abort
@@ -303,200 +303,200 @@ function! emmet#getSettings() abort
 endfunction
 
 function! emmet#getFilters(type) abort
-  let filterstr = emmet#getResource(a:type, 'filters', '')
-  return split(filterstr, '\s*,\s*')
+  let l:filterstr = emmet#getResource(a:type, 'filters', '')
+  return split(l:filterstr, '\s*,\s*')
 endfunction
 
 function! emmet#getResource(type, name, default) abort
   if exists('b:emmet_' . a:name)
     return get(b:, 'emmet_' . a:name)
   endif
-  let global = {}
+  let l:global = {}
   if has_key(s:emmet_settings, '*') && has_key(s:emmet_settings['*'], a:name)
-    let global = extend(global, s:emmet_settings['*'][a:name])
+    let l:global = extend(l:global, s:emmet_settings['*'][a:name])
   endif
 
   if has_key(s:emmet_settings, a:type)
-    let types = [a:type]
+    let l:types = [a:type]
   else
-    let types = split(a:type, '\.')
+    let l:types = split(a:type, '\.')
   endif
 
-  for type in types
-    if !has_key(s:emmet_settings, type)
+  for l:type in l:types
+    if !has_key(s:emmet_settings, l:type)
       continue
     endif
-    let ret = a:default
+    let l:ret = a:default
 
-    if has_key(s:emmet_settings[type], 'extends')
-      let extends = emmet#lang#getExtends(a:type)
-      call reverse(extends) " reverse to overwrite the correct way
-      for ext in extends
-        if !has_key(s:emmet_settings, ext)
+    if has_key(s:emmet_settings[l:type], 'extends')
+      let l:extends = emmet#lang#getExtends(a:type)
+      call reverse(l:extends) " reverse to overwrite the correct way
+      for l:ext in l:extends
+        if !has_key(s:emmet_settings, l:ext)
           continue
         endif
 
-        if has_key(s:emmet_settings[ext], a:name)
-          if type(ret) ==# 3 || type(ret) ==# 4
-            call emmet#mergeConfig(ret, s:emmet_settings[ext][a:name])
+        if has_key(s:emmet_settings[l:ext], a:name)
+          if type(l:ret) ==# 3 || type(l:ret) ==# 4
+            call emmet#mergeConfig(l:ret, s:emmet_settings[l:ext][a:name])
           else
-            let ret = s:emmet_settings[ext][a:name]
+            let l:ret = s:emmet_settings[l:ext][a:name]
           endif
         endif
       endfor
     endif
 
-    if has_key(s:emmet_settings[type], a:name)
-      if type(ret) ==# 3 || type(ret) ==# 4
-        call emmet#mergeConfig(ret, s:emmet_settings[type][a:name])
-        return extend(global, ret)
+    if has_key(s:emmet_settings[l:type], a:name)
+      if type(l:ret) ==# 3 || type(l:ret) ==# 4
+        call emmet#mergeConfig(l:ret, s:emmet_settings[l:type][a:name])
+        return extend(l:global, l:ret)
       else
-        return s:emmet_settings[type][a:name]
+        return s:emmet_settings[l:type][a:name]
       endif
     endif
-    if !empty(ret)
-      if type(ret) ==# 3 || type(ret) ==# 4
-        let ret = extend(global, ret)
+    if !empty(l:ret)
+      if type(l:ret) ==# 3 || type(l:ret) ==# 4
+        let l:ret = extend(l:global, l:ret)
       endif
-      return ret
+      return l:ret
     endif
   endfor
 
-  let ret = a:default
-  if type(ret) ==# 3 || type(ret) ==# 4
-    let ret = extend(global, ret)
+  let l:ret = a:default
+  if type(l:ret) ==# 3 || type(l:ret) ==# 4
+    let l:ret = extend(l:global, l:ret)
   endif
-  return ret
+  return l:ret
 endfunction
 
 function! emmet#getFileType(...) abort
-  let flg = get(a:000, 0, 0)
-  
+  let l:flg = get(a:000, 0, 0)
+
   if has_key(s:emmet_settings, &filetype)
-    let type = &filetype
-    if emmet#getResource(type, 'ignore_embeded_filetype', 0)
-      return type 
+    let l:type = &filetype
+    if emmet#getResource(l:type, 'ignore_embeded_filetype', 0)
+      return l:type
     endif
-  endif 
+  endif
 
   if get(g:, 'loaded_nvim_treesitter', 0)
-    let type = luaeval('require"emmet_utils".get_node_at_cursor()')
+    let l:type = luaeval('require"emmet_utils".get_node_at_cursor()')
   else
-    let pos = emmet#util#getcurpos()
-    let type = synIDattr(synID(max([pos[1], 1]), max([pos[2], 1]), 1), 'name')
+    let l:pos = emmet#util#getcurpos()
+    let l:type = synIDattr(synID(max([l:pos[1], 1]), max([l:pos[2], 1]), 1), 'name')
   endif
 
   " ignore htmlTagName as it seems to occur too often
-  if type == 'htmlTagName'
-    let type = ''
+  if l:type == 'htmlTagName'
+    let l:type = ''
   endif
-  if type =~ '^mkdSnippet'
-    let type = tolower(type[10:])
+  if l:type =~ '^mkdSnippet'
+    let l:type = tolower(l:type[10:])
   endif
 
-  if type =~? '^css'
-    let type = 'css'
-  elseif type =~? '^html'
-    let type = 'html'
-  elseif type =~? '^jsx'
-    let type = 'jsx'
-  elseif (type =~? '^js\w' || type =~? '^javascript') && !(&filetype =~? 'jsx')
-    let type = 'javascript'
-  elseif type =~? '^tsx'
-    let type = 'tsx'
-  elseif type =~? '^ts\w' || type =~? '^typescript'
-    let type = 'typescript'
-  elseif type =~? '^xml'
-    let type = 'xml'
-  elseif type == 'styledEmmetAbbreviation'
-    let type = 'styled'
+  if l:type =~? '^css'
+    let l:type = 'css'
+  elseif l:type =~? '^html'
+    let l:type = 'html'
+  elseif l:type =~? '^jsx'
+    let l:type = 'jsx'
+  elseif (l:type =~? '^js\w' || l:type =~? '^javascript') && !(&filetype =~? 'jsx')
+    let l:type = 'javascript'
+  elseif l:type =~? '^tsx'
+    let l:type = 'tsx'
+  elseif l:type =~? '^ts\w' || l:type =~? '^typescript'
+    let l:type = 'typescript'
+  elseif l:type =~? '^xml'
+    let l:type = 'xml'
+  elseif l:type == 'styledEmmetAbbreviation'
+    let l:type = 'styled'
   else
-    let types = split(&filetype, '\.')
-    for part in types
-      if has_key(s:emmet_settings, part)
-        let type = part
+    let l:types = split(&filetype, '\.')
+    for l:part in l:types
+      if has_key(s:emmet_settings, l:part)
+        let l:type = l:part
         break
       endif
-      let base = emmet#getBaseType(part)
-      if base !=# ''
-        if flg
-          let type = &filetype
+      let l:base = emmet#getBaseType(l:part)
+      if l:base !=# ''
+        if l:flg
+          let l:type = &filetype
         else
-          let type = base
+          let l:type = l:base
         endif
-        unlet base
+        unlet l:base
         break
       endif
     endfor
   endif
 
-  return empty(type) ? 'html' : type
+  return empty(l:type) ? 'html' : l:type
 endfunction
 
 function! emmet#getDollarExprs(expand) abort
-  let expand = a:expand
-  let dollar_list = []
-  let dollar_reg = '\%(\\\)\@<!\${\(\([^{}]\|\%(\\\)\@\<=[{}]\)\{}\)}'
+  let l:expand = a:expand
+  let l:dollar_list = []
+  let l:dollar_reg = '\%(\\\)\@<!\${\(\([^{}]\|\%(\\\)\@\<=[{}]\)\{}\)}'
   while 1
-    let matcharr = matchlist(expand, dollar_reg)
-    if len(matcharr) > 0
-      let key = get(matcharr, 1)
-      if key !~# '^\d\+:'
-        let key = substitute(key, '\\{', '{', 'g')
-        let key = substitute(key, '\\}', '}', 'g')
-        let value = emmet#getDollarValueByKey(key)
-        if type(value) ==# type('')
-          let expr = get(matcharr, 0)
-          call add(dollar_list, {'expr': expr, 'value': value})
+    let l:matcharr = matchlist(l:expand, l:dollar_reg)
+    if len(l:matcharr) > 0
+      let l:key = get(l:matcharr, 1)
+      if l:key !~# '^\d\+:'
+        let l:key = substitute(l:key, '\\{', '{', 'g')
+        let l:key = substitute(l:key, '\\}', '}', 'g')
+        let l:value = emmet#getDollarValueByKey(l:key)
+        if type(l:value) ==# type('')
+          let l:expr = get(l:matcharr, 0)
+          call add(l:dollar_list, {'expr': l:expr, 'value': l:value})
         endif
       endif
     else
       break
     endif
-    let expand = substitute(expand, dollar_reg, '', '')
+    let l:expand = substitute(l:expand, l:dollar_reg, '', '')
   endwhile
-  return dollar_list
+  return l:dollar_list
 endfunction
 
 function! emmet#getDollarValueByKey(key) abort
-  let ret = 0
-  let key = a:key
-  let ftsetting = get(s:emmet_settings, emmet#getFileType())
-  if type(ftsetting) ==# 4 && has_key(ftsetting, key)
-    let V = get(ftsetting, key)
-    if type(V) ==# 1 | return V | endif
+  let l:ret = 0
+  let l:key = a:key
+  let l:ftsetting = get(s:emmet_settings, emmet#getFileType())
+  if type(l:ftsetting) ==# 4 && has_key(l:ftsetting, l:key)
+    let l:V = get(l:ftsetting, l:key)
+    if type(l:V) ==# 1 | return l:V | endif
   endif
-  if type(ret) !=# 1 && has_key(s:emmet_settings.variables, key)
-    let V = get(s:emmet_settings.variables, key)
-    if type(V) ==# 1 | return V | endif
+  if type(l:ret) !=# 1 && has_key(s:emmet_settings.variables, l:key)
+    let l:V = get(s:emmet_settings.variables, l:key)
+    if type(l:V) ==# 1 | return l:V | endif
   endif
   if has_key(s:emmet_settings, 'custom_expands') && type(s:emmet_settings['custom_expands']) ==# 4
-    for k in keys(s:emmet_settings['custom_expands'])
-      if key =~# k
-        let V = get(s:emmet_settings['custom_expands'], k)
-        if type(V) ==# 1 | return V | endif
-        if type(V) ==# 2 | return V(key) | endif
+    for l:k in keys(s:emmet_settings['custom_expands'])
+      if l:key =~# l:k
+        let l:V = get(s:emmet_settings['custom_expands'], l:k)
+        if type(l:V) ==# 1 | return l:V | endif
+        if type(l:V) ==# 2 | return l:V(l:key) | endif
       endif
     endfor
   endif
-  return ret
+  return l:ret
 endfunction
 
 function! emmet#reExpandDollarExpr(expand, times) abort
-  let expand = a:expand
-  let dollar_exprs = emmet#getDollarExprs(expand)
-  if len(dollar_exprs) > 0
+  let l:expand = a:expand
+  let l:dollar_exprs = emmet#getDollarExprs(l:expand)
+  if len(l:dollar_exprs) > 0
     if a:times < 9
-      for n in range(len(dollar_exprs))
-        let pair = get(dollar_exprs, n)
-        let pat = get(pair, 'expr')
-        let sub = get(pair, 'value')
-        let expand = substitute(expand, pat, sub, '')
+      for l:n in range(len(l:dollar_exprs))
+        let l:pair = get(l:dollar_exprs, l:n)
+        let l:pat = get(l:pair, 'expr')
+        let l:sub = get(l:pair, 'value')
+        let l:expand = substitute(l:expand, l:pat, l:sub, '')
       endfor
-      return emmet#reExpandDollarExpr(expand, a:times + 1)
+      return emmet#reExpandDollarExpr(l:expand, a:times + 1)
     endif
   endif
-  return expand
+  return l:expand
 endfunction
 
 function! emmet#expandDollarExpr(expand) abort
@@ -504,20 +504,20 @@ function! emmet#expandDollarExpr(expand) abort
 endfunction
 
 function! emmet#expandCursorExpr(expand, mode) abort
-  let expand = a:expand
-  if expand !~# '\${cursor}'
+  let l:expand = a:expand
+  if l:expand !~# '\${cursor}'
     if a:mode ==# 2
-      let expand = '${cursor}' . expand
+      let l:expand = '${cursor}' . l:expand
     else
-      let expand .= '${cursor}'
+      let l:expand .= '${cursor}'
     endif
   endif
-  let expand = substitute(expand, '\${\d\+:\?\([^}]\+\)}', '$select$$cursor$\1$select$', 'g')
-  let expand = substitute(expand, '\${\d\+}', '$select$$cursor$$select$', 'g')
-  let expand = substitute(expand, '\${cursor}', '$cursor$', '')
-  let expand = substitute(expand, '\${cursor}', '', 'g')
-  let expand = substitute(expand, '\${cursor}', '', 'g')
-  return expand
+  let l:expand = substitute(l:expand, '\${\d\+:\?\([^}]\+\)}', '$select$$cursor$\1$select$', 'g')
+  let l:expand = substitute(l:expand, '\${\d\+}', '$select$$cursor$$select$', 'g')
+  let l:expand = substitute(l:expand, '\${cursor}', '$cursor$', '')
+  let l:expand = substitute(l:expand, '\${cursor}', '', 'g')
+  let l:expand = substitute(l:expand, '\${cursor}', '', 'g')
+  return l:expand
 endfunction
 
 function! emmet#unescapeDollarExpr(expand) abort
@@ -525,216 +525,216 @@ function! emmet#unescapeDollarExpr(expand) abort
 endfunction
 
 function! emmet#expandAbbr(mode, abbr) range abort
-  let type = emmet#getFileType(1)
-  let indent = emmet#getIndentation(type)
-  let expand = ''
-  let line = ''
-  let part = ''
-  let rest = ''
+  let l:type = emmet#getFileType(1)
+  let l:indent = emmet#getIndentation(l:type)
+  let l:expand = ''
+  let l:line = ''
+  let l:part = ''
+  let l:rest = ''
 
-  let filters = emmet#getFilters(type)
-  if len(filters) ==# 0
-    let filters = ['html']
+  let l:filters = emmet#getFilters(l:type)
+  if len(l:filters) ==# 0
+    let l:filters = ['html']
   endif
 
   if a:mode ==# 2
-    let leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
-    if len(leader) ==# 0
+    let l:leader = substitute(input('Tag: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
+    if len(l:leader) ==# 0
       return ''
     endif
-    if leader =~# s:filtermx
-      let filters = map(split(matchstr(leader, s:filtermx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\\\\\zs.\\\\ze", "&", "g")')
-      let leader = substitute(leader, s:filtermx, '', '')
+    if l:leader =~# s:filtermx
+      let l:filters = map(split(matchstr(l:leader, s:filtermx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\\\\\zs.\\\\ze", "&", "g")')
+      let l:leader = substitute(l:leader, s:filtermx, '', '')
     endif
-    if leader =~# '\*'
-      let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '')
-      if query !~# '}\s*$' && query !~# '\$#'
-        let query .= '>{$#}'
+    if l:leader =~# '\*'
+      let l:query = substitute(l:leader, '*', '*' . (a:lastline - a:firstline + 1), '')
+      if l:query !~# '}\s*$' && l:query !~# '\$#'
+        let l:query .= '>{$#}'
       endif
-      if emmet#useFilter(filters, '/')
-        let spl = emmet#splitFilterArg(filters)
-        let fline = getline(a:firstline)
-        let query = substitute(query, '>\{0,1}{\$#}\s*$', '{\\$column\\$}*' . len(split(fline, spl)), '')
+      if emmet#useFilter(l:filters, '/')
+        let l:spl = emmet#splitFilterArg(l:filters)
+        let l:fline = getline(a:firstline)
+        let l:query = substitute(l:query, '>\{0,1}{\$#}\s*$', '{\\$column\\$}*' . len(split(l:fline, l:spl)), '')
       else
-        let spl = ''
+        let l:spl = ''
       endif
-      let items = emmet#parseIntoTree(query, type).child
-      let itemno = 0
-      for item in items
-        let inner = emmet#toString(item, type, 0, filters, 0, indent)
-        let inner = substitute(inner, '\$#', '$line'.(itemno*(a:lastline - a:firstline + 1)/len(items)+1).'$', 'g')
-        let expand .= inner
-        let itemno = itemno + 1
+      let l:items = emmet#parseIntoTree(l:query, l:type).child
+      let l:itemno = 0
+      for l:item in l:items
+        let l:inner = emmet#toString(l:item, l:type, 0, l:filters, 0, l:indent)
+        let l:inner = substitute(l:inner, '\$#', '$line'.(l:itemno*(a:lastline - a:firstline + 1)/len(l:items)+1).'$', 'g')
+        let l:expand .= l:inner
+        let l:itemno = l:itemno + 1
       endfor
-      if emmet#useFilter(filters, 'e')
-        let expand = substitute(expand, '&', '\&amp;', 'g')
-        let expand = substitute(expand, '<', '\&lt;', 'g')
-        let expand = substitute(expand, '>', '\&gt;', 'g')
+      if emmet#useFilter(l:filters, 'e')
+        let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
+        let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
+        let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
       endif
-      let line = getline(a:firstline)
-      let part = substitute(line, '^\s*', '', '')
-      for n in range(a:firstline, a:lastline)
-        let lline = getline(n)
-        let lpart = substitute(lline, '^\s\+', '', '')
-        if emmet#useFilter(filters, 't')
-          let lpart = substitute(lpart, '^[0-9.-]\+\s\+', '', '')
-          let lpart = substitute(lpart, '\s\+$', '', '')
+      let l:line = getline(a:firstline)
+      let l:part = substitute(l:line, '^\s*', '', '')
+      for l:n in range(a:firstline, a:lastline)
+        let l:lline = getline(l:n)
+        let l:lpart = substitute(l:lline, '^\s\+', '', '')
+        if emmet#useFilter(l:filters, 't')
+          let l:lpart = substitute(l:lpart, '^[0-9.-]\+\s\+', '', '')
+          let l:lpart = substitute(l:lpart, '\s\+$', '', '')
         endif
-        if emmet#useFilter(filters, '/')
-          for column in split(lpart, spl)
-            let expand = substitute(expand, '\$column\$', '\=column', '')
+        if emmet#useFilter(l:filters, '/')
+          for l:column in split(l:lpart, l:spl)
+            let l:expand = substitute(l:expand, '\$column\$', '\=l:column', '')
           endfor
         else
-          let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', '\=lpart', 'g')
+          let l:expand = substitute(l:expand, '\$line'.(l:n-a:firstline+1).'\$', '\=l:lpart', 'g')
         endif
       endfor
-      let expand = substitute(expand, '\$line\d*\$', '', 'g')
-      let expand = substitute(expand, '\$column\$', '', 'g')
-      let content = join(getline(a:firstline, a:lastline), "\n")
-      if stridx(expand, '$#') < len(expand)-2
-        let expand = substitute(expand, '^\(.*\)\$#\s*$', '\1', '')
+      let l:expand = substitute(l:expand, '\$line\d*\$', '', 'g')
+      let l:expand = substitute(l:expand, '\$column\$', '', 'g')
+      let l:content = join(getline(a:firstline, a:lastline), "\n")
+      if stridx(l:expand, '$#') < len(l:expand)-2
+        let l:expand = substitute(l:expand, '^\(.*\)\$#\s*$', '\1', '')
       endif
-      let expand = substitute(expand, '\$#', '\=content', 'g')
+      let l:expand = substitute(l:expand, '\$#', '\=l:content', 'g')
     else
-      let str = ''
+      let l:str = ''
       if visualmode() ==# 'V'
-        let line = getline(a:firstline)
-        let lspaces = matchstr(line, '^\s*', '', '')
-        let part = substitute(line, '^\s*', '', '')
-        for n in range(a:firstline, a:lastline)
-          if len(leader) > 0
-            let line = getline(a:firstline)
-            let spaces = matchstr(line, '^\s*', '', '')
-            if len(spaces) >= len(lspaces)
-              let str .= indent . getline(n)[len(lspaces):] . "\n"
+        let l:line = getline(a:firstline)
+        let l:lspaces = matchstr(l:line, '^\s*', '', '')
+        let l:part = substitute(l:line, '^\s*', '', '')
+        for l:n in range(a:firstline, a:lastline)
+          if len(l:leader) > 0
+            let l:line = getline(a:firstline)
+            let l:spaces = matchstr(l:line, '^\s*', '', '')
+            if len(l:spaces) >= len(l:lspaces)
+              let l:str .= l:indent . getline(l:n)[len(l:lspaces):] . "\n"
             else
-              let str .= getline(n) . "\n"
+              let l:str .= getline(l:n) . "\n"
             endif
           else
-            let lpart = substitute(getline(n), '^\s*', '', '')
-            let str .= lpart . "\n"
+            let l:lpart = substitute(getline(l:n), '^\s*', '', '')
+            let l:str .= l:lpart . "\n"
           endif
         endfor
-        if stridx(leader, '{$#}') ==# -1
-          let leader .= '{$#}'
+        if stridx(l:leader, '{$#}') ==# -1
+          let l:leader .= '{$#}'
         endif
-        let items = emmet#parseIntoTree(leader, type).child
+        let l:items = emmet#parseIntoTree(l:leader, l:type).child
       else
-        let save_regcont = @"
-        let save_regtype = getregtype('"')
+        let l:save_regcont = @"
+        let l:save_regtype = getregtype('"')
         silent! normal! gvygv
-        let str = @"
-        call setreg('"', save_regcont, save_regtype)
-        if stridx(leader, '{$#}') ==# -1
-          let leader .= '{$#}'
+        let l:str = @"
+        call setreg('"', l:save_regcont, l:save_regtype)
+        if stridx(l:leader, '{$#}') ==# -1
+          let l:leader .= '{$#}'
         endif
-        let items = emmet#parseIntoTree(leader, type).child
+        let l:items = emmet#parseIntoTree(l:leader, l:type).child
       endif
-      for item in items
-        let expand .= emmet#toString(item, type, 0, filters, 0, '')
+      for l:item in l:items
+        let l:expand .= emmet#toString(l:item, l:type, 0, l:filters, 0, '')
       endfor
-      if emmet#useFilter(filters, 'e')
-        let expand = substitute(expand, '&', '\&amp;', 'g')
-        let expand = substitute(expand, '<', '\&lt;', 'g')
-        let expand = substitute(expand, '>', '\&gt;', 'g')
+      if emmet#useFilter(l:filters, 'e')
+        let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
+        let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
+        let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
       endif
-      if stridx(leader, '{$#}') !=# -1
-        let expand = substitute(expand, '\$#', '\="\n" . str', 'g')
+      if stridx(l:leader, '{$#}') !=# -1
+        let l:expand = substitute(l:expand, '\$#', '\="\n" . l:str', 'g')
       endif
     endif
   elseif a:mode ==# 4
-    let line = getline('.')
-    let spaces = matchstr(line, '^\s*')
-    if line !~# '^\s*$'
-      put =spaces.a:abbr
+    let l:line = getline('.')
+    let l:spaces = matchstr(l:line, '^\s*')
+    if l:line !~# '^\s*$'
+      put =l:spaces.a:abbr
     else
-      call setline('.', spaces.a:abbr)
+      call setline('.', l:spaces.a:abbr)
     endif
     normal! $
     call emmet#expandAbbr(0, '')
     return ''
   else
-    let line = getline('.')
-    if col('.') < len(line)
-      let line = matchstr(line, '^\(.*\%'.col('.').'c\)')
+    let l:line = getline('.')
+    if col('.') < len(l:line)
+      let l:line = matchstr(l:line, '^\(.*\%'.col('.').'c\)')
     endif
     if a:mode ==# 1
-      let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
+      let l:part = matchstr(l:line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
     else
-      let part = matchstr(line, '\(\S.*\)$')
-      let rtype = emmet#lang#type(type)
-      let part = emmet#lang#{rtype}#findTokens(part)
-      let line = line[0: strridx(line, part) + len(part) - 1]
+      let l:part = matchstr(l:line, '\(\S.*\)$')
+      let l:rtype = emmet#lang#type(l:type)
+      let l:part = emmet#lang#{l:rtype}#findTokens(l:part)
+      let l:line = l:line[0: strridx(l:line, l:part) + len(l:part) - 1]
     endif
     if col('.') ==# col('$')
-      let rest = ''
+      let l:rest = ''
     else
-      let rest = getline('.')[len(line):]
+      let l:rest = getline('.')[len(l:line):]
     endif
-    let str = part
-    if str =~# s:filtermx
-      let filters = split(matchstr(str, s:filtermx)[1:], '\s*,\s*')
-      let str = substitute(str, s:filtermx, '', '')
+    let l:str = l:part
+    if l:str =~# s:filtermx
+      let l:filters = split(matchstr(l:str, s:filtermx)[1:], '\s*,\s*')
+      let l:str = substitute(l:str, s:filtermx, '', '')
     endif
-    let items = emmet#parseIntoTree(str, type).child
-    for item in items
-      let expand .= emmet#toString(item, type, 0, filters, 0, indent)
+    let l:items = emmet#parseIntoTree(l:str, l:type).child
+    for l:item in l:items
+      let l:expand .= emmet#toString(l:item, l:type, 0, l:filters, 0, l:indent)
     endfor
-    if emmet#useFilter(filters, 'e')
-      let expand = substitute(expand, '&', '\&amp;', 'g')
-      let expand = substitute(expand, '<', '\&lt;', 'g')
-      let expand = substitute(expand, '>', '\&gt;', 'g')
+    if emmet#useFilter(l:filters, 'e')
+      let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
+      let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
+      let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
     endif
-    let expand = substitute(expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
+    let l:expand = substitute(l:expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
   endif
-  let expand = emmet#expandDollarExpr(expand)
-  let expand = emmet#expandCursorExpr(expand, a:mode)
-  if len(expand)
+  let l:expand = emmet#expandDollarExpr(l:expand)
+  let l:expand = emmet#expandCursorExpr(l:expand, a:mode)
+  if len(l:expand)
     if has_key(s:emmet_settings, 'timezone') && len(s:emmet_settings.timezone)
-      let expand = substitute(expand, '${datetime}', strftime('%Y-%m-%dT%H:%M:%S') . s:emmet_settings.timezone, 'g')
+      let l:expand = substitute(l:expand, '${datetime}', strftime('%Y-%m-%dT%H:%M:%S') . s:emmet_settings.timezone, 'g')
     else
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
-      let expand = substitute(expand, '${datetime}', strftime('%Y-%m-%dT%H:%M:%S %z'), 'g')
+      let l:expand = substitute(l:expand, '${datetime}', strftime('%Y-%m-%dT%H:%M:%S %z'), 'g')
     endif
-    let expand = emmet#unescapeDollarExpr(expand)
+    let l:expand = emmet#unescapeDollarExpr(l:expand)
     if a:mode ==# 2 && visualmode() ==# 'v'
       if a:firstline ==# a:lastline
-        let expand = substitute(expand, '[\r\n]\s*', '', 'g')
+        let l:expand = substitute(l:expand, '[\r\n]\s*', '', 'g')
       else
-        let expand = substitute(expand, '[\n]$', '', 'g')
+        let l:expand = substitute(l:expand, '[\n]$', '', 'g')
       endif
       silent! normal! gv
-      let col = col('''<')
+      let l:col = col('''<')
       silent! normal! c
-      let line = getline('.')
-      let lhs = matchstr(line, '.*\%<'.col.'c.')
-      let rhs = matchstr(line, '\%>'.(col-1).'c.*')
-      let expand = lhs.expand.rhs
-      let lines = split(expand, '\n')
-      call setline(line('.'), lines[0])
-      if len(lines) > 1
-        call append(line('.'), lines[1:])
+      let l:line = getline('.')
+      let l:lhs = matchstr(l:line, '.*\%<'.l:col.'c.')
+      let l:rhs = matchstr(l:line, '\%>'.(l:col-1).'c.*')
+      let l:expand = l:lhs.l:expand.l:rhs
+      let l:lines = split(l:expand, '\n')
+      call setline(line('.'), l:lines[0])
+      if len(l:lines) > 1
+        call append(line('.'), l:lines[1:])
       endif
     else
-      if line[:-len(part)-1] =~# '^\s\+$'
-        let indent = line[:-len(part)-1]
+      if l:line[:-len(l:part)-1] =~# '^\s\+$'
+        let l:indent = l:line[:-len(l:part)-1]
       else
-        let indent = ''
+        let l:indent = ''
       endif
-      let expand = substitute(expand, '[\r\n]\s*$', '', 'g')
-      if emmet#useFilter(filters, 's')
-        let epart = substitute(expand, '[\r\n]\s*', '', 'g')
+      let l:expand = substitute(l:expand, '[\r\n]\s*$', '', 'g')
+      if emmet#useFilter(l:filters, 's')
+        let l:epart = substitute(l:expand, '[\r\n]\s*', '', 'g')
       else
-        let epart = substitute(expand, '[\r\n]', "\n" . indent, 'g')
+        let l:epart = substitute(l:expand, '[\r\n]', "\n" . l:indent, 'g')
       endif
-      let expand = line[:-len(part)-1] . epart . rest
-      let lines = split(expand, '[\r\n]', 1)
+      let l:expand = l:line[:-len(l:part)-1] . l:epart . l:rest
+      let l:lines = split(l:expand, '[\r\n]', 1)
       if a:mode ==# 2
         silent! exe 'normal! gvc'
       endif
-      call setline('.', lines[0])
-      if len(lines) > 1
-        call append('.', lines[1:])
+      call setline('.', l:lines[0])
+      if len(l:lines) > 1
+        call append('.', l:lines[1:])
       endif
     endif
   endif
@@ -742,26 +742,26 @@ function! emmet#expandAbbr(mode, abbr) range abort
     call getchar()
   endif
   if search('\ze\$\(cursor\|select\)\$', 'c')
-    let oldselection = &selection
+    let l:oldselection = &selection
     let &selection = 'inclusive'
     if foldclosed(line('.')) !=# -1
       silent! foldopen
     endif
-    let pos = emmet#util#getcurpos()
-    let use_selection = emmet#getResource(type, 'use_selection', 0)
+    let l:pos = emmet#util#getcurpos()
+    let l:use_selection = emmet#getResource(l:type, 'use_selection', 0)
     try
       let l:gdefault = &gdefault
       let &gdefault = 0
-      if use_selection && getline('.')[col('.')-1:] =~# '^\$select'
-        let pos[2] += 1
+      if l:use_selection && getline('.')[col('.')-1:] =~# '^\$select'
+        let l:pos[2] += 1
         silent! s/\$select\$//
-        let next = searchpos('.\ze\$select\$', 'nW')
+        let l:next = searchpos('.\ze\$select\$', 'nW')
         silent! %s/\$\(cursor\|select\)\$//g
-        call emmet#util#selectRegion([pos[1:2], next])
+        call emmet#util#selectRegion([l:pos[1:2], l:next])
         return "\<esc>gv"
       else
         silent! %s/\$\(cursor\|select\)\$//g
-        silent! call setpos('.', pos)
+        silent! call setpos('.', l:pos)
         if col('.') < col('$')
           return "\<right>"
         endif
@@ -769,253 +769,253 @@ function! emmet#expandAbbr(mode, abbr) range abort
     finally
       let &gdefault = l:gdefault
     endtry
-    let &selection = oldselection
+    let &selection = l:oldselection
   endif
   return ''
 endfunction
 
 function! emmet#updateTag() abort
-  let type = emmet#getFileType()
-  let region = emmet#util#searchRegion('<\S', '>')
-  if !emmet#util#regionIsValid(region) || !emmet#util#cursorInRegion(region)
+  let l:type = emmet#getFileType()
+  let l:region = emmet#util#searchRegion('<\S', '>')
+  if !emmet#util#regionIsValid(l:region) || !emmet#util#cursorInRegion(l:region)
     return ''
   endif
-  let content = emmet#util#getContent(region)
-  let content = matchstr(content,  '^<[^><]\+>')
-  if content !~# '^<[^><]\+>$'
+  let l:content = emmet#util#getContent(l:region)
+  let l:content = matchstr(l:content,  '^<[^><]\+>')
+  if l:content !~# '^<[^><]\+>$'
     return ''
   endif
-  let current = emmet#lang#html#parseTag(content)
-  if empty(current)
+  let l:current = emmet#lang#html#parseTag(l:content)
+  if empty(l:current)
     return ''
   endif
-  let old_tag_name = current.name
+  let l:old_tag_name = l:current.name
 
-  let str = substitute(input('Enter Abbreviation: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
-  let tag_changed = str =~# '^\s*\w'
-  let item = emmet#parseIntoTree(str, type).child[0]
-  for k in keys(item.attr)
-    let current.attr[k] = item.attr[k]
+  let l:str = substitute(input('Enter Abbreviation: ', ''), '^\s*\(.*\)\s*$', '\1', 'g')
+  let l:tag_changed = l:str =~# '^\s*\w'
+  let l:item = emmet#parseIntoTree(l:str, l:type).child[0]
+  for l:k in keys(l:item.attr)
+    let l:current.attr[l:k] = l:item.attr[l:k]
   endfor
-  if tag_changed
-    let current.name = item.name
+  if l:tag_changed
+    let l:current.name = l:item.name
   endif
-  let html = substitute(emmet#toString(current, 'html', 1), '\n', '', '')
-  let html = substitute(html, '\${cursor}', '', '')
-  let html = matchstr(html,  '^<[^><]\+>')
-  if tag_changed
-    let pos2 = searchpairpos('<' . old_tag_name . '\>[^>]*>', '', '</' . old_tag_name . '>', 'W')
-    if pos2 != [0, 0]
-      let html .= emmet#util#getContent([region[1], pos2])[1:-2]
-      let html .= '</' . current.name . '>'
-      let region = [region[0], [pos2[0], pos2[1] + len(old_tag_name) + 3]]
+  let l:html = substitute(emmet#toString(l:current, 'html', 1), '\n', '', '')
+  let l:html = substitute(l:html, '\${cursor}', '', '')
+  let l:html = matchstr(l:html,  '^<[^><]\+>')
+  if l:tag_changed
+    let l:pos2 = searchpairpos('<' . l:old_tag_name . '\>[^>]*>', '', '</' . l:old_tag_name . '>', 'W')
+    if l:pos2 != [0, 0]
+      let l:html .= emmet#util#getContent([l:region[1], l:pos2])[1:-2]
+      let l:html .= '</' . l:current.name . '>'
+      let l:region = [l:region[0], [l:pos2[0], l:pos2[1] + len(l:old_tag_name) + 3]]
     endif
   endif
-  call emmet#util#setContent(region, html)
+  call emmet#util#setContent(l:region, l:html)
   return ''
 endfunction
 
 function! emmet#moveNextPrevItem(flag) abort
-  let type = emmet#getFileType()
-  return emmet#lang#{emmet#lang#type(type)}#moveNextPrevItem(a:flag)
+  let l:type = emmet#getFileType()
+  return emmet#lang#{emmet#lang#type(l:type)}#moveNextPrevItem(a:flag)
 endfunction
 
 function! emmet#moveNextPrev(flag) abort
-  let type = emmet#getFileType()
-  return emmet#lang#{emmet#lang#type(type)}#moveNextPrev(a:flag)
+  let l:type = emmet#getFileType()
+  return emmet#lang#{emmet#lang#type(l:type)}#moveNextPrev(a:flag)
 endfunction
 
 function! emmet#imageSize() abort
-  let orgpos = emmet#util#getcurpos()
-  let type = emmet#getFileType()
-  call emmet#lang#{emmet#lang#type(type)}#imageSize()
-  silent! call setpos('.', orgpos)
+  let l:orgpos = emmet#util#getcurpos()
+  let l:type = emmet#getFileType()
+  call emmet#lang#{emmet#lang#type(l:type)}#imageSize()
+  silent! call setpos('.', l:orgpos)
   return ''
 endfunction
 
 function! emmet#imageEncode() abort
-  let type = emmet#getFileType()
-  return emmet#lang#{emmet#lang#type(type)}#imageEncode()
+  let l:type = emmet#getFileType()
+  return emmet#lang#{emmet#lang#type(l:type)}#imageEncode()
 endfunction
 
 function! emmet#toggleComment() abort
-  let type = emmet#getFileType()
-  call emmet#lang#{emmet#lang#type(type)}#toggleComment()
+  let l:type = emmet#getFileType()
+  call emmet#lang#{emmet#lang#type(l:type)}#toggleComment()
   return ''
 endfunction
 
 function! emmet#balanceTag(flag) range abort
-  let type = emmet#getFileType()
-  return emmet#lang#{emmet#lang#type(type)}#balanceTag(a:flag)
+  let l:type = emmet#getFileType()
+  return emmet#lang#{emmet#lang#type(l:type)}#balanceTag(a:flag)
 endfunction
 
 function! emmet#splitJoinTag() abort
-  let type = emmet#getFileType()
-  return emmet#lang#{emmet#lang#type(type)}#splitJoinTag()
+  let l:type = emmet#getFileType()
+  return emmet#lang#{emmet#lang#type(l:type)}#splitJoinTag()
 endfunction
 
 function! emmet#mergeLines() range abort
-  let lines = join(map(getline(a:firstline, a:lastline), 'matchstr(v:val, "^\\s*\\zs.*\\ze\\s*$")'), '')
-  let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+  let l:lines = join(map(getline(a:firstline, a:lastline), 'matchstr(v:val, "^\\s*\\zs.*\\ze\\s*$")'), '')
+  let l:indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
   silent! exe 'normal! gvc'
-  call setline('.', indent . lines)
+  call setline('.', l:indent . l:lines)
 endfunction
 
 function! emmet#removeTag() abort
-  let type = emmet#getFileType()
-  call emmet#lang#{emmet#lang#type(type)}#removeTag()
+  let l:type = emmet#getFileType()
+  call emmet#lang#{emmet#lang#type(l:type)}#removeTag()
   return ''
 endfunction
 
 function! emmet#mergeLines() abort
-  let type = emmet#getFileType()
-  call emmet#lang#{emmet#lang#type(type)}#mergeLines()
+  let l:type = emmet#getFileType()
+  call emmet#lang#{emmet#lang#type(l:type)}#mergeLines()
   return ''
 endfunction
 
 function! emmet#anchorizeURL(flag) abort
-  let mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
-  let pos1 = searchpos(mx, 'bcnW')
-  let url = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-  let block = [pos1, [pos1[0], pos1[1] + len(url) - 1]]
-  if !emmet#util#cursorInRegion(block)
+  let l:mx = 'https\=:\/\/[-!#$%&*+,./:;=?@0-9a-zA-Z_~]\+'
+  let l:pos1 = searchpos(l:mx, 'bcnW')
+  let l:url = matchstr(getline(l:pos1[0])[l:pos1[1]-1:], l:mx)
+  let l:block = [l:pos1, [l:pos1[0], l:pos1[1] + len(l:url) - 1]]
+  if !emmet#util#cursorInRegion(l:block)
     return ''
   endif
 
-  let mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
-  let content = emmet#util#getContentFromURL(url)
-  let content = substitute(content, '\r', '', 'g')
-  let content = substitute(content, '[ \n]\+', ' ', 'g')
-  let content = substitute(content, '<!--.\{-}-->', '', 'g')
-  let title = matchstr(content, mx)
+  let l:mx = '.*<title[^>]*>\s*\zs\([^<]\+\)\ze\s*<\/title[^>]*>.*'
+  let l:content = emmet#util#getContentFromURL(l:url)
+  let l:content = substitute(l:content, '\r', '', 'g')
+  let l:content = substitute(l:content, '[ \n]\+', ' ', 'g')
+  let l:content = substitute(l:content, '<!--.\{-}-->', '', 'g')
+  let l:title = matchstr(l:content, l:mx)
 
-  let type = emmet#getFileType()
-  let rtype = emmet#lang#type(type)
+  let l:type = emmet#getFileType()
+  let l:rtype = emmet#lang#type(l:type)
   if &filetype ==# 'markdown'
-    let expand = printf('[%s](%s)', substitute(title, '[\[\]]', '\\&', 'g'), url)
+    let l:expand = printf('[%s](%s)', substitute(l:title, '[\[\]]', '\\&', 'g'), l:url)
   elseif &filetype ==# 'rst'
-    let expand = printf('`%s <%s>`_', substitute(title, '[\[\]]', '\\&', 'g'), url)
+    let l:expand = printf('`%s <%s>`_', substitute(l:title, '[\[\]]', '\\&', 'g'), l:url)
   elseif a:flag ==# 0
-    let a = emmet#lang#html#parseTag('<a>')
-    let a.attr.href = url
-    let a.value = '{' . title . '}'
-    let expand = emmet#toString(a, rtype, 0, [])
-    let expand = substitute(expand, '\${cursor}', '', 'g')
+    let l:a = emmet#lang#html#parseTag('<a>')
+    let l:a.attr.href = l:url
+    let l:a.value = '{' . l:title . '}'
+    let l:expand = emmet#toString(l:a, l:rtype, 0, [])
+    let l:expand = substitute(l:expand, '\${cursor}', '', 'g')
   else
-    let body = emmet#util#getTextFromHTML(content)
-    let body = '{' . substitute(body, '^\(.\{0,100}\).*', '\1', '') . '...}'
+    let l:body = emmet#util#getTextFromHTML(l:content)
+    let l:body = '{' . substitute(l:body, '^\(.\{0,100}\).*', '\1', '') . '...}'
 
-    let blockquote = emmet#lang#html#parseTag('<blockquote class="quote">')
-    let a = emmet#lang#html#parseTag('<a>')
-    let a.attr.href = url
-    let a.value = '{' . title . '}'
-    call add(blockquote.child, a)
-    call add(blockquote.child, emmet#lang#html#parseTag('<br/>'))
-    let p = emmet#lang#html#parseTag('<p>')
-    let p.value = body
-    call add(blockquote.child, p)
-    let cite = emmet#lang#html#parseTag('<cite>')
-    let cite.value = '{' . url . '}'
-    call add(blockquote.child, cite)
-    let expand = emmet#toString(blockquote, rtype, 0, [])
-    let expand = substitute(expand, '\${cursor}', '', 'g')
+    let l:blockquote = emmet#lang#html#parseTag('<blockquote class="quote">')
+    let l:a = emmet#lang#html#parseTag('<a>')
+    let l:a.attr.href = l:url
+    let l:a.value = '{' . l:title . '}'
+    call add(l:blockquote.child, l:a)
+    call add(l:blockquote.child, emmet#lang#html#parseTag('<br/>'))
+    let l:p = emmet#lang#html#parseTag('<p>')
+    let l:p.value = l:body
+    call add(l:blockquote.child, l:p)
+    let l:cite = emmet#lang#html#parseTag('<cite>')
+    let l:cite.value = '{' . l:url . '}'
+    call add(l:blockquote.child, l:cite)
+    let l:expand = emmet#toString(l:blockquote, l:rtype, 0, [])
+    let l:expand = substitute(l:expand, '\${cursor}', '', 'g')
   endif
-  let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
-  let expand = substitute(expand, "\n", "\n" . indent, 'g')
-  call emmet#util#setContent(block, expand)
+  let l:indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+  let l:expand = substitute(l:expand, "\n", "\n" . l:indent, 'g')
+  call emmet#util#setContent(l:block, l:expand)
   return ''
 endfunction
 
 function! emmet#codePretty() range abort
-  let type = input('FileType: ', &filetype, 'filetype')
-  if len(type) ==# 0
+  let l:type = input('FileType: ', &filetype, 'filetype')
+  if len(l:type) ==# 0
     return
   endif
-  let block = emmet#util#getVisualBlock()
-  let content = emmet#util#getContent(block)
+  let l:block = emmet#util#getVisualBlock()
+  let l:content = emmet#util#getContent(l:block)
   silent! 1new
-  let &l:filetype = type
-  call setline(1, split(content, "\n"))
-  let old_lazyredraw = &lazyredraw
+  let &l:filetype = l:type
+  call setline(1, split(l:content, "\n"))
+  let l:old_lazyredraw = &lazyredraw
   set lazyredraw
   silent! TOhtml
-  let &lazyredraw = old_lazyredraw
-  let content = join(getline(1, '$'), "\n")
+  let &lazyredraw = l:old_lazyredraw
+  let l:content = join(getline(1, '$'), "\n")
   silent! bw!
   silent! bw!
-  let content = matchstr(content, '<body[^>]*>[\s\n]*\zs.*\ze</body>')
-  call emmet#util#setContent(block, content)
+  let l:content = matchstr(l:content, '<body[^>]*>[\s\n]*\zs.*\ze</body>')
+  call emmet#util#setContent(l:block, l:content)
 endfunction
 
 function! emmet#expandWord(abbr, type, orig) abort
-  let str = a:abbr
-  let type = a:type
-  let indent = emmet#getIndentation(type)
+  let l:str = a:abbr
+  let l:type = a:type
+  let l:indent = emmet#getIndentation(l:type)
 
-  if len(type) ==# 0 | let type = 'html' | endif
-  if str =~# s:filtermx
-    let filters = split(matchstr(str, s:filtermx)[1:], '\s*,\s*')
-    let str = substitute(str, s:filtermx, '', '')
+  if len(l:type) ==# 0 | let l:type = 'html' | endif
+  if l:str =~# s:filtermx
+    let l:filters = split(matchstr(l:str, s:filtermx)[1:], '\s*,\s*')
+    let l:str = substitute(l:str, s:filtermx, '', '')
   else
-    let filters = emmet#getFilters(a:type)
-    if len(filters) ==# 0
-      let filters = ['html']
+    let l:filters = emmet#getFilters(a:type)
+    if len(l:filters) ==# 0
+      let l:filters = ['html']
     endif
   endif
-  let str = substitute(str, '|', '${cursor}', 'g')
-  let items = emmet#parseIntoTree(str, a:type).child
-  let expand = ''
-  for item in items
-    let expand .= emmet#toString(item, a:type, 0, filters, 0, indent)
+  let l:str = substitute(l:str, '|', '${cursor}', 'g')
+  let l:items = emmet#parseIntoTree(l:str, a:type).child
+  let l:expand = ''
+  for l:item in l:items
+    let l:expand .= emmet#toString(l:item, a:type, 0, l:filters, 0, l:indent)
   endfor
-  if emmet#useFilter(filters, 'e')
-    let expand = substitute(expand, '&', '\&amp;', 'g')
-    let expand = substitute(expand, '<', '\&lt;', 'g')
-    let expand = substitute(expand, '>', '\&gt;', 'g')
+  if emmet#useFilter(l:filters, 'e')
+    let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
+    let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
+    let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
   endif
-  if emmet#useFilter(filters, 's')
-    let expand = substitute(expand, "\n\s\*", '', 'g')
+  if emmet#useFilter(l:filters, 's')
+    let l:expand = substitute(l:expand, "\n\s\*", '', 'g')
   endif
   if a:orig ==# 0
-    let expand = emmet#expandDollarExpr(expand)
-    let expand = substitute(expand, '\${cursor}', '', 'g')
+    let l:expand = emmet#expandDollarExpr(l:expand)
+    let l:expand = substitute(l:expand, '\${cursor}', '', 'g')
   endif
-  return expand
+  return l:expand
 endfunction
 
 function! emmet#getSnippets(type) abort
-  let type = a:type
-  if len(type) ==# 0 || !has_key(s:emmet_settings, type)
-    let type = 'html'
+  let l:type = a:type
+  if len(l:type) ==# 0 || !has_key(s:emmet_settings, l:type)
+    let l:type = 'html'
   endif
-  return emmet#getResource(type, 'snippets', {})
+  return emmet#getResource(l:type, 'snippets', {})
 endfunction
 
 function! emmet#completeTag(findstart, base) abort
   if a:findstart
-    let line = getline('.')
-    let start = col('.') - 1
-    while start > 0 && line[start - 1] =~# '[a-zA-Z0-9:_\@\-]'
-      let start -= 1
+    let l:line = getline('.')
+    let l:start = col('.') - 1
+    while l:start > 0 && l:line[l:start - 1] =~# '[a-zA-Z0-9:_\@\-]'
+      let l:start -= 1
     endwhile
-    return start
+    return l:start
   else
-    let type = emmet#getFileType()
-    let res = []
+    let l:type = emmet#getFileType()
+    let l:res = []
 
-    let snippets = emmet#getResource(type, 'snippets', {})
-    for item in keys(snippets)
-      if stridx(item, a:base) !=# -1
-        call add(res, substitute(item, '\${cursor}\||', '', 'g'))
+    let l:snippets = emmet#getResource(l:type, 'snippets', {})
+    for l:item in keys(l:snippets)
+      if stridx(l:item, a:base) !=# -1
+        call add(l:res, substitute(l:item, '\${cursor}\||', '', 'g'))
       endif
     endfor
-    let aliases = emmet#getResource(type, 'aliases', {})
-    for item in values(aliases)
-      if stridx(item, a:base) !=# -1
-        call add(res, substitute(item, '\${cursor}\||', '', 'g'))
+    let l:aliases = emmet#getResource(l:type, 'aliases', {})
+    for l:item in values(l:aliases)
+      if stridx(l:item, a:base) !=# -1
+        call add(l:res, substitute(l:item, '\${cursor}\||', '', 'g'))
       endif
     endfor
-    return res
+    return l:res
   endif
 endfunction
 

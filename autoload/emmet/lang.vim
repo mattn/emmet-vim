@@ -10,19 +10,19 @@ function! emmet#lang#exists(type) abort
 endfunction
 
 function! emmet#lang#type(type) abort
-  let type = a:type
-  let base = type
-  let settings = emmet#getSettings()
-  while base != ''
-    for b in split(base, '\.')
-      if emmet#lang#exists(b)
-        return b
+  let l:type = a:type
+  let l:base = l:type
+  let l:settings = emmet#getSettings()
+  while l:base != ''
+    for l:b in split(l:base, '\.')
+      if emmet#lang#exists(l:b)
+        return l:b
       endif
-      if has_key(settings, b) && has_key(settings[b], 'extends')
-        let base = settings[b].extends
+      if has_key(l:settings, l:b) && has_key(l:settings[l:b], 'extends')
+        let l:base = l:settings[l:b].extends
         break
       else
-        let base = ''
+        let l:base = ''
       endif
     endfor
   endwhile
@@ -31,22 +31,22 @@ endfunction
 
 " get all extends for a type recursively
 function! emmet#lang#getExtends(type) abort
-  let settings = emmet#getSettings()
+  let l:settings = emmet#getSettings()
 
-  if !has_key(settings[a:type], 'extends')
+  if !has_key(l:settings[a:type], 'extends')
     return []
   endif
 
-  let extends = settings[a:type].extends
-  if type(extends) ==# 1
-    let tmp = split(extends, '\s*,\s*')
-    unlet! extends
-    let extends = tmp
+  let l:extends = l:settings[a:type].extends
+  if type(l:extends) ==# 1
+    let l:tmp = split(l:extends, '\s*,\s*')
+    unlet! l:extends
+    let l:extends = l:tmp
   endif
 
-  for ext in extends
-    let extends = extends + emmet#lang#getExtends(ext)
+  for l:ext in l:extends
+    let l:extends = l:extends + emmet#lang#getExtends(l:ext)
   endfor
 
-  return extends
+  return l:extends
 endfunction

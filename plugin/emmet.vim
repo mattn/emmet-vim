@@ -96,8 +96,8 @@ if !exists('g:user_emmet_leader_key')
 endif
 
 function! s:install_plugin(mode, buffer)
-  let buffer = a:buffer ? '<buffer>' : ''
-  let items = [
+  let l:buffer = a:buffer ? '<buffer>' : ''
+  let l:items = [
   \ {'mode': 'i', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'emmet-expand-abbr', 'func': '<c-r>=emmet#util#closePopup()<cr><c-r>=emmet#expandAbbr(0,"")<cr>'},
   \ {'mode': 'n', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'emmet-expand-abbr', 'func': ':call emmet#expandAbbr(3,"")<cr>'},
   \ {'mode': 'v', 'var': 'user_emmet_expandabbr_key', 'key': ',', 'plug': 'emmet-expand-abbr', 'func': ':call emmet#expandAbbr(2,"")<cr>'},
@@ -138,20 +138,20 @@ function! s:install_plugin(mode, buffer)
   \ {'mode': 'v', 'var': 'user_emmet_codepretty_key', 'key': 'c', 'plug': 'emmet-code-pretty', 'func': ':call emmet#codePretty()<cr>'},
   \]
 
-  let only_plug = get(g:, 'emmet_install_only_plug', 0)
-  for item in items
-    if a:mode !=# 'a' && stridx(a:mode, item.mode) == -1
+  let l:only_plug = get(g:, 'emmet_install_only_plug', 0)
+  for l:item in l:items
+    if a:mode !=# 'a' && stridx(a:mode, l:item.mode) == -1
       continue
     endif
-    exe item.mode . 'noremap '. buffer .' <plug>(' . item.plug . ') ' . item.func
-    if item.var != '' && !only_plug
-      if exists('g:' . item.var)
-        let key = eval('g:' . item.var)
+    exe l:item.mode . 'noremap '. l:buffer .' <plug>(' . l:item.plug . ') ' . l:item.func
+    if l:item.var != '' && !l:only_plug
+      if exists('g:' . l:item.var)
+        let l:key = eval('g:' . l:item.var)
       else
-        let key = g:user_emmet_leader_key . item.key
+        let l:key = g:user_emmet_leader_key . l:item.key
       endif
-      if !hasmapto('<plug>(' . item.plug . ')', item.mode) && !len(maparg(key, item.mode))
-        exe item.mode . 'map ' . buffer . ' <unique> <silent>' . key . ' <plug>(' . item.plug . ')'
+      if !hasmapto('<plug>(' . l:item.plug . ')', l:item.mode) && !len(maparg(l:key, l:item.mode))
+        exe l:item.mode . 'map ' . l:buffer . ' <unique> <silent>' . l:key . ' <plug>(' . l:item.plug . ')'
       endif
     endif
   endfor

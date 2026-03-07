@@ -1,9 +1,9 @@
 function! emmet#lorem#en#expand(command) abort
-  let wcount = matchstr(a:command, '\(\d*\)$')
-  let wcount = wcount > 0 ? wcount : 30
-  
-  let common = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipisicing', 'elit']
-  let words = ['exercitationem', 'perferendis', 'perspiciatis', 'laborum', 'eveniet',
+  let l:wcount = matchstr(a:command, '\(\d*\)$')
+  let l:wcount = l:wcount > 0 ? l:wcount : 30
+
+  let l:common = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipisicing', 'elit']
+  let l:words = ['exercitationem', 'perferendis', 'perspiciatis', 'laborum', 'eveniet',
   \            'sunt', 'iure', 'nam', 'nobis', 'eum', 'cum', 'officiis', 'excepturi',
   \            'odio', 'consectetur', 'quasi', 'aut', 'quisquam', 'vel', 'eligendi',
   \            'itaque', 'non', 'odit', 'tempore', 'quaerat', 'dignissimos',
@@ -32,34 +32,34 @@ function! emmet#lorem#en#expand(command) abort
   \            'architecto', 'est', 'esse', 'mollitia', 'nulla', 'a', 'similique',
   \            'eos', 'alias', 'dolore', 'tenetur', 'deleniti', 'porro', 'facere',
   \            'maxime', 'corrupti']
-  let ret = []
-  let sentence = 0
-  for i in range(wcount)
-    let arr = common
-    if sentence > 0
-      let arr += words
+  let l:ret = []
+  let l:sentence = 0
+  for l:i in range(l:wcount)
+    let l:arr = l:common
+    if l:sentence > 0
+      let l:arr += l:words
     endif
-    let r = emmet#util#rand()
-    let word = arr[r % len(arr)]
-    if sentence == 0
-      let word = substitute(word, '^.', '\U&', '')
+    let l:r = emmet#util#rand()
+    let l:word = l:arr[l:r % len(l:arr)]
+    if l:sentence == 0
+      let l:word = substitute(l:word, '^.', '\U&', '')
     endif
-    let sentence += 1
-    call add(ret, word)
-    if (sentence > 5 && emmet#util#rand() < 10000) || i == wcount - 1
-      if i == wcount - 1
-        let endc = '?!...'[emmet#util#rand() % 5]
-        call add(ret, endc)
+    let l:sentence += 1
+    call add(l:ret, l:word)
+    if (l:sentence > 5 && emmet#util#rand() < 10000) || l:i == l:wcount - 1
+      if l:i == l:wcount - 1
+        let l:endc = '?!...'[emmet#util#rand() % 5]
+        call add(l:ret, l:endc)
       else
-        let endc = '?!,...'[emmet#util#rand() % 6]
-        call add(ret, endc . ' ')
+        let l:endc = '?!,...'[emmet#util#rand() % 6]
+        call add(l:ret, l:endc . ' ')
       endif
-      if endc !=# ','
-        let sentence = 0
+      if l:endc !=# ','
+        let l:sentence = 0
       endif
     else
-      call add(ret, ' ')
+      call add(l:ret, ' ')
     endif
   endfor
-  return join(ret, '')
+  return join(l:ret, '')
 endfunction

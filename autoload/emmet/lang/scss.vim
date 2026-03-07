@@ -11,53 +11,53 @@ function! emmet#lang#scss#parseIntoTree(abbr, type) abort
 endfunction
 
 function! emmet#lang#scss#toString(settings, current, type, inline, filters, itemno, indent) abort
-  let settings = a:settings
-  let current = a:current
-  let type = a:type
-  let inline = a:inline
-  let filters = a:filters
-  let itemno = a:itemno
-  let indent = a:indent
-  let str = ''
+  let l:settings = a:settings
+  let l:current = a:current
+  let l:type = a:type
+  let l:inline = a:inline
+  let l:filters = a:filters
+  let l:itemno = a:itemno
+  let l:indent = a:indent
+  let l:str = ''
 
-  let current_name = substitute(current.name, '\$$', itemno+1, '')
-  if len(current.name) > 0
-    let str .= current_name
-    let tmp = ''
-    for attr in keys(current.attr)
-      let val = current.attr[attr]
-      while val =~# '\$\([^#{]\|$\)'
-        let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+  let l:current_name = substitute(l:current.name, '\$$', l:itemno+1, '')
+  if len(l:current.name) > 0
+    let l:str .= l:current_name
+    let l:tmp = ''
+    for l:attr in keys(l:current.attr)
+      let l:val = l:current.attr[l:attr]
+      while l:val =~# '\$\([^#{]\|$\)'
+        let l:val = substitute(l:val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", l:itemno+1).submatch(2)', 'g')
       endwhile
-      let attr = substitute(attr, '\$$', itemno+1, '')
-      if attr ==# 'id'
-        let str .= '#' . val
-      elseif attr ==# 'class'
-        let str .= '.' . val
+      let l:attr = substitute(l:attr, '\$$', l:itemno+1, '')
+      if l:attr ==# 'id'
+        let l:str .= '#' . l:val
+      elseif l:attr ==# 'class'
+        let l:str .= '.' . l:val
       else
-        let tmp .= attr . ': ' . val . ';'
+        let l:tmp .= l:attr . ': ' . l:val . ';'
       endif
     endfor
-    if len(tmp) > 0
-      let str .= " {\n"
-      for line in split(tmp, "\n")
-        let str .= indent . line . "\n"
+    if len(l:tmp) > 0
+      let l:str .= " {\n"
+      for l:line in split(l:tmp, "\n")
+        let l:str .= l:indent . l:line . "\n"
       endfor
     else
-      let str .= " {\n"
+      let l:str .= " {\n"
     endif
 
-    let inner = ''
-    for child in current.child
-      let inner .= emmet#toString(child, type, inline, filters, itemno)
+    let l:inner = ''
+    for l:child in l:current.child
+      let l:inner .= emmet#toString(l:child, l:type, l:inline, l:filters, l:itemno)
     endfor
-    let inner = substitute(inner, "\n", "\n" . escape(indent, '\'), 'g')
-    let inner = substitute(inner, "\n" . escape(indent, '\') . '$', '', 'g')
-    let str .= indent . inner . "${cursor}\n}\n"
+    let l:inner = substitute(l:inner, "\n", "\n" . escape(l:indent, '\'), 'g')
+    let l:inner = substitute(l:inner, "\n" . escape(l:indent, '\') . '$', '', 'g')
+    let l:str .= l:indent . l:inner . "${cursor}\n}\n"
   else
-    return emmet#lang#css#toString(settings, current, type, inline, filters, itemno, indent)
+    return emmet#lang#css#toString(l:settings, l:current, l:type, l:inline, l:filters, l:itemno, l:indent)
   endif
-  return str
+  return l:str
 endfunction
 
 function! emmet#lang#scss#imageSize() abort
@@ -78,33 +78,33 @@ endfunction
 
 function! emmet#lang#scss#balanceTag(flag) range abort
   if a:flag == -2 || a:flag == 2
-    let curpos = [0, line("'<"), col("'<"), 0]
-    call setpos('.', curpos)
+    let l:curpos = [0, line("'<"), col("'<"), 0]
+    call setpos('.', l:curpos)
   else
-    let curpos = emmet#util#getcurpos()
+    let l:curpos = emmet#util#getcurpos()
   endif
   if a:flag < 0
-    let ret = searchpair('}', '', '.\zs{')
+    let l:ret = searchpair('}', '', '.\zs{')
   else
-    let ret = searchpair('{', '', '}', 'bW')
+    let l:ret = searchpair('{', '', '}', 'bW')
   endif
-  if ret > 0
-    let pos1 = emmet#util#getcurpos()[1:2]
+  if l:ret > 0
+    let l:pos1 = emmet#util#getcurpos()[1:2]
     if a:flag < 0
-      let pos2 = searchpairpos('{', '', '}')
+      let l:pos2 = searchpairpos('{', '', '}')
     else
-      let pos2 = searchpairpos('{', '', '}')
+      let l:pos2 = searchpairpos('{', '', '}')
     endif
-    let block = [pos1, pos2]
-    if emmet#util#regionIsValid(block)
-      call emmet#util#selectRegion(block)
+    let l:block = [l:pos1, l:pos2]
+    if emmet#util#regionIsValid(l:block)
+      call emmet#util#selectRegion(l:block)
       return
     endif
   endif
   if a:flag == -2 || a:flag == 2
     silent! exe 'normal! gv'
   else
-    call setpos('.', curpos)
+    call setpos('.', l:curpos)
   endif
 endfunction
 

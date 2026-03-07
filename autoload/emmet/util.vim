@@ -12,10 +12,10 @@
 "   begin::end
 "   --------------------
 function! emmet#util#deleteContent(region) abort
-  let lines = getline(a:region[0][0], a:region[1][0])
+  let l:lines = getline(a:region[0][0], a:region[1][0])
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe 'delete '.(a:region[1][0] - a:region[0][0])
-  call setline(line('.'), lines[0][:a:region[0][1]-2] . lines[-1][a:region[1][1]])
+  call setline(line('.'), l:lines[0][:a:region[0][1]-2] . l:lines[-1][a:region[1][1]])
 endfunction
 
 " change_content : change content in region
@@ -37,36 +37,36 @@ endfunction
 "   baz:end
 "   --------------------
 function! emmet#util#setContent(region, content) abort
-  let newlines = split(a:content, '\n', 1)
-  let oldlines = getline(a:region[0][0], a:region[1][0])
+  let l:newlines = split(a:content, '\n', 1)
+  let l:oldlines = getline(a:region[0][0], a:region[1][0])
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe 'delete '.(a:region[1][0] - a:region[0][0])
-  if len(newlines) == 0
-    let tmp = ''
+  if len(l:newlines) == 0
+    let l:tmp = ''
     if a:region[0][1] > 1
-      let tmp = oldlines[0][:a:region[0][1]-2]
+      let l:tmp = l:oldlines[0][:a:region[0][1]-2]
     endif
     if a:region[1][1] >= 1
-      let tmp .= oldlines[-1][a:region[1][1]:]
+      let l:tmp .= l:oldlines[-1][a:region[1][1]:]
     endif
-    call setline(line('.'), tmp)
-  elseif len(newlines) == 1
+    call setline(line('.'), l:tmp)
+  elseif len(l:newlines) == 1
     if a:region[0][1] > 1
-      let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
+      let l:newlines[0] = l:oldlines[0][:a:region[0][1]-2] . l:newlines[0]
     endif
     if a:region[1][1] >= 1
-      let newlines[0] .= oldlines[-1][a:region[1][1]:]
+      let l:newlines[0] .= l:oldlines[-1][a:region[1][1]:]
     endif
-    call setline(line('.'), newlines[0])
+    call setline(line('.'), l:newlines[0])
   else
     if a:region[0][1] > 1
-      let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
+      let l:newlines[0] = l:oldlines[0][:a:region[0][1]-2] . l:newlines[0]
     endif
     if a:region[1][1] >= 1
-      let newlines[-1] .= oldlines[-1][a:region[1][1]:]
+      let l:newlines[-1] .= l:oldlines[-1][a:region[1][1]:]
     endif
-    call setline(line('.'), newlines[0])
-    call append(line('.'), newlines[1:])
+    call setline(line('.'), l:newlines[0])
+    call append(line('.'), l:newlines[1:])
   endif
 endfunction
 
@@ -93,8 +93,8 @@ endfunction
 "   this function return 0 or 1
 function! emmet#util#cursorInRegion(region) abort
   if !emmet#util#regionIsValid(a:region) | return 0 | endif
-  let cur = emmet#util#getcurpos()[1:2]
-  return emmet#util#pointInRegion(cur, a:region)
+  let l:cur = emmet#util#getcurpos()[1:2]
+  return emmet#util#pointInRegion(l:cur, a:region)
 endfunction
 
 " region_is_valid : check region is valid
@@ -107,11 +107,11 @@ endfunction
 " search_region : make region from pattern which is composing start/end
 "   this function return array of position
 function! emmet#util#searchRegion(start, end) abort
-  let b = searchpairpos(a:start, '', a:end, 'bcnW')
-  if b == [0, 0]
+  let l:b = searchpairpos(a:start, '', a:end, 'bcnW')
+  if l:b == [0, 0]
     return [searchpairpos(a:start, '', a:end, 'bnW'), searchpairpos(a:start, '\%#', a:end, 'nW')]
   else
-    return [b, searchpairpos(a:start, '', a:end. '', 'nW')]
+    return [l:b, searchpairpos(a:start, '', a:end. '', 'nW')]
   endif
 endfunction
 
@@ -121,14 +121,14 @@ function! emmet#util#getContent(region) abort
   if !emmet#util#regionIsValid(a:region)
     return ''
   endif
-  let lines = getline(a:region[0][0], a:region[1][0])
+  let l:lines = getline(a:region[0][0], a:region[1][0])
   if a:region[0][0] == a:region[1][0]
-    let lines[0] = lines[0][a:region[0][1]-1:a:region[1][1]-1]
+    let l:lines[0] = l:lines[0][a:region[0][1]-1:a:region[1][1]-1]
   else
-    let lines[0] = lines[0][a:region[0][1]-1:]
-    let lines[-1] = lines[-1][:a:region[1][1]-1]
+    let l:lines[0] = l:lines[0][a:region[0][1]-1:]
+    let l:lines[-1] = l:lines[-1][:a:region[1][1]-1]
   endif
-  return join(lines, "\n")
+  return join(l:lines, "\n")
 endfunction
 
 " region_in_region : check region is in the region
@@ -150,145 +150,145 @@ endfunction
 " html utils
 "==============================================================================
 function! emmet#util#getContentFromURL(url) abort
-  let res = system(printf('%s -i %s', g:emmet_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
-  while res =~# '^HTTP/1.\d 3' || res =~# '^HTTP/1\.\d 200 Connection established' || res =~# '^HTTP/1\.\d 100 Continue'
-    let pos = stridx(res, "\r\n\r\n")
-    if pos != -1
-      let res = strpart(res, pos+4)
+  let l:res = system(printf('%s -i %s', g:emmet_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
+  while l:res =~# '^HTTP/1.\d 3' || l:res =~# '^HTTP/1\.\d 200 Connection established' || l:res =~# '^HTTP/1\.\d 100 Continue'
+    let l:pos = stridx(l:res, "\r\n\r\n")
+    if l:pos != -1
+      let l:res = strpart(l:res, l:pos+4)
     else
-      let pos = stridx(res, "\n\n")
-      let res = strpart(res, pos+2)
+      let l:pos = stridx(l:res, "\n\n")
+      let l:res = strpart(l:res, l:pos+2)
     endif
   endwhile
-  let pos = stridx(res, "\r\n\r\n")
-  if pos != -1
-    let content = strpart(res, pos+4)
+  let l:pos = stridx(l:res, "\r\n\r\n")
+  if l:pos != -1
+    let l:content = strpart(l:res, l:pos+4)
   else
-    let pos = stridx(res, "\n\n")
-    let content = strpart(res, pos+2)
+    let l:pos = stridx(l:res, "\n\n")
+    let l:content = strpart(l:res, l:pos+2)
   endif
-  let header = res[:pos-1]
-  let charset = matchstr(content, '<meta[^>]\+content=["''][^;"'']\+;\s*charset=\zs[^;"'']\+\ze["''][^>]*>')
-  if len(charset) == 0
-    let charset = matchstr(content, '<meta\s\+charset=["'']\?\zs[^"'']\+\ze["'']\?[^>]*>')
+  let l:header = l:res[:l:pos-1]
+  let l:charset = matchstr(l:content, '<meta[^>]\+content=["''][^;"'']\+;\s*charset=\zs[^;"'']\+\ze["''][^>]*>')
+  if len(l:charset) == 0
+    let l:charset = matchstr(l:content, '<meta\s\+charset=["'']\?\zs[^"'']\+\ze["'']\?[^>]*>')
   endif
-  if len(charset) == 0
-    let charset = matchstr(header, '\nContent-Type:.* charset=[''"]\?\zs[^''";\n]\+\ze')
+  if len(l:charset) == 0
+    let l:charset = matchstr(l:header, '\nContent-Type:.* charset=[''"]\?\zs[^''";\n]\+\ze')
   endif
-  if len(charset) == 0
-    let s1 = len(split(content, '?'))
-    let utf8 = iconv(content, 'utf-8', &encoding)
-    let s2 = len(split(utf8, '?'))
-    return (s2 == s1 || s2 >= s1 * 2) ? utf8 : content
+  if len(l:charset) == 0
+    let l:s1 = len(split(l:content, '?'))
+    let l:utf8 = iconv(l:content, 'utf-8', &encoding)
+    let l:s2 = len(split(l:utf8, '?'))
+    return (l:s2 == l:s1 || l:s2 >= l:s1 * 2) ? l:utf8 : l:content
   endif
-  return iconv(content, charset, &encoding)
+  return iconv(l:content, l:charset, &encoding)
 endfunction
 
 function! emmet#util#getTextFromHTML(buf) abort
-  let threshold_len = 100
-  let threshold_per = 0.1
-  let buf = a:buf
+  let l:threshold_len = 100
+  let l:threshold_per = 0.1
+  let l:buf = a:buf
 
-  let buf = strpart(buf, stridx(buf, '</head>'))
-  let buf = substitute(buf, '<style[^>]*>.\{-}</style>', '', 'g')
-  let buf = substitute(buf, '<script[^>]*>.\{-}</script>', '', 'g')
-  let res = ''
-  let max = 0
-  let mx = '\(<td[^>]\{-}>\)\|\(<\/td>\)\|\(<div[^>]\{-}>\)\|\(<\/div>\)'
-  let m = split(buf, mx)
-  for str in m
-    let c = split(str, '<[^>]*?>')
-    let str = substitute(str, '<[^>]\{-}>', ' ', 'g')
-    let str = substitute(str, '&gt;', '>', 'g')
-    let str = substitute(str, '&lt;', '<', 'g')
-    let str = substitute(str, '&quot;', '"', 'g')
-    let str = substitute(str, '&apos;', '''', 'g')
-    let str = substitute(str, '&nbsp;', ' ', 'g')
-    let str = substitute(str, '&yen;', '\&#65509;', 'g')
-    let str = substitute(str, '&amp;', '\&', 'g')
-    let str = substitute(str, '^\s*\(.*\)\s*$', '\1', '')
-    let str = substitute(str, '\s\+', ' ', 'g')
-    let l = len(str)
-    if l > threshold_len
-      let per = (l+0.0) / len(c)
-      if max < l && per > threshold_per
-        let max = l
-        let res = str
+  let l:buf = strpart(l:buf, stridx(l:buf, '</head>'))
+  let l:buf = substitute(l:buf, '<style[^>]*>.\{-}</style>', '', 'g')
+  let l:buf = substitute(l:buf, '<script[^>]*>.\{-}</script>', '', 'g')
+  let l:res = ''
+  let l:max = 0
+  let l:mx = '\(<td[^>]\{-}>\)\|\(<\/td>\)\|\(<div[^>]\{-}>\)\|\(<\/div>\)'
+  let l:m = split(l:buf, l:mx)
+  for l:str in l:m
+    let l:c = split(l:str, '<[^>]*?>')
+    let l:str = substitute(l:str, '<[^>]\{-}>', ' ', 'g')
+    let l:str = substitute(l:str, '&gt;', '>', 'g')
+    let l:str = substitute(l:str, '&lt;', '<', 'g')
+    let l:str = substitute(l:str, '&quot;', '"', 'g')
+    let l:str = substitute(l:str, '&apos;', '''', 'g')
+    let l:str = substitute(l:str, '&nbsp;', ' ', 'g')
+    let l:str = substitute(l:str, '&yen;', '\&#65509;', 'g')
+    let l:str = substitute(l:str, '&amp;', '\&', 'g')
+    let l:str = substitute(l:str, '^\s*\(.*\)\s*$', '\1', '')
+    let l:str = substitute(l:str, '\s\+', ' ', 'g')
+    let l:l = len(l:str)
+    if l:l > l:threshold_len
+      let l:per = (l:l+0.0) / len(l:c)
+      if l:max < l:l && l:per > l:threshold_per
+        let l:max = l:l
+        let l:res = l:str
       endif
     endif
   endfor
-  let res = substitute(res, '^\s*\(.*\)\s*$', '\1', 'g')
-  return res
+  let l:res = substitute(l:res, '^\s*\(.*\)\s*$', '\1', 'g')
+  return l:res
 endfunction
 
 function! emmet#util#getImageSize(fn) abort
-  let fn = a:fn
+  let l:fn = a:fn
 
   if emmet#util#isImageMagickInstalled()
-    return emmet#util#imageSizeWithImageMagick(fn)
+    return emmet#util#imageSizeWithImageMagick(l:fn)
   endif
 
-  if filereadable(fn)
-    let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
+  if filereadable(l:fn)
+    let l:hex = substitute(system('xxd -p "'.l:fn.'"'), '\n', '', 'g')
   else
-    if fn !~# '^\w\+://'
-      let path = fnamemodify(expand('%'), ':p:gs?\\?/?')
+    if l:fn !~# '^\w\+://'
+      let l:path = fnamemodify(expand('%'), ':p:gs?\\?/?')
       if has('win32') || has('win64') |
-        let path = tolower(path)
+        let l:path = tolower(l:path)
       endif
-      for k in keys(g:emmet_docroot)
-        let root = fnamemodify(k, ':p:gs?\\?/?')
+      for l:k in keys(g:emmet_docroot)
+        let l:root = fnamemodify(l:k, ':p:gs?\\?/?')
         if has('win32') || has('win64') |
-          let root = tolower(root)
+          let l:root = tolower(l:root)
         endif
-        if stridx(path, root) == 0
-          let v = g:emmet_docroot[k]
-          let fn = (len(v) == 0 ? k : v) . fn
+        if stridx(l:path, l:root) == 0
+          let l:v = g:emmet_docroot[l:k]
+          let l:fn = (len(l:v) == 0 ? l:k : l:v) . l:fn
           break
         endif
       endfor
     endif
-    let hex = substitute(system(g:emmet_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
+    let l:hex = substitute(system(g:emmet_curl_command.' "'.l:fn.'" | xxd -p'), '\n', '', 'g')
   endif
 
-  let [width, height] = [-1, -1]
-  if hex =~# '^89504e470d0a1a0a'
-    let width = eval('0x'.hex[32:39])
-    let height = eval('0x'.hex[40:47])
+  let [l:width, l:height] = [-1, -1]
+  if l:hex =~# '^89504e470d0a1a0a'
+    let l:width = eval('0x'.l:hex[32:39])
+    let l:height = eval('0x'.l:hex[40:47])
   endif
-  if hex =~# '^ffd8'
-    let pos = 4
-    while pos < len(hex)
-      let bs = hex[pos+0:pos+3]
-      let pos += 4
-      if bs ==# 'ffc0' || bs ==# 'ffc2'
-        let pos += 6
-        let height = eval('0x'.hex[pos+0:pos+1])*256 + eval('0x'.hex[pos+2:pos+3])
-        let pos += 4
-        let width = eval('0x'.hex[pos+0:pos+1])*256 + eval('0x'.hex[pos+2:pos+3])
+  if l:hex =~# '^ffd8'
+    let l:pos = 4
+    while l:pos < len(l:hex)
+      let l:bs = l:hex[l:pos+0:l:pos+3]
+      let l:pos += 4
+      if l:bs ==# 'ffc0' || l:bs ==# 'ffc2'
+        let l:pos += 6
+        let l:height = eval('0x'.l:hex[l:pos+0:l:pos+1])*256 + eval('0x'.l:hex[l:pos+2:l:pos+3])
+        let l:pos += 4
+        let l:width = eval('0x'.l:hex[l:pos+0:l:pos+1])*256 + eval('0x'.l:hex[l:pos+2:l:pos+3])
         break
-      elseif bs =~# 'ffd[9a]'
+      elseif l:bs =~# 'ffd[9a]'
         break
-      elseif bs =~# 'ff\(e[0-9a-e]\|fe\|db\|dd\|c4\)'
-        let pos += (eval('0x'.hex[pos+0:pos+1])*256 + eval('0x'.hex[pos+2:pos+3])) * 2
+      elseif l:bs =~# 'ff\(e[0-9a-e]\|fe\|db\|dd\|c4\)'
+        let l:pos += (eval('0x'.l:hex[l:pos+0:l:pos+1])*256 + eval('0x'.l:hex[l:pos+2:l:pos+3])) * 2
       endif
     endwhile
   endif
-  if hex =~# '^47494638'
-    let width = eval('0x'.hex[14:15].hex[12:13])
-    let height = eval('0x'.hex[18:19].hex[16:17])
+  if l:hex =~# '^47494638'
+    let l:width = eval('0x'.l:hex[14:15].l:hex[12:13])
+    let l:height = eval('0x'.l:hex[18:19].l:hex[16:17])
   endif
 
-  return [width, height]
+  return [l:width, l:height]
 endfunction
 
 function! emmet#util#imageSizeWithImageMagick(fn) abort
-  let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
-  let img_size = split(substitute(img_info, '\n', '', ''), 'x')
-  if len(img_size) != 2
+  let l:img_info = system('identify -format "%wx%h" "'.a:fn.'"')
+  let l:img_size = split(substitute(l:img_info, '\n', '', ''), 'x')
+  if len(l:img_size) != 2
     return [-1, -1]
   endif
-  return img_size
+  return l:img_size
 endfunction
 
 function! emmet#util#isImageMagickInstalled() abort
@@ -299,78 +299,78 @@ function! emmet#util#isImageMagickInstalled() abort
 endfunction
 
 function! s:b64encode(bytes, table, pad)
-  let b64 = []
-  for i in range(0, len(a:bytes) - 1, 3)
-    let n = a:bytes[i] * 0x10000
-          \ + get(a:bytes, i + 1, 0) * 0x100
-          \ + get(a:bytes, i + 2, 0)
-    call add(b64, a:table[n / 0x40000])
-    call add(b64, a:table[n / 0x1000 % 0x40])
-    call add(b64, a:table[n / 0x40 % 0x40])
-    call add(b64, a:table[n % 0x40])
+  let l:b64 = []
+  for l:i in range(0, len(a:bytes) - 1, 3)
+    let l:n = a:bytes[l:i] * 0x10000
+          \ + get(a:bytes, l:i + 1, 0) * 0x100
+          \ + get(a:bytes, l:i + 2, 0)
+    call add(l:b64, a:table[l:n / 0x40000])
+    call add(l:b64, a:table[l:n / 0x1000 % 0x40])
+    call add(l:b64, a:table[l:n / 0x40 % 0x40])
+    call add(l:b64, a:table[l:n % 0x40])
   endfor
   if len(a:bytes) % 3 == 2
-    let b64[-1] = a:pad
+    let l:b64[-1] = a:pad
   elseif len(a:bytes) % 3 == 1
-    let b64[-1] = a:pad
-    let b64[-2] = a:pad
+    let l:b64[-1] = a:pad
+    let l:b64[-2] = a:pad
   endif
-  return b64
+  return l:b64
 endfunction
 
 function! emmet#util#imageEncodeDecode(fn, flag) abort
-  let fn = a:fn
+  let l:fn = a:fn
 
-  if filereadable(fn)
-    let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
+  if filereadable(l:fn)
+    let l:hex = substitute(system('xxd -p "'.l:fn.'"'), '\n', '', 'g')
   else
-    if fn !~# '^\w\+://'
-      let path = fnamemodify(expand('%'), ':p:gs?\\?/?')
+    if l:fn !~# '^\w\+://'
+      let l:path = fnamemodify(expand('%'), ':p:gs?\\?/?')
       if has('win32') || has('win64') |
-        let path = tolower(path)
+        let l:path = tolower(l:path)
       endif
-      for k in keys(g:emmet_docroot)
-        let root = fnamemodify(k, ':p:gs?\\?/?')
+      for l:k in keys(g:emmet_docroot)
+        let l:root = fnamemodify(l:k, ':p:gs?\\?/?')
         if has('win32') || has('win64') |
-          let root = tolower(root)
+          let l:root = tolower(l:root)
         endif
-        if stridx(path, root) == 0
-          let v = g:emmet_docroot[k]
-          let fn = (len(v) == 0 ? k : v) . fn
+        if stridx(l:path, l:root) == 0
+          let l:v = g:emmet_docroot[l:k]
+          let l:fn = (len(l:v) == 0 ? l:k : l:v) . l:fn
           break
         endif
       endfor
     endif
-    let hex = substitute(system(g:emmet_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
+    let l:hex = substitute(system(g:emmet_curl_command.' "'.l:fn.'" | xxd -p'), '\n', '', 'g')
   endif
 
-  let bin = map(split(hex, '..\zs'), 'eval("0x" . v:val)')
-  let table = split('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', '\zs')
-  let ret = 'data:image/'
-  if hex =~# '^89504e470d0a1a0a'
-    let ret .= 'png'
-  elseif hex =~# '^ffd8'
-    let ret .= 'jpeg'
-  elseif hex =~# '^47494638'
-    let ret .= 'gif'
-  elseif hex =~# '^00000020667479706176696600000000'
-    let ret .= 'avif'
+  let l:bin = map(split(l:hex, '..\zs'), 'eval("0x" . v:val)')
+  let l:table = split('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', '\zs')
+  let l:ret = 'data:image/'
+  if l:hex =~# '^89504e470d0a1a0a'
+    let l:ret .= 'png'
+  elseif l:hex =~# '^ffd8'
+    let l:ret .= 'jpeg'
+  elseif l:hex =~# '^47494638'
+    let l:ret .= 'gif'
+  elseif l:hex =~# '^00000020667479706176696600000000'
+    let l:ret .= 'avif'
   else
-    let ret .= 'unknown'
+    let l:ret .= 'unknown'
   endif
-  return ret . ';base64,' . join(s:b64encode(bin, table, '='), '')
+  return l:ret . ';base64,' . join(s:b64encode(l:bin, l:table, '='), '')
 endfunction
 
 function! emmet#util#unique(arr) abort
-  let m = {}
-  let r = []
-  for i in a:arr
-    if !has_key(m, i)
-      let m[i] = 1
-      call add(r, i)
+  let l:m = {}
+  let l:r = []
+  for l:i in a:arr
+    if !has_key(l:m, l:i)
+      let l:m[l:i] = 1
+      call add(l:r, l:i)
     endif
   endfor
-  return r
+  return l:r
 endfunction
 
 let s:seed = localtime()
@@ -384,27 +384,27 @@ function! emmet#util#rand() abort
 endfunction
 
 function! emmet#util#cache(name, ...) abort
-  let content = get(a:000, 0, '')
-  let dir = expand('~/.emmet/cache')
-  if !isdirectory(dir)
-    call mkdir(dir, 'p', 0700)
+  let l:content = get(a:000, 0, '')
+  let l:dir = expand('~/.emmet/cache')
+  if !isdirectory(l:dir)
+    call mkdir(l:dir, 'p', 0700)
   endif
-  let file = dir . '/' . substitute(a:name, '\W', '_', 'g')
-  if len(content) == 0
-    if !filereadable(file)
+  let l:file = l:dir . '/' . substitute(a:name, '\W', '_', 'g')
+  if len(l:content) == 0
+    if !filereadable(l:file)
       return ''
     endif
-	return join(readfile(file), "\n")
+	return join(readfile(l:file), "\n")
   endif
-  call writefile(split(content, "\n"), file)
+  call writefile(split(l:content, "\n"), l:file)
 endfunction
 
 function! emmet#util#getcurpos() abort
-  let pos = getpos('.')
-  if mode(0) ==# 'i' && pos[2] > 0
-    let pos[2] -=1
+  let l:pos = getpos('.')
+  if mode(0) ==# 'i' && l:pos[2] > 0
+    let l:pos[2] -=1
   endif
-  return pos
+  return l:pos
 endfunction
 
 function! emmet#util#closePopup() abort
