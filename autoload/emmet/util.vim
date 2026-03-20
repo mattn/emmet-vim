@@ -42,30 +42,16 @@ function! emmet#util#setContent(region, content) abort
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe 'delete '.(a:region[1][0] - a:region[0][0])
   if len(l:newlines) == 0
-    let l:tmp = ''
-    if a:region[0][1] > 1
-      let l:tmp = l:oldlines[0][:a:region[0][1]-2]
-    endif
-    if a:region[1][1] >= 1
-      let l:tmp .= l:oldlines[-1][a:region[1][1]:]
-    endif
-    call setline(line('.'), l:tmp)
-  elseif len(l:newlines) == 1
-    if a:region[0][1] > 1
-      let l:newlines[0] = l:oldlines[0][:a:region[0][1]-2] . l:newlines[0]
-    endif
-    if a:region[1][1] >= 1
-      let l:newlines[0] .= l:oldlines[-1][a:region[1][1]:]
-    endif
-    call setline(line('.'), l:newlines[0])
-  else
-    if a:region[0][1] > 1
-      let l:newlines[0] = l:oldlines[0][:a:region[0][1]-2] . l:newlines[0]
-    endif
-    if a:region[1][1] >= 1
-      let l:newlines[-1] .= l:oldlines[-1][a:region[1][1]:]
-    endif
-    call setline(line('.'), l:newlines[0])
+    let l:newlines = ['']
+  endif
+  if a:region[0][1] > 1
+    let l:newlines[0] = l:oldlines[0][:a:region[0][1]-2] . l:newlines[0]
+  endif
+  if a:region[1][1] >= 1
+    let l:newlines[-1] .= l:oldlines[-1][a:region[1][1]:]
+  endif
+  call setline(line('.'), l:newlines[0])
+  if len(l:newlines) > 1
     call append(line('.'), l:newlines[1:])
   endif
 endfunction
@@ -149,24 +135,21 @@ endfunction
 "==============================================================================
 " html utils
 "==============================================================================
+function! s:splitHeaderBody(res) abort
+  let l:pos = stridx(a:res, "\r\n\r\n")
+  if l:pos != -1
+    return [l:pos, strpart(a:res, l:pos+4)]
+  endif
+  let l:pos = stridx(a:res, "\n\n")
+  return [l:pos, strpart(a:res, l:pos+2)]
+endfunction
+
 function! emmet#util#getContentFromURL(url) abort
   let l:res = system(printf('%s -i %s', g:emmet_curl_command, shellescape(substitute(a:url, '#.*', '', ''))))
   while l:res =~# '^HTTP/1.\d 3' || l:res =~# '^HTTP/1\.\d 200 Connection established' || l:res =~# '^HTTP/1\.\d 100 Continue'
-    let l:pos = stridx(l:res, "\r\n\r\n")
-    if l:pos != -1
-      let l:res = strpart(l:res, l:pos+4)
-    else
-      let l:pos = stridx(l:res, "\n\n")
-      let l:res = strpart(l:res, l:pos+2)
-    endif
+    let [l:pos, l:res] = s:splitHeaderBody(l:res)
   endwhile
-  let l:pos = stridx(l:res, "\r\n\r\n")
-  if l:pos != -1
-    let l:content = strpart(l:res, l:pos+4)
-  else
-    let l:pos = stridx(l:res, "\n\n")
-    let l:content = strpart(l:res, l:pos+2)
-  endif
+  let [l:pos, l:content] = s:splitHeaderBody(l:res)
   let l:header = l:res[:l:pos-1]
   let l:charset = matchstr(l:content, '<meta[^>]\+content=["''][^;"'']\+;\s*charset=\zs[^;"'']\+\ze["''][^>]*>')
   if len(l:charset) == 0
@@ -221,6 +204,31 @@ function! emmet#util#getTextFromHTML(buf) abort
   return l:res
 endfunction
 
+function! s:resolveAndReadHex(fn) abort
+  let l:fn = a:fn
+  if filereadable(l:fn)
+    return substitute(system('xxd -p '.shellescape(l:fn)), '\n', '', 'g')
+  endif
+  if l:fn !~# '^\w\+://'
+    let l:path = fnamemodify(expand('%'), ':p:gs?\\?/?')
+    if has('win32') || has('win64') |
+      let l:path = tolower(l:path)
+    endif
+    for l:k in keys(g:emmet_docroot)
+      let l:root = fnamemodify(l:k, ':p:gs?\\?/?')
+      if has('win32') || has('win64') |
+        let l:root = tolower(l:root)
+      endif
+      if stridx(l:path, l:root) == 0
+        let l:v = g:emmet_docroot[l:k]
+        let l:fn = (len(l:v) == 0 ? l:k : l:v) . l:fn
+        break
+      endif
+    endfor
+  endif
+  return substitute(system(g:emmet_curl_command.' '.shellescape(l:fn).' | xxd -p'), '\n', '', 'g')
+endfunction
+
 function! emmet#util#getImageSize(fn) abort
   let l:fn = a:fn
 
@@ -228,28 +236,7 @@ function! emmet#util#getImageSize(fn) abort
     return emmet#util#imageSizeWithImageMagick(l:fn)
   endif
 
-  if filereadable(l:fn)
-    let l:hex = substitute(system('xxd -p '.shellescape(l:fn)), '\n', '', 'g')
-  else
-    if l:fn !~# '^\w\+://'
-      let l:path = fnamemodify(expand('%'), ':p:gs?\\?/?')
-      if has('win32') || has('win64') |
-        let l:path = tolower(l:path)
-      endif
-      for l:k in keys(g:emmet_docroot)
-        let l:root = fnamemodify(l:k, ':p:gs?\\?/?')
-        if has('win32') || has('win64') |
-          let l:root = tolower(l:root)
-        endif
-        if stridx(l:path, l:root) == 0
-          let l:v = g:emmet_docroot[l:k]
-          let l:fn = (len(l:v) == 0 ? l:k : l:v) . l:fn
-          break
-        endif
-      endfor
-    endif
-    let l:hex = substitute(system(g:emmet_curl_command.' '.shellescape(l:fn).' | xxd -p'), '\n', '', 'g')
-  endif
+  let l:hex = s:resolveAndReadHex(l:fn)
 
   let [l:width, l:height] = [-1, -1]
   if l:hex =~# '^89504e470d0a1a0a'
@@ -319,30 +306,7 @@ function! s:b64encode(bytes, table, pad)
 endfunction
 
 function! emmet#util#imageEncodeDecode(fn, flag) abort
-  let l:fn = a:fn
-
-  if filereadable(l:fn)
-    let l:hex = substitute(system('xxd -p '.shellescape(l:fn)), '\n', '', 'g')
-  else
-    if l:fn !~# '^\w\+://'
-      let l:path = fnamemodify(expand('%'), ':p:gs?\\?/?')
-      if has('win32') || has('win64') |
-        let l:path = tolower(l:path)
-      endif
-      for l:k in keys(g:emmet_docroot)
-        let l:root = fnamemodify(l:k, ':p:gs?\\?/?')
-        if has('win32') || has('win64') |
-          let l:root = tolower(l:root)
-        endif
-        if stridx(l:path, l:root) == 0
-          let l:v = g:emmet_docroot[l:k]
-          let l:fn = (len(l:v) == 0 ? l:k : l:v) . l:fn
-          break
-        endif
-      endfor
-    endif
-    let l:hex = substitute(system(g:emmet_curl_command.' '.shellescape(l:fn).' | xxd -p'), '\n', '', 'g')
-  endif
+  let l:hex = s:resolveAndReadHex(a:fn)
 
   let l:bin = map(split(l:hex, '..\zs'), 'eval("0x" . v:val)')
   let l:table = split('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', '\zs')
