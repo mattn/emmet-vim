@@ -1,0 +1,27 @@
+name: Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        vim:
+          - v9.0.0000
+          - head
+    steps:
+      - uses: actions/checkout@v4
+      - uses: thinca/action-setup-vim@v2
+        with:
+          vim_version: ${{ matrix.vim }}
+      - uses: actions/checkout@v4
+        with:
+          repository: thinca/vim-themis
+          path: vim-themis
+      - name: Run tests
+        run: ./vim-themis/bin/themis --runtimepath . test/
