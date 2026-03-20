@@ -1,0 +1,1 @@
+let &runtimepath .= ',' . fnamemodify(expand('<sfile>'), ':h') . '/test'
