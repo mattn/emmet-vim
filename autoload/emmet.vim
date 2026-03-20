@@ -523,6 +523,24 @@ function! emmet#unescapeDollarExpr(expand) abort
   return substitute(a:expand, '\\\$', '$', 'g')
 endfunction
 
+function! s:expandItems(items, type, filters, indent) abort
+  let l:expand = ''
+  for l:item in a:items
+    let l:expand .= emmet#toString(l:item, a:type, 0, a:filters, 0, a:indent)
+  endfor
+  return l:expand
+endfunction
+
+function! s:applyEscapeFilter(filters, expand) abort
+  let l:expand = a:expand
+  if emmet#useFilter(a:filters, 'e')
+    let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
+    let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
+    let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
+  endif
+  return l:expand
+endfunction
+
 function! emmet#expandAbbr(mode, abbr) range abort
   let l:type = emmet#getFileType(1)
   let l:indent = emmet#getIndentation(l:type)
@@ -565,11 +583,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
         let l:expand .= l:inner
         let l:itemno = l:itemno + 1
       endfor
-      if emmet#useFilter(l:filters, 'e')
-        let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
-        let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
-        let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
-      endif
+      let l:expand = s:applyEscapeFilter(l:filters, l:expand)
       let l:line = getline(a:firstline)
       let l:part = substitute(l:line, '^\s*', '', '')
       for l:n in range(a:firstline, a:lastline)
@@ -629,14 +643,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
         endif
         let l:items = emmet#parseIntoTree(l:leader, l:type).child
       endif
-      for l:item in l:items
-        let l:expand .= emmet#toString(l:item, l:type, 0, l:filters, 0, '')
-      endfor
-      if emmet#useFilter(l:filters, 'e')
-        let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
-        let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
-        let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
-      endif
+      let l:expand = s:applyEscapeFilter(l:filters, s:expandItems(l:items, l:type, l:filters, ''))
       if stridx(l:leader, '{$#}') !=# -1
         let l:expand = substitute(l:expand, '\$#', '\="\n" . l:str', 'g')
       endif
@@ -676,14 +683,7 @@ function! emmet#expandAbbr(mode, abbr) range abort
       let l:str = substitute(l:str, s:filtermx, '', '')
     endif
     let l:items = emmet#parseIntoTree(l:str, l:type).child
-    for l:item in l:items
-      let l:expand .= emmet#toString(l:item, l:type, 0, l:filters, 0, l:indent)
-    endfor
-    if emmet#useFilter(l:filters, 'e')
-      let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
-      let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
-      let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
-    endif
+    let l:expand = s:applyEscapeFilter(l:filters, s:expandItems(l:items, l:type, l:filters, l:indent))
     let l:expand = substitute(l:expand, '\$line\([0-9]\+\)\$', '\=submatch(1)', 'g')
   endif
   let l:expand = emmet#expandDollarExpr(l:expand)
@@ -956,15 +956,7 @@ function! emmet#expandWord(abbr, type, orig) abort
   endif
   let l:str = substitute(l:str, '|', '${cursor}', 'g')
   let l:items = emmet#parseIntoTree(l:str, a:type).child
-  let l:expand = ''
-  for l:item in l:items
-    let l:expand .= emmet#toString(l:item, a:type, 0, l:filters, 0, l:indent)
-  endfor
-  if emmet#useFilter(l:filters, 'e')
-    let l:expand = substitute(l:expand, '&', '\&amp;', 'g')
-    let l:expand = substitute(l:expand, '<', '\&lt;', 'g')
-    let l:expand = substitute(l:expand, '>', '\&gt;', 'g')
-  endif
+  let l:expand = s:applyEscapeFilter(l:filters, s:expandItems(l:items, a:type, l:filters, l:indent))
   if emmet#useFilter(l:filters, 's')
     let l:expand = substitute(l:expand, "\n\s\*", '', 'g')
   endif
