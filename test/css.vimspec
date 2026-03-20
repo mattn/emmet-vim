@@ -1,0 +1,144 @@
+Describe css
+
+  Describe expand abbreviation
+    It expands font-style normal
+      let res = ExpandInBuffer('{fs:n$$$$}', 'css', '{font-style: normal;}')
+      Assert Equals(res, '{font-style: normal;}')
+    End
+
+    It expands float left with fc filter
+      let res = ExpandInBuffer('{fl:l|fc$$$$}', 'css', '{float: left;}')
+      Assert Equals(res, '{float: left;}')
+    End
+
+    It expands background+
+      let res = ExpandInBuffer('{bg+$$$$}', 'css', '{background: $$$$#fff url() 0 0 no-repeat;}')
+      Assert Equals(res, '{background: $$$$#fff url() 0 0 no-repeat;}')
+    End
+
+    It expands background+ important
+      let res = ExpandInBuffer('{bg+!$$$$}', 'css', '{background: $$$$#fff url() 0 0 no-repeat !important;}')
+      Assert Equals(res, '{background: $$$$#fff url() 0 0 no-repeat !important;}')
+    End
+
+    It expands margin
+      let res = ExpandInBuffer('{m$$$$}', 'css', '{margin: $$$$;}')
+      Assert Equals(res, '{margin: $$$$;}')
+    End
+
+    It expands margin percent
+      let res = ExpandInBuffer('{m0.1p$$$$}', 'css', '{margin: 0.1%;}')
+      Assert Equals(res, '{margin: 0.1%;}')
+    End
+
+    It expands margin em
+      let res = ExpandInBuffer('{m1.0$$$$}', 'css', '{margin: 1.0em;}')
+      Assert Equals(res, '{margin: 1.0em;}')
+    End
+
+    It expands margin px
+      let res = ExpandInBuffer('{m2$$$$}', 'css', '{margin: 2px;}')
+      Assert Equals(res, '{margin: 2px;}')
+    End
+
+    It expands border-radius
+      let res = ExpandInBuffer('{bdrs10$$$$}', 'css', '{border-radius: 10px;}')
+      Assert Equals(res, '{border-radius: 10px;}')
+    End
+
+    It expands vendor prefix border-radius
+      let res = ExpandInBuffer('{-bdrs20$$$$}', 'css', "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\n-o-border-radius: 20px;\n-ms-border-radius: 20px;\nborder-radius: 20px;}")
+      Assert Equals(res, "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\n-o-border-radius: 20px;\n-ms-border-radius: 20px;\nborder-radius: 20px;}")
+    End
+
+    It expands linear-gradient
+      let res = ExpandInBuffer('{lg(top,#fff,#000)$$$$}', 'css', "{background-image: -webkit-gradient(top, 0 0, 0 100%, from(#fff), to(#000));\nbackground-image: -webkit-linear-gradient(#fff, #000);\nbackground-image: -moz-linear-gradient(#fff, #000);\nbackground-image: -o-linear-gradient(#fff, #000);\nbackground-image: linear-gradient(#fff, #000);\n}")
+      Assert Equals(res, "{background-image: -webkit-gradient(top, 0 0, 0 100%, from(#fff), to(#000));\nbackground-image: -webkit-linear-gradient(#fff, #000);\nbackground-image: -moz-linear-gradient(#fff, #000);\nbackground-image: -o-linear-gradient(#fff, #000);\nbackground-image: linear-gradient(#fff, #000);\n}")
+    End
+
+    It expands margin multi value
+      let res = ExpandInBuffer('{m10-5-0$$$$}', 'css', '{margin: 10px 5px 0;}')
+      Assert Equals(res, '{margin: 10px 5px 0;}')
+    End
+
+    It expands margin negative
+      let res = ExpandInBuffer('{m-10--5$$$$}', 'css', '{margin: -10px -5px;}')
+      Assert Equals(res, '{margin: -10px -5px;}')
+    End
+
+    It expands margin auto
+      let res = ExpandInBuffer('{m10-auto$$$$}', 'css', '{margin: 10px auto;}')
+      Assert Equals(res, '{margin: 10px auto;}')
+    End
+
+    It expands width percent
+      let res = ExpandInBuffer('{w100p$$$$}', 'css', '{width: 100%;}')
+      Assert Equals(res, '{width: 100%;}')
+    End
+
+    It expands height em
+      let res = ExpandInBuffer('{h50e$$$$}', 'css', '{height: 50em;}')
+      Assert Equals(res, '{height: 50em;}')
+    End
+
+    It expands multi property group
+      let res = ExpandInBuffer('{(bg+)+c$$$$}', 'css', "{background: $$$$#fff url() 0 0 no-repeat;\ncolor: #000;}")
+      Assert Equals(res, "{background: $$$$#fff url() 0 0 no-repeat;\ncolor: #000;}")
+    End
+
+    It expands multi property
+      let res = ExpandInBuffer('{m0+bgi+bg++p0$$$$}', 'css', "{margin: 0;\nbackground-image: url($$$$);\nbackground: #fff url() 0 0 no-repeat;\npadding: 0;}")
+      Assert Equals(res, "{margin: 0;\nbackground-image: url($$$$);\nbackground: #fff url() 0 0 no-repeat;\npadding: 0;}")
+    End
+
+    It expands fuzzy border-left
+      let res = ExpandInBuffer('{borle$$$$}', 'css', '{border-left: $$$$;}')
+      Assert Equals(res, '{border-left: $$$$;}')
+    End
+
+    It expands color shorthand
+      let res = ExpandInBuffer('{c#dba$$$$}', 'css', '{color: rgb(221, 187, 170);}')
+      Assert Equals(res, '{color: rgb(221, 187, 170);}')
+    End
+
+    It expands color shorthand with alpha
+      let res = ExpandInBuffer('{c#dba.7$$$$}', 'css', '{color: rgb(221, 187, 170, 0.7);}')
+      Assert Equals(res, '{color: rgb(221, 187, 170, 0.7);}')
+    End
+
+    It expands display none
+      let res = ExpandInBuffer('{dn$$$$}', 'css', '{display: none;}')
+      Assert Equals(res, '{display: none;}')
+    End
+
+    It expands padding with percent sign
+      let res = ExpandInBuffer('{p10%$$$$}', 'css', '{padding: 10%;}')
+      Assert Equals(res, '{padding: 10%;}')
+    End
+
+    It expands padding with p suffix
+      let res = ExpandInBuffer('{p10p$$$$}', 'css', '{padding: 10%;}')
+      Assert Equals(res, '{padding: 10%;}')
+    End
+
+    It expands padding with e suffix
+      let res = ExpandInBuffer('{p10e$$$$}', 'css', '{padding: 10em;}')
+      Assert Equals(res, '{padding: 10em;}')
+    End
+
+    It expands padding with em suffix
+      let res = ExpandInBuffer('{p10em$$$$}', 'css', '{padding: 10em;}')
+      Assert Equals(res, '{padding: 10em;}')
+    End
+
+    It expands padding with re suffix
+      let res = ExpandInBuffer('{p10re$$$$}', 'css', '{padding: 10rem;}')
+      Assert Equals(res, '{padding: 10rem;}')
+    End
+
+    It expands padding with rem suffix
+      let res = ExpandInBuffer('{p10rem$$$$}', 'css', '{padding: 10rem;}')
+      Assert Equals(res, '{padding: 10rem;}')
+    End
+  End
+End

@@ -1,0 +1,48 @@
+Describe slim
+
+  Describe expand abbreviation
+    It expands complex
+      Assert Equals(ExpandWord('div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}', 'slim'), "div\n  p\n  ul id=\"foo\"\n    li class=\"bar1\" foo=\"bar\" bar=\"baz\"\n      | baz\n    li class=\"bar2\" foo=\"bar\" bar=\"baz\"\n      | baz\n    li class=\"bar3\" foo=\"bar\" bar=\"baz\"\n      | baz\n")
+    End
+
+    It expands with slim filter
+      Assert Equals(ExpandWord('div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|slim', 'slim'), "div\n  p\n  ul id=\"foo\"\n    li class=\"bar1\" foo=\"bar\" bar=\"baz\"\n      | baz\n    li class=\"bar2\" foo=\"bar\" bar=\"baz\"\n      | baz\n    li class=\"bar3\" foo=\"bar\" bar=\"baz\"\n      | baz\n")
+    End
+
+    It expands a multiplier
+      Assert Equals(ExpandWord('a*3|slim', 'slim'), "a href=\"\"\na href=\"\"\na href=\"\"\n")
+    End
+
+    It expands class with text
+      Assert Equals(ExpandWord('.content{Hello!}|slim', 'slim'), "div class=\"content\"\n  | Hello!\n")
+    End
+
+    It expands title dollar hash
+      Assert Equals(ExpandWord('a[title=$#]{foo}', 'slim'), "a href=\"\" title=\"foo\"\n  | foo\n")
+    End
+  End
+
+  Describe split join tag
+    It joins
+      let res = ExpandInBuffer("a\n  | foo$$$$\\<c-y>j$$$$", 'slim', 'a')
+      Assert Equals(res, 'a')
+    End
+
+    It splits
+      let res = ExpandInBuffer("a$$$$\\<c-y>j$$$$", 'slim', "a\n  | $$$$")
+      Assert Equals(res, "a\n  | $$$$")
+    End
+  End
+
+  Describe toggle comment
+    It adds comment
+      let res = ExpandInBuffer("a href=\"http://www.google.com\"$$$$\\<c-y>/$$$$\n  | hello", 'slim', "/a href=\"http://www.google.com\"\n  | hello")
+      Assert Equals(res, "/a href=\"http://www.google.com\"\n  | hello")
+    End
+
+    It removes comment
+      let res = ExpandInBuffer("/a href=\"http://www.google.com\"$$$$\\<c-y>/$$$$\n  | hello", 'slim', "a href=\"http://www.google.com\"\n  | hello")
+      Assert Equals(res, "a href=\"http://www.google.com\"\n  | hello")
+    End
+  End
+End

@@ -1,0 +1,48 @@
+Describe haml
+
+  Describe expand abbreviation
+    It expands complex
+      Assert Equals(ExpandWord('div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}', 'haml'), "%div\n  %p\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n")
+    End
+
+    It expands with haml filter
+      Assert Equals(ExpandWord('div>p+ul#foo>li.bar$[foo=bar][bar=baz]*3>{baz}|haml', 'haml'), "%div\n  %p\n  %ul#foo\n    %li.bar1{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar2{ :foo => \"bar\", :bar => \"baz\" } baz\n    %li.bar3{ :foo => \"bar\", :bar => \"baz\" } baz\n")
+    End
+
+    It expands a multiplier
+      Assert Equals(ExpandWord('a*3|haml', 'haml'), "%a{ :href => \"\" }\n%a{ :href => \"\" }\n%a{ :href => \"\" }\n")
+    End
+
+    It expands class with text
+      Assert Equals(ExpandWord('.content{Hello!}|haml', 'haml'), "%div.content Hello!\n")
+    End
+
+    It expands title dollar hash
+      Assert Equals(ExpandWord('a[title=$#]{foo}', 'haml'), "%a{ :href => \"\", :title => \"foo\" } foo\n")
+    End
+  End
+
+  Describe split join
+    It joins
+      let res = ExpandInBuffer("%a foo\n  bar$$$$\\<c-y>j$$$$", 'haml', '%a ')
+      Assert Equals(res, '%a ')
+    End
+
+    It splits
+      let res = ExpandInBuffer("$$$$\\<c-y>j$$$$%a ", 'haml', '%a $$$$')
+      Assert Equals(res, '%a $$$$')
+    End
+  End
+
+  Describe toggle comment
+    It adds comment
+      let res = ExpandInBuffer('%a{ :href => "http://www.google.com"$$$$\<c-y>/$$$$ } hello', 'haml', '-# %a{ :href => "http://www.google.com" } hello')
+      Assert Equals(res, '-# %a{ :href => "http://www.google.com" } hello')
+    End
+
+    It removes comment
+      let res = ExpandInBuffer('-# %a{ :href => "http://www.google.com"$$$$\<c-y>/$$$$ } hello', 'haml', '%a{ :href => "http://www.google.com" } hello')
+      Assert Equals(res, '%a{ :href => "http://www.google.com" } hello')
+    End
+  End
+End

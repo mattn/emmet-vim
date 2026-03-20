@@ -1,1 +1,13 @@
 let &runtimepath .= ',' . fnamemodify(expand('<sfile>'), ':h') . '/test'
+call themis#helper('command').with(themis#helper('assert'))
+
+let s:emmet = themis#helper('emmet')
+call s:emmet.setup()
+
+function! ExpandWord(query, type) abort
+  return s:emmet.expand_word(a:query, a:type)
+endfunction
+
+function! ExpandInBuffer(query, type, result) abort
+  return s:emmet.expand_in_buffer(a:query, a:type, a:result)
+endfunction

@@ -1,0 +1,171 @@
+Describe others
+
+  Describe xsl
+    It expands vari
+      Assert Equals(ExpandWord('vari', 'xsl'), "<xsl:variable name=\"\"></xsl:variable>\n")
+    End
+
+    It expands ap>wp
+      Assert Equals(ExpandWord('ap>wp', 'xsl'), "<xsl:apply-templates select=\"\" mode=\"\">\n\t<xsl:with-param name=\"\" select=\"\"></xsl:with-param>\n</xsl:apply-templates>\n")
+    End
+  End
+
+  Describe xsd
+    It expands xsd:w3c
+      Assert Equals(ExpandWord('xsd:w3c', 'xsd'), "<?xml version=\"1.0\"?>\n<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t<xsd:element name=\"\" type=\"\"/>\n</xsd:schema>\n")
+    End
+  End
+
+  Describe mustache
+    It expands id with mustache syntax
+      Assert Equals(ExpandWord('div#{{foo}}', 'mustache'), "<div id=\"{{foo}}\"></div>\n")
+    End
+
+    It expands class with mustache syntax
+      Assert Equals(ExpandWord('div.{{foo}}', 'mustache'), "<div class=\"{{foo}}\"></div>\n")
+    End
+  End
+
+  Describe scss
+    It expands import
+      let res = ExpandInBuffer('@i$$$$', 'scss', '@import url();')
+      Assert Equals(res, '@import url();')
+    End
+
+    It expands font-style
+      let res = ExpandInBuffer('{fs:n$$$$}', 'scss', '{font-style: normal;}')
+      Assert Equals(res, '{font-style: normal;}')
+    End
+
+    It expands float left
+      let res = ExpandInBuffer('{fl:l|fc$$$$}', 'scss', '{float: left;}')
+      Assert Equals(res, '{float: left;}')
+    End
+
+    It expands background+
+      let res = ExpandInBuffer('{bg+$$$$}', 'scss', '{background: $$$$#fff url() 0 0 no-repeat;}')
+      Assert Equals(res, '{background: $$$$#fff url() 0 0 no-repeat;}')
+    End
+
+    It expands background+ important
+      let res = ExpandInBuffer('{bg+!$$$$}', 'scss', '{background: $$$$#fff url() 0 0 no-repeat !important;}')
+      Assert Equals(res, '{background: $$$$#fff url() 0 0 no-repeat !important;}')
+    End
+
+    It expands margin
+      let res = ExpandInBuffer('{m$$$$}', 'scss', '{margin: $$$$;}')
+      Assert Equals(res, '{margin: $$$$;}')
+    End
+
+    It expands margin percent
+      let res = ExpandInBuffer('{m0.1p$$$$}', 'scss', '{margin: 0.1%;}')
+      Assert Equals(res, '{margin: 0.1%;}')
+    End
+
+    It expands margin em
+      let res = ExpandInBuffer('{m1.0$$$$}', 'scss', '{margin: 1.0em;}')
+      Assert Equals(res, '{margin: 1.0em;}')
+    End
+
+    It expands margin px
+      let res = ExpandInBuffer('{m2$$$$}', 'scss', '{margin: 2px;}')
+      Assert Equals(res, '{margin: 2px;}')
+    End
+
+    It expands border-radius
+      let res = ExpandInBuffer('{bdrs10$$$$}', 'scss', '{border-radius: 10px;}')
+      Assert Equals(res, '{border-radius: 10px;}')
+    End
+
+    It expands vendor prefix
+      let res = ExpandInBuffer('{-bdrs20$$$$}', 'scss', "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\n-o-border-radius: 20px;\n-ms-border-radius: 20px;\nborder-radius: 20px;}")
+      Assert Equals(res, "{-webkit-border-radius: 20px;\n-moz-border-radius: 20px;\n-o-border-radius: 20px;\n-ms-border-radius: 20px;\nborder-radius: 20px;}")
+    End
+
+    It expands linear-gradient
+      let res = ExpandInBuffer('{lg(top,#fff,#000)$$$$}', 'scss', "{background-image: -webkit-gradient(top, 0 0, 0 100%, from(#fff), to(#000));\nbackground-image: -webkit-linear-gradient(#fff, #000);\nbackground-image: -moz-linear-gradient(#fff, #000);\nbackground-image: -o-linear-gradient(#fff, #000);\nbackground-image: linear-gradient(#fff, #000);\n}")
+      Assert Equals(res, "{background-image: -webkit-gradient(top, 0 0, 0 100%, from(#fff), to(#000));\nbackground-image: -webkit-linear-gradient(#fff, #000);\nbackground-image: -moz-linear-gradient(#fff, #000);\nbackground-image: -o-linear-gradient(#fff, #000);\nbackground-image: linear-gradient(#fff, #000);\n}")
+    End
+
+    It expands margin multi
+      let res = ExpandInBuffer('{m10-5-0$$$$}', 'scss', '{margin: 10px 5px 0;}')
+      Assert Equals(res, '{margin: 10px 5px 0;}')
+    End
+
+    It expands margin negative
+      let res = ExpandInBuffer('{m-10--5$$$$}', 'scss', '{margin: -10px -5px;}')
+      Assert Equals(res, '{margin: -10px -5px;}')
+    End
+
+    It expands margin auto
+      let res = ExpandInBuffer('{m10-auto$$$$}', 'scss', '{margin: 10px auto;}')
+      Assert Equals(res, '{margin: 10px auto;}')
+    End
+
+    It expands width percent
+      let res = ExpandInBuffer('{w100p$$$$}', 'scss', '{width: 100%;}')
+      Assert Equals(res, '{width: 100%;}')
+    End
+
+    It expands height em
+      let res = ExpandInBuffer('{h50e$$$$}', 'scss', '{height: 50em;}')
+      Assert Equals(res, '{height: 50em;}')
+    End
+
+    It expands multi property group
+      let res = ExpandInBuffer('{(bg+)+c$$$$}', 'scss', "{background: $$$$#fff url() 0 0 no-repeat;\ncolor: #000;}")
+      Assert Equals(res, "{background: $$$$#fff url() 0 0 no-repeat;\ncolor: #000;}")
+    End
+  End
+
+  Describe jade
+    It expands doctype
+      let res = ExpandInBuffer("!!!$$$$\\<c-y>,$$$$", 'jade', "doctype html\n\n")
+      Assert Equals(res, "doctype html\n\n")
+    End
+
+    It expands span class
+      let res = ExpandInBuffer("span.my-span$$$$\\<c-y>,$$$$", 'jade', 'span.my-span')
+      Assert Equals(res, 'span.my-span')
+    End
+
+    It expands input
+      let res = ExpandInBuffer("input$$$$\\<c-y>,text$$$$", 'jade', 'input(type="text")')
+      Assert Equals(res, 'input(type="text")')
+    End
+  End
+
+  Describe pug
+    It expands doctype
+      let res = ExpandInBuffer("!!!$$$$\\<c-y>,$$$$", 'pug', "doctype html\n\n")
+      Assert Equals(res, "doctype html\n\n")
+    End
+
+    It expands span class
+      let res = ExpandInBuffer("span.my-span$$$$\\<c-y>,$$$$", 'pug', 'span.my-span')
+      Assert Equals(res, 'span.my-span')
+    End
+
+    It expands input
+      let res = ExpandInBuffer("input$$$$\\<c-y>,text$$$$", 'pug', 'input(type="text")')
+      Assert Equals(res, 'input(type="text")')
+    End
+  End
+
+  Describe jsx
+    It expands img
+      let res = ExpandInBuffer("img$$$$\\<c-y>,$$$$", 'javascript.jsx', '<img src="" alt="" />')
+      Assert Equals(res, '<img src="" alt="" />')
+    End
+
+    It expands span class
+      let res = ExpandInBuffer("span.my-span$$$$\\<c-y>,$$$$", 'javascript.jsx', '<span className="my-span"></span>')
+      Assert Equals(res, '<span className="my-span"></span>')
+    End
+
+    It expands in function
+      let res = ExpandInBuffer("function() { return span.my-span$$$$\\<c-y>,$$$$; }", 'javascript.jsx', 'function() { return <span className="my-span"></span>; }')
+      Assert Equals(res, 'function() { return <span className="my-span"></span>; }')
+    End
+  End
+End

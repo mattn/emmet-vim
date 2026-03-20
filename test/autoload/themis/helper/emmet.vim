@@ -2,13 +2,7 @@ let s:helper = {}
 
 function! s:helper.setup() abort
   let g:user_emmet_settings = {'variables': {'indentation': "\t", 'use_selection': 1}}
-  for f in split(globpath(getcwd(), 'autoload/**/*.vim'), "\n")
-    if f =~# 'themis'
-      continue
-    endif
-    silent! exe 'so' f
-  endfor
-  silent! exe 'so' getcwd() . '/plugin/emmet.vim'
+  exe 'so' getcwd() . '/plugin/emmet.vim'
 endfunction
 
 function! s:helper.expand_word(query, type) abort
