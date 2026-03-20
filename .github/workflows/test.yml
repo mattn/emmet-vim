@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         vim:
-          - v9.0.0000
+          - v9.1.0000
           - head
     steps:
       - uses: actions/checkout@v4
